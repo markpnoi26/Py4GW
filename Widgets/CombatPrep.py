@@ -666,7 +666,7 @@ class CombatPrep:
 
         if is_window_opened:
             is_hero_ai_enabled = widget_handler.is_widget_enabled("HeroAI")
-            if not GLOBAL_CACHE.Map.IsExplorable() or not self.is_party_leader and not is_hero_ai_enabled:
+            if not GLOBAL_CACHE.Map.IsExplorable() and not self.is_party_leader and not is_hero_ai_enabled:
                 header_text = "The following prevents you from using CombatPrep:"
                 final_text = header_text
                 if not GLOBAL_CACHE.Map.IsExplorable():
