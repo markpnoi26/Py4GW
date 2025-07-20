@@ -81,7 +81,7 @@ def render_custom_behavior_gui():
             if "Widgets" in str(current_path):
                 prefix = "..\\"
 
-            score_text = f"score={score[1]:06.2f}" if score[1] is not None else "score = 0"
+            score_text = f"Score = {score[1]:06.2f}" if score[1] is not None else "Score = 0"
             texture_file = prefix + GLOBAL_CACHE.Skill.ExtraData.GetTexturePath(score[0].custom_skill.skill_id)
 
             PyImGui.table_next_row()
