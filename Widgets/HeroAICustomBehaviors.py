@@ -9,6 +9,7 @@ from Py4GWCoreLib import PyImGui
 from Py4GWCoreLib import Routines
 from Py4GWCoreLib import Timer
 from Widgets.CustomBehaviors.gui.current_build import render as current_build_render
+from Py4GW_widget_manager import get_widget_handler
 
 # Iterate through all modules in sys.modules (already imported modules)
 # Iterate over all imported modules and reload them
@@ -33,6 +34,7 @@ INI_WIDGET_WINDOW_PATH = os.path.join(BASE_DIR, "hero_ai_custom_behavior.ini")
 os.makedirs(BASE_DIR, exist_ok=True)
 
 cached_data = CacheData()
+widget_handler = get_widget_handler()
 
 # ——— Window Persistence Setup ———
 ini_window = IniHandler(INI_WIDGET_WINDOW_PATH)
@@ -66,6 +68,15 @@ def draw_widget():
 
     if is_window_opened:
         global party_forced_state_combo
+
+        is_hero_ai_enabled = widget_handler.is_widget_enabled("HeroAI")
+        if not is_hero_ai_enabled:
+            header_text = "The following prevents you from using HeroAICustomBehavior:"
+            final_text = header_text
+            if not is_hero_ai_enabled:
+                final_text += "\n  - HeroAI is not running "
+            PyImGui.text(final_text)
+            return
 
         PyImGui.begin_tab_bar("current_build")
 

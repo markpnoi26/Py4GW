@@ -16,6 +16,7 @@ from Py4GWCoreLib import Range
 from Py4GWCoreLib import Routines
 from Py4GWCoreLib import SharedCommandType
 from Py4GWCoreLib import Timer
+from Py4GW_widget_manager import get_widget_handler
 
 script_directory = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(script_directory, os.pardir))
@@ -69,6 +70,8 @@ FLAG_POSITION_Y = "FlagPosY"
 FOLOW_ANGLE = "FollowAngle"
 
 cached_data = CacheData()
+widget_handler = get_widget_handler()
+
 
 # ——— Window Persistence Setup ———
 ini_window = IniHandler(INI_WIDGET_WINDOW_PATH)
@@ -662,13 +665,21 @@ class CombatPrep:
         end_pos = PyImGui.get_window_pos()
 
         if is_window_opened:
-            if not GLOBAL_CACHE.Map.IsExplorable() or not self.is_party_leader:
-                PyImGui.text("Need to be party Leader and in Explorable Area")
+            is_hero_ai_enabled = widget_handler.is_widget_enabled("HeroAI")
+            if not GLOBAL_CACHE.Map.IsExplorable() or not self.is_party_leader and not is_hero_ai_enabled:
+                header_text = "The following prevents you from using CombatPrep:"
+                final_text = header_text
+                if not GLOBAL_CACHE.Map.IsExplorable():
+                    final_text += "\n  - Not in Explorable Area"
+                if not self.is_party_leader:
+                    final_text += "\n  - Not Currently Party Leader"
+                if not is_hero_ai_enabled:
+                    final_text += "\n  - HeroAI is not running "
+                PyImGui.text(final_text)
                 return
 
             # capture current state
             PyImGui.is_window_collapsed()
-            PyImGui.get_window_pos()
             if self.module_layout == ROW:
                 self._row_ui()
             else:
