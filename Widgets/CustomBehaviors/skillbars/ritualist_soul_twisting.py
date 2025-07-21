@@ -31,7 +31,7 @@ from Widgets.CustomBehaviors.skills.ritualist.armor_of_unfeeling_utility import 
 from Widgets.CustomBehaviors.skills.ritualist.summon_spirit_utility import SummonSpiritUtility
 
 
-class RitualistSoulTwisting_UtilitySkillBar(CustomBehaviorBaseUtility):
+class RitualistSoulTwistingUtilitySkillBar(CustomBehaviorBaseUtility):
 
     def __init__(self, cached_data: CacheData):
         super().__init__(cached_data)
