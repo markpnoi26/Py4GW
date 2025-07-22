@@ -1,6 +1,7 @@
 
-from Py4GWCoreLib import *
 from LUACoreLib.lua_bridge import LuaBridge
+
+from Py4GWCoreLib import *
 
 lua_bridge = LuaBridge('hello_world.lua')
 lua_script = lua_bridge.execute_lua_script()

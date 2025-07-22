@@ -1,6 +1,6 @@
-from Py4GWCoreLib import ThrottledTimer
-from Py4GWCoreLib import Routines
 from Py4GWCoreLib import GLOBAL_CACHE
+from Py4GWCoreLib import Routines
+from Py4GWCoreLib import ThrottledTimer
 
 module_name = "Resign on enter Map"
 

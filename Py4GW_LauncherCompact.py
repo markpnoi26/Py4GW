@@ -1,26 +1,30 @@
-from imgui_bundle import hello_imgui, imgui
-import json
-import tkinter as tk
-from tkinter import filedialog
-
-
 #region --- patcher ---
 import ctypes
 import ctypes.wintypes
+import json
+import tkinter as tk
 from ctypes import wintypes
+from tkinter import filedialog
+
+from imgui_bundle import hello_imgui
+from imgui_bundle import imgui
+
 user32 = ctypes.windll.user32
 kernel32 = ctypes.windll.kernel32
-from typing import List, Optional
+import configparser
+import os
+import sys
 
 #region --- injector ---
 import threading
 import time
+from typing import List
+from typing import Optional
+
+import psutil
 import win32gui
 import win32process
-import psutil
-import sys
-import configparser
-import os
+
 
 class IniHandler:
     def __init__(self, filename: str):

@@ -1,5 +1,6 @@
-from Py4GWCoreLib import*
 import time
+
+from Py4GWCoreLib import *
 
 #VARIABLES
 module_name = "TH3KUM1KO'S LEGENDARY GUARDIAN BOT"

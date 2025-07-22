@@ -1,12 +1,16 @@
-import inspect
 import importlib
+import inspect
 import pkgutil
-from typing import Generator, Any, List
+from typing import Any
+from typing import Generator
+from typing import List
 
-from Py4GWCoreLib import GLOBAL_CACHE, Routines
+from Py4GWCoreLib import GLOBAL_CACHE
+from Py4GWCoreLib import Routines
 from Widgets.CustomBehaviors.primitives.behavior_state import BehaviorState
 from Widgets.CustomBehaviors.primitives.constants import DEBUG
-from Widgets.CustomBehaviors.primitives.parties.custom_behavior_shared_memory import CustomBehaviorWidgetData, CustomBehaviorWidgetMemoryManager
+from Widgets.CustomBehaviors.primitives.parties.custom_behavior_shared_memory import CustomBehaviorWidgetData
+from Widgets.CustomBehaviors.primitives.parties.custom_behavior_shared_memory import CustomBehaviorWidgetMemoryManager
 
 
 class CustomBehaviorParty:

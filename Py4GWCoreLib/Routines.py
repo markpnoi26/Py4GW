@@ -1,14 +1,21 @@
-from Py4GWCoreLib import Timer
-from Py4GWCoreLib import Utils
-from Py4GWCoreLib import ConsoleLog
-from Py4GWCoreLib import ActionQueueManager
-from time import sleep
-import time
-from .enums import *
 import inspect
 import math
-from typing import List, Tuple, Callable, Optional
-from datetime import datetime, timezone
+import time
+from datetime import datetime
+from datetime import timezone
+from time import sleep
+from typing import Callable
+from typing import List
+from typing import Optional
+from typing import Tuple
+
+from Py4GWCoreLib import ActionQueueManager
+from Py4GWCoreLib import ConsoleLog
+from Py4GWCoreLib import Timer
+from Py4GWCoreLib import Utils
+
+from .enums import *
+
 """
 from .Map import Map
 from .Party import Party
@@ -1369,9 +1376,10 @@ class Routines:
             @staticmethod
             def FollowPath(path_points: List[Tuple[float, float]], custom_exit_condition:Callable[[], bool] =lambda: False, tolerance:float=150):
                 import random
-                from .Player import Player
+
                 from .Map import Map
                 from .Party import Party
+                from .Player import Player
 
                 for idx, (target_x, target_y) in enumerate(path_points):
                     if not Routines.Checks.Map.MapValid():
@@ -1674,8 +1682,9 @@ class Routines:
 
             @staticmethod
             def BuyIDKits(kits_to_buy:int, log=False):
-                from .ItemArray import ItemArray
                 from Py4GWCoreLib import ActionQueueManager
+
+                from .ItemArray import ItemArray
                 if kits_to_buy <= 0:
                     ActionQueueManager().ResetQueue("MERCHANT")
                     return
@@ -1700,8 +1709,9 @@ class Routines:
 
             @staticmethod
             def BuySalvageKits(kits_to_buy:int, log=False):
-                from .ItemArray import ItemArray
                 from Py4GWCoreLib import ActionQueueManager
+
+                from .ItemArray import ItemArray
                 if kits_to_buy <= 0:
                     ActionQueueManager().ResetQueue("MERCHANT")
                     return
@@ -1737,6 +1747,7 @@ class Routines:
             @staticmethod
             def SalvageItems(item_array:list[int], log=False):
                 from Py4GWCoreLib import ActionQueueManager
+
                 from .Inventory import Inventory
                 if len(item_array) == 0:
                     ActionQueueManager().ResetQueue("SALVAGE")
@@ -2319,6 +2330,7 @@ class Routines:
             @staticmethod
             def BuyIDKits(kits_to_buy:int, log=False):
                 from Py4GWCoreLib import ActionQueueManager
+
                 from .ItemArray import ItemArray
                 if kits_to_buy <= 0:
                     ActionQueueManager().ResetQueue("MERCHANT")
@@ -2344,8 +2356,9 @@ class Routines:
 
             @staticmethod
             def BuySalvageKits(kits_to_buy:int, log=False):
-                from .ItemArray import ItemArray
                 from Py4GWCoreLib import ActionQueueManager
+
+                from .ItemArray import ItemArray
                 if kits_to_buy <= 0:
                     ActionQueueManager().ResetQueue("MERCHANT")
                     return
@@ -2396,6 +2409,7 @@ class Routines:
             @staticmethod
             def SalvageItems(item_array:list[int], log=False):
                 from Py4GWCoreLib import ActionQueueManager
+
                 from .Inventory import Inventory
                 if len(item_array) == 0:
                     ActionQueueManager().ResetQueue("SALVAGE")
@@ -2445,8 +2459,9 @@ class Routines:
                     
             @staticmethod
             def DepositItems(item_array:list[int], log=False):
-                from .Inventory import Inventory
                 from Py4GWCoreLib import ActionQueueManager
+
+                from .Inventory import Inventory
                 if len(item_array) == 0:
                     ActionQueueManager().ResetQueue("ACTION")
                     return

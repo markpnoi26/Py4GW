@@ -1,8 +1,16 @@
-from Py4GWCoreLib import PyImGui, ImGui, IconsFontAwesome5
+from Py4GWCoreLib import IconsFontAwesome5
+from Py4GWCoreLib import ImGui
+from Py4GWCoreLib import PyImGui
+
 from . import state
+from .config_scope import character_select
+from .config_scope import use_account_settings
 from .handler import handler
-from .config_scope import use_account_settings, character_select
-from .settings_io import load_account_settings, load_global_settings, save_all_settings, restore_global_defaults
+from .settings_io import load_account_settings
+from .settings_io import load_global_settings
+from .settings_io import restore_global_defaults
+from .settings_io import save_all_settings
+
 
 def draw_centered_checkbox(label: str, value: bool) -> bool:
     width = PyImGui.calc_text_size(label)[0] + 20

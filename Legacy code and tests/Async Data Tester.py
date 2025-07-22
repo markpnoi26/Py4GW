@@ -1,5 +1,6 @@
-from Py4GWCoreLib import *
 import re
+
+from Py4GWCoreLib import *
 
 MODULE_NAME = "chat logger"
 

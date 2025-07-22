@@ -1,5 +1,7 @@
-import PyCamera
 import math
+
+import PyCamera
+
 
 class Camera:
     @staticmethod

@@ -1,8 +1,8 @@
-from Py4GWCoreLib import *
+import Mapping
 from BotUtilities import *
 from WindowUtilites import *
 
-import Mapping
+from Py4GWCoreLib import *
 
 bot_name = "Nikons Skalefin Soup Farm"
 

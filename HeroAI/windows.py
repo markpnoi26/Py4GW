@@ -1,15 +1,39 @@
+import math
 from operator import index
-from Py4GWCoreLib import GLOBAL_CACHE, IconsFontAwesome5, PyImGui, ImGui, Utils, Overlay, Range, SharedCommandType, ConsoleLog, Color
-from Py4GWCoreLib import UIManager, ModelID, GLOBAL_CACHE
 
-from .constants import MAX_NUM_PLAYERS, NUMBER_OF_SKILLS
-from .types import SkillType, SkillNature, Skilltarget, GameOptionStruct
-from .globals import capture_mouse_timer, show_area_rings, show_hero_follow_grid, show_distance_on_followers, hero_formation, capture_hero_flag, capture_flag_all, capture_hero_index
-from .utils import IsHeroFlagged, DrawFlagAll, DrawHeroFlag, DistanceFromWaypoint
+from Py4GWCoreLib import GLOBAL_CACHE
+from Py4GWCoreLib import Color
+from Py4GWCoreLib import ConsoleLog
+from Py4GWCoreLib import IconsFontAwesome5
+from Py4GWCoreLib import ImGui
+from Py4GWCoreLib import ModelID
+from Py4GWCoreLib import Overlay
+from Py4GWCoreLib import PyImGui
+from Py4GWCoreLib import Range
+from Py4GWCoreLib import SharedCommandType
+from Py4GWCoreLib import UIManager
+from Py4GWCoreLib import Utils
 
 from .cache_data import CacheData
+from .constants import MAX_NUM_PLAYERS
+from .constants import NUMBER_OF_SKILLS
+from .globals import capture_flag_all
+from .globals import capture_hero_flag
+from .globals import capture_hero_index
+from .globals import capture_mouse_timer
+from .globals import hero_formation
+from .globals import show_area_rings
+from .globals import show_distance_on_followers
+from .globals import show_hero_follow_grid
+from .types import GameOptionStruct
+from .types import SkillNature
+from .types import Skilltarget
+from .types import SkillType
+from .utils import DistanceFromWaypoint
+from .utils import DrawFlagAll
+from .utils import DrawHeroFlag
+from .utils import IsHeroFlagged
 
-import math
 
 def DrawBuffWindow(cached_data:CacheData):
     global MAX_NUM_PLAYERS

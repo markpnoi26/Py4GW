@@ -1,13 +1,17 @@
-from Py4GWCoreLib import PyImGui, GLOBAL_CACHE, IniHandler, Timer, ThrottledTimer
-from HeroAI.cache_data import CacheData
-from HeroAI.constants import MAX_NUM_PLAYERS
-from Widgets.HeroAI import TabType
-
+import configparser
 import os
 import sys
-import configparser
-from Py4GWCoreLib import *
 from typing import Set
+
+from HeroAI.cache_data import CacheData
+from HeroAI.constants import MAX_NUM_PLAYERS
+from Py4GWCoreLib import GLOBAL_CACHE
+from Py4GWCoreLib import IniHandler
+from Py4GWCoreLib import PyImGui
+from Py4GWCoreLib import ThrottledTimer
+from Py4GWCoreLib import Timer
+from Py4GWCoreLib import *
+from Widgets.HeroAI import TabType
 
 '''
 This widget draws a floating window with every HeroAI player and hero in the party and tracks their HR buff status.
@@ -27,7 +31,11 @@ player_data_cache = {}
 player_data_timer = ThrottledTimer(500)
 
 # ─── Import the game's API ────────────────────────────────────────────────
-from Py4GWCoreLib import Player, Party, PyImGui, IniHandler, Timer
+from Py4GWCoreLib import IniHandler
+from Py4GWCoreLib import Party
+from Py4GWCoreLib import Player
+from Py4GWCoreLib import PyImGui
+from Py4GWCoreLib import Timer
 
 # ─── Make sure "heroic_refrain" is on the import path ──────────────────
 script_directory = os.path.dirname(os.path.abspath(__file__))

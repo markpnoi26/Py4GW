@@ -1,5 +1,6 @@
-import time
 import threading
+import time
+
 from Py4GWCoreLib import *
 
 is_script_running = False

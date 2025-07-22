@@ -1,5 +1,6 @@
-from Py4GWCoreLib import *
 from datetime import datetime
+
+from Py4GWCoreLib import *
 
 widget_name = "Salvager"
 

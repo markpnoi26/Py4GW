@@ -1,6 +1,10 @@
+from typing import Tuple
+from typing import overload
+
 import PyOverlay
-from typing import Tuple, overload
+
 from .Py4GWcorelib import Utils
+
 
 class Overlay:
     _instance = None  # Static class-level variable

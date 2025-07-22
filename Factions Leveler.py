@@ -1,11 +1,13 @@
-import Py4GW
-import PyImGui
-from Hello_World import GUARDMAN_ZUI_DLG4
-from Py4GWCoreLib import *
-from Py4GWCoreLib import Routines
-from Py4GWCoreLib import GLOBAL_CACHE
+from typing import List
+from typing import Tuple
 
-from typing import List, Tuple
+import PyImGui
+
+import Py4GW
+from Hello_World import GUARDMAN_ZUI_DLG4
+from Py4GWCoreLib import GLOBAL_CACHE
+from Py4GWCoreLib import Routines
+from Py4GWCoreLib import *
 
 MODULE_NAME = "Factions Profession Leveler"
 
@@ -236,7 +238,10 @@ class FSM_Config:
             yield from self._stop_execution()
         yield from Routines.Yield.wait(1000)
         
-    from typing import Generator, Any, Tuple, List
+    from typing import Any
+    from typing import Generator
+    from typing import List
+    from typing import Tuple
 
     def follow_path(self, path: List[Tuple[float, float]], pause_on_danger: bool = False) -> Generator[Any, Any, bool]:
         success_movement = yield from Routines.Yield.Movement.FollowPath(

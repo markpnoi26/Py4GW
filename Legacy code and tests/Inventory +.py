@@ -1,25 +1,24 @@
+import math
+from enum import Enum
+from time import sleep
+from typing import Dict
+
 import Py4GW
-from Py4GWCoreLib import Timer
-from Py4GWCoreLib import Utils
-from Py4GWCoreLib import UIManager
-from Py4GWCoreLib import WindowID
-from Py4GWCoreLib import PyImGui
-from Py4GWCoreLib import ImGui
 from Py4GWCoreLib import GLOBAL_CACHE
 from Py4GWCoreLib import ActionQueueManager
-from Py4GWCoreLib import IconsFontAwesome5
-from Py4GWCoreLib import Bags
-from Py4GWCoreLib import Inventory
-from Py4GWCoreLib import ConsoleLog
-from Py4GWCoreLib import ModelID
-from Py4GWCoreLib import Routines
 from Py4GWCoreLib import AutoInventoryHandler
-
-from enum import Enum
-from typing import Dict
-import math
-from time import sleep
-
+from Py4GWCoreLib import Bags
+from Py4GWCoreLib import ConsoleLog
+from Py4GWCoreLib import IconsFontAwesome5
+from Py4GWCoreLib import ImGui
+from Py4GWCoreLib import Inventory
+from Py4GWCoreLib import ModelID
+from Py4GWCoreLib import PyImGui
+from Py4GWCoreLib import Routines
+from Py4GWCoreLib import Timer
+from Py4GWCoreLib import UIManager
+from Py4GWCoreLib import Utils
+from Py4GWCoreLib import WindowID
 
 MODULE_NAME = "ID & Salvage"
 

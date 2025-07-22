@@ -1,5 +1,7 @@
 import PyMerchant
+
 from Py4GWCoreLib.Py4GWcorelib import ActionQueueManager
+
 
 class TradingCache:
     def __init__(self, action_queue_manager):

@@ -1,6 +1,9 @@
 # PyPlayer.pyi - Auto-generated .pyi file for PyPlayer module
 
-from typing import Any, List, overload
+from typing import Any
+from typing import List
+from typing import overload
+
 from PyAgent import PyAgent
 
 class LoginCharacterInfo:

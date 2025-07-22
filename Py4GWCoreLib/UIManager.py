@@ -1,10 +1,17 @@
 
-import PyUIManager
-from typing import Dict, List, Tuple, Optional
 import json
+from collections import defaultdict
+from collections import deque
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Tuple
+
 import PyOverlay
-from collections import deque, defaultdict
-from .Py4GWcorelib import ConsoleLog, Console
+import PyUIManager
+
+from .Py4GWcorelib import Console
+from .Py4GWcorelib import ConsoleLog
 
 # —— Constants ——————————————————
 NPC_DIALOG_HASH    = 3856160816

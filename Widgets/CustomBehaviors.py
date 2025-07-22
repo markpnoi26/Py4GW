@@ -1,9 +1,10 @@
 
 import sys
+
 from Py4GWCoreLib.Py4GWcorelib import Utils
-from Widgets.CustomBehaviors.primitives.skillbars.custom_behavior_base_utility import CustomBehaviorBaseUtility
 from Widgets.CustomBehaviors.primitives.parties.custom_behavior_party import CustomBehaviorParty
 from Widgets.CustomBehaviors.primitives.parties.custom_behavior_shared_memory import CustomBehaviorWidgetMemoryManager
+from Widgets.CustomBehaviors.primitives.skillbars.custom_behavior_base_utility import CustomBehaviorBaseUtility
 from Widgets.CustomBehaviors.primitives.skills.custom_skill_utility_base import CustomSkillUtilityBase
 
 # Iterate through all modules in sys.modules (already imported modules)
@@ -20,14 +21,23 @@ for module_name in list(sys.modules.keys()):
             print(f"Error reloading module {module_name}: {e}")
 
 from typing import List
+
 from HeroAI.cache_data import CacheData
-from Py4GWCoreLib import ImGui, PyImGui, Routines, ActionQueueManager, Player, GLOBAL_CACHE, IconsFontAwesome5, SharedCommandType
-from Widgets.CustomBehaviors.primitives.custom_behavior_loader import CustomBehaviorLoader, MatchResult
-from Widgets.CustomBehaviors.primitives.behavior_state import BehaviorState
+from Py4GWCoreLib import GLOBAL_CACHE
+from Py4GWCoreLib import ActionQueueManager
+from Py4GWCoreLib import IconsFontAwesome5
+from Py4GWCoreLib import ImGui
+from Py4GWCoreLib import Player
+from Py4GWCoreLib import PyImGui
+from Py4GWCoreLib import Routines
+from Py4GWCoreLib import SharedCommandType
 from Widgets.CustomBehaviors.gui.current_build import render as current_build_render
+from Widgets.CustomBehaviors.gui.deamon import deamon as deamon
 from Widgets.CustomBehaviors.gui.party import render as party
 from Widgets.CustomBehaviors.gui.skillbars import render as all_templates_render
-from Widgets.CustomBehaviors.gui.deamon import deamon as deamon
+from Widgets.CustomBehaviors.primitives.behavior_state import BehaviorState
+from Widgets.CustomBehaviors.primitives.custom_behavior_loader import CustomBehaviorLoader
+from Widgets.CustomBehaviors.primitives.custom_behavior_loader import MatchResult
 
 party_forced_state_combo = 0
 DEBUG = True

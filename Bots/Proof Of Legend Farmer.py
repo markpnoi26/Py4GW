@@ -35,9 +35,10 @@
 #  │ Recommended Widgets: turn them all off -    │
 #  │ except Skip Cutscenes                       │
 #  └─────────────────────────────────────────────┘
-from Py4GWCoreLib import *
 import math
 import random
+
+from Py4GWCoreLib import *
 
 module_name = "Proof of Triumph Farmer"
 

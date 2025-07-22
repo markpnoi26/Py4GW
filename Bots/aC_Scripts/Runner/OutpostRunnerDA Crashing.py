@@ -1,17 +1,19 @@
-import Py4GW
 import math
 from typing import Tuple
-from Py4GWCoreLib import Profession
+
+from dangerous_models_runtime import can_cripple
+from dangerous_models_runtime import can_knockdown
+
+import Py4GW
 from Py4GWCoreLib import GLOBAL_CACHE
-from Py4GWCoreLib import Routines
-from Py4GWCoreLib import ConsoleLog
-from Py4GWCoreLib import AgentArray
 from Py4GWCoreLib import Agent
+from Py4GWCoreLib import AgentArray
+from Py4GWCoreLib import ConsoleLog
+from Py4GWCoreLib import Profession
 from Py4GWCoreLib import Range
+from Py4GWCoreLib import Routines
 from Py4GWCoreLib import Utils
 from Py4GWCoreLib import *
-from dangerous_models_runtime import can_cripple, can_knockdown
-
 
 
 class OutpostRunnerDA:

@@ -1,19 +1,23 @@
-from Py4GWCoreLib import List
-from Py4GWCoreLib import Timer
-from Py4GWCoreLib import ConsoleLog
-from Py4GWCoreLib import Console
-from Py4GWCoreLib import Keystroke
-from Py4GWCoreLib import Key
-from Py4GWCoreLib import Color
-from Py4GWCoreLib import ProfessionShort, Profession, Campaign
-from Py4GWCoreLib import UIManager
-from Py4GWCoreLib import PyImGui
-from Py4GWCoreLib import ImGui
-from Py4GWCoreLib import Routines
-from Py4GWCoreLib import GLOBAL_CACHE
-from Py4GWCoreLib import Map
-from Py4GWCoreLib import ProfessionTextureMap
 import traceback
+
+from Py4GWCoreLib import GLOBAL_CACHE
+from Py4GWCoreLib import Campaign
+from Py4GWCoreLib import Color
+from Py4GWCoreLib import Console
+from Py4GWCoreLib import ConsoleLog
+from Py4GWCoreLib import ImGui
+from Py4GWCoreLib import Key
+from Py4GWCoreLib import Keystroke
+from Py4GWCoreLib import List
+from Py4GWCoreLib import Map
+from Py4GWCoreLib import Profession
+from Py4GWCoreLib import ProfessionShort
+from Py4GWCoreLib import ProfessionTextureMap
+from Py4GWCoreLib import PyImGui
+from Py4GWCoreLib import Routines
+from Py4GWCoreLib import Timer
+from Py4GWCoreLib import UIManager
+
 MODULE_NAME = "Switch Character"
 
 class RerollCharacter:

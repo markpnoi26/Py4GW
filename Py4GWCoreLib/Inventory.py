@@ -1,5 +1,5 @@
-import PyItem
 import PyInventory
+import PyItem
 
 from .ItemArray import *
 

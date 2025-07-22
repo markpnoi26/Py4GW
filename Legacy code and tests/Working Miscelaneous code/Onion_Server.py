@@ -1,6 +1,7 @@
-from Py4GWCoreLib import *
 import socket
 import threading
+
+from Py4GWCoreLib import *
 
 module_name = "TCP Server"
 server = None

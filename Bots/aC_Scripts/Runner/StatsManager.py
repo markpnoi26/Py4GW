@@ -1,5 +1,7 @@
 from datetime import datetime
+
 from Py4GWCoreLib import IconsFontAwesome5
+
 
 class RunInfo:
     def __init__(self, order, id, origin, destination, region=None, run_name=None):

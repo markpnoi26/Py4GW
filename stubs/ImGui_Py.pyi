@@ -1,6 +1,9 @@
 # ImGui_Py.pyi - Auto-generated .pyi file for ImGui_Py module
 
-from typing import Tuple, List, Any, overload
+from typing import Any
+from typing import List
+from typing import Tuple
+from typing import overload
 
 # Enum WindowFlags
 class WindowFlags:
@@ -246,7 +249,9 @@ class ImGuiCol:
 
 # ImGui_Py.pyi - Auto-generated .pyi file for ImGui_Py module
 
-from typing import Tuple, List, Any
+from typing import Any
+from typing import List
+from typing import Tuple
 
 # Functions
 

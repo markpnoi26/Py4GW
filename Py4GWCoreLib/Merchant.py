@@ -1,5 +1,6 @@
 import PyMerchant
 
+
 class Trading:
     @staticmethod
     def merchant_instance():

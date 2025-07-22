@@ -1,7 +1,9 @@
-import time
 import random
+import time
 import traceback
-from multiprocessing import Process, current_process
+from multiprocessing import Process
+from multiprocessing import current_process
+
 from shared_state_ctypes import SharedState
 
 TEST_SHM_NAME = "stress_test_shm"

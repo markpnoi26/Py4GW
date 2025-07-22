@@ -1,6 +1,5 @@
 from Py4GWCoreLib import *
 
-
 start_salvage = False
 salvage_started = False
 salvage_timer = Timer()

@@ -1,9 +1,9 @@
-from Py4GWCoreLib import *
-
-from collections import namedtuple
 import os
-import time
 import random
+import time
+from collections import namedtuple
+
+from Py4GWCoreLib import *
 
 MODULE_NAME = "HeroHelper"
 

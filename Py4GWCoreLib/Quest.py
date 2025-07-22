@@ -1,5 +1,6 @@
 import PyQuest
 
+
 class Quest:
     @staticmethod
     def quest_instance():

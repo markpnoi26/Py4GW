@@ -1,17 +1,18 @@
-import traceback
-import Py4GW
-
-from Py4GWCoreLib import IniHandler, Timer, ThrottledTimer
-from Py4GWCoreLib import GLOBAL_CACHE
-from Py4GWCoreLib import RawAgentArray
-from Py4GWCoreLib import PyImGui
-from Py4GWCoreLib import ImGui
-from Py4GWCoreLib import Routines
-from Py4GWCoreLib import Keystroke
-from Py4GWCoreLib import Key
-from Py4GWCoreLib import ActionQueueManager
-
 import os
+import traceback
+
+import Py4GW
+from Py4GWCoreLib import GLOBAL_CACHE
+from Py4GWCoreLib import ActionQueueManager
+from Py4GWCoreLib import ImGui
+from Py4GWCoreLib import IniHandler
+from Py4GWCoreLib import Key
+from Py4GWCoreLib import Keystroke
+from Py4GWCoreLib import PyImGui
+from Py4GWCoreLib import RawAgentArray
+from Py4GWCoreLib import Routines
+from Py4GWCoreLib import ThrottledTimer
+from Py4GWCoreLib import Timer
 
 module_name = "Survival Title Helper"
 

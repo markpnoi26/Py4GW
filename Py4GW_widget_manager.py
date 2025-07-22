@@ -1,8 +1,9 @@
-from Py4GWCoreLib import *
 import importlib.util
 import os
-import types
 import sys
+import types
+
+from Py4GWCoreLib import *
 
 module_name = "Widget Manager"
 ini_file_location = "Py4GW.ini"

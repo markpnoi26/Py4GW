@@ -1,4 +1,6 @@
-from Py4GWCoreLib import ImGui, PyImGui
+from Py4GWCoreLib import ImGui
+from Py4GWCoreLib import PyImGui
+
 from .handler import handler
 
 module_name = "WidgetManager"

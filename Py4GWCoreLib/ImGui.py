@@ -1,12 +1,17 @@
-import Py4GW
-import PyImGui
-from enum import Enum, IntEnum
-from .Overlay import Overlay
-from Py4GWCoreLib.Py4GWcorelib import Color, ColorPalette
-from Py4GWCoreLib.enums import get_texture_for_model, ImguiFonts
-from Py4GWCoreLib import Utils
-
+from enum import Enum
 from enum import IntEnum
+
+import PyImGui
+
+import Py4GW
+from Py4GWCoreLib import Utils
+from Py4GWCoreLib.enums import ImguiFonts
+from Py4GWCoreLib.enums import get_texture_for_model
+from Py4GWCoreLib.Py4GWcorelib import Color
+from Py4GWCoreLib.Py4GWcorelib import ColorPalette
+
+from .Overlay import Overlay
+
 
 class SortDirection(Enum):
     No_Sort = 0

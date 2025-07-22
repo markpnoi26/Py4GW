@@ -1,5 +1,5 @@
-from Py4GWCoreLib import Timer
 from Py4GWCoreLib import GLOBAL_CACHE
+from Py4GWCoreLib import Timer
 
 module_name = "Return to Outpost"
 

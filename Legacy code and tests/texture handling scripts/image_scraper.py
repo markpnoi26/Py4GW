@@ -1,8 +1,9 @@
 import os
 import re
+from urllib.parse import unquote
+
 import requests
 from bs4 import BeautifulSoup
-from urllib.parse import unquote
 
 BASE_URL = "https://wiki.guildwars.com"
 GALLERY_URL = BASE_URL + "/wiki/Gallery_of_high_resolution_skill_icons/large"

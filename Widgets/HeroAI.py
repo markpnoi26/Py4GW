@@ -29,6 +29,7 @@ from HeroAI.windows import DrawMultiboxTools
 from HeroAI.windows import DrawOptions
 from HeroAI.windows import DrawPanelButtons
 from HeroAI.windows import SubmitGameOptions
+from Py4GW_widget_manager import get_widget_handler
 from Py4GWCoreLib import GLOBAL_CACHE
 from Py4GWCoreLib import ActionQueueManager
 from Py4GWCoreLib import IconsFontAwesome5
@@ -43,7 +44,6 @@ from Py4GWCoreLib import Routines
 from Py4GWCoreLib import SharedCommandType
 from Py4GWCoreLib import UIManager
 from Py4GWCoreLib import Utils
-from Py4GW_widget_manager import get_widget_handler
 from Widgets.CustomBehaviors.custom_behavior_hero_ai import execute_enhanced_custom_heroai_combat
 from Widgets.CustomBehaviors.primitives.custom_behavior_loader import CustomBehaviorLoader
 

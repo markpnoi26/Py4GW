@@ -1,6 +1,8 @@
 # Py4GW.pyi - Auto-generated .pyi file for Py4GW module
 
-from typing import Optional, List, Any  
+from typing import Any
+from typing import List
+from typing import Optional
 
 class Console:
     class MessageType:

@@ -1,7 +1,6 @@
 
-from YAVB.YAVBMain import YAVB
 from YAVB.LogConsole import LogConsole
-
+from YAVB.YAVBMain import YAVB
 
 _YAVB = YAVB()
 

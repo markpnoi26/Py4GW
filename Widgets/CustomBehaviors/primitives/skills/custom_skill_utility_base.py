@@ -4,15 +4,14 @@ from typing import Any
 
 from HeroAI.cache_data import CacheData
 from Py4GWCoreLib import Routines
-from Widgets.CustomBehaviors.primitives.helpers.behavior_result import BehaviorResult
 from Widgets.CustomBehaviors.primitives.behavior_state import BehaviorState
-from Widgets.CustomBehaviors.primitives.helpers import custom_behavior_helpers
-
-from Widgets.CustomBehaviors.primitives.skills.custom_skill import CustomSkill
-
-from Widgets.CustomBehaviors.primitives.skills.custom_skill_nature import CustomSkillNature
-from Widgets.CustomBehaviors.primitives.scores.score_definition import ScoreDefinition
 from Widgets.CustomBehaviors.primitives.constants import DEBUG
+from Widgets.CustomBehaviors.primitives.helpers import custom_behavior_helpers
+from Widgets.CustomBehaviors.primitives.helpers.behavior_result import BehaviorResult
+from Widgets.CustomBehaviors.primitives.scores.score_definition import ScoreDefinition
+from Widgets.CustomBehaviors.primitives.skills.custom_skill import CustomSkill
+from Widgets.CustomBehaviors.primitives.skills.custom_skill_nature import CustomSkillNature
+
 
 class CustomSkillUtilityBase:
     def __init__(self, skill: CustomSkill,

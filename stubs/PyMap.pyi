@@ -1,6 +1,9 @@
 # PyMap.pyi - Auto-generated .pyi file for PyMap module
 
-from typing import List, Optional, Any, overload
+from typing import Any
+from typing import List
+from typing import Optional
+from typing import overload
 
 # Enum InstanceType
 class InstanceType:

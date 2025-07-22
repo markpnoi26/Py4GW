@@ -1,8 +1,9 @@
 import os
+from pathlib import Path
+from urllib.parse import unquote
+
 import requests
 from bs4 import BeautifulSoup
-from urllib.parse import unquote
-from pathlib import Path
 
 SKILL_LIST_URL = "https://wiki.guildwars.com/wiki/Skill_template_format/Skill_list"
 OUTPUT_DIR = "skill_icons"

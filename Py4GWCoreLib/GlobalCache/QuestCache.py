@@ -1,4 +1,5 @@
 import PyQuest
+
 from Py4GWCoreLib.Py4GWcorelib import ActionQueueManager
 
 

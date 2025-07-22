@@ -1,4 +1,7 @@
-from Py4GWCoreLib import UIManager, Map, Party
+from Py4GWCoreLib import Map
+from Py4GWCoreLib import Party
+from Py4GWCoreLib import UIManager
+
 # config_scope.py
 selected_settings_scope = 0  # 0 = Global, 1 = Account
 character_select = False

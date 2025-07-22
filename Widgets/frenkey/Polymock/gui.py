@@ -1,11 +1,13 @@
 import importlib
-from Py4GWCoreLib import *
 
+from Py4GWCoreLib import *
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.Py4GWcorelib import ConsoleLog
 from Widgets.frenkey.Core import utility
 from Widgets.frenkey.Core.gui import GUI
-from Widgets.frenkey.Polymock import combat, data, state
+from Widgets.frenkey.Polymock import combat
+from Widgets.frenkey.Polymock import data
+from Widgets.frenkey.Polymock import state
 
 importlib.reload(combat)
 importlib.reload(data)

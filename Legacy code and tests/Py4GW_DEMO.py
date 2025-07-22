@@ -1,24 +1,26 @@
 # Necessary Imports
 import inspect
+import math
 import os
-import Py4GW
+import time
+import traceback
+
 import ImGui_Py
-import PyMap
 import PyAgent
-import PyPlayer
-import PyParty
-import PyItem
+import PyEffects
 import PyInventory
+import PyItem
+import PyMap
+import PyMerchant
+import PyParty
+import PyPlayer
 import PySkill
 import PySkillbar
-import PyMerchant
-import PyEffects
+
+import Py4GW
+
 # End Necessary Imports
 import Py4GWcorelib as CoreLib
-
-import traceback
-import math
-import time
 
 #This script is intended to be a showcase of every Methos and all the data that can be accessed from Py4GW
 #current status, not complete

@@ -1,5 +1,7 @@
-from enum import Enum, IntEnum
+from enum import Enum
+from enum import IntEnum
 from typing import Callable
+
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 
 Polymock_Registration = [640, [15506, 18910]]

@@ -1,4 +1,6 @@
 from Py4GWCoreLib import *
+
+
 class FollowPathAndAggro:
     def __init__(self, path_handler, follow_handler, aggro_range=2500, log_actions=False):
         self.path_handler       = path_handler

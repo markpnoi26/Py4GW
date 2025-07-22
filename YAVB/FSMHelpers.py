@@ -1,15 +1,22 @@
-from .BuildMgr import ShadowFormAssassinVaettir, ShadowFormMesmerVaettir
-from .LogConsole import LogConsole
+from typing import TYPE_CHECKING
+from typing import List
+from typing import Tuple
+
 from Py4GWCoreLib import GLOBAL_CACHE
-from Py4GWCoreLib import Routines
-from Py4GWCoreLib.enums import ModelID, TitleID, SharedCommandType, Range
 from Py4GWCoreLib import ItemArray
-from Py4GWCoreLib import Utils
-from typing import List, Tuple
 from Py4GWCoreLib import LootConfig
 from Py4GWCoreLib import Profession
+from Py4GWCoreLib import Routines
+from Py4GWCoreLib import Utils
+from Py4GWCoreLib.enums import ModelID
+from Py4GWCoreLib.enums import Range
+from Py4GWCoreLib.enums import SharedCommandType
+from Py4GWCoreLib.enums import TitleID
 
-from typing import TYPE_CHECKING
+from .BuildMgr import ShadowFormAssassinVaettir
+from .BuildMgr import ShadowFormMesmerVaettir
+from .LogConsole import LogConsole
+
 if TYPE_CHECKING:
     from .YAVBMain import YAVB
 

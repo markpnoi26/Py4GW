@@ -2,32 +2,29 @@
 # File: Dialog Sync.py   (no move_interact_blessing_npc fallback)
 # ──────────────────────────────────────────────────────────────────────────────
 
+import math
 import os
 import tempfile
 import time
-import math
 from types import SimpleNamespace
 
+from Bots.aC_Scripts.aC_api import click_dialog_button
+from Bots.aC_Scripts.aC_api import get_dialog_button_count
+from Bots.aC_Scripts.aC_api import is_npc_dialog_visible
 from Py4GW_widget_manager import get_widget_handler
-from Py4GWCoreLib import (
-    GLOBAL_CACHE,
-    PyImGui,
-    IconsFontAwesome5,
-    ConsoleLog,
-    Console,
-    Routines,
-    UIManager,
-    SharedCommandType,
-    Timer,
-    ThrottledTimer,
-    IniHandler,
-)
-from Widgets.Messaging import ProcessMessages, InteractWithTarget
-from Bots.aC_Scripts.aC_api import (
-    is_npc_dialog_visible,
-    click_dialog_button,
-    get_dialog_button_count,
-)
+from Py4GWCoreLib import GLOBAL_CACHE
+from Py4GWCoreLib import Console
+from Py4GWCoreLib import ConsoleLog
+from Py4GWCoreLib import IconsFontAwesome5
+from Py4GWCoreLib import IniHandler
+from Py4GWCoreLib import PyImGui
+from Py4GWCoreLib import Routines
+from Py4GWCoreLib import SharedCommandType
+from Py4GWCoreLib import ThrottledTimer
+from Py4GWCoreLib import Timer
+from Py4GWCoreLib import UIManager
+from Widgets.Messaging import InteractWithTarget
+from Widgets.Messaging import ProcessMessages
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Constants & Paths

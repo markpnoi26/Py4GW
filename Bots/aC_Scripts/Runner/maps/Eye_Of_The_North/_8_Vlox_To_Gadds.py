@@ -1,6 +1,7 @@
 # maps/EOTN/_8_vlox_to_gadds.py
 
-from Py4GWCoreLib.enums import outpost_name_to_id, explorable_name_to_id
+from Py4GWCoreLib.enums import explorable_name_to_id
+from Py4GWCoreLib.enums import outpost_name_to_id
 
 # 1) Teleport ID
 _8_vlox_to_gadds_ids = {

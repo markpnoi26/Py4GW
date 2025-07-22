@@ -1,7 +1,10 @@
-import PySkill
 import json
 import os
+
+import PySkill
+
 from .enums import SkillTextureMap
+
 
 class Skill:
     _desc_cache = None  # Cache JSON data once loaded

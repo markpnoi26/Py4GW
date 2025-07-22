@@ -1,6 +1,8 @@
 # PyInventory.pyi - Auto-generated .pyi file for PyInventory module
 
-from typing import Any, List
+from typing import Any
+from typing import List
+
 from .PyItem import PyItem
 
 # Class Bag (SafeBag)

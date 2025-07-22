@@ -1,7 +1,6 @@
-from Py4GWCoreLib import *
-
 from typing import Optional
 
+from Py4GWCoreLib import *
 
 module_name = "Mod Handler"
 json_file_path = "modifiers.json"

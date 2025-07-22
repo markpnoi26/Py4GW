@@ -1,4 +1,5 @@
-from Py4GWCoreLib.enums import outpost_name_to_id, explorable_name_to_id
+from Py4GWCoreLib.enums import explorable_name_to_id
+from Py4GWCoreLib.enums import outpost_name_to_id
 
 # 1) IDs
 _7_umbral_grotto_to_vlox_ids = {

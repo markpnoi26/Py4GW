@@ -1,19 +1,23 @@
-import Py4GW
-from Py4GWCoreLib import Timer
-from Py4GWCoreLib import ImGui, PyImGui
-from Py4GWCoreLib import GLOBAL_CACHE
-from Py4GWCoreLib import ConsoleLog
-from Py4GWCoreLib import ModelID, TitleID
-from Py4GWCoreLib import ItemArray
-from Py4GWCoreLib import AgentArray
-from Py4GWCoreLib import Routines
-from Py4GWCoreLib import Range
-from Py4GWCoreLib import Utils, Color
-from Py4GWCoreLib import LootConfig
-
-
 from time import sleep
-from typing import Generator, List, Tuple
+from typing import Generator
+from typing import List
+from typing import Tuple
+
+import Py4GW
+from Py4GWCoreLib import GLOBAL_CACHE
+from Py4GWCoreLib import AgentArray
+from Py4GWCoreLib import Color
+from Py4GWCoreLib import ConsoleLog
+from Py4GWCoreLib import ImGui
+from Py4GWCoreLib import ItemArray
+from Py4GWCoreLib import LootConfig
+from Py4GWCoreLib import ModelID
+from Py4GWCoreLib import PyImGui
+from Py4GWCoreLib import Range
+from Py4GWCoreLib import Routines
+from Py4GWCoreLib import Timer
+from Py4GWCoreLib import TitleID
+from Py4GWCoreLib import Utils
 
 MODULE_NAME = "Apo's YAVB (yield example)"
 #region paths

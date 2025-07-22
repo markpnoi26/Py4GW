@@ -1,10 +1,12 @@
-from .handler import handler
-from .config_scope import use_account_settings
 from . import state
+from .config_scope import use_account_settings
+from .handler import handler
+
 
 def restore_global_defaults():
-    from .default_settings import global_widget_defaults
     import configparser
+
+    from .default_settings import global_widget_defaults
 
     parser = configparser.ConfigParser()
 

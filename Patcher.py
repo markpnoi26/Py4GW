@@ -1,6 +1,7 @@
 import ctypes
 import ctypes.wintypes
-from typing import List, Optional
+from typing import List
+from typing import Optional
 
 PROCESS_VM_OPERATION = 0x0008
 PROCESS_VM_READ = 0x0010

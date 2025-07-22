@@ -6,6 +6,7 @@ import traceback
 
 import Py4GW
 from HeroAI.cache_data import CacheData
+from Py4GW_widget_manager import get_widget_handler
 from Py4GWCoreLib import GLOBAL_CACHE
 from Py4GWCoreLib import CombatPrepSkillsType
 from Py4GWCoreLib import IconsFontAwesome5
@@ -16,7 +17,6 @@ from Py4GWCoreLib import Range
 from Py4GWCoreLib import Routines
 from Py4GWCoreLib import SharedCommandType
 from Py4GWCoreLib import Timer
-from Py4GW_widget_manager import get_widget_handler
 
 script_directory = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(script_directory, os.pardir))
@@ -756,3 +756,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+__all__ = ["main", "configure"]

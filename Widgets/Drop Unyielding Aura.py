@@ -1,5 +1,6 @@
 from Py4GWCoreLib import GLOBAL_CACHE
 from Py4GWCoreLib import Timer
+
 module_name = "Drop Unyielding Aura"
 
 class config:

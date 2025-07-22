@@ -1,5 +1,6 @@
-from Py4GWCoreLib import *
 from WindowUtilites import *
+
+from Py4GWCoreLib import *
 
 pyParty = PyParty.PyParty()
 

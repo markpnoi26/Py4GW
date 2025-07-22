@@ -1,17 +1,28 @@
+import importlib.util
+import math
+import time
+
+from aC_api import *
+from aC_api.Blessing_Core import get_blessing_npc
+from aC_api.Titles import asura_tiers
+from aC_api.Titles import deldrimor_tiers
+from aC_api.Titles import display_faction
+from aC_api.Titles import display_title_progress
+from aC_api.Titles import display_title_track
+from aC_api.Titles import eotn_region_titles
+from aC_api.Titles import kurzick_regions
+from aC_api.Titles import kurzick_tiers
+from aC_api.Titles import lightbringer_tiers
+from aC_api.Titles import luxon_regions
+from aC_api.Titles import luxon_tiers
+from aC_api.Titles import nightfall_regions
+from aC_api.Titles import norn_tiers
+from aC_api.Titles import sunspear_tiers
+from aC_api.Titles import vanguard_tiers
+
+from HeroAI.cache_data import *
 from Py4GWCoreLib import *
 from Widgets.Blessed import Get_Blessed
-from aC_api import *
-from HeroAI.cache_data import *
-import time
-import math
-import importlib.util
-from aC_api.Blessing_Core import get_blessing_npc
-from aC_api.Titles import (
-    display_title_track, display_faction, display_title_progress,
-    vanguard_tiers, norn_tiers, asura_tiers, deldrimor_tiers,
-    sunspear_tiers, lightbringer_tiers, kurzick_tiers, luxon_tiers,
-    luxon_regions, kurzick_regions, nightfall_regions, eotn_region_titles
-)
 
 module_name = "PyQuishAI "
 cache_data = CacheData()

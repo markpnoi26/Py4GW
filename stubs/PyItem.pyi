@@ -1,7 +1,10 @@
 # PyItem.pyi - Auto-generated .pyi file for PyItem module
 
-from typing import Any, List, overload
-from enum import Enum, IntEnum
+from enum import Enum
+from enum import IntEnum
+from typing import Any
+from typing import List
+from typing import overload
 
 # Enum DyeColor (SafeDyeColor)
 class DyeColor:

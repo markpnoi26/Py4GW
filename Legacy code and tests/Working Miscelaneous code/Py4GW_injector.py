@@ -1,6 +1,6 @@
+import ctypes
 import subprocess
 import sys
-import ctypes
 from ctypes import wintypes
 
 # Dependencies required for the script

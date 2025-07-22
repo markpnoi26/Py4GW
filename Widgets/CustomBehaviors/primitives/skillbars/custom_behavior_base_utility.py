@@ -1,15 +1,21 @@
 from abc import abstractmethod
 from collections import deque
-from typing import List, Generator, Any, override
+from typing import Any
+from typing import Generator
+from typing import List
+from typing import override
 
 from HeroAI.cache_data import CacheData
-from Py4GWCoreLib import GLOBAL_CACHE, Routines, Range
+from Py4GWCoreLib import GLOBAL_CACHE
+from Py4GWCoreLib import Range
+from Py4GWCoreLib import Routines
+from Widgets.CustomBehaviors.primitives.constants import DEBUG
+from Widgets.CustomBehaviors.primitives.scores.score_static_definition import ScoreStaticDefinition
 from Widgets.CustomBehaviors.primitives.skillbars.custom_behavior_base import CustomBehaviorBase
 from Widgets.CustomBehaviors.primitives.skills.custom_skill import CustomSkill
 from Widgets.CustomBehaviors.primitives.skills.custom_skill_utility_base import CustomSkillUtilityBase
 from Widgets.CustomBehaviors.skills.generic.hero_ai_utility import HeroAiUtility
-from Widgets.CustomBehaviors.primitives.scores.score_static_definition import ScoreStaticDefinition
-from Widgets.CustomBehaviors.primitives.constants import DEBUG
+
 
 class CustomBehaviorBaseUtility(CustomBehaviorBase):
 

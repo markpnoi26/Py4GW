@@ -1,8 +1,10 @@
-from Py4GWCoreLib import *
+from map_loader import get_regions
+from map_loader import get_runs
 from OutpostRunner_FSM import OutpostRunnerFSM
-from map_loader import get_regions, get_runs
 from StatsManager import RunInfo
+
 from Py4GWCoreLib import IconsFontAwesome5
+from Py4GWCoreLib import *
 
 # UI state
 selected_region = None

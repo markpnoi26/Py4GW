@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
-from Py4GWCoreLib import *
 import os
+
+from Py4GWCoreLib import *
+
 module_name = "Loot Pickit2 Manager"
 
 #script_directory = os.path.dirname(os.path.abspath(__file__))

@@ -1,6 +1,7 @@
-from dataclasses import dataclass
 import time
+from dataclasses import dataclass
 from typing import Any
+
 
 @dataclass
 class EventMessage:

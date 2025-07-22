@@ -1,8 +1,10 @@
 import os
+import time
+from enum import IntEnum
+
 import requests
 from bs4 import BeautifulSoup
-from enum import IntEnum
-import time
+
 
 # ----[ MODIFY THIS CLASS WITH YOUR FULL MODELID ENUM ]----
 class ModelID(IntEnum):

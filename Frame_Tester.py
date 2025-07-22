@@ -1,8 +1,13 @@
-from Py4GWCoreLib import *
-from collections import defaultdict
-from typing import Dict, List, Tuple, Any, Optional
-import json
 import ctypes
+import json
+from collections import defaultdict
+from typing import Any
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Tuple
+
+from Py4GWCoreLib import *
 
 MODULE_NAME = "Frame Tester"
 json_file_name = ".\\Py4GWCoreLib\\frame_aliases.json"

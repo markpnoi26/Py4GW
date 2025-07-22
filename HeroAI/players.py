@@ -1,6 +1,7 @@
 from Py4GWCoreLib import GLOBAL_CACHE
-from .constants import MAX_NUM_PLAYERS
+
 from .cache_data import CacheData
+from .constants import MAX_NUM_PLAYERS
 
 
 def RegisterPlayer(cached_data:CacheData):

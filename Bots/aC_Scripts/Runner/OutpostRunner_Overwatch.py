@@ -1,10 +1,11 @@
 # OutpostRunner_Overwatch.py
 
-from Py4GWCoreLib import *
-from Widgets.Messaging import SharedCommandType
+import time
+
 import map_loader
 
-import time
+from Py4GWCoreLib import *
+from Widgets.Messaging import SharedCommandType
 
 
 class OutpostRunnerOverwatch:

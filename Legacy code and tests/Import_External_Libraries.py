@@ -1,8 +1,9 @@
-from Py4GWCoreLib import *
-import sys
-import os
 import ctypes
+import os
 import subprocess
+import sys
+
+from Py4GWCoreLib import *
 
 #*******************************************************************************
 #*********  Start of manual import of external libraries  ***********************
@@ -57,8 +58,8 @@ except Exception as e:
 
 # Now try importing `win32pipe`
 try:
-    import win32pipe
     import win32file
+    import win32pipe
     print("win32pipe successfully imported!")
 except ModuleNotFoundError as e:
     print(f"win32pipe import failed: {e}")

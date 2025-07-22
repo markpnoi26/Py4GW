@@ -1,6 +1,7 @@
 # maps/EOTN/_6_olafstead_to_umbralgrotto.py
 
-from Py4GWCoreLib.enums import outpost_name_to_id, explorable_name_to_id
+from Py4GWCoreLib.enums import explorable_name_to_id
+from Py4GWCoreLib.enums import outpost_name_to_id
 
 # 1) IDs
 _6_olafstead_to_umbralgrotto_ids = {

@@ -1,8 +1,10 @@
-from Py4GWCoreLib import *
 from OutpostRunner_FSMHelpers import OutpostRunnerFSMHelpers
-from OutpostRunnerDA import OutpostRunnerDA
 from OutpostRunner_Overwatch import OutpostRunnerOverwatch
+from OutpostRunnerDA import OutpostRunnerDA
 from StatsManager import RunInfo
+
+from Py4GWCoreLib import *
+
 
 class OutpostRunnerFSM:
     def __init__(self):

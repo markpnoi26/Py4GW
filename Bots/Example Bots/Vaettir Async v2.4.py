@@ -1,7 +1,8 @@
-from Py4GWCoreLib import *
 import math
+
+from Py4GWCoreLib import *
 from Py4GWCoreLib.enums import ModelID
- 
+
 module_name = "Vaettir Bot"
 
 #region coords

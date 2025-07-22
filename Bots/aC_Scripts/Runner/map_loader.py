@@ -1,5 +1,6 @@
 import os
 from importlib import util
+
 from Py4GWCoreLib import ConsoleLog
 
 # maps/

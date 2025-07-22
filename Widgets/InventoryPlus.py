@@ -1,33 +1,31 @@
-import Py4GW
 import PyImGui
-from Py4GWCoreLib import *
-from Widgets.InvPlus.Coroutines import (IdentifyCheckedItems, 
-                                SalvageCheckedItems, 
-                                MerchantCheckedItems, 
-                                BuyMerchantItems
-                                )
 
+import Py4GW
+from Py4GWCoreLib import *
+from Widgets.InvPlus.AutoHandlerModule import AutoHandlderModule
 from Widgets.InvPlus.ColorizeModule import ColorizeModule
-from Widgets.InvPlus.GUI_Helpers import (TabIcon, 
-                                         Frame,
-                                            floating_game_button,   
-                                            game_button,
-                                            game_toggle_button,
-                                            _get_parent_hash,
-                                            _get_offsets,
-                                            _get_frame_color,
-                                            _get_frame_outline_color,
-                                            _get_checkbox_color,
-                                            _get_floating_button_color,
-                                            INVENTORY_FRAME_HASH,
-                                            XUNLAI_VAULT_FRAME_HASH
-                            )
+from Widgets.InvPlus.Coroutines import BuyMerchantItems
+from Widgets.InvPlus.Coroutines import IdentifyCheckedItems
+from Widgets.InvPlus.Coroutines import MerchantCheckedItems
+from Widgets.InvPlus.Coroutines import SalvageCheckedItems
+from Widgets.InvPlus.GUI_Helpers import INVENTORY_FRAME_HASH
+from Widgets.InvPlus.GUI_Helpers import XUNLAI_VAULT_FRAME_HASH
+from Widgets.InvPlus.GUI_Helpers import Frame
+from Widgets.InvPlus.GUI_Helpers import TabIcon
+from Widgets.InvPlus.GUI_Helpers import _get_checkbox_color
+from Widgets.InvPlus.GUI_Helpers import _get_floating_button_color
+from Widgets.InvPlus.GUI_Helpers import _get_frame_color
+from Widgets.InvPlus.GUI_Helpers import _get_frame_outline_color
+from Widgets.InvPlus.GUI_Helpers import _get_offsets
+from Widgets.InvPlus.GUI_Helpers import _get_parent_hash
+from Widgets.InvPlus.GUI_Helpers import floating_game_button
+from Widgets.InvPlus.GUI_Helpers import game_button
+from Widgets.InvPlus.GUI_Helpers import game_toggle_button
 from Widgets.InvPlus.IdentifyModule import IdentifyModule
+from Widgets.InvPlus.LootModule import LootModule
+from Widgets.InvPlus.MerchantModule import MerchantModule
 from Widgets.InvPlus.SalvageModule import SalvageModule
 from Widgets.InvPlus.XunlaiModule import XunlaiModule
-from Widgets.InvPlus.AutoHandlerModule import AutoHandlderModule
-from Widgets.InvPlus.MerchantModule import MerchantModule
-from Widgets.InvPlus.LootModule import LootModule
 
 MODULE_NAME = "Inventory +"
 

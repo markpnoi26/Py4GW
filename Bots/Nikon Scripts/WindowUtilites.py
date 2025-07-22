@@ -1,6 +1,8 @@
-from Py4GWCoreLib import *
-import Py4GW
 from datetime import datetime
+
+import Py4GW
+from Py4GWCoreLib import *
+
 
 #### --- LOGGING ROUTINE --- ####
 ## LogItem (text, Py4Gw.Console.MessageType)

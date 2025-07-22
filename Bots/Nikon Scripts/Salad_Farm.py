@@ -1,9 +1,9 @@
-from Py4GWCoreLib import *
+import Enemies
+import Mapping
 from BotUtilities import *
 from WindowUtilites import *
 
-import Mapping
-import Enemies
+from Py4GWCoreLib import *
 
 bot_name = "Nikons Pahnai Salad Farm"
 

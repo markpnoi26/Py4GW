@@ -1,7 +1,9 @@
 from ctypes.wintypes import PUINT
+
 import PyQuest
 
 from Py4GWCoreLib import *
+
 
 class BotVars:
     def __init__(self, map_id=0):

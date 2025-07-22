@@ -1,5 +1,7 @@
 from enum import Enum
+
 from Py4GWCoreLib import GLOBAL_CACHE
+
 
 class CustomSkillNature(Enum):
     Offensive = 0

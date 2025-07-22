@@ -1,9 +1,8 @@
-from Py4GWCoreLib import *
-import time
-import sys
 import os
+import sys
+import time
 
-
+from Py4GWCoreLib import *
 
 MODULE_NAME = "tester for everything"
 

@@ -1,7 +1,8 @@
-import sys
 import argparse
+import sys
 
 from process import *
+
 
 def main(args):
     if (2 ** 32) < sys.maxsize:

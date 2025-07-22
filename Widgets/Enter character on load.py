@@ -1,10 +1,10 @@
 
 from Py4GWCoreLib import GLOBAL_CACHE
+from Py4GWCoreLib import ConsoleLog
+from Py4GWCoreLib import Key
+from Py4GWCoreLib import Keystroke
 from Py4GWCoreLib import Timer
 from Py4GWCoreLib import UIManager
-from Py4GWCoreLib import Keystroke
-from Py4GWCoreLib import Key
-from Py4GWCoreLib import ConsoleLog
 
 module_name = "Enter character on load"
 play_button_hash = 184818986

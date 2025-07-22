@@ -1,6 +1,7 @@
 # maps/EOTN/_9_vlox_to_tarnished.py
 
-from Py4GWCoreLib.enums import outpost_name_to_id, explorable_name_to_id
+from Py4GWCoreLib.enums import explorable_name_to_id
+from Py4GWCoreLib.enums import outpost_name_to_id
 
 # 1) IDs
 _9_vlox_to_tarnished_ids = {

@@ -1,7 +1,9 @@
 # Blessing_dialog_helper.py
 import time
+from collections import defaultdict
+from collections import deque
+
 from Py4GWCoreLib import *
-from collections import deque, defaultdict
 
 # —— Constants ——————————————————
 NPC_DIALOG_HASH    = 3856160816

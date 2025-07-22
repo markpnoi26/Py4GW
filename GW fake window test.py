@@ -1,6 +1,7 @@
+import webbrowser
+
 import Py4GW
 from Py4GWCoreLib import *
-import webbrowser
 
 MODULE_NAME = "GwFake Window Test"
 TEXTURE_FOLDER = "Textures\\Game UI\\"

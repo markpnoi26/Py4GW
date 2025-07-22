@@ -1,10 +1,10 @@
-import Py4GW
 import PyPlayer
 
+import Py4GW
 
+from .Agent import *
 from .enums import *
 from .Map import *
-from .Agent import *
 
 
 # Player

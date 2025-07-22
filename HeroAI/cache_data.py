@@ -1,12 +1,22 @@
 from dataclasses import dataclass
 
-from .constants import SHARED_MEMORY_FILE_NAME, STAY_ALERT_TIME, MAX_NUM_PLAYERS, NUMBER_OF_SKILLS
-from .globals import HeroAI_varsClass, HeroAI_Window_varsClass
-from .combat import CombatClass
 from Py4GWCoreLib import GLOBAL_CACHE
-from Py4GWCoreLib import Timer, ThrottledTimer
-from Py4GWCoreLib import Range, Utils, ConsoleLog
-from Py4GWCoreLib import AgentArray, Weapon
+from Py4GWCoreLib import AgentArray
+from Py4GWCoreLib import ConsoleLog
+from Py4GWCoreLib import Range
+from Py4GWCoreLib import ThrottledTimer
+from Py4GWCoreLib import Timer
+from Py4GWCoreLib import Utils
+from Py4GWCoreLib import Weapon
+
+from .combat import CombatClass
+from .constants import MAX_NUM_PLAYERS
+from .constants import NUMBER_OF_SKILLS
+from .constants import SHARED_MEMORY_FILE_NAME
+from .constants import STAY_ALERT_TIME
+from .globals import HeroAI_varsClass
+from .globals import HeroAI_Window_varsClass
+
 
 @dataclass
 class GameData:

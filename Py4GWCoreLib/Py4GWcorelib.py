@@ -1,26 +1,30 @@
-import traceback
-import math
-from enum import Enum
-import time
-from time import sleep
-from collections import namedtuple, deque
-from typing import Optional
+import configparser
 import ctypes
+import math
+import os
+import socket
+import threading
+import time
+import traceback
+from abc import ABC
+from abc import abstractmethod
+from collections import deque
+from collections import namedtuple
+from datetime import datetime
+from datetime import timezone
+from enum import Enum
+from time import sleep
+from typing import Callable
+from typing import Optional
 
-import Py4GW
 import PyAgent
 import PyKeystroke
 
+import Py4GW
+
 from .Agent import *
-from abc import ABC, abstractmethod
 from .enums import *
 
-from typing import Callable
-import threading
-import socket
-import configparser
-import os
-from datetime import datetime, timezone
 
 #region IniHandler
 class IniHandler:
@@ -2334,13 +2338,13 @@ class LootConfig:
         return list(self.dye_blacklist)
 
     def GetfilteredLootArray(self, distance: float = Range.SafeCompass.value, multibox_loot: bool = False, allow_unasigned_loot=False) -> list[int]:
+        from .Agent import Agent
         from .AgentArray import AgentArray
         from .GlobalCache import GLOBAL_CACHE
-        from .Routines import Routines
-        from .Agent import Agent
         from .Item import Item
-        from .Player import Player
         from .Party import Party
+        from .Player import Player
+        from .Routines import Routines
         
         def IsValidItem(item_id):
             if not Agent.IsValid(item_id):
@@ -2449,7 +2453,8 @@ class AutoInventoryHandler():
         return cls._instance
 
     def __init__(self):
-        from Py4GWCoreLib import ThrottledTimer, IniHandler
+        from Py4GWCoreLib import IniHandler
+        from Py4GWCoreLib import ThrottledTimer
         if self._initialized:
             return
         self._LOOKUP_TIME:int = 15000
@@ -2554,7 +2559,8 @@ class AutoInventoryHandler():
         self.keep_gold = ini.read_int(section, "keep_gold", self.keep_gold)
         
     def AutoID(self, item_id):
-        from Py4GWCoreLib import Inventory, ConsoleLog
+        from Py4GWCoreLib import ConsoleLog
+        from Py4GWCoreLib import Inventory
         first_id_kit = Inventory.GetFirstIDKit()
         if first_id_kit == 0:
             ConsoleLog(self.module_name, "No ID Kit found in inventory", Py4GW.Console.MessageType.Warning)
@@ -2562,7 +2568,8 @@ class AutoInventoryHandler():
             Inventory.IdentifyItem(item_id, first_id_kit)
             
     def AutoSalvage(self, item_id):
-        from Py4GWCoreLib import Inventory, ConsoleLog
+        from Py4GWCoreLib import ConsoleLog
+        from Py4GWCoreLib import Inventory
         first_salv_kit = Inventory.GetFirstSalvageKit(use_lesser=True)
         if first_salv_kit == 0:
             ConsoleLog(self.module_name, "No Salvage Kit found in inventory", Py4GW.Console.MessageType.Warning)
@@ -2570,9 +2577,16 @@ class AutoInventoryHandler():
             Inventory.SalvageItem(item_id, first_salv_kit)
             
     def IdentifyItems(self,progress_callback: Optional[Callable[[float], None]] = None):
-        from Py4GWCoreLib import GLOBAL_CACHE, ItemArray, Routines, Bags, ActionQueueManager, ConsoleLog
-        from Py4GWCoreLib import Inventory, Item
         import PyItem
+
+        from Py4GWCoreLib import GLOBAL_CACHE
+        from Py4GWCoreLib import ActionQueueManager
+        from Py4GWCoreLib import Bags
+        from Py4GWCoreLib import ConsoleLog
+        from Py4GWCoreLib import Inventory
+        from Py4GWCoreLib import Item
+        from Py4GWCoreLib import ItemArray
+        from Py4GWCoreLib import Routines
         
         bag_list = ItemArray.CreateBagList(Bags.Backpack, Bags.BeltPouch, Bags.Bag1, Bags.Bag2)
         item_array = ItemArray.GetItemArray(bag_list)
@@ -2610,8 +2624,16 @@ class AutoInventoryHandler():
             ConsoleLog(self.module_name, f"Identified {identified_items} items", Py4GW.Console.MessageType.Success)
             
     def SalvageItems(self, progress_callback: Optional[Callable[[float], None]] = None):
-        from Py4GWCoreLib import GLOBAL_CACHE, Item, ItemArray, Routines, Bags, ActionQueueManager, ConsoleLog, Inventory
         import PyItem
+
+        from Py4GWCoreLib import GLOBAL_CACHE
+        from Py4GWCoreLib import ActionQueueManager
+        from Py4GWCoreLib import Bags
+        from Py4GWCoreLib import ConsoleLog
+        from Py4GWCoreLib import Inventory
+        from Py4GWCoreLib import Item
+        from Py4GWCoreLib import ItemArray
+        from Py4GWCoreLib import Routines
 
         bag_list = ItemArray.CreateBagList(Bags.Backpack, Bags.BeltPouch, Bags.Bag1, Bags.Bag2)
         item_array = ItemArray.GetItemArray(bag_list)
@@ -2708,7 +2730,9 @@ class AutoInventoryHandler():
 
             
     def DepositItemsAuto(self):
-        from Py4GWCoreLib import GLOBAL_CACHE, Routines, Bags
+        from Py4GWCoreLib import GLOBAL_CACHE
+        from Py4GWCoreLib import Bags
+        from Py4GWCoreLib import Routines
         for bag_id in range(Bags.Backpack, Bags.Bag2+1):
             bag_to_check = GLOBAL_CACHE.ItemArray.CreateBagList(bag_id)
             item_array = GLOBAL_CACHE.ItemArray.GetItemArray(bag_to_check)
@@ -2783,7 +2807,8 @@ class AutoInventoryHandler():
         yield
         
     def IDSalvageDepositItems(self):
-        from Py4GWCoreLib import Routines, ConsoleLog
+        from Py4GWCoreLib import ConsoleLog
+        from Py4GWCoreLib import Routines
         ConsoleLog("AutoInventoryHandler", "Starting ID, Salvage and Deposit routine", Py4GW.Console.MessageType.Info)
         self.status = "Identifying"
         yield from self.IdentifyItems()

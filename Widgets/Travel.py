@@ -1,14 +1,14 @@
-import Py4GW
-
-from Py4GWCoreLib import IniHandler
-from Py4GWCoreLib import Timer
-from Py4GWCoreLib import GLOBAL_CACHE
-from Py4GWCoreLib import PyImGui
-from Py4GWCoreLib import ImGui
-from Py4GWCoreLib import IconsFontAwesome5
-
 import os
 import time
+
+import Py4GW
+from Py4GWCoreLib import GLOBAL_CACHE
+from Py4GWCoreLib import IconsFontAwesome5
+from Py4GWCoreLib import ImGui
+from Py4GWCoreLib import IniHandler
+from Py4GWCoreLib import PyImGui
+from Py4GWCoreLib import Timer
+
 module_name = "Outpost Travel"
 
 script_directory = os.path.dirname(os.path.abspath(__file__))

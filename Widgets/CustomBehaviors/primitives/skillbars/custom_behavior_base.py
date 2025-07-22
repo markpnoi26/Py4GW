@@ -1,12 +1,15 @@
 from abc import abstractmethod
-from typing import List, Generator, Any
+from typing import Any
+from typing import Generator
+from typing import List
 
 from HeroAI.cache_data import CacheData
-from Py4GWCoreLib import GLOBAL_CACHE, Routines
+from Py4GWCoreLib import GLOBAL_CACHE
+from Py4GWCoreLib import Routines
 from Widgets.CustomBehaviors.primitives.behavior_state import BehaviorState
+from Widgets.CustomBehaviors.primitives.helpers import custom_behavior_helpers
 from Widgets.CustomBehaviors.primitives.parties.custom_behavior_party import CustomBehaviorParty
 from Widgets.CustomBehaviors.primitives.skills.custom_skill import CustomSkill
-from Widgets.CustomBehaviors.primitives.helpers import custom_behavior_helpers
 
 
 class CustomBehaviorBase:

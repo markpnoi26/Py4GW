@@ -10,11 +10,12 @@ Instructions:
 
 """
 import logging
-from Py4GWCoreLib import *
-from datetime import datetime
 import os
 import subprocess
 import sys
+from datetime import datetime
+
+from Py4GWCoreLib import *
 
 try:
     import plotly

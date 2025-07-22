@@ -1,5 +1,6 @@
-from Py4GWCoreLib import *
 from PackageTemplate.my_lib import *
+
+from Py4GWCoreLib import *
 
 MODULE_NAME = "widget template"
 

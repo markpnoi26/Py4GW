@@ -3,9 +3,9 @@ import traceback
 
 import Py4GW  # type: ignore
 from HeroAI.cache_data import CacheData
+from Py4GWCoreLib import Player
 from Py4GWCoreLib import PyImGui
 from Py4GWCoreLib import Routines
-from Py4GWCoreLib import Player
 
 cached_data = CacheData()
 

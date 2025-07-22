@@ -1,7 +1,10 @@
 import importlib
 import os
-from Py4GWCoreLib import *
+
 from map_loader import load_map_data
+
+from Py4GWCoreLib import *
+
 
 class OutpostRunnerFSMHelpers:
     def __init__(self):

@@ -1,10 +1,18 @@
 import datetime
-from Py4GWCoreLib import AgentArray, Quest
+
+from Py4GWCoreLib import AgentArray
+from Py4GWCoreLib import Quest
+from Py4GWCoreLib.enums import Allegiance
+from Py4GWCoreLib.enums import Bags
+from Py4GWCoreLib.enums import ItemType
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.Item import Bag
-from Py4GWCoreLib.Py4GWcorelib import ConsoleLog, Utils
-from Py4GWCoreLib.enums import Allegiance, Bags, ItemType
-from Widgets.frenkey.Polymock.data import Polymock_Quest, Polymock_Quests, Polymock_Spawns, PolymockPieces
+from Py4GWCoreLib.Py4GWcorelib import ConsoleLog
+from Py4GWCoreLib.Py4GWcorelib import Utils
+from Widgets.frenkey.Polymock.data import Polymock_Quest
+from Widgets.frenkey.Polymock.data import Polymock_Quests
+from Widgets.frenkey.Polymock.data import Polymock_Spawns
+from Widgets.frenkey.Polymock.data import PolymockPieces
 
 
 class WidgetState:

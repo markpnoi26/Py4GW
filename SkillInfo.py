@@ -1,9 +1,12 @@
-import Py4GW
-import PyImGui
-from PyAgent import Profession, AttributeClass
-from Py4GWCoreLib import *
 import webbrowser
 from fractions import Fraction
+
+import PyImGui
+from PyAgent import AttributeClass
+from PyAgent import Profession
+
+import Py4GW
+from Py4GWCoreLib import *
 
 MODULE_NAME = "Skill Altas"
 TEXTURE_FOLDER = "Textures\\Game UI\\Skill Description\\"
@@ -11,6 +14,7 @@ PROFESSION_TEXTURE_FOLDER = "Textures\\Profession_Icons\\"
 
 import re
 from typing import Any
+
 
 def DrawCompareSkills():
     def compare_text(display_name, val_a, val_b):

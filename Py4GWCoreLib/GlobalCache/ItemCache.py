@@ -1,13 +1,14 @@
-import PyInventory
-import PyItem
-import Py4GW
-
-from Py4GWCoreLib.Py4GWcorelib import ThrottledTimer
-from Py4GWCoreLib import Bag
-from typing import Dict, List
 import time
 from enum import Enum
+from typing import Dict
+from typing import List
 
+import PyInventory
+import PyItem
+
+import Py4GW
+from Py4GWCoreLib import Bag
+from Py4GWCoreLib.Py4GWcorelib import ThrottledTimer
 
 #PyInventory.Bag(bag_enum.value, bag_enum.name)
 

@@ -1,5 +1,6 @@
-from Py4GWCoreLib import *
 import json
+
+from Py4GWCoreLib import *
 
 MODULE_NAME = "Character Inventory Logger"
 file_name = "inventory_data.json"

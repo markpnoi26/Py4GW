@@ -1,8 +1,17 @@
-from Py4GWCoreLib import UIManager, EnumPreference, PyImGui, ImGui, Utils
+from Py4GWCoreLib import EnumPreference
+from Py4GWCoreLib import ImGui
+from Py4GWCoreLib import PyImGui
+from Py4GWCoreLib import UIManager
+from Py4GWCoreLib import Utils
+
 from . import state
-from .handler import handler
 from .config_scope import use_account_settings
-from .ui_config_sections import draw_account_widget_config, draw_quick_dock_config, draw_debug_config, draw_floating_menu_config
+from .handler import handler
+from .ui_config_sections import draw_account_widget_config
+from .ui_config_sections import draw_debug_config
+from .ui_config_sections import draw_floating_menu_config
+from .ui_config_sections import draw_quick_dock_config
+
 
 def draw_embedded_widget_config():
     interface_frame_id = UIManager.GetChildFrameID(1431953425, [1,4294967291])

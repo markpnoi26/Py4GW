@@ -1,5 +1,8 @@
 import math
-from typing import List, Tuple, Optional
+from typing import List
+from typing import Optional
+from typing import Tuple
+
 
 def distance(p1: Tuple[float, float], p2: Tuple[float, float]) -> float:
     """Calcule la distance euclidienne entre deux points"""

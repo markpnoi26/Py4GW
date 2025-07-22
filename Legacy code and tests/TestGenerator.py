@@ -1,6 +1,8 @@
 import time
 from enum import Enum
-from typing import Any, Generator
+from typing import Any
+from typing import Generator
+
 
 @staticmethod
 def wait_for(milliseconds) -> Generator[Any, Any, Any]:

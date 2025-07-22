@@ -1,6 +1,9 @@
-import PySkill
 from typing import Dict
+
+import PySkill
+
 from ..enums import SkillTextureMap
+
 
 class SkillCache:
     def __init__(self):

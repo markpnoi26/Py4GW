@@ -1,6 +1,6 @@
-from Py4GWCoreLib import*
 import time
 
+from Py4GWCoreLib import *
 
 #VARIABLES
 module_name = "Py4GW - LDoA"

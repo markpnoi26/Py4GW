@@ -1,8 +1,8 @@
 from Py4GWCoreLib import GLOBAL_CACHE
-from Py4GWCoreLib import ThrottledTimer
 from Py4GWCoreLib import ActionQueueNode
 from Py4GWCoreLib import ConsoleLog
 from Py4GWCoreLib import Map
+from Py4GWCoreLib import ThrottledTimer
 
 module_name = "Skip Cinematic"
 

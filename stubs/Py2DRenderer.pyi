@@ -1,7 +1,6 @@
 from typing import List
-import PyOverlay 
 
-
+import PyOverlay
 
 class Py2DRenderer:
     def __init__(self) -> None: ...

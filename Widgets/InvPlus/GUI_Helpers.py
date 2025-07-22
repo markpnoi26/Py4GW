@@ -1,11 +1,12 @@
+import math
+
 import PyImGui
 
-from Py4GWCoreLib import IconsFontAwesome5
 from Py4GWCoreLib import Color
 from Py4GWCoreLib import ColorPalette
-from Py4GWCoreLib import UIManager
+from Py4GWCoreLib import IconsFontAwesome5
 from Py4GWCoreLib import ImGui
-import math
+from Py4GWCoreLib import UIManager
 
 INVENTORY_FRAME_HASH = 291586130   
 XUNLAI_VAULT_FRAME_HASH = 2315448754

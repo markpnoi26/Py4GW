@@ -1,5 +1,9 @@
-from typing import Optional, Tuple, Any, overload
-from enum import Enum, IntEnum
+from enum import Enum
+from enum import IntEnum
+from typing import Any
+from typing import Optional
+from typing import Tuple
+from typing import overload
 
 class SortDirection(IntEnum):
     NoDirection = 0

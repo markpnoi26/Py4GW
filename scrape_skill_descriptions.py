@@ -1,8 +1,11 @@
-import requests
-from bs4 import BeautifulSoup, NavigableString, Tag
-from urllib.parse import urljoin
 import json
 import re
+from urllib.parse import urljoin
+
+import requests
+from bs4 import BeautifulSoup
+from bs4 import NavigableString
+from bs4 import Tag
 
 HEADERS = {'User-Agent': 'Mozilla/5.0'}
 SKILL_LIST_URL = "https://wiki.guildwars.com/wiki/Skill_template_format/Skill_list"

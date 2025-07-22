@@ -1,4 +1,5 @@
 from operator import ne
+
 from Py4GWCoreLib import *
 
 module_name = "Point Logger"

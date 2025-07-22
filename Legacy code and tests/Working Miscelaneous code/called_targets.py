@@ -1,4 +1,5 @@
 from Py4GWCoreLib import *
+
 checkbox_state = True
 def DrawWindow():
     global checkbox_state

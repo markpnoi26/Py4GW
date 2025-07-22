@@ -1,10 +1,13 @@
-from ctypes import Structure, c_int, c_float, c_bool
-from enum import Enum, IntEnum
-from .constants import (
-    MAX_NUM_PLAYERS,
-    NUMBER_OF_SKILLS,
-    MAX_NUMBER_OF_BUFFS
-)
+from ctypes import Structure
+from ctypes import c_bool
+from ctypes import c_float
+from ctypes import c_int
+from enum import Enum
+from enum import IntEnum
+
+from .constants import MAX_NUM_PLAYERS
+from .constants import MAX_NUMBER_OF_BUFFS
+from .constants import NUMBER_OF_SKILLS
 
 
 class PlayerBuff(Structure):
