@@ -6,7 +6,7 @@ import traceback
 
 import Py4GW
 from HeroAI.cache_data import CacheData
-from Py4GW_widget_manager import get_widget_handler
+from py4gw_widget_manager import get_widget_handler
 from Py4GWCoreLib import GLOBAL_CACHE
 from Py4GWCoreLib import CombatPrepSkillsType
 from Py4GWCoreLib import IconsFontAwesome5

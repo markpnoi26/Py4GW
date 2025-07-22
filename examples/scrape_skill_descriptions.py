@@ -11,12 +11,13 @@ HEADERS = {'User-Agent': 'Mozilla/5.0'}
 SKILL_LIST_URL = "https://wiki.guildwars.com/wiki/Skill_template_format/Skill_list"
 MAX_SKILLS = 10  # First 10 for test
 
+
 def get_skill_list():
     response = requests.get(SKILL_LIST_URL, headers=HEADERS)
     soup = BeautifulSoup(response.text, 'html.parser')
     table = soup.find("table")
     skills = []
-    for row in table.find_all("tr")[1:]:
+    for row in table.find_all("tr")[1:]:  # type: ignore
         cols = row.find_all("td")
         if len(cols) < 2:
             continue
@@ -28,11 +29,12 @@ def get_skill_list():
             name = link.get("title").strip()
             href = urljoin("https://wiki.guildwars.com", link.get("href"))
             skills.append((skill_id, name, href))
-            #if len(skills) >= MAX_SKILLS:
+            # if len(skills) >= MAX_SKILLS:
             #    break
         except ValueError:
             continue
     return skills
+
 
 def extract_descriptions(soup):
     def format_text_with_ranges(element):
@@ -94,6 +96,7 @@ def extract_descriptions(soup):
 
     return full_description, concise_description
 
+
 def extract_progression(soup):
     results = []
 
@@ -111,14 +114,7 @@ def extract_progression(soup):
         field_names = [field.get_text(strip=True) for field in field_divs]
 
         # Step 2: Initialize dict for each field
-        field_data = [
-            {
-                "attribute": attribute,
-                "field": field_name,
-                "values": {}
-            }
-            for field_name in field_names
-        ]
+        field_data = [{"attribute": attribute, "field": field_name, "values": {}} for field_name in field_names]
 
         # Step 3: Extract values by column
         value_cell = rows[1].find_all("td")[1]  # the right-hand cell
@@ -142,7 +138,6 @@ def extract_progression(soup):
     return results
 
 
-
 def main():
     all_skills = {}
     skills = get_skill_list()
@@ -160,11 +155,12 @@ def main():
             "url": url,
             "desc_full": full_desc,
             "desc_concise": concise_desc,
-            "progression": progression
+            "progression": progression,
         }
 
     with open("skills_output.json", "w", encoding="utf-8") as f:
         json.dump(all_skills, f, indent=2, ensure_ascii=False)
+
 
 if __name__ == "__main__":
     main()

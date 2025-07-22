@@ -7,6 +7,8 @@ chat_text_frame_hash = 4223760173
 text_input = ""
 
 focus_set = False
+
+
 def floating_input_text(label, value, x, y, width=120, height=24, color: Color = Color(255, 255, 255, 255)):
     global focus_set
     # Set the position and size of the floating input
@@ -14,11 +16,11 @@ def floating_input_text(label, value, x, y, width=120, height=24, color: Color =
     PyImGui.set_next_window_size(width, height)
 
     flags = (
-        PyImGui.WindowFlags.NoCollapse |
-        PyImGui.WindowFlags.NoTitleBar |
-        PyImGui.WindowFlags.NoScrollbar |
-        PyImGui.WindowFlags.NoScrollWithMouse |
-        PyImGui.WindowFlags.AlwaysAutoResize
+        PyImGui.WindowFlags.NoCollapse
+        | PyImGui.WindowFlags.NoTitleBar
+        | PyImGui.WindowFlags.NoScrollbar
+        | PyImGui.WindowFlags.NoScrollWithMouse
+        | PyImGui.WindowFlags.AlwaysAutoResize
     )
 
     PyImGui.push_style_var2(ImGui.ImGuiStyleVar.WindowPadding, 0.0, 0.0)
@@ -49,27 +51,26 @@ def main():
     try:
         chat_text_frame_id = UIManager.GetFrameIDByHash(chat_text_frame_hash)
         if UIManager.FrameExists(chat_text_frame_id) and GLOBAL_CACHE.Player.IsTyping():
-            #UIManager().DrawFrame(chat_text_frame_id, ColorPalette.GetColor("GW_White").to_color())
-            left,top, right, bottom = UIManager.GetFrameCoords(chat_text_frame_id)
+            # UIManager().DrawFrame(chat_text_frame_id, ColorPalette.GetColor("GW_White").to_color())
+            left, top, right, bottom = UIManager.GetFrameCoords(chat_text_frame_id)
             width = right - left
             height = bottom - top
-            
-            text_input = floating_input_text("TextOverride", text_input,x = left, y = top, width=width, height=height, color=Color(255, 255, 0, 255))
+
+            text_input = floating_input_text(
+                "TextOverride", text_input, x=left, y=top, width=width, height=height, color=Color(255, 255, 0, 255)
+            )
         else:
             focus_set = False
 
-        window_flags=PyImGui.WindowFlags.AlwaysAutoResize #| PyImGui.WindowFlags.MenuBar
+        window_flags = PyImGui.WindowFlags.AlwaysAutoResize  # | PyImGui.WindowFlags.MenuBar
         if PyImGui.begin("chat status", window_flags):
             PyImGui.text(GLOBAL_CACHE.Player.IsTyping() and "Player is typing..." or "Player is not typing")
         PyImGui.end()
-        
-
 
     except Exception as e:
         Py4GW.Console.Log(MODULE_NAME, f"Error: {str(e)}", Py4GW.Console.MessageType.Error)
         raise
 
 
-    
 if __name__ == "__main__":
     main()

@@ -9,7 +9,7 @@ from typing import List
 from typing import Optional
 from typing import Tuple
 
-from Py4GW_widget_manager import get_widget_handler
+from py4gw_widget_manager import get_widget_handler
 from Py4GWCoreLib import Agent
 from Py4GWCoreLib import AgentArray
 from Py4GWCoreLib import Console

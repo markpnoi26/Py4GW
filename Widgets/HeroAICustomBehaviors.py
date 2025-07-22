@@ -5,7 +5,7 @@ import traceback
 
 import Py4GW  # type: ignore
 from HeroAI.cache_data import CacheData
-from Py4GW_widget_manager import get_widget_handler
+from py4gw_widget_manager import get_widget_handler
 from Py4GWCoreLib import IconsFontAwesome5
 from Py4GWCoreLib import ImGui
 from Py4GWCoreLib import IniHandler

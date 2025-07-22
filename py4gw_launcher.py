@@ -1,29 +1,22 @@
-#region --- patcher ---
+import configparser
 import ctypes
-import ctypes.wintypes
 import json
+import os
+import threading
+import time
 import tkinter as tk
 from ctypes import wintypes
 from tkinter import filedialog
-
-from imgui_bundle import hello_imgui
-from imgui_bundle import imgui
-
-user32 = ctypes.windll.user32
-kernel32 = ctypes.windll.kernel32
-import configparser
-import os
-import sys
-
-#region --- injector ---
-import threading
-import time
-from typing import List
 from typing import Optional
 
 import psutil
 import win32gui
 import win32process
+from imgui_bundle import hello_imgui
+from imgui_bundle import imgui
+
+user32 = ctypes.windll.user32
+kernel32 = ctypes.windll.kernel32
 
 
 class IniHandler:
@@ -134,7 +127,6 @@ class IniHandler:
             config.remove_section(section)
             self.save(config)
 
-
     # ----------------------------
     # Utility Methods
     # ----------------------------
@@ -182,15 +174,16 @@ ini_handler = IniHandler(ini_file)
 mods_directory = os.path.join(current_directory, "Addons", "mods")
 os.makedirs(mods_directory, exist_ok=True)  # Create Addons/Mods if it doesn't exist
 
-config_file = ini_handler.read_key("settings","account_config_file","accounts.json")
-py4gw_dll_name = ini_handler.read_key("settings","py4gw_dll_name","Py4GW.dll")
-blackbox_dll_name = ini_handler.read_key("settings","blackbox_dll_name","GWBlackBOX.dll")
+config_file = ini_handler.read_key("settings", "account_config_file", "accounts.json")
+py4gw_dll_name = ini_handler.read_key("settings", "py4gw_dll_name", "Py4GW.dll")
+blackbox_dll_name = ini_handler.read_key("settings", "blackbox_dll_name", "GWBlackBOX.dll")
 gmod_dll_name = ini_handler.read_key("settings", "gmod_dll_name", "gMod.dll")
 
 log_history = []
 log_history.append("Welcome To Py4GW!")
 
 APP_VERSION = "1.0.0"  # Update this with each release as needed
+
 
 def check_and_handle_version_mismatch(ini_filename: str):
     """
@@ -207,7 +200,7 @@ def check_and_handle_version_mismatch(ini_filename: str):
     # Compare with the current version
     if stored_version != APP_VERSION:
         log_history.append(f"Version mismatch detected: Stored={stored_version}, Current={APP_VERSION}")
-        
+
         # Clear the Hello ImGui settings file to reset layout settings
         if os.path.exists(ini_filename):
             try:
@@ -224,6 +217,7 @@ def check_and_handle_version_mismatch(ini_filename: str):
     else:
         log_history.append(f"Version check passed: {APP_VERSION}")
 
+
 PROCESS_ALL_ACCESS = 0x1F0FFF
 VIRTUAL_MEM = 0x1000 | 0x2000  # MEM_COMMIT | MEM_RESERVE
 PAGE_READWRITE = 0x04
@@ -233,7 +227,7 @@ PROCESS_VM_OPERATION = 0x0008
 PROCESS_VM_READ = 0x0010
 PROCESS_VM_WRITE = 0x0020
 PROCESS_QUERY_INFORMATION = 0x0400
-MAX_PATH = 260  
+MAX_PATH = 260
 TH32CS_SNAPPROCESS = 0x00000002
 
 # Constants
@@ -243,7 +237,7 @@ HWND_TOP = 0
 WM_SETTEXT = 0x000C
 
 # Load libraries
-#user32 = ctypes.WinDLL('user32', use_last_error=True)
+# user32 = ctypes.WinDLL('user32', use_last_error=True)
 
 # Define WNDENUMPROC correctly
 WNDENUMPROC = ctypes.WINFUNCTYPE(wintypes.BOOL, wintypes.HWND, wintypes.LPARAM)
@@ -262,71 +256,111 @@ user32.SetWindowTextW.argtypes = [wintypes.HWND, wintypes.LPCWSTR]
 user32.SetWindowTextW.restype = wintypes.BOOL
 
 
-
 class PROCESS_BASIC_INFORMATION(ctypes.Structure):
-    _fields_ = [("Reserved1", ctypes.c_void_p),
-                ("PebBaseAddress", ctypes.c_void_p),
-                ("Reserved2", ctypes.c_void_p * 2),
-                ("UniqueProcessId", ctypes.c_ulong),
-                ("Reserved3", ctypes.c_void_p)]
+    _fields_ = [
+        ("Reserved1", ctypes.c_void_p),
+        ("PebBaseAddress", ctypes.c_void_p),
+        ("Reserved2", ctypes.c_void_p * 2),
+        ("UniqueProcessId", ctypes.c_ulong),
+        ("Reserved3", ctypes.c_void_p),
+    ]
+
 
 class PEB(ctypes.Structure):
-    _fields_ = [("InheritedAddressSpace", ctypes.c_ubyte),
-                ("ReadImageFileExecOptions", ctypes.c_ubyte),
-                ("BeingDebugged", ctypes.c_ubyte),
-                ("BitField", ctypes.c_ubyte),
-                ("Mutant", ctypes.c_void_p),
-                ("ImageBaseAddress", ctypes.c_void_p)]
+    _fields_ = [
+        ("InheritedAddressSpace", ctypes.c_ubyte),
+        ("ReadImageFileExecOptions", ctypes.c_ubyte),
+        ("BeingDebugged", ctypes.c_ubyte),
+        ("BitField", ctypes.c_ubyte),
+        ("Mutant", ctypes.c_void_p),
+        ("ImageBaseAddress", ctypes.c_void_p),
+    ]
+
 
 class PROCESSENTRY32(ctypes.Structure):
-    _fields_ = [("dwSize", ctypes.c_ulong),
-                ("cntUsage", ctypes.c_ulong),
-                ("th32ProcessID", ctypes.c_ulong),
-                ("th32DefaultHeapID", ctypes.POINTER(ctypes.c_ulong)),
-                ("th32ModuleID", ctypes.c_ulong),
-                ("cntThreads", ctypes.c_ulong),
-                ("th32ParentProcessID", ctypes.c_ulong),
-                ("pcPriClassBase", ctypes.c_long),
-                ("dwFlags", ctypes.c_ulong),
-                ("szExeFile", ctypes.c_char * MAX_PATH)]
+    _fields_ = [
+        ("dwSize", ctypes.c_ulong),
+        ("cntUsage", ctypes.c_ulong),
+        ("th32ProcessID", ctypes.c_ulong),
+        ("th32DefaultHeapID", ctypes.POINTER(ctypes.c_ulong)),
+        ("th32ModuleID", ctypes.c_ulong),
+        ("cntThreads", ctypes.c_ulong),
+        ("th32ParentProcessID", ctypes.c_ulong),
+        ("pcPriClassBase", ctypes.c_long),
+        ("dwFlags", ctypes.c_ulong),
+        ("szExeFile", ctypes.c_char * MAX_PATH),
+    ]
+
 
 CREATE_SUSPENDED = 0x00000004
 
+
 class STARTUPINFO(ctypes.Structure):
-    _fields_ = [("cb", ctypes.c_ulong),
-                ("lpReserved", ctypes.c_wchar_p),
-                ("lpDesktop", ctypes.c_wchar_p),
-                ("lpTitle", ctypes.c_wchar_p),
-                ("dwX", ctypes.c_ulong),
-                ("dwY", ctypes.c_ulong),
-                ("dwXSize", ctypes.c_ulong),
-                ("dwYSize", ctypes.c_ulong),
-                ("dwXCountChars", ctypes.c_ulong),
-                ("dwYCountChars", ctypes.c_ulong),
-                ("dwFillAttribute", ctypes.c_ulong),
-                ("dwFlags", ctypes.c_ulong),
-                ("wShowWindow", ctypes.c_ushort),
-                ("cbReserved2", ctypes.c_ushort),
-                ("lpReserved2", ctypes.c_void_p), 
-                ("hStdInput", ctypes.c_void_p),
-                ("hStdOutput", ctypes.c_void_p),
-                ("hStdError", ctypes.c_void_p)]
+    _fields_ = [
+        ("cb", ctypes.c_ulong),
+        ("lpReserved", ctypes.c_wchar_p),
+        ("lpDesktop", ctypes.c_wchar_p),
+        ("lpTitle", ctypes.c_wchar_p),
+        ("dwX", ctypes.c_ulong),
+        ("dwY", ctypes.c_ulong),
+        ("dwXSize", ctypes.c_ulong),
+        ("dwYSize", ctypes.c_ulong),
+        ("dwXCountChars", ctypes.c_ulong),
+        ("dwYCountChars", ctypes.c_ulong),
+        ("dwFillAttribute", ctypes.c_ulong),
+        ("dwFlags", ctypes.c_ulong),
+        ("wShowWindow", ctypes.c_ushort),
+        ("cbReserved2", ctypes.c_ushort),
+        ("lpReserved2", ctypes.c_void_p),
+        ("hStdInput", ctypes.c_void_p),
+        ("hStdOutput", ctypes.c_void_p),
+        ("hStdError", ctypes.c_void_p),
+    ]
+
 
 class PROCESS_INFORMATION(ctypes.Structure):
-    _fields_ = [("hProcess", ctypes.c_void_p),
-                ("hThread", ctypes.c_void_p),
-                ("dwProcessId", ctypes.c_ulong),
-                ("dwThreadId", ctypes.c_ulong)]
+    _fields_ = [
+        ("hProcess", ctypes.c_void_p),
+        ("hThread", ctypes.c_void_p),
+        ("dwProcessId", ctypes.c_ulong),
+        ("dwThreadId", ctypes.c_ulong),
+    ]
+
 
 kernel32 = ctypes.windll.kernel32
 ntdll = ctypes.windll.ntdll
 
+
 class Account:
-    def __init__(self, character_name, email, password, gw_client_name, gw_path, extra_args, run_as_admin,
-                 inject_py4gw, inject_blackbox, script_path="", enable_client_rename=False, use_character_name=False,
-                 custom_client_name="", last_launch_time=None, total_runtime=0.0, current_session_time=0.0,
-                 average_runtime=0.0, min_runtime=0.0, max_runtime=0.0, top_left=(0, 0), width=800, height=600,
-                 preview_area=False, resize_client=False, inject_gmod=False, gmod_mods=None):
+    def __init__(
+        self,
+        character_name,
+        email,
+        password,
+        gw_client_name,
+        gw_path,
+        extra_args,
+        run_as_admin,
+        inject_py4gw,
+        inject_blackbox,
+        script_path="",
+        enable_client_rename=False,
+        use_character_name=False,
+        custom_client_name="",
+        last_launch_time=None,
+        total_runtime=0.0,
+        current_session_time=0.0,
+        average_runtime=0.0,
+        min_runtime=0.0,
+        max_runtime=0.0,
+        top_left=(0, 0),
+        width=800,
+        height=600,
+        preview_area=False,
+        resize_client=False,
+        inject_gmod=False,
+        gmod_mods=None,
+    ):
         self.character_name = character_name
         self.email = email
         self.password = password
@@ -336,7 +370,7 @@ class Account:
         self.run_as_admin = run_as_admin
         self.inject_py4gw = inject_py4gw
         self.inject_blackbox = inject_blackbox
-        self.inject_gmod = inject_gmod          # New: Flag for gMod injection
+        self.inject_gmod = inject_gmod  # New: Flag for gMod injection
         self.gmod_mods = gmod_mods if gmod_mods is not None else []  # New: List of mod file names
         self.script_path = script_path  # Path to the Python script
         self.enable_client_rename = enable_client_rename  # Whether client renaming is enabled
@@ -415,6 +449,7 @@ class Account:
             resize_client=data.get("resize_client", False),
         )
 
+
 class Team:
     def __init__(self, name):
         self.name = name
@@ -445,6 +480,7 @@ class Team:
 
 class TeamManager:
     global log_history
+
     def __init__(self):
         self.teams = {}
 
@@ -481,7 +517,6 @@ class TeamManager:
             log_history.append(f"Error parsing JSON from {file_path}: {e}")
             self.teams = {}
 
-
     def get_team(self, team_name):
         """
         Retrieve a team by name.
@@ -509,6 +544,7 @@ class TeamManager:
                 results.append(account)
         return results
 
+
 class Patcher:
     global log_history
 
@@ -519,14 +555,21 @@ class Patcher:
         pbi = PROCESS_BASIC_INFORMATION()
         return_length = ctypes.c_ulong(0)
 
-        if ntdll.NtQueryInformationProcess(process_handle, 0, ctypes.byref(pbi), ctypes.sizeof(pbi), ctypes.byref(return_length)) != 0:
+        if (
+            ntdll.NtQueryInformationProcess(
+                process_handle, 0, ctypes.byref(pbi), ctypes.sizeof(pbi), ctypes.byref(return_length)
+            )
+            != 0
+        ):
             return None
 
         peb_address = pbi.PebBaseAddress
         buffer = ctypes.create_string_buffer(ctypes.sizeof(PEB))
 
         bytes_read = ctypes.c_size_t()
-        if not kernel32.ReadProcessMemory(process_handle, peb_address, buffer, ctypes.sizeof(PEB), ctypes.byref(bytes_read)):
+        if not kernel32.ReadProcessMemory(
+            process_handle, peb_address, buffer, ctypes.sizeof(PEB), ctypes.byref(bytes_read)
+        ):
             return None
 
         peb = PEB.from_buffer(buffer)
@@ -541,16 +584,36 @@ class Patcher:
     def patch(self, pid: int) -> bool:
 
         process_handle = kernel32.OpenProcess(
-            PROCESS_VM_OPERATION | PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_QUERY_INFORMATION, 
-            False, 
-            pid
+            PROCESS_VM_OPERATION | PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_QUERY_INFORMATION, False, pid
         )
-        
+
         if process_handle is None:
             log_history.append(f"Patcher - Could not open process with PID {pid}: {ctypes.GetLastError()}")
             return False
 
-        sig_patch = bytes([0x56, 0x57, 0x68, 0x00, 0x01, 0x00, 0x00, 0x89, 0x85, 0xF4, 0xFE, 0xFF, 0xFF, 0xC7, 0x00, 0x00, 0x00, 0x00, 0x00])
+        sig_patch = bytes(
+            [
+                0x56,
+                0x57,
+                0x68,
+                0x00,
+                0x01,
+                0x00,
+                0x00,
+                0x89,
+                0x85,
+                0xF4,
+                0xFE,
+                0xFF,
+                0xFF,
+                0xC7,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+            ]
+        )
         module_base = self.get_process_module_base(process_handle)
         if module_base is None:
             log_history.append("Patcher - Failed to get module base")
@@ -574,11 +637,13 @@ class Patcher:
         payload = bytes([0x31, 0xC0, 0x90, 0xC3])
 
         bytes_written = ctypes.c_size_t()
-        if not kernel32.WriteProcessMemory(process_handle, mcpatch_address, payload, len(payload), ctypes.byref(bytes_written)):
+        if not kernel32.WriteProcessMemory(
+            process_handle, mcpatch_address, payload, len(payload), ctypes.byref(bytes_written)
+        ):
             log_history.append(f"Patcher - Failed to write process memory: {ctypes.GetLastError()}")
             kernel32.CloseHandle(process_handle)
             return False
-        
+
         log_history.append(f"Patcher - Patched at address: {hex(mcpatch_address)}")
         kernel32.CloseHandle(process_handle)
         return True
@@ -603,8 +668,9 @@ class Patcher:
         user32.EnumWindows(WNDENUMPROC(callback), 0)
         return hwnd
 
-
-    def launch_and_patch(self, gw_exe_path: str, account: str, password: str, character: str, extra_args: str, elevated: bool) -> Optional[int]:
+    def launch_and_patch(
+        self, gw_exe_path: str, account: str, password: str, character: str, extra_args: str, elevated: bool
+    ) -> Optional[int]:
         command_line = f'"{gw_exe_path}" -email "{account}" -password "{password}"'
         if character:
             command_line += f' -character "{character}"'
@@ -615,16 +681,16 @@ class Patcher:
         process_info = PROCESS_INFORMATION()
 
         success = kernel32.CreateProcessW(
-            None,  
+            None,
             command_line,
-            None, 
+            None,
             None,
             False,
             CREATE_SUSPENDED,
             None,
             None,
             ctypes.byref(startup_info),
-            ctypes.byref(process_info)
+            ctypes.byref(process_info),
         )
 
         if not success:
@@ -641,7 +707,7 @@ class Patcher:
             kernel32.CloseHandle(process_info.hProcess)
             kernel32.CloseHandle(process_info.hThread)
             return None
-        
+
         if kernel32.ResumeThread(process_info.hThread) == -1:
             log_history.append(f"Python - Failed to resume thread: {ctypes.GetLastError()}")
             kernel32.TerminateProcess(process_info.hProcess, 0)
@@ -656,10 +722,11 @@ class Patcher:
 
         return pid
 
+
 class GWLauncher:
     global log_history, current_directory, py4gw_dll_name, blackbox_dll_name, ini_handler
 
-    def __init__(self):     
+    def __init__(self):
         self.active_pids = []
         self.gmod_injection_delay = 0.5  # Delay before gMod injection (configurable)
 
@@ -668,7 +735,7 @@ class GWLauncher:
         log_history.append(f"Waiting for GW window (PID: {pid})")
         start_time = time.time()
         found_windows = []
-        
+
         def enum_windows_callback(hwnd, _):
             if win32gui.IsWindowVisible(hwnd):
                 try:
@@ -692,21 +759,21 @@ class GWLauncher:
                 # Clear previous findings
                 found_windows.clear()
                 win32gui.EnumWindows(enum_windows_callback, None)
-                
+
                 if found_windows:
                     log_history.append(f"Wait for GW Window - Found {len(found_windows)} windows for process {pid}")
                     # Return True if we found any window from the process
                     return True
-                
+
             except psutil.NoSuchProcess:
                 log_history.append(f"Wait for GW Window - Process {pid} no longer exists")
                 return False
             except Exception as e:
                 log_history.append(f"Wait for GW Window - Error while waiting for GW window: {str(e)}")
                 return False
-                
+
             time.sleep(0.5)
-            
+
             # Add progress indicator every 5 seconds
             elapsed = time.time() - start_time
             if elapsed % 5 < 0.5:
@@ -718,7 +785,7 @@ class GWLauncher:
                     log_history.append(f"Wait for GW Window - Process command line: {process.cmdline()}")
                 except Exception as e:
                     log_history.append(f"Wait for GW Window - Error getting process info: {str(e)}")
-        
+
         log_history.append(f"Wait for GW Window - Timeout waiting for window of process {pid}")
         return False
 
@@ -741,10 +808,7 @@ class GWLauncher:
                 return False
 
             # Get LoadLibraryA address
-            loadlib_addr = kernel32.GetProcAddress(
-                kernel32._handle,
-                b"LoadLibraryA"
-            )
+            loadlib_addr = kernel32.GetProcAddress(kernel32._handle, b"LoadLibraryA")
             if not loadlib_addr:
                 log_history.append("Inject DLL - Failed to get LoadLibraryA address")
                 return False
@@ -754,13 +818,7 @@ class GWLauncher:
             path_size = len(dll_path_bytes)
 
             # Allocate memory in target process
-            allocated_memory = kernel32.VirtualAllocEx(
-                process_handle,
-                0,
-                path_size,
-                VIRTUAL_MEM,
-                PAGE_READWRITE
-            )
+            allocated_memory = kernel32.VirtualAllocEx(process_handle, 0, path_size, VIRTUAL_MEM, PAGE_READWRITE)
             if not allocated_memory:
                 log_history.append("Inject DLL - Failed to allocate memory")
                 return False
@@ -768,11 +826,7 @@ class GWLauncher:
             # Write DLL path to allocated memory
             written = ctypes.c_size_t(0)
             write_success = kernel32.WriteProcessMemory(
-                process_handle,
-                allocated_memory,
-                dll_path_bytes,
-                path_size,
-                ctypes.byref(written)
+                process_handle, allocated_memory, dll_path_bytes, path_size, ctypes.byref(written)
             )
             if not write_success or written.value != path_size:
                 log_history.append("Inject DLL - Failed to write to process memory")
@@ -780,13 +834,7 @@ class GWLauncher:
 
             # Create remote thread
             thread_handle = kernel32.CreateRemoteThread(
-                process_handle,
-                None,
-                0,
-                loadlib_addr,
-                allocated_memory,
-                0,
-                None
+                process_handle, None, 0, loadlib_addr, allocated_memory, 0, None
             )
             if not thread_handle:
                 log_history.append("Inject DLL - Failed to create remote thread")
@@ -817,19 +865,19 @@ class GWLauncher:
 
     def inject_BlackBox(self, pid, dll_path):
         """Inject GWBlackBoxdll.dll into the process"""
-        
+
         if not os.path.exists(os.path.join(current_directory, "Addons", blackbox_dll_name)):
             log_history.append("GWBlackBox DLL path not valid")
             return False
 
         log_history.append(f"Injecting BlackBox from: {os.path.join(current_directory, "Addons", blackbox_dll_name)}")
-        
+
         # Store original DLL path
         original_dll_path = os.path.join(current_directory, "Addons", blackbox_dll_name)
-        
+
         try:
             # Use existing inject_dll method
-            result = self.inject_dll(pid,original_dll_path)
+            result = self.inject_dll(pid, original_dll_path)
             log_history.append("GWBlackBox injection " + ("successful" if result else "failed"))
             return result
         finally:
@@ -845,7 +893,7 @@ class GWLauncher:
         result = self.inject_dll(pid, gmod_path)
         log_history.append("gMod injection " + ("successful" if result else "failed"))
         return result
-                
+
     def is_process_running(self, pid):
         try:
             process = psutil.Process(pid)
@@ -858,24 +906,23 @@ class GWLauncher:
         if delay > 0:
             log_history.append(f"Waiting {delay} seconds before injecting {dll_type} DLL...")
             time.sleep(delay)
-        
+
         if not self.is_process_running(pid):
             log_history.append(f"Process no longer running, skipping {dll_type} DLL injection")
             return False
-       
-        
+
         if dll_type == "Py4GW":
             log_history.append("Attempting Py4GW DLL injection...")
             dll_dir = os.path.join(current_directory, py4gw_dll_name)
-            return self.inject_dll(pid,dll_dir)
+            return self.inject_dll(pid, dll_dir)
         elif dll_type == "BlackBox":
             log_history.append("Attempting BlackBox DLL injection...")
             dll_dir = os.path.join(current_directory, "Addons", "GWBlackBOX.dll")
-            return self.inject_BlackBox(pid,dll_dir)
+            return self.inject_BlackBox(pid, dll_dir)
         elif dll_type == "gMod":
             log_history.append("Attempting gMod DLL injection...")
             return self.inject_gmod(pid)
-        
+
         log_history.append(f"Skipping {dll_type} DLL injection (not enabled).")
         return False
 
@@ -955,7 +1002,7 @@ class GWLauncher:
                 account.password,
                 account.character_name,
                 account.extra_args,
-                account.run_as_admin
+                account.run_as_admin,
             )
 
             if pid is None:
@@ -1003,7 +1050,7 @@ class GWLauncher:
                     client_name =  account.character_name if account.use_character_name else account.custom_client_name
                     log_history.append(f"Launch GW - renaming client to: {client_name}")
                     user32.SetWindowTextW(hwnd, client_name)
-        
+
                 if hwnd and account_data.resize_client:
                     # Move and resize the window
                     pos_x, pos_y = account_data.top_left
@@ -1018,13 +1065,14 @@ class GWLauncher:
                 kernel32.CloseHandle(process_info.hProcess)
                 kernel32.CloseHandle(process_info.hThread)
                 """
-            #threading.Thread(target=self.monitor_game_process, args=(account, pid), daemon=True).start()
+            # threading.Thread(target=self.monitor_game_process, args=(account, pid), daemon=True).start()
         except Exception as e:
             log_history.append(f"Error launching GW: {str(e)}")
 
 
 # -------------------------------------------------#
 # -------------- GUI Functions --------------------#
+
 
 def create_docking_splits() -> list[hello_imgui.DockingSplit]:
     """
@@ -1047,19 +1095,14 @@ def create_docking_splits() -> list[hello_imgui.DockingSplit]:
         return [
             # Bottom split for the Console
             hello_imgui.DockingSplit(
-                initial_dock_="MainDockSpace",
-                new_dock_="ConsoleDockSpace",
-                direction_=imgui.Dir.down,
-                ratio_=0.20
+                initial_dock_="MainDockSpace", new_dock_="ConsoleDockSpace", direction_=imgui.Dir.down, ratio_=0.20
             ),
             # Right split for the Advanced View
             hello_imgui.DockingSplit(
-                initial_dock_="MainDockSpace",
-                new_dock_="AdvDockSpace",
-                direction_=imgui.Dir.right,
-                ratio_=0.70
-            )
+                initial_dock_="MainDockSpace", new_dock_="AdvDockSpace", direction_=imgui.Dir.right, ratio_=0.70
+            ),
         ]
+
 
 def create_dockable_windows() -> list[hello_imgui.DockableWindow]:
     """
@@ -1078,7 +1121,7 @@ def create_dockable_windows() -> list[hello_imgui.DockableWindow]:
                 dock_space_name_="MainDockSpace",
                 gui_function_=show_team_view,
                 can_be_closed_=False,
-                is_visible_=True
+                is_visible_=True,
             )
         )
     if visible_windows.get("AdvDockSpace", True):
@@ -1088,9 +1131,9 @@ def create_dockable_windows() -> list[hello_imgui.DockableWindow]:
                 dock_space_name_="AdvDockSpace",
                 gui_function_=show_configuration_content,
                 can_be_closed_=False,
-                is_visible_=True
+                is_visible_=True,
             )
-        )   
+        )
     if visible_windows.get("AdvDockSpace", True):
         dockable_windows.append(
             hello_imgui.DockableWindow(
@@ -1098,19 +1141,17 @@ def create_dockable_windows() -> list[hello_imgui.DockableWindow]:
                 dock_space_name_="AdvDockSpace",
                 gui_function_=show_account_content,
                 can_be_closed_=False,
-                is_visible_=True
+                is_visible_=True,
             )
-        )         
+        )
     if visible_windows.get("ConsoleDockSpace", True):
         dockable_windows.append(
             hello_imgui.DockableWindow(
-                label_="Console",
-                dock_space_name_="ConsoleDockSpace",
-                gui_function_=show_log_console,
-                is_visible_=True
+                label_="Console", dock_space_name_="ConsoleDockSpace", gui_function_=show_log_console, is_visible_=True
             )
         )
     return dockable_windows
+
 
 def show_log_console():
     """Content for the Console"""
@@ -1119,17 +1160,16 @@ def show_log_console():
 
     # Start scrollable child window
     imgui.begin_child(
-    str_id="ConsoleDockSpaceWindow",
-    size=imgui.ImVec2(0, 0),
-    child_flags=int(imgui.ChildFlags_.borders.value),  # Ensure it's an int
-    window_flags=int(imgui.WindowFlags_.horizontal_scrollbar.value)  # Ensure window_flags is also an int
-)
-    
+        str_id="ConsoleDockSpaceWindow",
+        size=imgui.ImVec2(0, 0),
+        child_flags=int(imgui.ChildFlags_.borders.value),  # Ensure it's an int
+        window_flags=int(imgui.WindowFlags_.horizontal_scrollbar.value),  # Ensure window_flags is also an int
+    )
 
     # Track scroll position
-    scroll_y = imgui.get_scroll_y()                      # Current scroll position
-    scroll_max_y = imgui.get_scroll_max_y()              # Max scroll position
-    is_scrolled_to_bottom = (scroll_y >= scroll_max_y)   # Detect if at the bottom
+    scroll_y = imgui.get_scroll_y()  # Current scroll position
+    scroll_max_y = imgui.get_scroll_max_y()  # Max scroll position
+    is_scrolled_to_bottom = scroll_y >= scroll_max_y  # Detect if at the bottom
 
     # Display log messages
     for i in range(len(log_history)):
@@ -1142,9 +1182,7 @@ def show_log_console():
     imgui.end_child()
 
 
-
 launch_gw = GWLauncher()
-
 
 
 def show_team_view():
@@ -1158,19 +1196,20 @@ def show_team_view():
 
     # Display the current view mode
     current_mode = "Compact View" if is_compact_view else "Advanced View"
-    imgui.push_style_color(imgui.Col_.text, (0.0, 1.0, 0.0, 1.0))  # Green text
+    # Green text
+    imgui.push_style_color(imgui.Col_.text, (0.0, 1.0, 0.0, 1.0))  # type: ignore
     imgui.text(f"View Mode: {current_mode}")
     imgui.pop_style_color()
-    
+
     # Checkbox to toggle between Compact and Advanced View
     changed, is_compact_view = imgui.checkbox("Toggle View##visibility_toggle", is_compact_view)
-    
+
     if imgui.is_item_hovered():
         if is_compact_view:
             imgui.set_tooltip("Switch to Advanced View to show Console and Configuration panels")
         else:
             imgui.set_tooltip("Switch to Compact View to hide Console and Configuration panels")
-    
+
     # Save to INI if changed
     if changed:
         ini_handler.write_key("Py4GW_Launcher", "is_compact_view", str(is_compact_view))
@@ -1208,7 +1247,7 @@ def show_team_view():
     for team_name, team in team_manager.teams.items():
         if imgui.tree_node(f"{team_name}##{id(team)}"):
             imgui.spacing()
-            
+
             # Button to launch all accounts in the team sequentially
             if imgui.button(f"Launch {team_name}##{id(team)}"):
                 log_history.append(f"Launching all accounts for team: {team_name}")
@@ -1221,7 +1260,7 @@ def show_team_view():
             for account in team.accounts:
                 if imgui.tree_node(f"{account.character_name}##{id(account)}"):
                     imgui.spacing()
-                    
+
                     # Launch individual accounts
                     if imgui.button(f"Launch {account.character_name}##{id(account)}"):
                         log_history.append(f"Launching account: {account.character_name}")
@@ -1232,7 +1271,6 @@ def show_team_view():
             imgui.tree_pop()
 
 
-
 def show_account_content():
     """
     Content for the Main Content Window
@@ -1240,7 +1278,6 @@ def show_account_content():
     """
     global selected_team, team_manager, config_file, launch_gw
 
-    
     # Generate a list of team names
     team_names = [team.name for team in team_manager.teams.values()]
 
@@ -1251,9 +1288,7 @@ def show_account_content():
 
     # Combo box for existing teams
     imgui.set_next_item_width(300)
-    changed, selected_index = imgui.combo(
-        "Select Team", selected_index, team_names
-    )
+    changed, selected_index = imgui.combo("Select Team", selected_index, team_names)
 
     # Update the selected team if a selection is made
     if changed and selected_index != -1:
@@ -1413,7 +1448,6 @@ def show_account_content():
             team_manager.save_to_json(config_file)
 
 
-
 def save_teams_to_json(name):
     global config_file
     imgui.separator()
@@ -1423,6 +1457,7 @@ def save_teams_to_json(name):
             log_history.append("Config saved!")
         except Exception as e:
             log_history.append(f"Error saving teams: {e}")
+
 
 def select_folder():
     """
@@ -1434,6 +1469,7 @@ def select_folder():
     root.destroy()
     return folder_path
 
+
 def select_gw_exe():
     """
     Open a file selection dialog to select the 'Gw.exe' file.
@@ -1443,10 +1479,11 @@ def select_gw_exe():
     file_path = filedialog.askopenfilename(
         title="Select Guild Wars Executable",
         filetypes=[("Executable Files", "*.exe")],  # Restrict to .exe files
-        initialfile="Gw.exe"  # Suggest Gw.exe as the default file
+        initialfile="Gw.exe",  # Suggest Gw.exe as the default file
     )
     root.destroy()
     return file_path
+
 
 def select_dll(name):
     """
@@ -1457,10 +1494,11 @@ def select_dll(name):
     file_path = filedialog.askopenfilename(
         title="Select DLL",
         filetypes=[("dynamic Libraries", "*.dll")],  # Restrict to .exe files
-        initialfile=name  # Suggest Gw.exe as the default file
+        initialfile=name,  # Suggest Gw.exe as the default file
     )
     root.destroy()
     return file_path
+
 
 def select_python_script():
     """
@@ -1469,26 +1507,24 @@ def select_python_script():
     root = tk.Tk()
     root.withdraw()  # Hide the main Tkinter window
     file_path = filedialog.askopenfilename(
-        title="Select Python script",
-        filetypes=[("Python Scripts", "*.py")]  # Restrict to .exe files
+        title="Select Python script", filetypes=[("Python Scripts", "*.py")]  # Restrict to .exe files
     )
     root.destroy()
     return file_path
+
 
 # Function for mod selection
 def select_mod_file():
     root = tk.Tk()
     root.withdraw()
-    file_path = filedialog.askopenfilename(
-        title="Select Mod File",
-        filetypes=[("Mod Files", "*.tpf")]
-    )
+    file_path = filedialog.askopenfilename(title="Select Mod File", filetypes=[("Mod Files", "*.tpf")])
     root.destroy()
     if file_path:
         # Return the full path directly
         log_history.append(f"Selected mod file: {file_path}")
         return file_path
     return None
+
 
 team_manager = TeamManager()
 selected_team = None
@@ -1506,7 +1542,7 @@ new_account_data = {
     "inject_py4gw": True,
     "inject_blackbox": False,
     "inject_gmod": False,
-    "gmod_mods": []
+    "gmod_mods": [],
 }
 
 # Initialize view mode persistence
@@ -1518,6 +1554,7 @@ visible_windows = {
     "ConsoleDockSpace": True,
 }
 log_history.append(f"Loaded is_compact_view from [Py4GW_Launcher]: {is_compact_view}")
+
 
 def show_configuration_content():
     global config_file, team_manager, selected_team, entered_team_name, data_loaded, show_password, new_account_data
@@ -1540,7 +1577,6 @@ def show_configuration_content():
             log_history.append(f"Error loading teams: {e}")
         data_loaded = True
 
-
     # Title and separator
     imgui.text("Team Management")
     imgui.separator()
@@ -1557,9 +1593,7 @@ def show_configuration_content():
         selected_index = team_names.index(selected_team.name) if selected_team.name in team_names else -1
 
     # Combo box for existing teams
-    changed, selected_index = imgui.combo(
-        "Existing Teams", selected_index, team_names
-    )
+    changed, selected_index = imgui.combo("Existing Teams", selected_index, team_names)
 
     # Update the selected team if a selection is made
     if changed and selected_index != -1:
@@ -1596,31 +1630,33 @@ def show_configuration_content():
             if imgui.collapsing_header(f"{account.character_name}##{id(account)}"):
                 imgui.spacing()
                 imgui.set_next_item_width(300)  # Standardized field width
-                _, account.character_name = imgui.input_text(f"Character Name##{id(account)}", account.character_name, 128)
+                _, account.character_name = imgui.input_text(
+                    f"Character Name##{id(account)}", account.character_name, 128
+                )
                 imgui.spacing()
                 imgui.set_next_item_width(300)
                 _, account.email = imgui.input_text(f"Email##{id(account)}", account.email, 128)
                 imgui.spacing()
 
-        
                 password_flags = 0 if show_password else imgui.InputTextFlags_.password.value
                 imgui.set_next_item_width(300)
 
                 _, account.password = imgui.input_text(
-                    label=f"Password##{id(account)}",                # Label for the input box
-                    str=account.password,            # Existing value to display and modify
-                    flags=password_flags  # Password flag to obscure text
+                    label=f"Password##{id(account)}",  # Label for the input box
+                    str=account.password,  # Existing value to display and modify
+                    flags=password_flags,  # Password flag to obscure text
                 )
 
                 imgui.same_line()
 
                 _, show_password = imgui.checkbox(f"Show Password##{id(account)}", show_password)
 
-
                 imgui.spacing()
 
                 imgui.set_next_item_width(300)
-                _, account.gw_client_name = imgui.input_text(f"Rename GW Client##{id(account)}", account.gw_client_name, 128)
+                _, account.gw_client_name = imgui.input_text(
+                    f"Rename GW Client##{id(account)}", account.gw_client_name, 128
+                )
                 imgui.set_next_item_width(300)
                 old_gw_path = account.gw_path
                 _, account.gw_path = imgui.input_text(f"GW Path##{id(account)}", account.gw_path, 128)
@@ -1637,16 +1673,17 @@ def show_configuration_content():
                     normalized_path = os.path.normpath(account.gw_path).lower()
                     protected_dirs = [
                         os.path.normpath("C:/Program Files (x86)").lower(),
-                        os.path.normpath("C:/Program Files").lower()
+                        os.path.normpath("C:/Program Files").lower(),
                     ]
                     is_protected = any(normalized_path.startswith(protected_dir) for protected_dir in protected_dirs)
                     if is_protected:
-                        imgui.push_style_color(imgui.Col_.text, (1.0, 0.0, 0.0, 1.0))  # Red text
+                        # Red text
+                        imgui.push_style_color(imgui.Col_.text, (1.0, 0.0, 0.0, 1.0))  # type: ignore
                         imgui.text_wrapped(
-                                "Warning: GW Path is in a protected directory (C:/Program Files (x86) or C:/Program Files). "
-                                "The launcher requires admin privileges to create/modify files (e.g., modlist.txt) in this location. "
-                                "Use an unprotected directory such as 'C:/Games/Guild Wars', or run the launcher with elevated privileges (as administrator)." 
-                            )
+                            "Warning: GW Path is in a protected directory (C:/Program Files (x86) or C:/Program Files). "
+                            "The launcher requires admin privileges to create/modify files (e.g., modlist.txt) in this location. "
+                            "Use an unprotected directory such as 'C:/Games/Guild Wars', or run the launcher with elevated privileges (as administrator)."
+                        )
                         imgui.pop_style_color()
                 # If gw_path changed manually, update modlist.txt
                 if old_gw_path != account.gw_path and account.inject_gmod:
@@ -1668,7 +1705,9 @@ def show_configuration_content():
                         if os.path.exists(modlist_path):
                             try:
                                 os.remove(modlist_path)
-                                log_history.append(f"Removed modlist.txt at {modlist_path} as gMod injection was disabled")
+                                log_history.append(
+                                    f"Removed modlist.txt at {modlist_path} as gMod injection was disabled"
+                                )
                             except Exception as e:
                                 log_history.append(f"Error removing modlist.txt at {modlist_path}: {str(e)}")
 
@@ -1705,17 +1744,17 @@ def show_configuration_content():
         # Collapsible section for new account form
         if imgui.collapsing_header("Add New Account", imgui.TreeNodeFlags_.default_open.value):
             imgui.spacing()
-    
+
             for key in new_account_data.keys():
                 if key == "password":  # Special handling for the password field
                     password_flags = 0 if show_password else imgui.InputTextFlags_.password.value
                     imgui.set_next_item_width(300)  # Standardized field width
-            
+
                     # Input field for password
                     _, new_account_data[key] = imgui.input_text(
-                    label=f"Password##new_item",  # Label for the input box
-                    str=new_account_data[key],    # Existing value to display and modify
-                    flags=password_flags  # Password flag to obscure text
+                        label="Password##new_item",  # Label for the input box
+                        str=new_account_data[key],  # Existing value to display and modify
+                        flags=password_flags,  # Password flag to obscure text
                     )
 
                     # Checkbox for toggling password visibility
@@ -1723,17 +1762,15 @@ def show_configuration_content():
                     _, show_password = imgui.checkbox("Show Password##new_item", show_password)
                 elif key == "gw_path":  # Special handling for the GW Path field
                     imgui.set_next_item_width(300)  # Standardized field width
-            
+
                     # Input field for GW Path
                     _, new_account_data[key] = imgui.input_text(
-                        key.replace("_", " ").title() + "##new_item", 
-                        new_account_data[key], 
-                        128
+                        key.replace("_", " ").title() + "##new_item", new_account_data[key], 128
                     )
 
                     # Button for folder selection
                     imgui.same_line()
-                    if imgui.button(f"Select Gw.exe##new_item"):
+                    if imgui.button("Select Gw.exe##new_item"):
                         selected_exe = select_gw_exe()
                         if selected_exe:
                             new_account_data[key] = selected_exe
@@ -1742,19 +1779,24 @@ def show_configuration_content():
                         normalized_path = os.path.normpath(new_account_data[key]).lower()
                         protected_dirs = [
                             os.path.normpath("C:/Program Files (x86)").lower(),
-                            os.path.normpath("C:/Program Files").lower()
+                            os.path.normpath("C:/Program Files").lower(),
                         ]
-                        is_protected = any(normalized_path.startswith(protected_dir) for protected_dir in protected_dirs)
+                        is_protected = any(
+                            normalized_path.startswith(protected_dir) for protected_dir in protected_dirs
+                        )
                         if is_protected:
-                            imgui.push_style_color(imgui.Col_.text, (1.0, 0.0, 0.0, 1.0))  # Red text
+                            # Red text
+                            imgui.push_style_color(imgui.Col_.text, (1.0, 0.0, 0.0, 1.0))  # type: ignore
                             imgui.text_wrapped(
                                 "Warning: GW Path is in a protected directory (C:/Program Files (x86) or C:/Program Files). "
                                 "The launcher requires admin privileges to create/modify files (e.g., modlist.txt) in this location. "
-                                "Use an unprotected directory such as 'C:/Games/Guild Wars', or run the launcher with elevated privileges (as administrator)." 
+                                "Use an unprotected directory such as 'C:/Games/Guild Wars', or run the launcher with elevated privileges (as administrator)."
                             )
                             imgui.pop_style_color()
                 elif key == "gmod_mods":
-                    _, new_account_data["inject_gmod"] = imgui.checkbox("Inject gMod##new_item", new_account_data["inject_gmod"])
+                    _, new_account_data["inject_gmod"] = imgui.checkbox(
+                        "Inject gMod##new_item", new_account_data["inject_gmod"]
+                    )
                     if new_account_data["inject_gmod"]:
                         imgui.text("gMod Mods:")
                         for i, mod in enumerate(new_account_data["gmod_mods"]):
@@ -1769,10 +1811,14 @@ def show_configuration_content():
                 elif key == "inject_gmod":
                     continue
                 elif isinstance(new_account_data[key], bool):
-                    _, new_account_data[key] = imgui.checkbox(key.replace("_", " ").title() + "##new_item", new_account_data[key])
+                    _, new_account_data[key] = imgui.checkbox(
+                        key.replace("_", " ").title() + "##new_item", new_account_data[key]
+                    )
                 elif isinstance(new_account_data[key], str):
                     imgui.set_next_item_width(300)  # Standardized field width
-                    _, new_account_data[key] = imgui.input_text(key.replace("_", " ").title() + "##new_item", new_account_data[key], 128)
+                    _, new_account_data[key] = imgui.input_text(
+                        key.replace("_", " ").title() + "##new_item", new_account_data[key], 128
+                    )
 
             if imgui.button("Add Account"):
                 new_account = Account(**new_account_data)
@@ -1791,6 +1837,7 @@ def show_configuration_content():
                         new_account_data[key] = ""
                     else:
                         new_account_data[key] = False
+
 
 def set_taskbar_icon(icon_path: str):
     """Set both the taskbar icon and window title bar icon on Windows."""
@@ -1812,14 +1859,17 @@ def set_taskbar_icon(icon_path: str):
 
     except Exception as e:
         print(f"❌ Failed to set taskbar icon: {str(e)}")
-        
+
+
 def main() -> None:
     """Run the Py4GW Launcher application with ImGui."""
     try:
         runner_params = hello_imgui.RunnerParams()
         runner_params.app_window_params.window_title = "Py4GW Launcher"
         runner_params.app_window_params.window_geometry.size = (350, 450) if is_compact_view else (800, 600)
-        runner_params.imgui_window_params.default_imgui_window_type = hello_imgui.DefaultImGuiWindowType.provide_full_screen_dock_space
+        runner_params.imgui_window_params.default_imgui_window_type = (
+            hello_imgui.DefaultImGuiWindowType.provide_full_screen_dock_space
+        )
         runner_params.docking_params.docking_splits = create_docking_splits()
 
         # Explicitly set the ini_filename for Hello ImGui settings
@@ -1835,12 +1885,13 @@ def main() -> None:
             runner_params.docking_params.docking_splits = create_docking_splits()
 
         runner_params.callbacks.show_gui = update_gui
-        
+
         set_taskbar_icon("python_icon.ico")
-        
+
         hello_imgui.run(runner_params)
     except Exception as e:
         log_history.append(f"Application error: {str(e)}")
+
 
 if __name__ == "__main__":
     main()
