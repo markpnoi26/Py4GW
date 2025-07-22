@@ -2,6 +2,7 @@ from HeroAI.custom_skill import CustomSkillClass
 from Py4GWCoreLib import GLOBAL_CACHE
 from Widgets.CustomBehaviors.primitives.skills.custom_skill_nature import CustomSkillNature
 
+
 class CustomSkill:
 
     custom_skill_class = CustomSkillClass()

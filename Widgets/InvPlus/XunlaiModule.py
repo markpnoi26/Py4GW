@@ -1,33 +1,33 @@
 
-import PyImGui
 from typing import Dict
 
+import PyImGui
 
-from Py4GWCoreLib import ImGui
-from Py4GWCoreLib import ColorPalette
-from Py4GWCoreLib import ItemArray
-from Py4GWCoreLib import Item
+from Py4GWCoreLib import GLOBAL_CACHE
 from Py4GWCoreLib import Bags
+from Py4GWCoreLib import ColorPalette
 from Py4GWCoreLib import IconsFontAwesome5
+from Py4GWCoreLib import ImGui
+from Py4GWCoreLib import Item
+from Py4GWCoreLib import ItemArray
 from Py4GWCoreLib import ModelID
 from Py4GWCoreLib import UIManager
-from Py4GWCoreLib import GLOBAL_CACHE
 from Py4GWCoreLib.enums import ItemModelTextureMap
-from Widgets.InvPlus.GUI_Helpers import (TabIcon, 
-                                         Frame,
-                                            floating_game_button,   
-                                            game_button,
-                                            game_toggle_button,
-                                            _get_parent_hash,
-                                            _get_offsets,
-                                            _get_frame_color,
-                                            _get_frame_outline_color,
-                                            _get_checkbox_color,
-                                            _get_floating_button_color,
-                                            INVENTORY_FRAME_HASH,
-                                            XUNLAI_VAULT_FRAME_HASH
-                            )         
 from Widgets.InvPlus.Coroutines import IdentifyCheckedItems
+from Widgets.InvPlus.GUI_Helpers import INVENTORY_FRAME_HASH
+from Widgets.InvPlus.GUI_Helpers import XUNLAI_VAULT_FRAME_HASH
+from Widgets.InvPlus.GUI_Helpers import Frame
+from Widgets.InvPlus.GUI_Helpers import TabIcon
+from Widgets.InvPlus.GUI_Helpers import _get_checkbox_color
+from Widgets.InvPlus.GUI_Helpers import _get_floating_button_color
+from Widgets.InvPlus.GUI_Helpers import _get_frame_color
+from Widgets.InvPlus.GUI_Helpers import _get_frame_outline_color
+from Widgets.InvPlus.GUI_Helpers import _get_offsets
+from Widgets.InvPlus.GUI_Helpers import _get_parent_hash
+from Widgets.InvPlus.GUI_Helpers import floating_game_button
+from Widgets.InvPlus.GUI_Helpers import game_button
+from Widgets.InvPlus.GUI_Helpers import game_toggle_button
+
 
 class XunlaiModule:   
     def __init__(self, inventory_frame: Frame):

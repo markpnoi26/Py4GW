@@ -1,12 +1,15 @@
-from Py4GWCoreLib import *
 import pathlib
 import sys
+
+from Py4GWCoreLib import *
+
 site_packages_path = r"C:\Users\Apo\AppData\Local\Programs\Python\Python313-32\Lib\site-packages"
 
 if site_packages_path not in sys.path:
     sys.path.append(site_packages_path)
     
 from lupa import LuaRuntime
+
 
 class LuaBridge:
     def __init__(self, script_name='test_script.lua'):

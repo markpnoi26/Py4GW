@@ -18,9 +18,8 @@ ctypes.windll.LoadLibrary(os.path.join(pywin32_system32, "pythoncom313.dll"))
 
 # Now try importing the modules
 import pywintypes
-import win32pipe
 import win32file
-
+import win32pipe
 
 module_name = "Pipe Handler"
 server = None

@@ -1,5 +1,6 @@
 from Py4GWCoreLib import *
 
+
 def Debug(message, title = 'DEBUG', msg_type = 'Debug'):
     py4gw_msg_type = Py4GW.Console.MessageType.Debug
     if   msg_type == 'Debug':       py4gw_msg_type = Py4GW.Console.MessageType.Debug

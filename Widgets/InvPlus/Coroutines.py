@@ -1,19 +1,18 @@
-import Py4GW
-import PyItem
-
 from typing import Dict
 
-from Py4GWCoreLib import Inventory
+import PyItem
+
+import Py4GW
+from Py4GWCoreLib import GLOBAL_CACHE
 from Py4GWCoreLib import ActionQueueManager
-from Py4GWCoreLib import Routines
+from Py4GWCoreLib import Bags
 from Py4GWCoreLib import ConsoleLog
+from Py4GWCoreLib import Inventory
 from Py4GWCoreLib import Item
 from Py4GWCoreLib import ItemArray
-from Py4GWCoreLib import Bags
-from Py4GWCoreLib import Trading
 from Py4GWCoreLib import ModelID
-from Py4GWCoreLib import GLOBAL_CACHE
-
+from Py4GWCoreLib import Routines
+from Py4GWCoreLib import Trading
 
 
 #region IdentifyCheckedItems         

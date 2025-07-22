@@ -1,18 +1,22 @@
    
-from Py4GWCoreLib import PyImGui, ImGui, Color
+from typing import TYPE_CHECKING
+
+from Py4GWCoreLib import GLOBAL_CACHE
+from Py4GWCoreLib import Agent
+from Py4GWCoreLib import Color
+from Py4GWCoreLib import IconsFontAwesome5
+from Py4GWCoreLib import ImGui
+from Py4GWCoreLib import ImguiFonts
+from Py4GWCoreLib import Item
+from Py4GWCoreLib import LootConfig
+from Py4GWCoreLib import Profession
+from Py4GWCoreLib import PyImGui
+from Py4GWCoreLib import Range
+from Py4GWCoreLib import Routines
+
 from .LogConsole import LogConsole
 from .StatsMgr import RunStatistics
-from Py4GWCoreLib import Routines
-from Py4GWCoreLib import GLOBAL_CACHE
-from Py4GWCoreLib import Profession
-from Py4GWCoreLib import IconsFontAwesome5
-from Py4GWCoreLib import LootConfig
-from Py4GWCoreLib import Range
-from Py4GWCoreLib import Item
-from Py4GWCoreLib import Agent
-from Py4GWCoreLib import ImguiFonts
 
-from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from .YAVBMain import YAVB
 

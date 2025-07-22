@@ -1,13 +1,18 @@
-from ctypes import Structure, c_uint, c_float, c_bool, c_wchar
-from multiprocessing import shared_memory
-from ctypes import sizeof
-from datetime import datetime, timezone
-from datetime import datetime, timezone
 import time
+from ctypes import Structure
+from ctypes import c_bool
+from ctypes import c_float
+from ctypes import c_uint
+from ctypes import c_wchar
+from ctypes import sizeof
+from datetime import datetime
+from datetime import timezone
+from multiprocessing import shared_memory
 from threading import Lock
 
 from Widgets.CustomBehaviors.primitives.behavior_state import BehaviorState
 from Widgets.CustomBehaviors.primitives.constants import DEBUG
+
 
 class CustomBehaviorWidgetStruct(Structure):
     _pack_ = 1

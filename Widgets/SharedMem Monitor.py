@@ -1,7 +1,12 @@
-from Py4GWCoreLib import *
-from ctypes import Structure, c_uint, c_float, c_bool, c_wchar
-from multiprocessing import shared_memory
+from ctypes import Structure
+from ctypes import c_bool
+from ctypes import c_float
+from ctypes import c_uint
+from ctypes import c_wchar
 from ctypes import sizeof
+from multiprocessing import shared_memory
+
+from Py4GWCoreLib import *
 
 MODULE_NAME = "Py4GWSharedMemoryManager Monitor"
   

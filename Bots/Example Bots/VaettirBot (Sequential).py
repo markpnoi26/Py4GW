@@ -1,6 +1,7 @@
-from Py4GWCoreLib import *
 import time
 from time import sleep
+
+from Py4GWCoreLib import *
 
 MODULE_NAME = "VaettirBot 3.0"
 #region paths

@@ -1,7 +1,10 @@
-from Py4GWCoreLib import *
-
-from ctypes import Structure, c_int, c_float, c_bool
+from ctypes import Structure
+from ctypes import c_bool
+from ctypes import c_float
+from ctypes import c_int
 from enum import Enum
+
+from Py4GWCoreLib import *
 
 NUMBER_OF_SKILLS = 8
 MAX_NUM_PLAYERS = 8

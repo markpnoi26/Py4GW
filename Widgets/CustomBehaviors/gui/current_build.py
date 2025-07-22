@@ -2,17 +2,22 @@ import os
 import pathlib
 import re
 import sys
-from Py4GWCoreLib import IconsFontAwesome5, ImGui, Player, PyImGui
+
+from Py4GWCoreLib import IconsFontAwesome5
+from Py4GWCoreLib import ImGui
+from Py4GWCoreLib import Player
+from Py4GWCoreLib import PyImGui
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
-from Py4GWCoreLib.Py4GWcorelib import Color, Utils
-from Widgets.CustomBehaviors.primitives.skillbars.custom_behavior_base import CustomBehaviorBase
-from Widgets.CustomBehaviors.primitives.skillbars.custom_behavior_base_utility import CustomBehaviorBaseUtility
+from Py4GWCoreLib.Py4GWcorelib import Color
+from Py4GWCoreLib.Py4GWcorelib import Utils
+from Widgets.CustomBehaviors.primitives.constants import DEBUG
 from Widgets.CustomBehaviors.primitives.custom_behavior_loader import CustomBehaviorLoader
 from Widgets.CustomBehaviors.primitives.parties.custom_behavior_party import CustomBehaviorParty
 from Widgets.CustomBehaviors.primitives.parties.custom_behavior_shared_memory import CustomBehaviorWidgetMemoryManager
+from Widgets.CustomBehaviors.primitives.skillbars.custom_behavior_base import CustomBehaviorBase
+from Widgets.CustomBehaviors.primitives.skillbars.custom_behavior_base_utility import CustomBehaviorBaseUtility
 from Widgets.CustomBehaviors.primitives.skills.custom_skill import CustomSkill
 from Widgets.CustomBehaviors.primitives.skills.custom_skill_utility_base import CustomSkillUtilityBase
-from Widgets.CustomBehaviors.primitives.constants import DEBUG
 
 shared_data = CustomBehaviorWidgetMemoryManager().GetCustomBehaviorWidgetData()
 WITH_DETAIL = False

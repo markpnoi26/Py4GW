@@ -1,23 +1,29 @@
 from HeroAI.custom_skill import CustomSkillClass
-from HeroAI.types import SkillType,SkillNature, Skilltarget
+from HeroAI.types import SkillNature
+from HeroAI.types import Skilltarget
+from HeroAI.types import SkillType
+
 from .Agent import Agent
+
 from.AgentArray import AgentArray
-from .Player import Player
-from .Skill import Skill
-from .Skillbar import SkillBar
-from .Party import Party
 from typing import Optional
-from .Py4GWcorelib import ThrottledTimer
-from .Py4GWcorelib import ActionQueueManager
-from .Py4GWcorelib import Console
-from .Py4GWcorelib import ConsoleLog
-from .enums import Range
-from .Routines import Routines
-from .Effect import Effects
+
 from HeroAI.cache_data import CacheData
 from HeroAI.players import *
 
-            
+from .Effect import Effects
+from .enums import Range
+from .Party import Party
+from .Player import Player
+from .Py4GWcorelib import ActionQueueManager
+from .Py4GWcorelib import Console
+from .Py4GWcorelib import ConsoleLog
+from .Py4GWcorelib import ThrottledTimer
+from .Routines import Routines
+from .Skill import Skill
+from .Skillbar import SkillBar
+
+
 class SkillIDS:
     def __init__(self):
         self.energy_drain = Skill.GetID("Energy_Drain") 
@@ -318,14 +324,12 @@ class SkillManager:
             return Range.Spellcast.value if self.InAggro() else Range.Earshot.value
         
         def GetAppropiateTarget(self, slot):
-            from HeroAI.targeting import (
-                TargetLowestAlly, 
-                TargetLowestAllyCaster, 
-                TargetLowestAllyMartial, 
-                TargetLowestAllyMelee, 
-                TargetLowestAllyRanged, 
-                TargetLowestAllyEnergy,
-            )
+            from HeroAI.targeting import TargetLowestAlly
+            from HeroAI.targeting import TargetLowestAllyCaster
+            from HeroAI.targeting import TargetLowestAllyEnergy
+            from HeroAI.targeting import TargetLowestAllyMartial
+            from HeroAI.targeting import TargetLowestAllyMelee
+            from HeroAI.targeting import TargetLowestAllyRanged
             
             v_target = 0
 

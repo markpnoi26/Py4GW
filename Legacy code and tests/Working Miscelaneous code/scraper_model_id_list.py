@@ -1489,11 +1489,13 @@ entries = [
 ]
 
 
-import time
-import random
 import json
-from bs4 import BeautifulSoup
+import random
+import time
+
 import requests
+from bs4 import BeautifulSoup
+
 
 def scrape_wiki_page(entry):
     url = entry['wiki_url']

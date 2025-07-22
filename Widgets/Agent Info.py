@@ -1,10 +1,11 @@
+from typing import Tuple
+
 from Py4GWCoreLib import GLOBAL_CACHE
-from Py4GWCoreLib import PyImGui
-from Py4GWCoreLib import ImGui 
-from Py4GWCoreLib import Routines
 from Py4GWCoreLib import Allegiance
 from Py4GWCoreLib import Color
-from typing import Tuple
+from Py4GWCoreLib import ImGui
+from Py4GWCoreLib import PyImGui
+from Py4GWCoreLib import Routines
 
 MODULE_NAME = "Agent Info Viewer"
 LOG_ACTIONS = True

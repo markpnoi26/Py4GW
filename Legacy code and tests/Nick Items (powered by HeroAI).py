@@ -1,7 +1,6 @@
-from Py4GWCoreLib import *
-from HeroAI.shared_memory_manager import *
 from HeroAI.game_option import *
-
+from HeroAI.shared_memory_manager import *
+from Py4GWCoreLib import *
 
 MODULE_NAME = "tester for everything"
 

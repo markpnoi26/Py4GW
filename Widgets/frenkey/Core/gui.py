@@ -1,5 +1,7 @@
 from typing import Optional
+
 import PyImGui
+
 
 class GUI:
     @staticmethod

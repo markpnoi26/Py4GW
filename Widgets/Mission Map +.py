@@ -1,22 +1,23 @@
-from Py4GWCoreLib import PetModelID, SpiritModelID
-from Py4GWCoreLib import Color
+import math
+from typing import Union
+
 from Py4GWCoreLib import GLOBAL_CACHE
-from Py4GWCoreLib import PyImGui
-from Py4GWCoreLib import ImGui
-from Py4GWCoreLib import Overlay
+from Py4GWCoreLib import Color
 from Py4GWCoreLib import DXOverlay
-from Py4GWCoreLib import ThrottledTimer
+from Py4GWCoreLib import ImGui
+from Py4GWCoreLib import Map
+from Py4GWCoreLib import Overlay
+from Py4GWCoreLib import PetModelID
+from Py4GWCoreLib import PyImGui
 from Py4GWCoreLib import PyMissionMap
-from Py4GWCoreLib import Timer
-from Py4GWCoreLib import Utils
-from Py4GWCoreLib import RawAgentArray
 from Py4GWCoreLib import Range
 from Py4GWCoreLib import Rarity
+from Py4GWCoreLib import RawAgentArray
 from Py4GWCoreLib import Routines
-from Py4GWCoreLib import Map
-
-from typing import Union
-import math
+from Py4GWCoreLib import SpiritModelID
+from Py4GWCoreLib import ThrottledTimer
+from Py4GWCoreLib import Timer
+from Py4GWCoreLib import Utils
 
 #region CONSTANTS
 MODULE_NAME = "Mission Map"

@@ -1,5 +1,6 @@
 from Py4GWCoreLib import *
 
+
 class Blessings(Enum):
     # — Nightfall: Sunspear promotion bounties —
     Corsair_Bounty   = (1794, 1842, 1971, 1972)

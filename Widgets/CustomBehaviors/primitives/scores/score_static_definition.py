@@ -1,7 +1,9 @@
 from abc import abstractmethod
-from typing import Callable, override
+from typing import Callable
+from typing import override
 
 from Widgets.CustomBehaviors.primitives.scores.score_definition import ScoreDefinition
+
 
 class ScoreStaticDefinition(ScoreDefinition):
     def __init__(self, score: float):

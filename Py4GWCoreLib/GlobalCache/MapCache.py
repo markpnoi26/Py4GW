@@ -1,8 +1,11 @@
 import PyMap
 from PyMap import MapID
 
+from Py4GWCoreLib.enums import explorable_name_to_id
+from Py4GWCoreLib.enums import explorables
+from Py4GWCoreLib.enums import outposts
 from Py4GWCoreLib.Py4GWcorelib import ActionQueueManager
-from Py4GWCoreLib.enums import outposts, explorables, explorable_name_to_id
+
 
 class MapCache:
     def __init__(self, action_queue_manager: ActionQueueManager):

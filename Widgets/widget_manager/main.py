@@ -1,12 +1,18 @@
-from Py4GWCoreLib import Py4GW, Map, Party, ConsoleLog, UIManager
-import traceback
 import sys
+import traceback
+
+from Py4GWCoreLib import ConsoleLog
+from Py4GWCoreLib import Map
+from Py4GWCoreLib import Party
+from Py4GWCoreLib import Py4GW
+from Py4GWCoreLib import UIManager
 
 from . import state
+from .config_scope import character_select
+from .config_scope import is_in_character_select
 from .handler import handler
-from .ui_floating_menu import draw_floating_menu
 from .settings_io import initialize_settings
-from .config_scope import is_in_character_select, character_select
+from .ui_floating_menu import draw_floating_menu
 
 account_init = True
 checked = False

@@ -1,7 +1,8 @@
-import PyItem
-import PyInventory
-
 from enum import Enum
+
+import PyInventory
+import PyItem
+
 
 class Bag(Enum):
     NoBag = 0

@@ -1,5 +1,6 @@
-from Py4GWCoreLib import *
 import random
+
+from Py4GWCoreLib import *
 
 MODULE_NAME = "Chat Spam"
 

@@ -1,5 +1,6 @@
-from fontTools.ttLib import TTFont
 import re
+
+from fontTools.ttLib import TTFont
 
 # List of font files to load
 fonts = [

@@ -1,16 +1,26 @@
-from datetime import datetime
 import math
+from datetime import datetime
+
+import PySkillbar
 from PyAgent import PyAgent
 from PySkillbar import SkillbarSkill
-import PySkillbar
+
 from Py4GWCoreLib import AgentArray
+from Py4GWCoreLib.enums import Allegiance
+from Py4GWCoreLib.enums import Key
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
-from Py4GWCoreLib.Py4GWcorelib import ConsoleLog, Keystroke, Utils
+from Py4GWCoreLib.Py4GWcorelib import ConsoleLog
+from Py4GWCoreLib.Py4GWcorelib import Keystroke
+from Py4GWCoreLib.Py4GWcorelib import Utils
 from Py4GWCoreLib.Routines import Routines
 from Py4GWCoreLib.Skillbar import SkillBar
-from Py4GWCoreLib.enums import Allegiance, Key
 from Widgets.frenkey.Polymock import state
-from Widgets.frenkey.Polymock.data import Polymock_Quest, Polymock_Quests, Polymock_Spawns, PolymockBar, PolymockPieces, SkillReaction
+from Widgets.frenkey.Polymock.data import Polymock_Quest
+from Widgets.frenkey.Polymock.data import Polymock_Quests
+from Widgets.frenkey.Polymock.data import Polymock_Spawns
+from Widgets.frenkey.Polymock.data import PolymockBar
+from Widgets.frenkey.Polymock.data import PolymockPieces
+from Widgets.frenkey.Polymock.data import SkillReaction
 
 # Check how many times we have used a skill with the same Energy. If Energy does not change we have to set a new energy base level
 # If we had no target and now have the first target, we have to use our opener

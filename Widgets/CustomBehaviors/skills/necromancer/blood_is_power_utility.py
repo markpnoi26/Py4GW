@@ -1,7 +1,11 @@
 from tkinter.constants import N
-from typing import Any, Generator, override
+from typing import Any
+from typing import Generator
+from typing import override
 
-from Py4GWCoreLib import GLOBAL_CACHE, Routines, Range
+from Py4GWCoreLib import GLOBAL_CACHE
+from Py4GWCoreLib import Range
+from Py4GWCoreLib import Routines
 from Py4GWCoreLib.enums import Profession
 from Widgets.CustomBehaviors.primitives.behavior_state import BehaviorState
 from Widgets.CustomBehaviors.primitives.helpers import custom_behavior_helpers
@@ -36,7 +40,6 @@ class BloodIsPowerUtility(CustomSkillUtilityBase):
         self.required_target_mana_lower_than_percent: float = required_target_mana_lower_than_percent
 
     def _get_target(self) -> int | None:
-        allowed_classes = [Profession.Mesmer.value, Profession.Ritualist.value]
         allowed_agent_names = ["to_be_implemented"]
         from HeroAI.utils import CheckForEffect
     
@@ -45,7 +48,6 @@ class BloodIsPowerUtility(CustomSkillUtilityBase):
                 condition=lambda agent_id:
                     agent_id != GLOBAL_CACHE.Player.GetAgentID() and
                     custom_behavior_helpers.Resources.get_energy_percent_in_party(agent_id) < self.required_target_mana_lower_than_percent and
-                    GLOBAL_CACHE.Agent.GetProfessionIDs(agent_id)[0] in allowed_classes and
                     not CheckForEffect(agent_id, self.custom_skill.skill_id),
                 sort_key=(TargetingOrder.ENERGY_ASC, TargetingOrder.DISTANCE_ASC),
                 range_to_count_enemies=None,

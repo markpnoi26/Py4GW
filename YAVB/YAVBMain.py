@@ -1,28 +1,33 @@
-import Py4GW
-from typing import Optional, Union
-import math
-import random
 import json
+import math
 import os
-from Py4GWCoreLib import ThrottledTimer
-from Py4GWCoreLib import PyImGui, ImGui, Color
-from Py4GWCoreLib import FSM
-from Py4GWCoreLib import AutoInventoryHandler
-from Py4GWCoreLib import IniHandler
-from Py4GWCoreLib import GLOBAL_CACHE
-from Py4GWCoreLib import ConsoleLog
+import random
+from typing import Optional
+from typing import Union
 
-from .BuildMgr import ShadowFormAssassinVaettir, ShadowFormMesmerVaettir
-from .ProgressTracker import ProgressTracker
-from .LogConsole import LogConsole
-from .StatsMgr import RunStatistics
-from .FSMHelpers import _FSM_Helpers
-from .FSM import YAVB_FSM
-from .GUI import YAVB_GUI
-from Py4GWCoreLib import Routines
+import Py4GW
+from Py4GWCoreLib import FSM
+from Py4GWCoreLib import GLOBAL_CACHE
 from Py4GWCoreLib import AgentArray
 from Py4GWCoreLib import AgentModelID
+from Py4GWCoreLib import AutoInventoryHandler
+from Py4GWCoreLib import Color
+from Py4GWCoreLib import ConsoleLog
+from Py4GWCoreLib import ImGui
+from Py4GWCoreLib import IniHandler
+from Py4GWCoreLib import PyImGui
 from Py4GWCoreLib import Range
+from Py4GWCoreLib import Routines
+from Py4GWCoreLib import ThrottledTimer
+
+from .BuildMgr import ShadowFormAssassinVaettir
+from .BuildMgr import ShadowFormMesmerVaettir
+from .FSM import YAVB_FSM
+from .FSMHelpers import _FSM_Helpers
+from .GUI import YAVB_GUI
+from .LogConsole import LogConsole
+from .ProgressTracker import ProgressTracker
+from .StatsMgr import RunStatistics
 
 
 class YAVB:

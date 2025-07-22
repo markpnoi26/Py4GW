@@ -1,10 +1,19 @@
-from Py4GWCoreLib import Timer, Player, ConsoleLog, Py4GW, traceback
-from .default_settings import global_widget_defaults, account_widget_defaults, default_schema_version
+import configparser
 import importlib.util
 import os
-import types
 import sys
-import configparser
+import types
+
+from Py4GWCoreLib import ConsoleLog
+from Py4GWCoreLib import Player
+from Py4GWCoreLib import Py4GW
+from Py4GWCoreLib import Timer
+from Py4GWCoreLib import traceback
+
+from .default_settings import account_widget_defaults
+from .default_settings import default_schema_version
+from .default_settings import global_widget_defaults
+
 
 class WidgetHandler:
     _instance = None

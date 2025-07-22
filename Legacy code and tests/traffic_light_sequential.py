@@ -1,5 +1,7 @@
+from typing import Any
+from typing import Generator
+
 from Py4GWCoreLib import *
-from typing import Generator, Any
 
 module_name = "Coroutine Traffic Light"
 

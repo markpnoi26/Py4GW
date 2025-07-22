@@ -1,9 +1,11 @@
 import threading
 import time
 from queue import Queue
+
 import PyInventory
-from Py4GWCoreLib import PyImGui as ImGui_Py
+
 from Py4GWCoreLib import Py4GW as Py4GWCoreLib
+from Py4GWCoreLib import PyImGui as ImGui_Py
 from Py4GWCoreLib import Routines
 from Py4GWCoreLib import *
 

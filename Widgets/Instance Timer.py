@@ -1,13 +1,15 @@
 
-from Py4GWCoreLib import IniHandler
-from Py4GWCoreLib import PyImGui
-from Py4GWCoreLib import ImGui
-from Py4GWCoreLib import Overlay
-from Py4GWCoreLib import Timer
-from Py4GWCoreLib import FormatTime
+import os
+
 from Py4GWCoreLib import GLOBAL_CACHE
 from Py4GWCoreLib import Color
-import os
+from Py4GWCoreLib import FormatTime
+from Py4GWCoreLib import ImGui
+from Py4GWCoreLib import IniHandler
+from Py4GWCoreLib import Overlay
+from Py4GWCoreLib import PyImGui
+from Py4GWCoreLib import Timer
+
 module_name = "Instance Timer"
 
 script_directory = os.path.dirname(os.path.abspath(__file__))

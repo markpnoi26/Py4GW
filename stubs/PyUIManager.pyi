@@ -1,4 +1,6 @@
-from typing import List, Tuple, Callable
+from typing import Callable
+from typing import List
+from typing import Tuple
 
 class UIInteractionCallback:
     def __init__(self) -> None:

@@ -1,23 +1,20 @@
+import time
+from ctypes import sizeof
+from multiprocessing import Lock
+from multiprocessing import shared_memory
+
 import Py4GW
 from Py4GWCoreLib import GLOBAL_CACHE
 
-from multiprocessing import shared_memory, Lock
-from ctypes import sizeof
-import time
+from .constants import LOCK_MUTEX_TIMEOUT
+from .constants import MAX_NUM_PLAYERS
+from .constants import MAX_NUMBER_OF_BUFFS
+from .constants import NUMBER_OF_SKILLS
+from .constants import SHARED_MEMORY_FILE_NAME
+from .constants import SMM_MODULE_NAME
+from .constants import SUBSCRIBE_TIMEOUT_SECONDS
+from .types import GameStruct
 
-from .constants import (
-    SMM_MODULE_NAME,
-    MAX_NUM_PLAYERS,
-    NUMBER_OF_SKILLS,
-    SHARED_MEMORY_FILE_NAME,
-    LOCK_MUTEX_TIMEOUT,
-    SUBSCRIBE_TIMEOUT_SECONDS,
-    MAX_NUMBER_OF_BUFFS,
-)
-
-from .types import (
-    GameStruct,
-)
 
 #last_hour = int(time.time() // 3600 * 3600)
 def get_base_timestamp():

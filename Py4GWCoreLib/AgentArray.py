@@ -1,10 +1,10 @@
-import Py4GW
-import PyPlayer
 import PyAgent
+import PyPlayer
+
+import Py4GW
 
 from .Agent import *
 from .Player import *
-
 from .Py4GWcorelib import Utils
 
 
@@ -363,9 +363,10 @@ class RawAgentArray:
         self.map_valid = False
 
     def update(self):
-        from .Routines import Routines
-        from .Map import Map
         import time
+
+        from .Map import Map
+        from .Routines import Routines
 
         # === Check map validity ===
         self.map_valid = Routines.Checks.Map.MapValid()

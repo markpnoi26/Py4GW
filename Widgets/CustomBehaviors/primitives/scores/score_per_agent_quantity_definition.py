@@ -1,6 +1,8 @@
 from abc import abstractmethod
 from ast import TypeVar
-from typing import Callable, Generic, override
+from typing import Callable
+from typing import Generic
+from typing import override
 
 from Widgets.CustomBehaviors.primitives.scores.score_definition import ScoreDefinition
 

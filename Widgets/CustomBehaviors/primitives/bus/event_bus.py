@@ -1,8 +1,14 @@
-from typing import Any, Callable, Dict, List, Optional, Union
-from collections import defaultdict
 import threading
-from Widgets.CustomBehaviors.primitives.bus.event_type import EventType
+from collections import defaultdict
+from typing import Any
+from typing import Callable
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Union
+
 from Widgets.CustomBehaviors.primitives.bus.event_message import EventMessage
+from Widgets.CustomBehaviors.primitives.bus.event_type import EventType
 from Widgets.CustomBehaviors.primitives.constants import DEBUG
 
 

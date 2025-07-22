@@ -1,7 +1,11 @@
-from Py4GWCoreLib import GLOBAL_CACHE, Allegiance, Overlay, Weapon
+from Py4GWCoreLib import GLOBAL_CACHE
+from Py4GWCoreLib import Allegiance
+from Py4GWCoreLib import Overlay
+from Py4GWCoreLib import Weapon
+
+from .cache_data import CacheData
 from .constants import MAX_NUM_PLAYERS
 from .targeting import *
-from .cache_data import CacheData
 
 
 def DistanceFromLeader(cached_data:CacheData):

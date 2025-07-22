@@ -1,17 +1,26 @@
-from re import S
-from typing import Any, Callable, Generator, override
 import random
+from re import S
+from typing import Any
+from typing import Callable
+from typing import Generator
+from typing import override
 
-from Py4GWCoreLib import GLOBAL_CACHE, Routines, Range
-from Py4GWCoreLib.enums import Profession, Range
+from Py4GWCoreLib import GLOBAL_CACHE
+from Py4GWCoreLib import Range
+from Py4GWCoreLib import Routines
+from Py4GWCoreLib.enums import Profession
+from Py4GWCoreLib.enums import Range
 from Widgets.CustomBehaviors.primitives.behavior_state import BehaviorState
 from Widgets.CustomBehaviors.primitives.helpers import custom_behavior_helpers
 from Widgets.CustomBehaviors.primitives.helpers.behavior_result import BehaviorResult
 from Widgets.CustomBehaviors.primitives.helpers.targeting_order import TargetingOrder
-from Widgets.CustomBehaviors.primitives.scores.score_per_agent_quantity_definition import ScorePerAgentQuantityDefinition
+from Widgets.CustomBehaviors.primitives.scores.score_per_agent_quantity_definition import (
+    ScorePerAgentQuantityDefinition,
+)
 from Widgets.CustomBehaviors.primitives.scores.score_static_definition import ScoreStaticDefinition
 from Widgets.CustomBehaviors.primitives.skills.custom_skill import CustomSkill
 from Widgets.CustomBehaviors.primitives.skills.custom_skill_utility_base import CustomSkillUtilityBase
+
 
 class FallBackUtility(CustomSkillUtilityBase):
     def __init__(

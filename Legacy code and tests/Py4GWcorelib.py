@@ -1,27 +1,28 @@
-from ctypes import string_at
-from http.client import UNAUTHORIZED
 import inspect
+import math
 import os
 import stat
+from ctypes import string_at
+from enum import Enum
+from http.client import UNAUTHORIZED
 from statistics import StatisticsError
 from tkinter.filedialog import dialogstates
 from turtle import st
-import Py4GW
+
 import ImGui_Py
-import PyMap
 import PyAgent
-import PyPlayer
-import PyParty
-import PyItem
+import PyEffects
 import PyInventory
+import PyItem
+import PyKeystroke
+import PyMap
+import PyMerchant
+import PyParty
+import PyPlayer
 import PySkill
 import PySkillbar
-import PyMerchant
-import PyEffects
-import PyKeystroke
 
-import math
-from enum import Enum
+import Py4GW
 
 #This is the base Python Library for Py4GW
 #It is intended to be used as am inlcude the Py4GW API

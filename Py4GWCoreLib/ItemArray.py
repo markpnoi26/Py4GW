@@ -1,9 +1,12 @@
+import PyInventory
 import PyItem
+
 import Py4GW
 
-from .Item import Bag, Item
+from .Item import Bag
+from .Item import Item
 from .Py4GWcorelib import ThrottledTimer
-import PyInventory 
+
 
 class ItemArray:
     @staticmethod

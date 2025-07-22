@@ -2,12 +2,16 @@
 # Reload imports
 import importlib
 import os
-from Widgets.frenkey.Polymock import gui, combat, state
 
-from Py4GWCoreLib import Player, Routines
+from Py4GWCoreLib import Player
+from Py4GWCoreLib import Routines
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.GlobalCache.SharedMemory import Py4GWSharedMemoryManager
-from Py4GWCoreLib.Py4GWcorelib import ConsoleLog, ThrottledTimer
+from Py4GWCoreLib.Py4GWcorelib import ConsoleLog
+from Py4GWCoreLib.Py4GWcorelib import ThrottledTimer
+from Widgets.frenkey.Polymock import combat
+from Widgets.frenkey.Polymock import gui
+from Widgets.frenkey.Polymock import state
 
 importlib.reload(gui)
 importlib.reload(combat)

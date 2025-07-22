@@ -1,10 +1,18 @@
-from Py4GWCoreLib import PyImGui, ImGui, time, Overlay, IconsFontAwesome5, Py4GW, ConsoleLog
+from Py4GWCoreLib import ConsoleLog
+from Py4GWCoreLib import IconsFontAwesome5
+from Py4GWCoreLib import ImGui
+from Py4GWCoreLib import Overlay
+from Py4GWCoreLib import Py4GW
+from Py4GWCoreLib import PyImGui
+from Py4GWCoreLib import time
+
 from . import state
 from .handler import handler
-from .ui_widget_menu import draw_widget_popup_menus
+from .ui_embedded_config import draw_embedded_widget_config
 from .ui_old_menu import draw_old_widget_ui
 from .ui_quickdock import quick_dock_menu
-from .ui_embedded_config import draw_embedded_widget_config
+from .ui_widget_menu import draw_widget_popup_menus
+
 
 def draw_floating_menu():
     

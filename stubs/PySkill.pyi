@@ -1,6 +1,9 @@
-from typing import List, overload
+from typing import List
+from typing import overload
+
+from PyAgent import AttributeClass
+from PyAgent import Profession
 from PyMap import Campaign
-from PyAgent import Profession, AttributeClass
 
 class SkillID:
     id: int

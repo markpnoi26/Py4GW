@@ -1,6 +1,8 @@
 from platform import python_implementation
-from Py4GWCoreLib import *
+
 import PyHeroAI
+
+from Py4GWCoreLib import *
 
 module_name = "HeroAI Control Panel"
 hero_ai_handler = PyHeroAI.PyHeroAI()

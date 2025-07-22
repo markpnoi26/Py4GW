@@ -1,7 +1,12 @@
-from Py4GWCoreLib import UIManager, Overlay, PyImGui, ImGui, IconsFontAwesome5
+from Py4GWCoreLib import IconsFontAwesome5
+from Py4GWCoreLib import ImGui
+from Py4GWCoreLib import Overlay
+from Py4GWCoreLib import PyImGui
+from Py4GWCoreLib import UIManager
+
 from . import state
-from .handler import handler
 from .config_scope import use_account_settings
+from .handler import handler
 
 button_flags = (
     PyImGui.WindowFlags.NoTitleBar |

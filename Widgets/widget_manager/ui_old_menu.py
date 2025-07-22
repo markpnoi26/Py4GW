@@ -1,8 +1,15 @@
-from Py4GWCoreLib import PyImGui, ImGui, IconsFontAwesome5, ConsoleLog, Py4GW, Utils, ThrottledTimer
-from .handler import handler
-from .config_scope import use_account_settings
+from Py4GWCoreLib import ConsoleLog
+from Py4GWCoreLib import IconsFontAwesome5
+from Py4GWCoreLib import ImGui
+from Py4GWCoreLib import Py4GW
+from Py4GWCoreLib import PyImGui
+from Py4GWCoreLib import ThrottledTimer
+from Py4GWCoreLib import Utils
+
 from . import state
-    
+from .config_scope import use_account_settings
+from .handler import handler
+
 timer = ThrottledTimer(400)
 def draw_old_widget_ui():
     global timer

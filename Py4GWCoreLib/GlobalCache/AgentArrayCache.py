@@ -1,5 +1,7 @@
-from Py4GWCoreLib.AgentArray import RawAgentArray
 import PyPlayer
+
+from Py4GWCoreLib.AgentArray import RawAgentArray
+
 
 class AgentArrayCache:
     def __init__(self, raw_agent_array: RawAgentArray):

@@ -1,4 +1,5 @@
 from Py4GWCoreLib import *
+
 module_name = "Return to Outpost"
 
 class config:

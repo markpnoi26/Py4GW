@@ -1,17 +1,15 @@
 import Py4GW
-
-from Py4GWCoreLib import Timer
-from Py4GWCoreLib import ThrottledTimer
-from Py4GWCoreLib import RawAgentArray
 from Py4GWCoreLib import GLOBAL_CACHE
-from Py4GWCoreLib import UIManager
-from Py4GWCoreLib import Routines
 from Py4GWCoreLib import Color
 from Py4GWCoreLib import ImGui
-from Py4GWCoreLib import PetBehavior
-from Py4GWCoreLib import Keystroke
 from Py4GWCoreLib import Key
-
+from Py4GWCoreLib import Keystroke
+from Py4GWCoreLib import PetBehavior
+from Py4GWCoreLib import RawAgentArray
+from Py4GWCoreLib import Routines
+from Py4GWCoreLib import ThrottledTimer
+from Py4GWCoreLib import Timer
+from Py4GWCoreLib import UIManager
 
 module_name = "PetHelper"
 

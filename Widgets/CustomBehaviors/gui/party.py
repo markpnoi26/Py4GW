@@ -1,6 +1,7 @@
-from Py4GWCoreLib import IconsFontAwesome5, PyImGui
-from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
+from Py4GWCoreLib import IconsFontAwesome5
+from Py4GWCoreLib import PyImGui
 from Py4GWCoreLib.enums import SharedCommandType
+from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Widgets.CustomBehaviors.primitives.behavior_state import BehaviorState
 from Widgets.CustomBehaviors.primitives.parties.custom_behavior_party import CustomBehaviorParty
 from Widgets.CustomBehaviors.primitives.parties.custom_behavior_shared_memory import CustomBehaviorWidgetMemoryManager

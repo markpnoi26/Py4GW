@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 # Create an enumeration
 class BehaviorState(Enum):
     IN_AGGRO = 1

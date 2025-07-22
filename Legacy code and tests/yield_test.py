@@ -1,4 +1,5 @@
-from typing import Generator, Any
+from typing import Any
+from typing import Generator
 
 from Py4GWCoreLib import *
 

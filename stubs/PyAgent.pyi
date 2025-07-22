@@ -1,6 +1,7 @@
 # PyAgent.pyi - Auto-generated .pyi file for PyAgent module
 
-from typing import List, Tuple
+from typing import List
+from typing import Tuple
 
 # Enum ProfessionType
 class ProfessionType:

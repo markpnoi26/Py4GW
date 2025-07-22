@@ -1,22 +1,23 @@
 
 import PyImGui
+
 import Py4GW
-from Py4GWCoreLib import ImGui
+from Py4GWCoreLib import Bags
 from Py4GWCoreLib import ColorPalette
 from Py4GWCoreLib import ConsoleLog
-from Py4GWCoreLib import UIManager
+from Py4GWCoreLib import ImGui
 from Py4GWCoreLib import Inventory
-from Py4GWCoreLib import ItemArray
 from Py4GWCoreLib import Item
-from Py4GWCoreLib import Bags
+from Py4GWCoreLib import ItemArray
+from Py4GWCoreLib import UIManager
+from Widgets.InvPlus.GUI_Helpers import XUNLAI_VAULT_FRAME_HASH
+from Widgets.InvPlus.GUI_Helpers import Frame
+from Widgets.InvPlus.GUI_Helpers import _get_frame_color
+from Widgets.InvPlus.GUI_Helpers import _get_frame_outline_color
+from Widgets.InvPlus.GUI_Helpers import _get_offsets
+from Widgets.InvPlus.GUI_Helpers import _get_parent_hash
 from Widgets.InvPlus.GUI_Helpers import game_toggle_button
-from Widgets.InvPlus.GUI_Helpers import (Frame,
-                                        _get_parent_hash,
-                                        _get_offsets,
-                                        _get_frame_color,
-                                        _get_frame_outline_color,
-                                        XUNLAI_VAULT_FRAME_HASH
-                                        )           
+
 
 class ColorizeModule:
     def __init__(self, inventory_frame: Frame):

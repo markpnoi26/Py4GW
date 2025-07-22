@@ -1,6 +1,7 @@
-from Py4GWCoreLib import *
-from Py4GWCoreLib import Player
 from PyPlayer import PyPlayer
+
+from Py4GWCoreLib import Player
+from Py4GWCoreLib import *
 
 module_name = "Faction Deposit UI"
 

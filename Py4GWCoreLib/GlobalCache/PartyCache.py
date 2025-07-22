@@ -1,6 +1,8 @@
 import PyParty
+
 from Py4GWCoreLib import Player
 from Py4GWCoreLib.Py4GWcorelib import ActionQueueManager
+
 
 class PartyCache:
     def __init__(self, action_queue_manager, map_cache, player_cache):

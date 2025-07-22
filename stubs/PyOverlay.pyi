@@ -1,4 +1,5 @@
 from typing import overload
+
 class Point2D:
     x: int
     y: int

@@ -1,5 +1,7 @@
-from Py4GWCoreLib import IconsFontAwesome5, PyImGui
-from Widgets.CustomBehaviors.primitives.custom_behavior_loader import CustomBehaviorLoader, MatchResult
+from Py4GWCoreLib import IconsFontAwesome5
+from Py4GWCoreLib import PyImGui
+from Widgets.CustomBehaviors.primitives.custom_behavior_loader import CustomBehaviorLoader
+from Widgets.CustomBehaviors.primitives.custom_behavior_loader import MatchResult
 from Widgets.CustomBehaviors.primitives.parties.custom_behavior_party import CustomBehaviorParty
 from Widgets.CustomBehaviors.primitives.parties.custom_behavior_shared_memory import CustomBehaviorWidgetMemoryManager
 

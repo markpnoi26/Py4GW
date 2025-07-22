@@ -1,22 +1,27 @@
-import win32gui
-import win32con
-import win32api
-import win32process
+import ctypes
 import json
-from dataclasses import dataclass, asdict
-from typing import List, Optional
+import logging
 import os
 import subprocess
-import win32event
-import ctypes
-import logging
-from datetime import datetime
-import time
-import psutil
-from ctypes import wintypes
-import threading
-from Patcher import Patcher
 import sys
+import threading
+import time
+from ctypes import wintypes
+from dataclasses import asdict
+from dataclasses import dataclass
+from datetime import datetime
+from typing import List
+from typing import Optional
+
+import psutil
+import win32api
+import win32con
+import win32event
+import win32gui
+import win32process
+
+from Patcher import Patcher
+
 # Add these constants
 PROCESS_ALL_ACCESS = 0x1F0FFF
 VIRTUAL_MEM = 0x1000 | 0x2000  # MEM_COMMIT | MEM_RESERVE

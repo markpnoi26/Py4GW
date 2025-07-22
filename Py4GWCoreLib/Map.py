@@ -1,14 +1,22 @@
-import Py4GW
+import math
+import time
+from collections import deque
+
 import PyMap
 import PyMissionMap
-import PyPathing
 import PyOverlay
-from .enums import outposts, outpost_name_to_id, explorables, explorable_name_to_id, FlagPreference
-from .UIManager import *
+import PyPathing
+
+import Py4GW
+
+from .enums import FlagPreference
+from .enums import explorable_name_to_id
+from .enums import explorables
+from .enums import outpost_name_to_id
+from .enums import outposts
 from .Overlay import *
-from collections import deque
-import time
-import math
+from .UIManager import *
+
 
 class Map:
     @staticmethod
@@ -956,7 +964,7 @@ class Map:
                                                    scale = None, rotation = None):
                 """ Convert a screen position of pathing geometry to a screen position relative to the compass."""
                 from .Player import Player
-                
+
                 # Step 1: Get map bounds
                 if not map_bounds:
                     map_bounds = Map.GetMapBoundaries()

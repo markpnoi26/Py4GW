@@ -1,8 +1,8 @@
 # shared_state_ctypes.py
 # ---------------------------------------------------------------
+import ctypes
 import os
 import time
-import ctypes
 from enum import IntEnum
 from multiprocessing import shared_memory
 

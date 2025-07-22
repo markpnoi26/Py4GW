@@ -1,9 +1,13 @@
-import Py4GW
 import traceback
+
+import Py4GW
 from Py4GWCoreLib import GLOBAL_CACHE
 
-from .constants import GAME_OPTION_MODULE_NAME, MAX_NUM_PLAYERS, NUMBER_OF_SKILLS
 from .cache_data import CacheData
+from .constants import GAME_OPTION_MODULE_NAME
+from .constants import MAX_NUM_PLAYERS
+from .constants import NUMBER_OF_SKILLS
+
 
 def UpdateGameOptions(cache_data:CacheData):
     """Update the player list from shared memory."""

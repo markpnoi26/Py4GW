@@ -1,5 +1,7 @@
-from Py4GWCoreLib import *
 import os
+
+from Py4GWCoreLib import *
+
 module_name = "PCons Manager"
 
 script_directory = os.path.dirname(os.path.abspath(__file__))

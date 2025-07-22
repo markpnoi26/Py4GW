@@ -1,5 +1,8 @@
+from typing import Generator
+from typing import List
+from typing import Tuple
+
 from Py4GWCoreLib import *
-from typing import Generator, List, Tuple
 
 MODULE_NAME = "Boreal Bot 3.0 YIELD"
 

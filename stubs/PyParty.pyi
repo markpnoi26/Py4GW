@@ -1,6 +1,9 @@
 # PyParty.pyi - Auto-generated .pyi file for PyParty module
 
-from typing import List, Any, overload
+from typing import Any
+from typing import List
+from typing import overload
+
 from .PyAgent import Profession
 
 # Enum HeroType

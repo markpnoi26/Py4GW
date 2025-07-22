@@ -1,11 +1,16 @@
 import PyInventory
-from Py4GWCoreLib.Py4GWcorelib import ActionQueueManager
-from Py4GWCoreLib import ConsoleLog
-from Py4GWCoreLib.UIManager import UIManager
+
 from Py4GWCoreLib import Bags
+from Py4GWCoreLib import ConsoleLog
+from Py4GWCoreLib import Item
 from Py4GWCoreLib import ModelID
-from Py4GWCoreLib import Item 
-from .ItemCache import RawItemCache, Bag_enum, ItemCache
+from Py4GWCoreLib.Py4GWcorelib import ActionQueueManager
+from Py4GWCoreLib.UIManager import UIManager
+
+from .ItemCache import Bag_enum
+from .ItemCache import ItemCache
+from .ItemCache import RawItemCache
+
 
 class InventoryCache:
     def __init__(self, action_queue_manager, raw_item_cache, item_cache):

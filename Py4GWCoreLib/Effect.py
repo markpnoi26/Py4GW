@@ -3,6 +3,7 @@ import PyEffects
 
 from .Player import Player
 
+
 class Effects:
     @staticmethod
     def get_instance(agent_id):

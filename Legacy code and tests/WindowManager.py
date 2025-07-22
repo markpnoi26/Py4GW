@@ -1,5 +1,6 @@
-from Py4GWCoreLib import *
 from typing import Callable
+
+from Py4GWCoreLib import *
 
 
 class BaseElement:

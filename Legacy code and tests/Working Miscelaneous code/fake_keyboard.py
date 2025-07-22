@@ -1,9 +1,8 @@
 
-from Py4GWCoreLib import *
-
 import ctypes
 from ctypes import wintypes
 
+from Py4GWCoreLib import *
 
 # Constants and Structures
 ULONG_PTR = ctypes.c_uint32

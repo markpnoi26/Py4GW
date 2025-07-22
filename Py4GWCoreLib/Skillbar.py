@@ -1,6 +1,7 @@
 import PySkill
 import PySkillbar
 
+
 class SkillBar:
     @staticmethod
     def LoadSkillTemplate(skill_template):

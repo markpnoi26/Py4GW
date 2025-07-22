@@ -4,10 +4,17 @@ Example usage of the EventBus system.
 This file demonstrates how to use the event bus for communication between classes.
 """
 
-from typing import Any, Tuple
 import time
-from .EventBus import EventMessage, subscribe, publish, unsubscribe, get_subscriber_count, DEBUG
+from typing import Any
+from typing import Tuple
+
 from .event_type_constant import EventType
+from .EventBus import DEBUG
+from .EventBus import EventMessage
+from .EventBus import get_subscriber_count
+from .EventBus import publish
+from .EventBus import subscribe
+from .EventBus import unsubscribe
 
 
 class CombatSystem:

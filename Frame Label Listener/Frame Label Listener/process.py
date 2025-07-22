@@ -20,20 +20,16 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ctypes import (
-    Structure,
-    POINTER,
-    sizeof,
-    byref,
-)
-
-from contextlib import suppress
-
-import sys
 import ctypes
-import struct
 import functools
+import struct
+import sys
 import traceback
+from contextlib import suppress
+from ctypes import POINTER
+from ctypes import Structure
+from ctypes import byref
+from ctypes import sizeof
 
 BOOL        = ctypes.c_long
 BYTE        = ctypes.c_byte

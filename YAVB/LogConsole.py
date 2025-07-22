@@ -1,9 +1,10 @@
+from datetime import datetime
 from enum import IntEnum
+from typing import Optional
+
 from Py4GWCoreLib import Color
 from Py4GWCoreLib import ImGui
 from Py4GWCoreLib import PyImGui
-from datetime import datetime
-from typing import Optional
 
 
 #region Logconsole  

@@ -1,8 +1,7 @@
-from Py4GWCoreLib import ThrottledTimer
-from Py4GWCoreLib import Routines
 from Py4GWCoreLib import GLOBAL_CACHE
+from Py4GWCoreLib import Routines
+from Py4GWCoreLib import ThrottledTimer
 from Py4GWCoreLib import TitleID
-
 
 module_name = "Set title on map load"
 

@@ -1,8 +1,12 @@
 from unittest import result
-import Py4GW
+
 import PyAgent
 import PyPlayer
+
+import Py4GW
+
 from .model_data import ModelData
+
 
 class ItemOwnerCache:
     _instance = None
@@ -167,6 +171,7 @@ class Agent:
         Returns: list
         """
         import re
+
         from .Skill import Skill
         def format_skill_name(skill_name):
             """

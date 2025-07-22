@@ -1,7 +1,9 @@
 # PySkill.pyi - Auto-generated .pyi file for PySkill module
 
 from typing import List
+
 from PySkill import SkillID
+
 # PySkillbar.pyi - Auto-generated .pyi file for PySkillbar module
 
 # Class SkillbarSkill

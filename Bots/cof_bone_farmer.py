@@ -1,7 +1,9 @@
 # region imports
-from Py4GWCoreLib import *
-from random import randint
 from datetime import datetime
+from random import randint
+
+from Py4GWCoreLib import *
+
 # endregion
 
 # region classes

@@ -1,10 +1,13 @@
-from Py4GWCoreLib import GLOBAL_CACHE, Utils, AgentArray, Routines
-from .constants import (
-    Range,
-    BLOOD_IS_POWER,
-    BLOOD_RITUAL,
-    MAX_NUM_PLAYERS,
-)
+from Py4GWCoreLib import GLOBAL_CACHE
+from Py4GWCoreLib import AgentArray
+from Py4GWCoreLib import Routines
+from Py4GWCoreLib import Utils
+
+from .constants import BLOOD_IS_POWER
+from .constants import BLOOD_RITUAL
+from .constants import MAX_NUM_PLAYERS
+from .constants import Range
+
 
 def GetAllAlliesArray(distance=Range.SafeCompass.value):
     ally_array = GLOBAL_CACHE.AgentArray.GetAllyArray()
@@ -49,7 +52,7 @@ def TargetLowestAlly(other_ally=False,filter_skill_id=0):
 
 def TargetLowestAllyEnergy(other_ally=False, filter_skill_id=0):
     global BLOOD_IS_POWER, BLOOD_RITUAL
-    from .utils import (CheckForEffect)
+    from .utils import CheckForEffect
     def GetEnergyValues(agent_id):
         import HeroAI.shared_memory_manager as shared_memory_manager
         shared_memory_handler = shared_memory_manager.SharedMemoryManager()

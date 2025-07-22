@@ -6,6 +6,7 @@ import traceback
 
 import Py4GW
 from HeroAI.cache_data import CacheData
+from py4gw_widget_manager import get_widget_handler
 from Py4GWCoreLib import GLOBAL_CACHE
 from Py4GWCoreLib import CombatPrepSkillsType
 from Py4GWCoreLib import IconsFontAwesome5
@@ -69,6 +70,8 @@ FLAG_POSITION_Y = "FlagPosY"
 FOLOW_ANGLE = "FollowAngle"
 
 cached_data = CacheData()
+widget_handler = get_widget_handler()
+
 
 # ——— Window Persistence Setup ———
 ini_window = IniHandler(INI_WIDGET_WINDOW_PATH)
@@ -662,8 +665,17 @@ class CombatPrep:
         end_pos = PyImGui.get_window_pos()
 
         if is_window_opened:
-            if not GLOBAL_CACHE.Map.IsExplorable() or not self.is_party_leader:
-                PyImGui.text("Need to be party Leader and in Explorable Area")
+            is_hero_ai_enabled = widget_handler.is_widget_enabled("HeroAI")
+            if not GLOBAL_CACHE.Map.IsExplorable() or not self.is_party_leader or not is_hero_ai_enabled:
+                header_text = "The following prevents you from using CombatPrep:"
+                final_text = header_text
+                if not GLOBAL_CACHE.Map.IsExplorable():
+                    final_text += "\n  - Not in Explorable Area"
+                if not self.is_party_leader:
+                    final_text += "\n  - Not Currently Party Leader"
+                if not is_hero_ai_enabled:
+                    final_text += "\n  - HeroAI is not running "
+                PyImGui.text(final_text)
                 return
 
             # capture current state
@@ -744,3 +756,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+__all__ = ["main", "configure"]

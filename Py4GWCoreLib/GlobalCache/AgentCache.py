@@ -1,6 +1,9 @@
-import PyAgent
-from Py4GWCoreLib.AgentArray import RawAgentArray
 import time
+
+import PyAgent
+
+from Py4GWCoreLib.AgentArray import RawAgentArray
+
 
 class AgentCache:
     def __init__(self, raw_agent_array):

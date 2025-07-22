@@ -1,6 +1,12 @@
-from typing import List, Any, Generator, Callable, override
+from typing import Any
+from typing import Callable
+from typing import Generator
+from typing import List
+from typing import override
 
-from Py4GWCoreLib import GLOBAL_CACHE, Routines, Range
+from Py4GWCoreLib import GLOBAL_CACHE
+from Py4GWCoreLib import Range
+from Py4GWCoreLib import Routines
 from Widgets.CustomBehaviors.primitives.behavior_state import BehaviorState
 from Widgets.CustomBehaviors.primitives.helpers import custom_behavior_helpers
 from Widgets.CustomBehaviors.primitives.helpers.behavior_result import BehaviorResult
