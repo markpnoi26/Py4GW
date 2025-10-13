@@ -5,7 +5,9 @@ from Py4GWCoreLib.enums import Bags
 
 INVENTORY_FILE = "inventory.json"
 recorded_data = OrderedDict()
+inventory_poller_timer = ThrottledTimer(1000)
 search_query = ''
+current_character_name = ''
 
 
 def save_data():
@@ -23,7 +25,8 @@ def load_data():
         return OrderedDict()
 
 
-def get_user_name():
+def get_character_name():
+    global current_character_name
     agent_id = GLOBAL_CACHE.Player.GetAgentID()
     GLOBAL_CACHE.Agent.RequestName(agent_id)
 
@@ -33,13 +36,8 @@ def get_user_name():
     elapsed = 0.0
 
     while elapsed < timeout:
-        all_ready = True
-        if not GLOBAL_CACHE.Agent.IsNameReady(agent_id):
-            all_ready = False
-            break  # no need to check further
-
-        if all_ready:
-            break  # exit early, all names ready
+        if GLOBAL_CACHE.Agent.IsNameReady(agent_id):
+            break
 
         yield from Routines.Yield.wait(int(poll_interval) * 1000)
         elapsed += poll_interval
@@ -48,12 +46,10 @@ def get_user_name():
     # Populate agent_names dictionary
     if GLOBAL_CACHE.Agent.IsNameReady(agent_id):
         name = GLOBAL_CACHE.Agent.GetName(agent_id)
-
-    return name
+    current_character_name = name
 
 
 def get_items_from_bag(bag):
-    """Return dict of {item_name: {model_id, count}} for a single bag."""
     items = OrderedDict()
     for item in bag.GetItems():
         if not item or item.model_id == 0:
@@ -79,20 +75,13 @@ def get_items_from_bag(bag):
 
 
 def record_data(Anniversary_panel=True):
-    """Record current account’s inventory (by character) + shared storage."""
     global recorded_data
+    global current_character_name
 
     current_email = GLOBAL_CACHE.Player.GetAccountEmail()
-    character_name = ''
+    GLOBAL_CACHE.Coroutines.append(get_character_name())
 
-    try:
-        while True:
-            next(get_user_name())  # advance the generator
-    except StopIteration as e:
-        character_name = e.value  # this is the return value
-
-    if not current_email or not character_name:
-        ConsoleLog("Inventory Recorder", "!! Could not retrieve account email/name.")
+    if not current_email or not current_character_name:
         return
 
     if not recorded_data:
@@ -119,7 +108,7 @@ def record_data(Anniversary_panel=True):
         bag = raw_item_cache.get_bags([bag_id])[0]
         char_inventory[bag_name] = get_items_from_bag(bag)
 
-    account_section["Characters"][character_name] = {"Inventory": char_inventory}
+    account_section["Characters"][current_character_name] = {"Inventory": char_inventory}
 
     # === STORAGE ===
     storage_bags = {
@@ -149,14 +138,6 @@ def record_data(Anniversary_panel=True):
     account_section["Storage"] = storage_section
 
     save_data()
-
-    inv_count = sum(len(items) for bag in char_inventory.values() for items in [bag])
-    stg_count = sum(len(items) for items in storage_section.values())
-
-    ConsoleLog(
-        "Inventory Recorder",
-        f"Recorded {inv_count} inventory items and {stg_count} storage items for {character_name} ({current_email})."
-    )
 
 
 # Fuzzy Search
@@ -231,8 +212,9 @@ def main():
         PyImGui.text("Inventory + Storage Recorder by Email / Character")
         PyImGui.separator()
 
-        if PyImGui.button("SCAN & RECORD"):
+        if inventory_poller_timer.IsExpired():
             record_data()
+            inventory_poller_timer.Reset()
 
         if PyImGui.button("CLEAR CURRENT ACCOUNT"):
             current_email = GLOBAL_CACHE.Player.GetAccountEmail()
