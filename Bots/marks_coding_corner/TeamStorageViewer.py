@@ -1,7 +1,10 @@
 import json
+import re
 from collections import OrderedDict
 from Py4GWCoreLib import *
 from Py4GWCoreLib.enums import Bags
+from Py4GWCoreLib import get_texture_for_model
+
 
 INVENTORY_FILE = "inventory.json"
 recorded_data = OrderedDict()
@@ -99,7 +102,7 @@ def record_data(Anniversary_panel=True):
         "Backpack": Bags.Backpack.value,
         "BeltPouch": Bags.BeltPouch.value,
         "Bag1": Bags.Bag1.value,
-        "Bag2": Bags.Bag2.value
+        "Bag2": Bags.Bag2.value,
     }
 
     # Create or overwrite this character’s inventory
@@ -160,9 +163,7 @@ def levenshtein_ratio(s1: str, s2: str) -> float:
         for j in range(1, len2 + 1):
             cost = 0 if s1[i - 1] == s2[j - 1] else 1
             dp[i][j] = min(
-                dp[i - 1][j] + 1,      # deletion
-                dp[i][j - 1] + 1,      # insertion
-                dp[i - 1][j - 1] + cost  # substitution
+                dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost  # deletion  # insertion  # substitution
             )
 
     distance = dp[len1][len2]
@@ -193,8 +194,7 @@ def combined_search(query: str, items: list[str], fuzzy_threshold: float = 0.55)
 
     # --- Fuzzy match fallback ---
     fuzzy_matches = [
-        item for item in items
-        if item not in partial_matches and levenshtein_ratio(query, item) >= fuzzy_threshold
+        item for item in items if item not in partial_matches and levenshtein_ratio(query, item) >= fuzzy_threshold
     ]
 
     # Combine and sort alphabetically
@@ -235,6 +235,120 @@ def main():
         # === TABS BY ACCOUNT ===
         if recorded_data:
             if PyImGui.begin_tab_bar("AccountTabs"):
+                # === GLOBAL SEARCH TAB ===
+                if PyImGui.begin_tab_item("Search View"):
+                    PyImGui.text("Search for items across all accounts")
+                    PyImGui.separator()
+
+                    search_query = PyImGui.input_text("##GlobalSearchBar", search_query, 128)
+                    PyImGui.separator()
+
+                    if search_query:
+                        # === Gather all matching results across accounts ===
+                        search_results = []
+                        for email, account_data in recorded_data.items():
+                            # Build a neat identifier like: email — [Char1, Char2]
+                            character_names = list(account_data.get("Characters", {}).keys())
+                            if character_names:
+                                # Limit to 3 characters for readability
+                                display_chars = character_names[:3]
+                                if len(character_names) > 3:
+                                    display_chars.append("...")
+
+                                # Join each character name on its own new line, indented
+                                character_block = "\n".join(f"   - {name}" for name in display_chars)
+                                account_label = f"{email}\n{character_block}"
+                            else:
+                                account_label = f"[{email}]\n   [No Characters]"
+
+                            # --- Characters ---
+                            if "Characters" in account_data:
+                                for char_name, char_info in account_data["Characters"].items():
+                                    inv_data = char_info.get("Inventory", {})
+                                    for bag_name, items in inv_data.items():
+                                        for item_name, info in items.items():
+                                            if search_query.lower() in item_name.lower():
+                                                search_results.append(
+                                                    {
+                                                        "account_label": account_label,
+                                                        "email": email,
+                                                        "character": char_name,
+                                                        "bag": bag_name,
+                                                        "item_name": item_name,
+                                                        "model_id": info["model_id"],
+                                                        "count": info["count"],
+                                                        "location_type": "Character",
+                                                    }
+                                                )
+
+                            # --- Storage ---
+                            if "Storage" in account_data:
+                                for storage_name, items in account_data["Storage"].items():
+                                    for item_name, info in items.items():
+                                        if search_query.lower() in item_name.lower():
+                                            search_results.append(
+                                                {
+                                                    "account_label": account_label,
+                                                    "email": email,
+                                                    "character": None,
+                                                    "bag": storage_name,
+                                                    "item_name": item_name,
+                                                    "model_id": info["model_id"],
+                                                    "count": info["count"],
+                                                    "location_type": "Storage",
+                                                }
+                                            )
+
+                        # === Display results ===
+                        if search_results:
+                            if PyImGui.begin_table(
+                                "SearchResultsTable",
+                                5,
+                                PyImGui.TableFlags.Borders | PyImGui.TableFlags.RowBg | PyImGui.TableFlags.ScrollY,
+                            ):
+                                PyImGui.table_setup_column("Icon", 0, 30.0)
+                                PyImGui.table_setup_column("Item Name", 0, 150.0)
+                                PyImGui.table_setup_column("Count", 0, 50.0)
+                                PyImGui.table_setup_column("Location", 0, 180.0)
+                                PyImGui.table_setup_column("Account (Characters)", 0, 300.0)
+                                PyImGui.table_headers_row()
+
+                                for entry in search_results:
+                                    texture = get_texture_for_model(entry["model_id"])
+                                    PyImGui.table_next_row()
+
+                                    # === ICON ===
+                                    PyImGui.table_next_column()
+                                    if texture:
+                                        ImGui.DrawTexture(texture, 20, 20)
+                                    else:
+                                        PyImGui.text("N/A")
+
+                                    # === ITEM NAME ===
+                                    PyImGui.table_next_column()
+                                    PyImGui.text(re.sub(r'^\d+\s*', '', entry["item_name"]))
+
+                                    # === COUNT ===
+                                    PyImGui.table_next_column()
+                                    PyImGui.text(str(entry["count"]))
+
+                                    # === LOCATION ===
+                                    PyImGui.table_next_column()
+                                    if entry["location_type"] == "Character":
+                                        PyImGui.text(f"{entry['character']} - {entry['bag']}")
+                                    else:
+                                        PyImGui.text(f"Storage - {entry['bag']}")
+
+                                    # === ACCOUNT IDENTIFIER ===
+                                    PyImGui.table_next_column()
+                                    PyImGui.text(entry["account_label"])
+
+                                PyImGui.end_table()
+                        else:
+                            PyImGui.text("No matching items found.")
+                    else:
+                        PyImGui.text("Type above to search across all accounts.")
+                    PyImGui.end_tab_item()
                 for email, account_data in recorded_data.items():
                     if PyImGui.begin_tab_item(email):
                         PyImGui.text(f"Account: {email}")
@@ -255,6 +369,7 @@ def main():
                                     for bag_name, items in inv_data.items():
                                         if not items:
                                             continue
+
                                         # Filter visible items
                                         item_names = list(items.keys())
                                         filtered_items = item_names
@@ -264,18 +379,34 @@ def main():
                                             continue
 
                                         PyImGui.text(bag_name)
-                                        if PyImGui.begin_table(f"InvTable_{email}_{char_name}_{bag_name}", 3, PyImGui.TableFlags.Borders | PyImGui.TableFlags.RowBg):
-                                            PyImGui.table_setup_column("Model ID")
+                                        if PyImGui.begin_table(
+                                            f"InvTable_{email}_{char_name}_{bag_name}",
+                                            3,
+                                            PyImGui.TableFlags.Borders | PyImGui.TableFlags.RowBg,
+                                        ):
+                                            PyImGui.table_setup_column("Icon")
                                             PyImGui.table_setup_column("Item Name")
                                             PyImGui.table_setup_column("Count")
                                             PyImGui.table_headers_row()
+
                                             for item_name in filtered_items:
                                                 info = items[item_name]
+                                                texture = get_texture_for_model(info["model_id"])
+
                                                 PyImGui.table_next_row()
+
+                                                # === ICON COLUMN ===
                                                 PyImGui.table_next_column()
-                                                PyImGui.text(str(info["model_id"]))
+                                                if texture:
+                                                    ImGui.DrawTexture(texture, 20, 20)
+                                                else:
+                                                    PyImGui.text("N/A")
+
+                                                # === ITEM NAME COLUMN ===
                                                 PyImGui.table_next_column()
-                                                PyImGui.text(item_name)
+                                                PyImGui.text(re.sub(r'^\d+\s*', '', item_name))
+
+                                                # === COUNT COLUMN ===
                                                 PyImGui.table_next_column()
                                                 PyImGui.text(str(info["count"]))
                                             PyImGui.end_table()
@@ -287,6 +418,7 @@ def main():
                                 for storage_name, items in account_data["Storage"].items():
                                     if not items:
                                         continue
+
                                     item_names = list(items.keys())
                                     filtered_items = item_names
                                     if search_query:
@@ -295,18 +427,34 @@ def main():
                                         continue
 
                                     PyImGui.text(storage_name)
-                                    if PyImGui.begin_table(f"StorageTable_{email}_{storage_name}", 3, PyImGui.TableFlags.Borders | PyImGui.TableFlags.RowBg):
-                                        PyImGui.table_setup_column("Model ID")
+                                    if PyImGui.begin_table(
+                                        f"StorageTable_{email}_{storage_name}",
+                                        3,
+                                        PyImGui.TableFlags.Borders | PyImGui.TableFlags.RowBg,
+                                    ):
+                                        PyImGui.table_setup_column("Icon")
                                         PyImGui.table_setup_column("Item Name")
                                         PyImGui.table_setup_column("Count")
                                         PyImGui.table_headers_row()
+
                                         for item_name in filtered_items:
                                             info = items[item_name]
+                                            texture = get_texture_for_model(info["model_id"])
+
                                             PyImGui.table_next_row()
+
+                                            # === ICON COLUMN ===
                                             PyImGui.table_next_column()
-                                            PyImGui.text(str(info["model_id"]))
+                                            if texture:
+                                                ImGui.DrawTexture(texture, 20, 20)
+                                            else:
+                                                PyImGui.text("N/A")
+
+                                            # === ITEM NAME COLUMN ===
                                             PyImGui.table_next_column()
-                                            PyImGui.text(item_name)
+                                            PyImGui.text(re.sub(r'^\d+\s*', '', item_name))
+
+                                            # === COUNT COLUMN ===
                                             PyImGui.table_next_column()
                                             PyImGui.text(str(info["count"]))
                                         PyImGui.end_table()
