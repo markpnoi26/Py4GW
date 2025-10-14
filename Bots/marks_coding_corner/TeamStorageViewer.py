@@ -1,31 +1,195 @@
-import json
 import re
 from collections import OrderedDict
 from Py4GWCoreLib import *
 from Py4GWCoreLib.enums import Bags
 from Py4GWCoreLib import get_texture_for_model
+import sqlite3
+from contextlib import closing
 
-
-INVENTORY_FILE = "inventory.json"
+DB_PATH = "inventory.db"
 recorded_data = OrderedDict()
 inventory_poller_timer = ThrottledTimer(1000)
+db_initialized = False
 search_query = ''
 current_character_name = ''
 
 
-def save_data():
-    """Save all recorded inventory data to file."""
-    with open(INVENTORY_FILE, "w") as f:
-        json.dump(recorded_data, f, indent=4)
+def init_db():
+    with closing(sqlite3.connect(DB_PATH)) as conn:
+        c = conn.cursor()
+
+        # === Accounts ===
+        c.execute("""
+        CREATE TABLE IF NOT EXISTS accounts (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            email TEXT UNIQUE
+        )
+        """)
+
+        # === Characters ===
+        c.execute("""
+        CREATE TABLE IF NOT EXISTS characters (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            account_id INTEGER,
+            name TEXT,
+            UNIQUE(account_id, name),
+            FOREIGN KEY (account_id) REFERENCES accounts(id)
+        )
+        """)
+
+        # === Items (for both inventory + storage) ===
+        c.execute("""
+        CREATE TABLE IF NOT EXISTS items (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            account_id INTEGER,
+            character_id INTEGER,
+            storage_name TEXT,
+            bag_name TEXT,
+            item_name TEXT,
+            model_id INTEGER,
+            count INTEGER,
+            FOREIGN KEY (account_id) REFERENCES accounts(id),
+            FOREIGN KEY (character_id) REFERENCES characters(id)
+        )
+        """)
+
+        conn.commit()
 
 
-def load_data():
-    """Load data from disk if available."""
-    try:
-        with open(INVENTORY_FILE, "r") as f:
-            return json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError):
-        return OrderedDict()
+def get_account_id(conn, email):
+    c = conn.cursor()
+    c.execute("INSERT OR IGNORE INTO accounts (email) VALUES (?)", (email,))
+    conn.commit()
+    c.execute("SELECT id FROM accounts WHERE email = ?", (email,))
+    return c.fetchone()[0]
+
+
+def get_character_id(conn, account_id, name):
+    c = conn.cursor()
+    c.execute("INSERT OR IGNORE INTO characters (account_id, name) VALUES (?, ?)", (account_id, name))
+    conn.commit()
+    c.execute("SELECT id FROM characters WHERE account_id = ? AND name = ?", (account_id, name))
+    result = c.fetchone()
+    if result:
+        return result[0]
+    return None
+
+
+def get_bag_id(conn, character_id=None, storage_name=None, bag_name=None):
+    c = conn.cursor()
+    c.execute("""
+        INSERT OR IGNORE INTO bags (character_id, storage_name, bag_name)
+        VALUES (?, ?, ?)
+    """, (character_id, storage_name, bag_name))
+    conn.commit()
+    c.execute("""
+        SELECT id FROM bags WHERE character_id IS ? AND storage_name IS ? AND bag_name IS ?
+    """, (character_id, storage_name, bag_name))
+    return c.fetchone()[0]
+
+
+def add_item(conn, bag_id, item_name, model_id, count):
+    c = conn.cursor()
+    c.execute("""
+        INSERT INTO items (bag_id, item_name, model_id, count)
+        VALUES (?, ?, ?, ?)
+    """, (bag_id, item_name, model_id, count))
+    conn.commit()
+
+
+def record_data_to_db(account_email, char_name, char_inventory, storage_section):
+    """Overwrite the database with the current state for this account."""
+    with closing(sqlite3.connect(DB_PATH)) as conn:
+        account_id = get_account_id(conn, account_email)
+        character_id = get_character_id(conn, account_id, char_name)
+
+        c = conn.cursor()
+
+        # Clear all old data for this account (fresh snapshot)
+        c.execute("DELETE FROM items WHERE account_id = ?", (account_id,))
+
+        # --- Character inventory ---
+        for bag_name, items in char_inventory.items():
+            for item_name, info in items.items():
+                c.execute("""
+                    INSERT INTO items (account_id, character_id, bag_name, item_name, model_id, count)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                """, (
+                    account_id,
+                    character_id,
+                    bag_name,
+                    item_name,
+                    info.get("model_id", 0),
+                    info.get("count", 1)
+                ))
+
+        # --- Shared storage ---
+        for storage_name, items in storage_section.items():
+            for item_name, info in items.items():
+                c.execute("""
+                    INSERT INTO items (account_id, character_id, storage_name, item_name, model_id, count)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                """, (
+                    account_id,
+                    None,
+                    storage_name,
+                    item_name,
+                    info.get("model_id", 0),
+                    info.get("count", 1)
+                ))
+
+        conn.commit()
+
+
+def load_from_db():
+    """Load all accounts, characters, and items into the in-memory format used by the UI."""
+    with closing(sqlite3.connect(DB_PATH)) as conn:
+        c = conn.cursor()
+
+        recorded_data = OrderedDict()
+
+        # === Get all accounts ===
+        c.execute("SELECT id, email FROM accounts")
+        accounts = c.fetchall()
+
+        for account_id, email in accounts:
+            recorded_data[email] = {
+                "Characters": OrderedDict(),
+                "Storage": OrderedDict()
+            }
+
+            # === Characters ===
+            c.execute("SELECT id, name FROM characters WHERE account_id = ?", (account_id,))
+            characters = c.fetchall()
+
+            for char_id, char_name in characters:
+                recorded_data[email]["Characters"][char_name] = {"Inventory": OrderedDict()}
+
+                # === Inventory items ===
+                c.execute("""
+                    SELECT bag_name, item_name, model_id, count
+                    FROM items
+                    WHERE account_id = ? AND character_id = ? AND bag_name IS NOT NULL
+                """, (account_id, char_id))
+                for bag_name, item_name, model_id, count in c.fetchall():
+                    inv = recorded_data[email]["Characters"][char_name]["Inventory"]
+                    if bag_name not in inv:
+                        inv[bag_name] = OrderedDict()
+                    inv[bag_name][item_name] = {"model_id": model_id, "count": count}
+
+            # === Storage items ===
+            c.execute("""
+                SELECT storage_name, item_name, model_id, count
+                FROM items
+                WHERE account_id = ? AND storage_name IS NOT NULL
+            """, (account_id,))
+            for storage_name, item_name, model_id, count in c.fetchall():
+                storage = recorded_data[email]["Storage"]
+                if storage_name not in storage:
+                    storage[storage_name] = OrderedDict()
+                storage[storage_name][item_name] = {"model_id": model_id, "count": count}
+
+        return recorded_data
 
 
 def get_character_name():
@@ -88,7 +252,7 @@ def record_data(Anniversary_panel=True):
         return
 
     if not recorded_data:
-        recorded_data.update(load_data())
+        recorded_data.update(load_from_db())
 
     # Ensure structure: { email: { "Characters": {char: {...}}, "Storage": {...} } }
     if current_email not in recorded_data:
@@ -140,7 +304,7 @@ def record_data(Anniversary_panel=True):
 
     account_section["Storage"] = storage_section
 
-    save_data()
+    record_data_to_db(current_email, current_character_name, char_inventory, storage_section)
 
 
 # Fuzzy Search
@@ -203,32 +367,55 @@ def combined_search(query: str, items: list[str], fuzzy_threshold: float = 0.55)
 
 
 def main():
-    global recorded_data, search_query
+    global recorded_data
+    global search_query
+    global db_initialized
 
-    if not recorded_data:
-        recorded_data.update(load_data())
+    if not db_initialized:
+        init_db()
+        ConsoleLog("DB", "DB initialized")
+        db_initialized = True
 
+    # Always load from database — no JSON anymore
+    recorded_data = load_from_db()
+
+    PyImGui.set_next_window_size(1000, 800)
     if PyImGui.begin("Inventory Recorder (by Account)"):
-        PyImGui.text("Inventory + Storage Recorder by Email / Character")
+        PyImGui.text("Inventory + Storage Recorder by Email / Character (SQLite Edition)")
         PyImGui.separator()
 
+        # === AUTO-POLL (Refresh inventory snapshot) ===
         if inventory_poller_timer.IsExpired():
             record_data()
+            # Reload memory view
+            recorded_data = load_from_db()
+
+            json.dumps(recorded_data)
             inventory_poller_timer.Reset()
 
+        # === CLEAR CURRENT ACCOUNT ===
         if PyImGui.button("CLEAR CURRENT ACCOUNT"):
             current_email = GLOBAL_CACHE.Player.GetAccountEmail()
-            if current_email in recorded_data:
-                recorded_data.pop(current_email)
-                save_data()
+            if current_email:
+                with closing(sqlite3.connect(DB_PATH)) as conn:
+                    c = conn.cursor()
+                    c.execute("DELETE FROM items WHERE account_id = (SELECT id FROM accounts WHERE email = ?)", (current_email,))
+                    conn.commit()
                 ConsoleLog("Inventory Recorder", f"Cleared recorded data for {current_email}.")
+                recorded_data = load_from_db()
             else:
                 ConsoleLog("Inventory Recorder", "No data found for this account.")
 
+        # === CLEAR ALL ACCOUNTS ===
         if PyImGui.button("CLEAR ALL ACCOUNTS"):
-            recorded_data.clear()
-            save_data()
+            with closing(sqlite3.connect(DB_PATH)) as conn:
+                c = conn.cursor()
+                c.execute("DELETE FROM items")
+                c.execute("DELETE FROM characters")
+                c.execute("DELETE FROM accounts")
+                conn.commit()
             ConsoleLog("Inventory Recorder", "Cleared ALL recorded data.")
+            recorded_data = load_from_db()
 
         PyImGui.separator()
 
