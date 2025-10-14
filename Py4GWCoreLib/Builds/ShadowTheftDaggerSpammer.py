@@ -1,19 +1,16 @@
 from Py4GWCoreLib import GLOBAL_CACHE
-from Py4GWCoreLib import Routines
-from Py4GWCoreLib import BuildMgr
-from Py4GWCoreLib.Builds import AutoCombat
-
 from Py4GWCoreLib import ActionQueueManager
-from Py4GWCoreLib import Keystroke
-from Py4GWCoreLib import Key
-
-from Py4GWCoreLib import Range
-from Py4GWCoreLib import ThrottledTimer
-from Py4GWCoreLib import Profession
 from Py4GWCoreLib import Agent
+from Py4GWCoreLib import BuildMgr
+from Py4GWCoreLib import Key
+from Py4GWCoreLib import Keystroke
 from Py4GWCoreLib import Player
+from Py4GWCoreLib import Profession
+from Py4GWCoreLib import Range
+from Py4GWCoreLib import Routines
+from Py4GWCoreLib import ThrottledTimer
 from Py4GWCoreLib import Weapon
-
+from Py4GWCoreLib.Builds import AutoCombat
 
 DUNGEON_MODEL_IDS = {
     6493: "Stone Summit Dominator",  # 6
@@ -287,7 +284,7 @@ class AssassinShadowTheftDaggerSpammer(BuildMgr):
                     ):
                         asura_scan_slot = GLOBAL_CACHE.SkillBar.GetSlotBySkillID(self.asuran_scan)
                         yield from Routines.Yield.Keybinds.UseSkill(asura_scan_slot)
-                        yield from Routines.Yield.wait(250)
+                        yield from Routines.Yield.wait(200)
 
                         # Reset throttle after casting
                         self.asuran_scan_throttle.Reset()

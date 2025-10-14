@@ -1,13 +1,19 @@
 import re
-from collections import OrderedDict
-from Py4GWCoreLib import *
-from Py4GWCoreLib.enums import Bags
-from Py4GWCoreLib import get_texture_for_model
 import sqlite3
+from collections import OrderedDict
 from contextlib import closing
 
+from Py4GWCoreLib import GLOBAL_CACHE
+from Py4GWCoreLib import ConsoleLog
+from Py4GWCoreLib import ImGui
+from Py4GWCoreLib import PyImGui
+from Py4GWCoreLib import Routines
+from Py4GWCoreLib import ThrottledTimer
+from Py4GWCoreLib import get_texture_for_model
+from Py4GWCoreLib.enums import Bags
+from Py4GWCoreLib.enums import ModelID
+
 DB_PATH = "inventory.db"
-recorded_data = OrderedDict()
 inventory_poller_timer = ThrottledTimer(1000)
 db_initialized = False
 search_query = ''
@@ -97,47 +103,43 @@ def add_item(conn, bag_id, item_name, model_id, count):
     conn.commit()
 
 
-def record_data_to_db(account_email, char_name, char_inventory, storage_section):
-    """Overwrite the database with the current state for this account."""
-    with closing(sqlite3.connect(DB_PATH)) as conn:
-        account_id = get_account_id(conn, account_email)
-        character_id = get_character_id(conn, account_id, char_name)
+def save_bag_to_db(email, char_name=None, storage_name=None, bag_name=None, bag_items=None):
+    """Insert or update items directly in the DB for this bag."""
+    if not bag_items:
+        return
 
+    with closing(sqlite3.connect(DB_PATH)) as conn:
+        account_id = get_account_id(conn, email)
+        character_id = get_character_id(conn, account_id, char_name) if char_name else None
         c = conn.cursor()
 
-        # Clear all old data for this account (fresh snapshot)
-        c.execute("DELETE FROM items WHERE account_id = ?", (account_id,))
+        # Delete old items for this bag first
+        if char_name:
+            c.execute("""
+                DELETE FROM items
+                WHERE account_id=? AND character_id=? AND bag_name=?
+            """, (account_id, character_id, bag_name))
+        else:
+            c.execute("""
+                DELETE FROM items
+                WHERE account_id=? AND storage_name=? 
+            """, (account_id, storage_name))
 
-        # --- Character inventory ---
-        for bag_name, items in char_inventory.items():
-            for item_name, info in items.items():
-                c.execute("""
-                    INSERT INTO items (account_id, character_id, bag_name, item_name, model_id, count)
-                    VALUES (?, ?, ?, ?, ?, ?)
-                """, (
-                    account_id,
-                    character_id,
-                    bag_name,
-                    item_name,
-                    info.get("model_id", 0),
-                    info.get("count", 1)
-                ))
-
-        # --- Shared storage ---
-        for storage_name, items in storage_section.items():
-            for item_name, info in items.items():
-                c.execute("""
-                    INSERT INTO items (account_id, character_id, storage_name, item_name, model_id, count)
-                    VALUES (?, ?, ?, ?, ?, ?)
-                """, (
-                    account_id,
-                    None,
-                    storage_name,
-                    item_name,
-                    info.get("model_id", 0),
-                    info.get("count", 1)
-                ))
-
+        # Insert new items
+        for item_name, info in bag_items.items():
+            c.execute("""
+                INSERT INTO items
+                (account_id, character_id, bag_name, storage_name, item_name, model_id, count)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            """, (
+                account_id,
+                character_id,
+                bag_name if char_name else None,
+                storage_name if not char_name else None,
+                item_name,
+                info.get("model_id", 0),
+                info.get("count", 1)
+            ))
         conn.commit()
 
 
@@ -216,33 +218,72 @@ def get_character_name():
     current_character_name = name
 
 
-def get_items_from_bag(bag):
-    items = OrderedDict()
+def get_character_bag_items_coroutine(bag, email, char_name, bag_name):
+    """Updates recorded_data[email]["Characters"][char_name]["Inventory"][bag_name]"""
+
+    if not email or not char_name:
+        return
+
+    bag_items = yield from _collect_bag_items(bag)
+    save_bag_to_db(email, char_name=char_name, bag_name=bag_name, bag_items=bag_items)
+
+
+def get_storage_bag_items_coroutine(bag, email, storage_name):
+    """Updates recorded_data[email]["Storage"][bag_name]"""
+
+    if not email:
+        return
+
+    bag_items = yield from _collect_bag_items(bag)
+    save_bag_to_db(email, storage_name=storage_name, bag_items=bag_items)
+
+
+def _collect_bag_items(bag):
+    """Shared coroutine to fetch all items from a bag."""
+    bag_items = OrderedDict()
+
     for item in bag.GetItems():
         if not item or item.model_id == 0:
             continue
 
-        if not item.IsItemNameReady():
-            item.RequestName()
-            continue
+        model_id = item.model_id
+        name = None
 
-        name = item.GetName()
+        # Try to get name from your IntEnum first
+        try:
+            name = ModelID(model_id).name  # Enum member name
+            name = name.replace("_", " ")
+        except ValueError:
+            name = None  # Not in enum
+
+        # Only request in-game name if enum doesn't have it
+        if not name:
+            if not GLOBAL_CACHE.Item.IsNameReady(item.item_id):
+                GLOBAL_CACHE.Item.RequestName(item.item_id)
+                timeout = 1.5
+                poll_interval = 0.05
+                elapsed = 0
+                while not GLOBAL_CACHE.Item.IsNameReady(item.item_id) and elapsed < timeout:
+                    yield from Routines.Yield.wait(int(poll_interval * 1000))
+                    elapsed += poll_interval
+
+            name = GLOBAL_CACHE.Item.GetName(item.item_id)
+
         if not name:
             continue
 
         model_id = item.model_id
         quantity = item.quantity
 
-        if name not in items:
-            items[name] = {"model_id": model_id, "count": quantity}
+        if name not in bag_items:
+            bag_items[name] = {"model_id": model_id, "count": quantity}
         else:
-            items[name]["count"] += quantity
+            bag_items[name]["count"] += quantity
 
-    return items
+    return bag_items
 
 
 def record_data(Anniversary_panel=True):
-    global recorded_data
     global current_character_name
 
     current_email = GLOBAL_CACHE.Player.GetAccountEmail()
@@ -251,14 +292,6 @@ def record_data(Anniversary_panel=True):
     if not current_email or not current_character_name:
         return
 
-    if not recorded_data:
-        recorded_data.update(load_from_db())
-
-    # Ensure structure: { email: { "Characters": {char: {...}}, "Storage": {...} } }
-    if current_email not in recorded_data:
-        recorded_data[current_email] = {"Characters": OrderedDict(), "Storage": OrderedDict()}
-
-    account_section = recorded_data[current_email]
     raw_item_cache = GLOBAL_CACHE.Inventory._raw_item_cache
 
     # === INVENTORY ===
@@ -269,13 +302,16 @@ def record_data(Anniversary_panel=True):
         "Bag2": Bags.Bag2.value,
     }
 
-    # Create or overwrite this character’s inventory
-    char_inventory = OrderedDict()
     for bag_name, bag_id in inventory_bags.items():
         bag = raw_item_cache.get_bags([bag_id])[0]
-        char_inventory[bag_name] = get_items_from_bag(bag)
-
-    account_section["Characters"][current_character_name] = {"Inventory": char_inventory}
+        GLOBAL_CACHE.Coroutines.append(
+            get_character_bag_items_coroutine(
+                bag,
+                current_email,
+                char_name=current_character_name,
+                bag_name=bag_name,
+            )
+        )
 
     # === STORAGE ===
     storage_bags = {
@@ -295,16 +331,17 @@ def record_data(Anniversary_panel=True):
         "Storage14": Bags.Storage14.value,
     }
 
-    storage_section = OrderedDict()
-    for bag_name, bag_id in storage_bags.items():
+    for storage_name, bag_id in storage_bags.items():
         if bag_id is None:
             continue
         bag = raw_item_cache.get_bags([bag_id])[0]
-        storage_section[bag_name] = get_items_from_bag(bag)
-
-    account_section["Storage"] = storage_section
-
-    record_data_to_db(current_email, current_character_name, char_inventory, storage_section)
+        GLOBAL_CACHE.Coroutines.append(
+            get_storage_bag_items_coroutine(
+                bag,
+                current_email,
+                storage_name=storage_name,
+            )
+        )
 
 
 # Fuzzy Search
@@ -366,8 +403,24 @@ def combined_search(query: str, items: list[str], fuzzy_threshold: float = 0.55)
     return combined
 
 
+def aggregate_items_by_model(items_dict):
+    """
+    Given a dict of items (item_name -> {"model_id", "count"}), return
+    a dict of model_id -> {"name": first_item_name, "count": total_count}.
+    """
+    agg = OrderedDict()
+    for name, info in items_dict.items():
+        model_id = info["model_id"]
+        count = info["count"]
+
+        if model_id not in agg:
+            agg[model_id] = {"name": name, "count": count}
+        else:
+            agg[model_id]["count"] += count
+    return agg
+
+
 def main():
-    global recorded_data
     global search_query
     global db_initialized
 
@@ -390,33 +443,7 @@ def main():
             # Reload memory view
             recorded_data = load_from_db()
 
-            json.dumps(recorded_data)
             inventory_poller_timer.Reset()
-
-        # === CLEAR CURRENT ACCOUNT ===
-        if PyImGui.button("CLEAR CURRENT ACCOUNT"):
-            current_email = GLOBAL_CACHE.Player.GetAccountEmail()
-            if current_email:
-                with closing(sqlite3.connect(DB_PATH)) as conn:
-                    c = conn.cursor()
-                    c.execute("DELETE FROM items WHERE account_id = (SELECT id FROM accounts WHERE email = ?)", (current_email,))
-                    conn.commit()
-                ConsoleLog("Inventory Recorder", f"Cleared recorded data for {current_email}.")
-                recorded_data = load_from_db()
-            else:
-                ConsoleLog("Inventory Recorder", "No data found for this account.")
-
-        # === CLEAR ALL ACCOUNTS ===
-        if PyImGui.button("CLEAR ALL ACCOUNTS"):
-            with closing(sqlite3.connect(DB_PATH)) as conn:
-                c = conn.cursor()
-                c.execute("DELETE FROM items")
-                c.execute("DELETE FROM characters")
-                c.execute("DELETE FROM accounts")
-                conn.commit()
-            ConsoleLog("Inventory Recorder", "Cleared ALL recorded data.")
-            recorded_data = load_from_db()
-
         PyImGui.separator()
 
         # === TABS BY ACCOUNT ===
@@ -488,15 +515,17 @@ def main():
 
                         # === Display results ===
                         if search_results:
+                            # Sort alphabetically ignoring leading numbers
+                            search_results.sort(key=lambda entry: re.sub(r'^\d+\s*', '', entry["item_name"]).lower())
                             if PyImGui.begin_table(
                                 "SearchResultsTable",
                                 5,
                                 PyImGui.TableFlags.Borders | PyImGui.TableFlags.RowBg | PyImGui.TableFlags.ScrollY,
                             ):
                                 PyImGui.table_setup_column("Icon", 0, 30.0)
-                                PyImGui.table_setup_column("Item Name", 0, 150.0)
+                                PyImGui.table_setup_column("Item Name", 0, 200.0)
                                 PyImGui.table_setup_column("Count", 0, 50.0)
-                                PyImGui.table_setup_column("Location", 0, 180.0)
+                                PyImGui.table_setup_column("Location", 0, 150.0)
                                 PyImGui.table_setup_column("Account (Characters)", 0, 300.0)
                                 PyImGui.table_headers_row()
 
@@ -571,9 +600,9 @@ def main():
                                             3,
                                             PyImGui.TableFlags.Borders | PyImGui.TableFlags.RowBg,
                                         ):
-                                            PyImGui.table_setup_column("Icon")
-                                            PyImGui.table_setup_column("Item Name")
-                                            PyImGui.table_setup_column("Count")
+                                            PyImGui.table_setup_column("Icon", 0, 30.0)
+                                            PyImGui.table_setup_column("Item Name", 0, 300.0)
+                                            PyImGui.table_setup_column("Count", 0, 25.0)
                                             PyImGui.table_headers_row()
 
                                             for item_name in filtered_items:
@@ -619,9 +648,9 @@ def main():
                                         3,
                                         PyImGui.TableFlags.Borders | PyImGui.TableFlags.RowBg,
                                     ):
-                                        PyImGui.table_setup_column("Icon")
-                                        PyImGui.table_setup_column("Item Name")
-                                        PyImGui.table_setup_column("Count")
+                                        PyImGui.table_setup_column("Icon", 0, 30.0)
+                                        PyImGui.table_setup_column("Item Name", 0, 300.0)
+                                        PyImGui.table_setup_column("Count", 0, 25.0)
                                         PyImGui.table_headers_row()
 
                                         for item_name in filtered_items:
@@ -652,6 +681,31 @@ def main():
                 PyImGui.end_tab_bar()
         else:
             PyImGui.text("No recorded accounts found yet.")
+
+        PyImGui.separator()
+        # === CLEAR CURRENT ACCOUNT ===
+        if PyImGui.button("CLEAR CURRENT ACCOUNT"):
+            current_email = GLOBAL_CACHE.Player.GetAccountEmail()
+            if current_email:
+                with closing(sqlite3.connect(DB_PATH)) as conn:
+                    c = conn.cursor()
+                    c.execute("DELETE FROM items WHERE account_id = (SELECT id FROM accounts WHERE email = ?)", (current_email,))
+                    conn.commit()
+                ConsoleLog("Inventory Recorder", f"Cleared recorded data for {current_email}.")
+                recorded_data = load_from_db()
+            else:
+                ConsoleLog("Inventory Recorder", "No data found for this account.")
+
+        # === CLEAR ALL ACCOUNTS ===
+        if PyImGui.button("CLEAR ALL ACCOUNTS"):
+            with closing(sqlite3.connect(DB_PATH)) as conn:
+                c = conn.cursor()
+                c.execute("DELETE FROM items")
+                c.execute("DELETE FROM characters")
+                c.execute("DELETE FROM accounts")
+                conn.commit()
+            ConsoleLog("Inventory Recorder", "Cleared ALL recorded data.")
+            recorded_data = load_from_db()
 
         PyImGui.end()
 
