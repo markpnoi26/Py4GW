@@ -18,6 +18,7 @@ DB_PATH = "inventory.db"
 inventory_poller_timer = ThrottledTimer(5000)
 db_initialized = False
 on_first_load = True
+all_accounts_search_query = ''
 search_query = ''
 current_character_name = ''
 recorded_data = OrderedDict()
@@ -422,6 +423,7 @@ def aggregate_items_by_model(items_dict):
 
 
 def main():
+    global all_accounts_search_query
     global search_query
     global db_initialized
     global on_first_load
@@ -462,10 +464,10 @@ def main():
                     PyImGui.text("Search for items across all accounts")
                     PyImGui.separator()
 
-                    search_query = PyImGui.input_text("##GlobalSearchBar", search_query, 128)
+                    all_accounts_search_query = PyImGui.input_text("##GlobalSearchBar", all_accounts_search_query, 128)
                     PyImGui.separator()
 
-                    if search_query:
+                    if all_accounts_search_query:
                         # === Gather all matching results across accounts ===
                         search_results = []
                         for email, account_data in recorded_data.items():
@@ -486,7 +488,7 @@ def main():
                                     inv_data = char_info.get("Inventory", {})
                                     for bag_name, items in inv_data.items():
                                         for item_name, info in items.items():
-                                            if search_query.lower() in item_name.lower():
+                                            if all_accounts_search_query.lower() in item_name.lower():
                                                 search_results.append(
                                                     {
                                                         "account_label": account_label,
@@ -504,7 +506,7 @@ def main():
                             if "Storage" in account_data:
                                 for storage_name, items in account_data["Storage"].items():
                                     for item_name, info in items.items():
-                                        if search_query.lower() in item_name.lower():
+                                        if all_accounts_search_query.lower() in item_name.lower():
                                             search_results.append(
                                                 {
                                                     "account_label": account_label,
