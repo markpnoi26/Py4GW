@@ -3,6 +3,7 @@ import sqlite3
 from collections import OrderedDict
 from contextlib import closing
 
+from Bots.marks_coding_corner.utils.loot_utils import set_autoloot_options_for_custom_bots
 from Py4GWCoreLib import GLOBAL_CACHE
 from Py4GWCoreLib import ConsoleLog
 from Py4GWCoreLib import ImGui
@@ -14,14 +15,16 @@ from Py4GWCoreLib.enums import Bags
 from Py4GWCoreLib.enums import ModelID
 
 DB_PATH = "inventory.db"
-inventory_poller_timer = ThrottledTimer(1000)
+inventory_poller_timer = ThrottledTimer(5000)
 db_initialized = False
+on_first_load = True
 search_query = ''
 current_character_name = ''
+recorded_data = OrderedDict()
 
 
 def init_db():
-    with closing(sqlite3.connect(DB_PATH)) as conn:
+    with closing(sqlite3.connect(DB_PATH, timeout=1.0)) as conn:
         c = conn.cursor()
 
         # === Accounts ===
@@ -81,66 +84,50 @@ def get_character_id(conn, account_id, name):
     return None
 
 
-def get_bag_id(conn, character_id=None, storage_name=None, bag_name=None):
-    c = conn.cursor()
-    c.execute("""
-        INSERT OR IGNORE INTO bags (character_id, storage_name, bag_name)
-        VALUES (?, ?, ?)
-    """, (character_id, storage_name, bag_name))
-    conn.commit()
-    c.execute("""
-        SELECT id FROM bags WHERE character_id IS ? AND storage_name IS ? AND bag_name IS ?
-    """, (character_id, storage_name, bag_name))
-    return c.fetchone()[0]
-
-
-def add_item(conn, bag_id, item_name, model_id, count):
-    c = conn.cursor()
-    c.execute("""
-        INSERT INTO items (bag_id, item_name, model_id, count)
-        VALUES (?, ?, ?, ?)
-    """, (bag_id, item_name, model_id, count))
-    conn.commit()
-
-
 def save_bag_to_db(email, char_name=None, storage_name=None, bag_name=None, bag_items=None):
     """Insert or update items directly in the DB for this bag."""
     if not bag_items:
         return
 
-    with closing(sqlite3.connect(DB_PATH)) as conn:
-        account_id = get_account_id(conn, email)
-        character_id = get_character_id(conn, account_id, char_name) if char_name else None
-        c = conn.cursor()
+    try:
+        with closing(sqlite3.connect(DB_PATH, timeout=1.0)) as conn:
+            account_id = get_account_id(conn, email)
+            character_id = get_character_id(conn, account_id, char_name) if char_name else None
+            c = conn.cursor()
 
-        # Delete old items for this bag first
-        if char_name:
-            c.execute("""
-                DELETE FROM items
-                WHERE account_id=? AND character_id=? AND bag_name=?
-            """, (account_id, character_id, bag_name))
-        else:
-            c.execute("""
-                DELETE FROM items
-                WHERE account_id=? AND storage_name=? 
-            """, (account_id, storage_name))
+            # Delete old items for this bag first
+            if char_name:
+                c.execute("""
+                    DELETE FROM items
+                    WHERE account_id=? AND character_id=? AND bag_name=?
+                """, (account_id, character_id, bag_name))
+            else:
+                c.execute("""
+                    DELETE FROM items
+                    WHERE account_id=? AND storage_name=?
+                """, (account_id, storage_name))
 
-        # Insert new items
-        for item_name, info in bag_items.items():
-            c.execute("""
-                INSERT INTO items
-                (account_id, character_id, bag_name, storage_name, item_name, model_id, count)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            """, (
-                account_id,
-                character_id,
-                bag_name if char_name else None,
-                storage_name if not char_name else None,
-                item_name,
-                info.get("model_id", 0),
-                info.get("count", 1)
-            ))
-        conn.commit()
+            # Insert new items
+            for item_name, info in bag_items.items():
+                c.execute("""
+                    INSERT INTO items
+                    (account_id, character_id, bag_name, storage_name, item_name, model_id, count)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                """, (
+                    account_id,
+                    character_id,
+                    bag_name if char_name else None,
+                    storage_name if not char_name else None,
+                    item_name,
+                    info.get("model_id", 0),
+                    info.get("count", 1)
+                ))
+            conn.commit()
+    except sqlite3.OperationalError as e:
+        error = 'Database timeout'
+        if "database is locked" in str(e):
+            error = 'Database write lock timeout'
+        ConsoleLog(f"Inventory Recorder [{error}]", "Write lock timeout reached. Will try again later.")
 
 
 def load_from_db():
@@ -252,7 +239,21 @@ def _collect_bag_items(bag):
         # Try to get name from your IntEnum first
         try:
             name = ModelID(model_id).name  # Enum member name
+            INSCRIPTIONS = {
+                ModelID.Inscriptions_All,
+                ModelID.Inscriptions_Focus_Items,
+                ModelID.Inscriptions_Focus_Shield,
+                ModelID.Inscriptions_General,
+                ModelID.Inscriptions_Martial,
+                ModelID.Inscriptions_Spellcasting,
+            }
+
             name = name.replace("_", " ")
+
+            if model_id in INSCRIPTIONS:
+                name = None
+            if model_id == ModelID.Vial_Of_Dye:
+                name = None
         except ValueError:
             name = None  # Not in enum
 
@@ -423,14 +424,21 @@ def aggregate_items_by_model(items_dict):
 def main():
     global search_query
     global db_initialized
+    global on_first_load
+    global recorded_data
+
+    if not Routines.Checks.Map.MapValid():
+        return
+
+    if on_first_load:
+        on_first_load = False
+        set_autoloot_options_for_custom_bots(salvage_golds=False, module_active=False)
+        recorded_data = load_from_db()
 
     if not db_initialized:
         init_db()
         ConsoleLog("DB", "DB initialized")
         db_initialized = True
-
-    # Always load from database — no JSON anymore
-    recorded_data = load_from_db()
 
     PyImGui.set_next_window_size(1000, 800)
     if PyImGui.begin("Inventory Recorder (by Account)"):
@@ -466,9 +474,6 @@ def main():
                             if character_names:
                                 # Limit to 3 characters for readability
                                 display_chars = character_names[:3]
-                                if len(character_names) > 3:
-                                    display_chars.append("...")
-
                                 # Join each character name on its own new line, indented
                                 character_block = "\n".join(f"   - {name}" for name in display_chars)
                                 account_label = f"{email}\n{character_block}"
@@ -580,6 +585,9 @@ def main():
                         # === CHARACTER INVENTORIES ===
                         if "Characters" in account_data:
                             for char_name, char_info in account_data["Characters"].items():
+                                if char_name == "Invalid ID":
+                                    continue
+
                                 if PyImGui.collapsing_header(f"{char_name} Inventory", True):
                                     inv_data = char_info.get("Inventory", {})
                                     for bag_name, items in inv_data.items():
@@ -683,6 +691,8 @@ def main():
             PyImGui.text("No recorded accounts found yet.")
 
         PyImGui.separator()
+        PyImGui.text(f"Reload interval: {int(inventory_poller_timer.GetTimeRemaining() // 1000)}s")
+
         # === CLEAR CURRENT ACCOUNT ===
         if PyImGui.button("CLEAR CURRENT ACCOUNT"):
             current_email = GLOBAL_CACHE.Player.GetAccountEmail()
