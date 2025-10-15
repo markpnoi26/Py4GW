@@ -46,7 +46,7 @@ window_collapsed = ini_window.read_bool(MODULE_NAME, COLLAPSED, False)
 
 DB_BASE_DIR = os.path.join(project_root, "Widgets/Data")
 DB_PATH = os.path.join(DB_BASE_DIR, "inventory.db")
-inventory_poller_timer = ThrottledTimer(5000)
+inventory_poller_timer = ThrottledTimer(3000)
 db_initialized = False
 on_first_load = True
 all_accounts_search_query = ''
@@ -448,6 +448,11 @@ def draw_widget():
             inventory_poller_timer.Reset()
         PyImGui.separator()
 
+        # === SCROLLABLE AREA START ===
+        # Compute space for footer
+        available_height = PyImGui.get_window_height() - 175  # leave room for buttons + footer
+        PyImGui.begin_child("ScrollableContent", (0.0, float(available_height)), True, 1)
+
         # === TABS BY ACCOUNT ===
         if recorded_data:
             if PyImGui.begin_tab_bar("AccountTabs"):
@@ -694,6 +699,7 @@ def draw_widget():
                 PyImGui.end_tab_bar()
         else:
             PyImGui.text("No recorded accounts found yet.")
+        PyImGui.end_child()  # End scrollable section
 
         PyImGui.separator()
         PyImGui.text(f"Reload interval: {int(inventory_poller_timer.GetTimeRemaining() // 1000)}s")
@@ -721,7 +727,6 @@ def draw_widget():
                 conn.commit()
             ConsoleLog("Inventory Recorder", "Cleared ALL recorded data.")
             recorded_data = load_from_db()
-
         PyImGui.end()
 
     if save_window_timer.HasElapsed(1000):
