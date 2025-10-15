@@ -2,6 +2,7 @@ import os
 import re
 import sqlite3
 import traceback
+import time
 from collections import OrderedDict
 from contextlib import closing
 
@@ -47,12 +48,15 @@ window_collapsed = ini_window.read_bool(MODULE_NAME, COLLAPSED, False)
 
 DB_BASE_DIR = os.path.join(project_root, "Widgets/Data")
 DB_PATH = os.path.join(DB_BASE_DIR, "inventory.db")
+STABILIZATION_TIME = 3.0
 inventory_poller_timer = ThrottledTimer(3000)
 db_initialized = False
 on_first_load = True
 all_accounts_search_query = ''
 search_query = ''
 current_character_name = ''
+last_seen_name = ''
+name_stable_since = 0.0
 recorded_data = OrderedDict()
 
 INVENTORY_BAGS = {
@@ -85,15 +89,18 @@ def init_db():
         c = conn.cursor()
 
         # === Accounts ===
-        c.execute("""
+        c.execute(
+            """
         CREATE TABLE IF NOT EXISTS accounts (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             email TEXT UNIQUE
         )
-        """)
+        """
+        )
 
         # === Characters ===
-        c.execute("""
+        c.execute(
+            """
         CREATE TABLE IF NOT EXISTS characters (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             account_id INTEGER,
@@ -101,10 +108,12 @@ def init_db():
             UNIQUE(account_id, name),
             FOREIGN KEY (account_id) REFERENCES accounts(id)
         )
-        """)
+        """
+        )
 
         # === Items (for both inventory + storage) ===
-        c.execute("""
+        c.execute(
+            """
         CREATE TABLE IF NOT EXISTS items (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             account_id INTEGER,
@@ -117,7 +126,8 @@ def init_db():
             FOREIGN KEY (account_id) REFERENCES accounts(id),
             FOREIGN KEY (character_id) REFERENCES characters(id)
         )
-        """)
+        """
+        )
 
         conn.commit()
 
@@ -151,31 +161,40 @@ def save_bag_to_db(email, char_name=None, storage_name=None, bag_name=None, bag_
 
             # Delete old items for this bag first
             if char_name:
-                c.execute("""
+                c.execute(
+                    """
                     DELETE FROM items
                     WHERE account_id=? AND character_id=? AND bag_name=?
-                """, (account_id, character_id, bag_name))
+                """,
+                    (account_id, character_id, bag_name),
+                )
             else:
-                c.execute("""
+                c.execute(
+                    """
                     DELETE FROM items
                     WHERE account_id=? AND storage_name=?
-                """, (account_id, storage_name))
+                """,
+                    (account_id, storage_name),
+                )
 
             # Insert new items
             for item_name, info in bag_items.items():
-                c.execute("""
+                c.execute(
+                    """
                     INSERT INTO items
                     (account_id, character_id, bag_name, storage_name, item_name, model_id, count)
                     VALUES (?, ?, ?, ?, ?, ?, ?)
-                """, (
-                    account_id,
-                    character_id,
-                    bag_name if char_name else None,
-                    storage_name if not char_name else None,
-                    item_name,
-                    info.get("model_id", 0),
-                    info.get("count", 1)
-                ))
+                """,
+                    (
+                        account_id,
+                        character_id,
+                        bag_name if char_name else None,
+                        storage_name if not char_name else None,
+                        item_name,
+                        info.get("model_id", 0),
+                        info.get("count", 1),
+                    ),
+                )
             conn.commit()
     except sqlite3.OperationalError as e:
         error = 'Database timeout'
@@ -196,10 +215,7 @@ def load_from_db():
         accounts = c.fetchall()
 
         for account_id, email in accounts:
-            recorded_data[email] = {
-                "Characters": OrderedDict(),
-                "Storage": OrderedDict()
-            }
+            recorded_data[email] = {"Characters": OrderedDict(), "Storage": OrderedDict()}
 
             # === Characters ===
             c.execute("SELECT id, name FROM characters WHERE account_id = ?", (account_id,))
@@ -209,11 +225,14 @@ def load_from_db():
                 recorded_data[email]["Characters"][char_name] = {"Inventory": OrderedDict()}
 
                 # === Inventory items ===
-                c.execute("""
+                c.execute(
+                    """
                     SELECT bag_name, item_name, model_id, count
                     FROM items
                     WHERE account_id = ? AND character_id = ? AND bag_name IS NOT NULL
-                """, (account_id, char_id))
+                """,
+                    (account_id, char_id),
+                )
                 for bag_name, item_name, model_id, count in c.fetchall():
                     inv = recorded_data[email]["Characters"][char_name]["Inventory"]
                     if bag_name not in inv:
@@ -221,11 +240,14 @@ def load_from_db():
                     inv[bag_name][item_name] = {"model_id": model_id, "count": count}
 
             # === Storage items ===
-            c.execute("""
+            c.execute(
+                """
                 SELECT storage_name, item_name, model_id, count
                 FROM items
                 WHERE account_id = ? AND storage_name IS NOT NULL
-            """, (account_id,))
+            """,
+                (account_id,),
+            )
             for storage_name, item_name, model_id, count in c.fetchall():
                 storage = recorded_data[email]["Storage"]
                 if storage_name not in storage:
@@ -236,7 +258,6 @@ def load_from_db():
 
 
 def get_character_name():
-    global current_character_name
     agent_id = GLOBAL_CACHE.Player.GetAgentID()
     GLOBAL_CACHE.Agent.RequestName(agent_id)
 
@@ -256,7 +277,7 @@ def get_character_name():
     # Populate agent_names dictionary
     if GLOBAL_CACHE.Agent.IsNameReady(agent_id):
         name = GLOBAL_CACHE.Agent.GetName(agent_id)
-    current_character_name = name
+    return name
 
 
 def get_character_bag_items_coroutine(bag, email, char_name, bag_name):
@@ -338,39 +359,78 @@ def _collect_bag_items(bag):
     return bag_items
 
 
-def record_data():
+def record_data_coroutine():
     global current_character_name
+    global last_seen_name
+    global name_stable_since
 
     current_email = GLOBAL_CACHE.Player.GetAccountEmail()
-    GLOBAL_CACHE.Coroutines.append(get_character_name())
-
-    if not current_email or not current_character_name:
+    if not current_email or GLOBAL_CACHE.Player.InCharacterSelectScreen():
+        yield
         return
 
+    if not Routines.Checks.Map.MapValid():
+        yield
+        return
+
+    # --- get current name asynchronously ---
+    char_name = yield from get_character_name()
+    if not char_name:
+        yield
+        return
+
+    now = time.time()
+
+    # --- Stabilization tracking ---
+    if char_name != last_seen_name:
+        # Name changed — restart the timer
+        last_seen_name = char_name
+        name_stable_since = now
+        yield
+        return
+
+    # Check if stable long enough
+    stable_duration = now - name_stable_since
+    if stable_duration < STABILIZATION_TIME:
+        # Wait until the name has stabilized
+        yield
+        return
+
+    # --- Once stable: update and record ---
+    if current_character_name != char_name:
+        current_character_name = char_name
+        ConsoleLog("Inventory Recorder", f"Character stabilized: {char_name}")
+        yield from save_character_inventory_to_db(current_email, char_name)
+    yield
+
+
+def save_character_inventory_to_db(current_email, char_name):
+    """Save both inventory and storage bags to DB."""
     raw_item_cache = GLOBAL_CACHE.Inventory._raw_item_cache
 
+    # Character Bags
     for bag_name, bag_id in INVENTORY_BAGS.items():
         bag = raw_item_cache.get_bags([bag_id])[0]
-        GLOBAL_CACHE.Coroutines.append(
-            get_character_bag_items_coroutine(
-                bag,
-                current_email,
-                char_name=current_character_name,
-                bag_name=bag_name,
-            )
+        yield from get_character_bag_items_coroutine(
+            bag,
+            current_email,
+            char_name=char_name,
+            bag_name=bag_name,
         )
 
+    # Storage Bags
     for storage_name, bag_id in STORAGE_BAGS.items():
         if bag_id is None:
             continue
         bag = raw_item_cache.get_bags([bag_id])[0]
-        GLOBAL_CACHE.Coroutines.append(
-            get_storage_bag_items_coroutine(
-                bag,
-                current_email,
-                storage_name=storage_name,
-            )
+        yield from get_storage_bag_items_coroutine(
+            bag,
+            current_email,
+            storage_name=storage_name,
         )
+
+    ConsoleLog("Inventory Recorder", f"Saved bags for {char_name}")
+    yield
 
 
 def search(query: str, items: list[str]) -> list[str]:
@@ -414,6 +474,8 @@ def draw_widget():
     global db_initialized
     global on_first_load
     global recorded_data
+    global current_character_name
+    global name_stable_since
 
     if first_run:
         PyImGui.set_next_window_pos(window_x, window_y)
@@ -422,9 +484,6 @@ def draw_widget():
 
     new_collapsed = PyImGui.is_window_collapsed()
     end_pos = PyImGui.get_window_pos()
-
-    if not Routines.Checks.Map.MapValid():
-        return
 
     if on_first_load:
         on_first_load = False
@@ -435,18 +494,16 @@ def draw_widget():
         ConsoleLog("DB", "DB initialized")
         db_initialized = True
 
+    # === AUTO-POLL (Refresh inventory snapshot) ===
+    if inventory_poller_timer.IsExpired():
+        GLOBAL_CACHE.Coroutines.append(record_data_coroutine())
+        # Reload memory view
+        recorded_data = load_from_db()
+        inventory_poller_timer.Reset()
+
     PyImGui.set_next_window_size(1000, 800)
     if PyImGui.begin(MODULE_NAME):
         PyImGui.text("Inventory + Storage Recorder by Email / Character (SQLite Edition)")
-        PyImGui.separator()
-
-        # === AUTO-POLL (Refresh inventory snapshot) ===
-        if inventory_poller_timer.IsExpired():
-            record_data()
-            # Reload memory view
-            recorded_data = load_from_db()
-
-            inventory_poller_timer.Reset()
         PyImGui.separator()
 
         # === SCROLLABLE AREA START ===
@@ -703,7 +760,10 @@ def draw_widget():
         PyImGui.end_child()  # End scrollable section
 
         PyImGui.separator()
-        PyImGui.text(f"Reload interval: {int(inventory_poller_timer.GetTimeRemaining() // 1000)}(s)")
+        is_name_stable = time.time() - name_stable_since > STABILIZATION_TIME
+        PyImGui.text(
+            f"Reload interval: {int(inventory_poller_timer.GetTimeRemaining() // 1000)}(s) for {"..." if not is_name_stable else current_character_name}"
+        )
         if PyImGui.collapsing_header("Advanced Clearing", True):
             if PyImGui.begin_table("clear_buttons_table", 2, PyImGui.TableFlags.BordersInnerV):
                 # Define colors
@@ -728,7 +788,10 @@ def draw_widget():
                     if current_email:
                         with closing(sqlite3.connect(DB_PATH)) as conn:
                             c = conn.cursor()
-                            c.execute("DELETE FROM items WHERE account_id = (SELECT id FROM accounts WHERE email = ?)", (current_email,))
+                            c.execute(
+                                "DELETE FROM items WHERE account_id = (SELECT id FROM accounts WHERE email = ?)",
+                                (current_email,),
+                            )
                             conn.commit()
                         ConsoleLog("Inventory Recorder", f"Cleared recorded data for {current_email}.")
                         recorded_data = load_from_db()
@@ -772,9 +835,9 @@ def configure():
 
 
 def main():
-    global cached_data
     try:
-        if not Routines.Checks.Map.MapValid():
+        if not Routines.Checks.Map.MapValid() or GLOBAL_CACHE.Player.InCharacterSelectScreen():
+            # When swapping characters, reset everything
             return
 
         if Routines.Checks.Map.IsMapReady():
