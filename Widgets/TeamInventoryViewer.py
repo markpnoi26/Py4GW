@@ -1,9 +1,12 @@
+import os
+import traceback
 import re
 import sqlite3
 from collections import OrderedDict
 from contextlib import closing
 
-from Bots.marks_coding_corner.utils.loot_utils import set_autoloot_options_for_custom_bots
+import Py4GW  # type: ignore
+from HeroAI.cache_data import CacheData
 from Py4GWCoreLib import GLOBAL_CACHE
 from Py4GWCoreLib import ConsoleLog
 from Py4GWCoreLib import ImGui
@@ -13,8 +16,40 @@ from Py4GWCoreLib import ThrottledTimer
 from Py4GWCoreLib import get_texture_for_model
 from Py4GWCoreLib.enums import Bags
 from Py4GWCoreLib.enums import ModelID
+from Py4GWCoreLib import IniHandler
+from Py4GWCoreLib import PyImGui
+from Py4GWCoreLib import Routines
+from Py4GWCoreLib import Timer
 
-DB_PATH = "inventory.db"
+
+script_directory = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.abspath(os.path.join(script_directory, os.pardir))
+
+first_run = True
+
+BASE_DIR = os.path.join(project_root, "Widgets/Config")
+INI_WIDGET_WINDOW_PATH = os.path.join(BASE_DIR, "TeamInventoryViewer.ini")
+os.makedirs(BASE_DIR, exist_ok=True)
+
+# ——— Window Persistence Setup ———
+ini_window = IniHandler(INI_WIDGET_WINDOW_PATH)
+save_window_timer = Timer()
+save_window_timer.Start()
+
+# String consts
+MODULE_NAME = "TeamInventoryViewer"  # Change this Module name
+COLLAPSED = "collapsed"
+X_POS = "x"
+Y_POS = "y"
+
+# load last‐saved window state (fallback to 100,100 / un-collapsed)
+window_x = ini_window.read_int(MODULE_NAME, X_POS, 100)
+window_y = ini_window.read_int(MODULE_NAME, Y_POS, 100)
+window_collapsed = ini_window.read_bool(MODULE_NAME, COLLAPSED, False)
+
+
+DB_BASE_DIR = os.path.join(project_root, "Widgets/Data")
+DB_PATH = os.path.join(DB_BASE_DIR, "inventory.db")
 inventory_poller_timer = ThrottledTimer(5000)
 db_initialized = False
 on_first_load = True
@@ -375,12 +410,25 @@ def aggregate_items_by_model(items_dict):
     return agg
 
 
-def main():
+# Pass in whatever your widget needs as argument
+def draw_widget():
+    global window_x
+    global window_y
+    global window_collapsed
+    global first_run
     global all_accounts_search_query
     global search_query
     global db_initialized
     global on_first_load
     global recorded_data
+
+    if first_run:
+        PyImGui.set_next_window_pos(window_x, window_y)
+        PyImGui.set_next_window_collapsed(window_collapsed, 0)
+        first_run = False
+
+    new_collapsed = PyImGui.is_window_collapsed()
+    end_pos = PyImGui.get_window_pos()
 
     if not Routines.Checks.Map.MapValid():
         return
@@ -672,6 +720,48 @@ def main():
             recorded_data = load_from_db()
 
         PyImGui.end()
+
+    if save_window_timer.HasElapsed(1000):
+        # Position changed?
+        if (end_pos[0], end_pos[1]) != (window_x, window_y):
+            window_x, window_y = int(end_pos[0]), int(end_pos[1])
+            ini_window.write_key(MODULE_NAME, X_POS, str(window_x))
+            ini_window.write_key(MODULE_NAME, Y_POS, str(window_y))
+        # Collapsed state changed?
+        if new_collapsed != window_collapsed:
+            window_collapsed = new_collapsed
+            ini_window.write_key(MODULE_NAME, COLLAPSED, str(window_collapsed))
+        save_window_timer.Reset()
+
+
+def configure():
+    pass
+
+
+def main():
+    global cached_data
+    try:
+        if not Routines.Checks.Map.MapValid():
+            return
+
+        if Routines.Checks.Map.IsMapReady():
+            draw_widget()
+
+    except ImportError as e:
+        Py4GW.Console.Log(MODULE_NAME, f"ImportError encountered: {str(e)}", Py4GW.Console.MessageType.Error)
+        Py4GW.Console.Log(MODULE_NAME, f"Stack trace: {traceback.format_exc()}", Py4GW.Console.MessageType.Error)
+    except ValueError as e:
+        Py4GW.Console.Log(MODULE_NAME, f"ValueError encountered: {str(e)}", Py4GW.Console.MessageType.Error)
+        Py4GW.Console.Log(MODULE_NAME, f"Stack trace: {traceback.format_exc()}", Py4GW.Console.MessageType.Error)
+    except TypeError as e:
+        Py4GW.Console.Log(MODULE_NAME, f"TypeError encountered: {str(e)}", Py4GW.Console.MessageType.Error)
+        Py4GW.Console.Log(MODULE_NAME, f"Stack trace: {traceback.format_exc()}", Py4GW.Console.MessageType.Error)
+    except Exception as e:
+        # Catch-all for any other unexpected exceptions
+        Py4GW.Console.Log(MODULE_NAME, f"Unexpected error encountered: {str(e)}", Py4GW.Console.MessageType.Error)
+        Py4GW.Console.Log(MODULE_NAME, f"Stack trace: {traceback.format_exc()}", Py4GW.Console.MessageType.Error)
+    finally:
+        pass
 
 
 if __name__ == "__main__":
