@@ -2,6 +2,7 @@ import os
 import re
 import sqlite3
 import traceback
+import json
 from collections import OrderedDict
 from contextlib import closing
 
@@ -53,6 +54,30 @@ all_accounts_search_query = ''
 search_query = ''
 current_character_name = ''
 recorded_data = OrderedDict()
+
+INVENTORY_BAGS = {
+    "Backpack": Bags.Backpack.value,
+    "BeltPouch": Bags.BeltPouch.value,
+    "Bag1": Bags.Bag1.value,
+    "Bag2": Bags.Bag2.value,
+}
+
+STORAGE_BAGS = {
+    "Storage1": Bags.Storage1.value,
+    "Storage2": Bags.Storage2.value,
+    "Storage3": Bags.Storage3.value,
+    "Storage4": Bags.Storage4.value,
+    "Storage5": Bags.Storage5.value,
+    "Storage6": Bags.Storage6.value,
+    "Storage7": Bags.Storage7.value,
+    "Storage8": Bags.Storage8.value,
+    "Storage9": Bags.Storage9.value,
+    "Storage10": Bags.Storage10.value,
+    "Storage11": Bags.Storage11.value,
+    "Storage12": Bags.Storage12.value,
+    "Storage13": Bags.Storage13.value,
+    "Storage14": Bags.Storage14.value,
+}
 
 
 def init_db():
@@ -116,11 +141,8 @@ def get_character_id(conn, account_id, name):
     return None
 
 
-def save_bag_to_db(email, char_name=None, storage_name=None, bag_name=None, bag_items=None):
+def save_bag_to_db(email, char_name=None, storage_name=None, bag_name=None, bag_items={}):
     """Insert or update items directly in the DB for this bag."""
-    if not bag_items:
-        return
-
     try:
         with closing(sqlite3.connect(DB_PATH, timeout=1.0)) as conn:
             account_id = get_account_id(conn, email)
@@ -250,7 +272,7 @@ def get_character_bag_items_coroutine(bag, email, char_name, bag_name):
 def get_storage_bag_items_coroutine(bag, email, storage_name):
     """Updates recorded_data[email]["Storage"][bag_name]"""
 
-    if not email or Routines.Checks.Map.IsExplorable():
+    if not email:
         return
 
     bag_items = yield from _collect_bag_items(bag)
@@ -316,7 +338,7 @@ def _collect_bag_items(bag):
     return bag_items
 
 
-def record_data(Anniversary_panel=True):
+def record_data():
     global current_character_name
 
     current_email = GLOBAL_CACHE.Player.GetAccountEmail()
@@ -327,15 +349,7 @@ def record_data(Anniversary_panel=True):
 
     raw_item_cache = GLOBAL_CACHE.Inventory._raw_item_cache
 
-    # === INVENTORY ===
-    inventory_bags = {
-        "Backpack": Bags.Backpack.value,
-        "BeltPouch": Bags.BeltPouch.value,
-        "Bag1": Bags.Bag1.value,
-        "Bag2": Bags.Bag2.value,
-    }
-
-    for bag_name, bag_id in inventory_bags.items():
+    for bag_name, bag_id in INVENTORY_BAGS.items():
         bag = raw_item_cache.get_bags([bag_id])[0]
         GLOBAL_CACHE.Coroutines.append(
             get_character_bag_items_coroutine(
@@ -346,25 +360,7 @@ def record_data(Anniversary_panel=True):
             )
         )
 
-    # === STORAGE ===
-    storage_bags = {
-        "Storage1": Bags.Storage1.value,
-        "Storage2": Bags.Storage2.value,
-        "Storage3": Bags.Storage3.value,
-        "Storage4": Bags.Storage4.value,
-        "Storage5": Bags.Storage5.value if Anniversary_panel else None,
-        "Storage6": Bags.Storage6.value,
-        "Storage7": Bags.Storage7.value,
-        "Storage8": Bags.Storage8.value,
-        "Storage9": Bags.Storage9.value,
-        "Storage10": Bags.Storage10.value,
-        "Storage11": Bags.Storage11.value,
-        "Storage12": Bags.Storage12.value,
-        "Storage13": Bags.Storage13.value,
-        "Storage14": Bags.Storage14.value,
-    }
-
-    for storage_name, bag_id in storage_bags.items():
+    for storage_name, bag_id in STORAGE_BAGS.items():
         if bag_id is None:
             continue
         bag = raw_item_cache.get_bags([bag_id])[0]
@@ -440,7 +436,7 @@ def draw_widget():
         db_initialized = True
 
     PyImGui.set_next_window_size(1000, 800)
-    if PyImGui.begin("Inventory Recorder (by Account)"):
+    if PyImGui.begin(MODULE_NAME):
         PyImGui.text("Inventory + Storage Recorder by Email / Character (SQLite Edition)")
         PyImGui.separator()
 
@@ -589,7 +585,12 @@ def draw_widget():
 
                                 if PyImGui.collapsing_header(f"{char_name} Inventory", True):
                                     inv_data = char_info.get("Inventory", {})
-                                    for bag_name, items in inv_data.items():
+                                    ordered_inv_data = {
+                                        bag_name: inv_data.get(bag_name, [])
+                                        for bag_name in INVENTORY_BAGS.keys()
+                                        if bag_name in inv_data
+                                    }
+                                    for bag_name, items in ordered_inv_data.items():
                                         if not items:
                                             continue
 
@@ -638,7 +639,13 @@ def draw_widget():
                         # === STORAGE SECTION ===
                         if "Storage" in account_data:
                             if PyImGui.collapsing_header("Shared Storage", True):
-                                for storage_name, items in account_data["Storage"].items():
+                                account_storage = account_data.get("Storage", {})
+                                ordered_storage_data = {
+                                    storage_name: account_storage.get(storage_name, [])
+                                    for storage_name in STORAGE_BAGS.keys()
+                                    if storage_name in account_storage
+                                }
+                                for storage_name, items in ordered_storage_data.items():
                                     if not items:
                                         continue
 
