@@ -219,7 +219,7 @@ def get_character_bag_items_coroutine(bag, email, char_name, bag_name):
 def get_storage_bag_items_coroutine(bag, email, storage_name):
     """Updates recorded_data[email]["Storage"][bag_name]"""
 
-    if not email:
+    if not email or Routines.Checks.Map.IsExplorable():
         return
 
     bag_items = yield from _collect_bag_items(bag)
@@ -345,47 +345,7 @@ def record_data(Anniversary_panel=True):
             )
         )
 
-
-# Fuzzy Search
-def levenshtein_ratio(s1: str, s2: str) -> float:
-    """Return a similarity ratio between 0.0 and 1.0 for two strings."""
-    s1, s2 = s1.lower(), s2.lower()
-    if s1 == s2:
-        return 1.0
-    len1, len2 = len(s1), len(s2)
-    if len1 == 0 or len2 == 0:
-        return 0.0
-
-    dp = [[0] * (len2 + 1) for _ in range(len1 + 1)]
-    for i in range(len1 + 1):
-        dp[i][0] = i
-    for j in range(len2 + 1):
-        dp[0][j] = j
-
-    for i in range(1, len1 + 1):
-        for j in range(1, len2 + 1):
-            cost = 0 if s1[i - 1] == s2[j - 1] else 1
-            dp[i][j] = min(
-                dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost  # deletion  # insertion  # substitution
-            )
-
-    distance = dp[len1][len2]
-    max_len = max(len1, len2)
-    return 1 - (distance / max_len)
-
-
-def fuzzy_search(query: str, items: list[str], threshold: float = 0.6):
-    """Return list of (item, score) for matches above threshold."""
-    results = []
-    for item in items:
-        score = levenshtein_ratio(query, item)
-        if score >= threshold:
-            results.append((item, score))
-    results.sort(key=lambda x: x[1], reverse=True)
-    return results
-
-
-def combined_search(query: str, items: list[str], fuzzy_threshold: float = 0.55) -> list[str]:
+def search(query: str, items: list[str]) -> list[str]:
     """Return items matching partially or with fuzzy similarity."""
     if not query:
         return items
@@ -395,14 +355,7 @@ def combined_search(query: str, items: list[str], fuzzy_threshold: float = 0.55)
     # --- Partial match first (fast) ---
     partial_matches = [item for item in items if query in item.lower()]
 
-    # --- Fuzzy match fallback ---
-    fuzzy_matches = [
-        item for item in items if item not in partial_matches and levenshtein_ratio(query, item) >= fuzzy_threshold
-    ]
-
-    # Combine and sort alphabetically
-    combined = sorted(partial_matches) + sorted(fuzzy_matches)
-    return combined
+    return sorted(partial_matches)
 
 
 def aggregate_items_by_model(items_dict):
@@ -599,7 +552,7 @@ def main():
                                         item_names = list(items.keys())
                                         filtered_items = item_names
                                         if search_query:
-                                            filtered_items = combined_search(search_query, item_names)
+                                            filtered_items = search(search_query, item_names)
                                         if not filtered_items:
                                             continue
 
@@ -647,7 +600,7 @@ def main():
                                     item_names = list(items.keys())
                                     filtered_items = item_names
                                     if search_query:
-                                        filtered_items = combined_search(search_query, item_names)
+                                        filtered_items = search(search_query, item_names)
                                     if not filtered_items:
                                         continue
 
