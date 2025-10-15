@@ -434,7 +434,6 @@ def main():
 
     if on_first_load:
         on_first_load = False
-        set_autoloot_options_for_custom_bots(salvage_golds=False, module_active=False)
         recorded_data = load_from_db()
 
     if not db_initialized:
