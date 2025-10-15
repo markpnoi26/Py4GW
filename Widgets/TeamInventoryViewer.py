@@ -7,6 +7,7 @@ from contextlib import closing
 
 import Py4GW  # type: ignore
 from Py4GWCoreLib import GLOBAL_CACHE
+from Py4GWCoreLib import Color
 from Py4GWCoreLib import ConsoleLog
 from Py4GWCoreLib import ImGui
 from Py4GWCoreLib import IniHandler
@@ -702,32 +703,56 @@ def draw_widget():
         PyImGui.end_child()  # End scrollable section
 
         PyImGui.separator()
-        PyImGui.text(f"Reload interval: {int(inventory_poller_timer.GetTimeRemaining() // 1000)}s")
+        PyImGui.text(f"Reload interval: {int(inventory_poller_timer.GetTimeRemaining() // 1000)}(s)")
+        if PyImGui.collapsing_header("Advanced Clearing", True):
+            if PyImGui.begin_table("clear_buttons_table", 2, PyImGui.TableFlags.BordersInnerV):
+                # Define colors
+                orange_color = Color(255, 165, 0, 255).to_tuple_normalized()  # orange
+                orange_hover = Color(255, 200, 50, 255).to_tuple_normalized()
+                orange_active = Color(255, 140, 0, 255).to_tuple_normalized()
 
-        # === CLEAR CURRENT ACCOUNT ===
-        if PyImGui.button("CLEAR CURRENT ACCOUNT"):
-            current_email = GLOBAL_CACHE.Player.GetAccountEmail()
-            if current_email:
-                with closing(sqlite3.connect(DB_PATH)) as conn:
-                    c = conn.cursor()
-                    c.execute("DELETE FROM items WHERE account_id = (SELECT id FROM accounts WHERE email = ?)", (current_email,))
-                    conn.commit()
-                ConsoleLog("Inventory Recorder", f"Cleared recorded data for {current_email}.")
-                recorded_data = load_from_db()
-            else:
-                ConsoleLog("Inventory Recorder", "No data found for this account.")
+                red_color = Color(220, 20, 60, 255).to_tuple_normalized()  # crimson red
+                red_hover = Color(255, 50, 80, 255).to_tuple_normalized()
+                red_active = Color(180, 0, 40, 255).to_tuple_normalized()
 
-        # === CLEAR ALL ACCOUNTS ===
-        if PyImGui.button("CLEAR ALL ACCOUNTS"):
-            with closing(sqlite3.connect(DB_PATH)) as conn:
-                c = conn.cursor()
-                c.execute("DELETE FROM items")
-                c.execute("DELETE FROM characters")
-                c.execute("DELETE FROM accounts")
-                conn.commit()
-            ConsoleLog("Inventory Recorder", "Cleared ALL recorded data.")
-            recorded_data = load_from_db()
-        PyImGui.end()
+                PyImGui.table_next_row()
+
+                # === Column 1: CLEAR CURRENT ACCOUNT ===
+                PyImGui.table_set_column_index(0)
+                col_width = PyImGui.get_content_region_avail()[0]
+                PyImGui.push_style_color(PyImGui.ImGuiCol.Button, orange_color)
+                PyImGui.push_style_color(PyImGui.ImGuiCol.ButtonHovered, orange_hover)
+                PyImGui.push_style_color(PyImGui.ImGuiCol.ButtonActive, orange_active)
+                if PyImGui.button("Clear Current account", width=col_width):
+                    current_email = GLOBAL_CACHE.Player.GetAccountEmail()
+                    if current_email:
+                        with closing(sqlite3.connect(DB_PATH)) as conn:
+                            c = conn.cursor()
+                            c.execute("DELETE FROM items WHERE account_id = (SELECT id FROM accounts WHERE email = ?)", (current_email,))
+                            conn.commit()
+                        ConsoleLog("Inventory Recorder", f"Cleared recorded data for {current_email}.")
+                        recorded_data = load_from_db()
+                    else:
+                        ConsoleLog("Inventory Recorder", "No data found for this account.")
+                PyImGui.pop_style_color(3)
+
+                # === Column 2: CLEAR ALL ACCOUNTS ===
+                PyImGui.table_set_column_index(1)
+                col_width = PyImGui.get_content_region_avail()[0]
+                PyImGui.push_style_color(PyImGui.ImGuiCol.Button, red_color)
+                PyImGui.push_style_color(PyImGui.ImGuiCol.ButtonHovered, red_hover)
+                PyImGui.push_style_color(PyImGui.ImGuiCol.ButtonActive, red_active)
+                if PyImGui.button("Clear all accounts", width=col_width):
+                    with closing(sqlite3.connect(DB_PATH)) as conn:
+                        c = conn.cursor()
+                        c.execute("DELETE FROM items")
+                        c.execute("DELETE FROM characters")
+                        c.execute("DELETE FROM accounts")
+                        conn.commit()
+                    ConsoleLog("Inventory Recorder", "Cleared ALL recorded data.")
+                    recorded_data = load_from_db()
+                PyImGui.pop_style_color(3)
+                PyImGui.end_table()
 
     if save_window_timer.HasElapsed(1000):
         # Position changed?
