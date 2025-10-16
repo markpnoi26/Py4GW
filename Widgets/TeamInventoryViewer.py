@@ -1,6 +1,7 @@
 import json
 import os
 import re
+import shutil
 import traceback
 from collections import OrderedDict
 
@@ -84,7 +85,7 @@ STORAGE_BAGS = {
 }
 
 
-class SimpleFileLock:
+class JsonFileLock:
     def __init__(self, path, timeout=5000):
         self.lockfile = path
         self.timeout = timeout  # milliseconds
@@ -124,7 +125,7 @@ class SimpleFileLock:
 class JSONInventoryStore:
     def __init__(self, json_path=JSON_INVENTORY_PATH, lock_path=JSON_INVENTORY_LOCK_PATH):
         self.json_path = json_path
-        self.lock = SimpleFileLock(lock_path, timeout=5000)
+        self.lock = JsonFileLock(lock_path, timeout=5000)
 
     def _read(self):
         try:
@@ -133,37 +134,61 @@ class JSONInventoryStore:
         except FileNotFoundError:
             return OrderedDict()
 
-    def _write(self, data):
+    def _write_nonblocking(self, data):
+        """
+        Non-blocking write: yields control between attempts.
+        """
         temp_file = f"{self.json_path}.tmp"
+        backup_file = f"{self.json_path}.bak"
 
-        # Write JSON to a temp file first
+        # Write to temp file first
         with open(temp_file, "w") as f:
             json.dump(data, f, indent=2)
 
+        # Sanity check
+        try:
+            with open(temp_file, "r") as f:
+                json.load(f)
+        except json.JSONDecodeError as e:
+            ConsoleLog("FileLock", f"[ERROR] Temp JSON failed sanity check: {e}")
+            try:
+                os.remove(temp_file)
+            except Exception:
+                pass
+            return
+
+        # Backup current file if exists
+        if os.path.exists(self.json_path):
+            try:
+                shutil.copy2(self.json_path, backup_file)
+            except Exception as e:
+                ConsoleLog("FileLock", f"[WARN] Could not create backup: {e}")
+
+        # Attempt atomic replace with retries
         max_attempts = 5
         attempt = 0
-        backoff = ThrottledTimer(50)  # 50ms interval between attempts
+        backoff = ThrottledTimer(50)  # 50ms
 
         while attempt < max_attempts:
             try:
                 os.replace(temp_file, self.json_path)
-                return  # success
+                return
             except PermissionError:
-                # If throttled timer expired, retry
                 if backoff.IsExpired():
                     attempt += 1
-                    backoff.Reset()  # exponential backoff
-            except Exception:
-                ConsoleLog('Filelock', "[WARN] Unexpected write error: {e}")
+                    backoff.Reset()
+            except Exception as e:
+                ConsoleLog("FileLock", f"[WARN] Unexpected write error: {e}")
                 break
 
-        # Clean up if we still failed after max_attempts
+            yield  # yield control between retries
+
+        # Clean up if failed
         try:
             os.remove(temp_file)
         except Exception:
             pass
-
-        ConsoleLog('FileLock', "[WARN] Could not safely write {self.json_path} after {max_attempts} attempts.")
+        ConsoleLog("FileLock", f"[WARN] Could not safely write {self.json_path} after {max_attempts} attempts.")
 
     def store(self, callback):
         """
@@ -173,11 +198,14 @@ class JSONInventoryStore:
         with self.lock:
             data = self._read()
             callback(data)
-            self._write(data)
+            self._write_nonblocking(data)
 
     # --- Example operations using store() ---
     def save_bag(self, email, char_name=None, storage_name=None, bag_name=None, bag_items={}):
+        changed = False
+
         def updater(data):
+            nonlocal changed
             if email not in data:
                 data[email] = {"Characters": OrderedDict(), "Storage": OrderedDict()}
 
@@ -186,31 +214,23 @@ class JSONInventoryStore:
                 if char_name not in characters:
                     characters[char_name] = {"Inventory": OrderedDict()}
                 inv = characters[char_name]["Inventory"]
-
-                # --- Delta check ---
-                if inv.get(bag_name) == bag_items:
-                    return False  # no change, skip write
-                inv[bag_name] = bag_items
+                if inv.get(bag_name) != bag_items:
+                    inv[bag_name] = bag_items
+                    changed = True
             else:
                 storage = data[email]["Storage"]
+                if storage.get(storage_name) != bag_items:
+                    storage[storage_name] = bag_items
+                    changed = True
 
-                # --- Delta check ---
-                if storage.get(storage_name) == bag_items:
-                    return False  # no change, skip write
-                storage[storage_name] = bag_items
+        data = self._read()
+        updater(data)
 
-            return True  # indicates a change was made
+        if not changed:
+            return  # nothing to yield
 
-        # Use the store method with delta awareness
-        def locked_updater(data):
-            changed = updater(data)
-            return changed
-
-        # Only write if updater returns True
-        with self.lock:
-            data = self._read()
-            if updater(data):
-                self._write(data)
+        # yield from non-blocking write
+        yield from self._write_nonblocking(data)
 
     def clear_account(self, email):
         def updater(data):
@@ -274,7 +294,7 @@ def get_character_bag_items_coroutine(bag, email, char_name, bag_name):
         return
 
     bag_items = yield from _collect_bag_items(bag)
-    store.save_bag(email, char_name=char_name, bag_name=bag_name, bag_items=bag_items)
+    yield from store.save_bag(email, char_name=char_name, bag_name=bag_name, bag_items=bag_items)
 
 
 def get_storage_bag_items_coroutine(bag, email, storage_name):
@@ -285,7 +305,7 @@ def get_storage_bag_items_coroutine(bag, email, storage_name):
         return
 
     bag_items = yield from _collect_bag_items(bag)
-    store.save_bag(email, storage_name=storage_name, bag_items=bag_items)
+    yield from store.save_bag(email, storage_name=storage_name, bag_items=bag_items)
 
 
 def _collect_bag_items(bag):
@@ -448,7 +468,7 @@ def draw_widget():
         inventory_poller_timer.Reset()
 
     PyImGui.set_next_window_size(1000, 1000)
-    if PyImGui.begin(MODULE_NAME):
+    if PyImGui.begin("Team Inventory Viewer"):
         PyImGui.text("Inventory + Storage Viewer")
         PyImGui.separator()
 
