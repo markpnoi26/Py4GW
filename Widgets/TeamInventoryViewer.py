@@ -4,6 +4,7 @@ import re
 import shutil
 import traceback
 from collections import OrderedDict
+from pathlib import Path
 
 import Py4GW  # type: ignore
 from Py4GWCoreLib import GLOBAL_CACHE
@@ -27,8 +28,7 @@ first_run = True
 
 BASE_DIR = os.path.join(project_root, "Widgets/Config")
 DB_BASE_DIR = os.path.join(project_root, "Widgets/Data")
-JSON_INVENTORY_PATH = os.path.join(DB_BASE_DIR, "inventory.json")
-JSON_INVENTORY_LOCK_PATH = os.path.join(DB_BASE_DIR, f"{JSON_INVENTORY_PATH}.lock")
+JSON_INVENTORY_PATH = os.path.join(DB_BASE_DIR, "Inventory")
 INI_WIDGET_WINDOW_PATH = os.path.join(BASE_DIR, "TeamInventoryViewer.ini")
 os.makedirs(BASE_DIR, exist_ok=True)
 
@@ -81,186 +81,171 @@ STORAGE_BAGS = {
     "Storage12": Bags.Storage12.value,
     "Storage13": Bags.Storage13.value,
     "Storage14": Bags.Storage14.value,
-    "MaterialStorage": Bags.MaterialStorage.value
+    "MaterialStorage": Bags.MaterialStorage.value,
 }
 
 
-class JsonFileLock:
-    def __init__(self, path, timeout=5000):
-        self.lockfile = path
-        self.timeout = timeout  # milliseconds
-        self.acquired = False
-
-    def acquire(self):
-        timer = ThrottledTimer(self.timeout)
-        while os.path.exists(self.lockfile):
-            if timer.IsExpired():
-                return False  # could not acquire lock
-            return False  # non-blocking: check again later
-        # lock is free, acquire it
-        try:
-            with open(self.lockfile, "w") as f:
-                f.write("locked")
-            self.acquired = True
-            return True
-        except OSError:
-            # Another process may have acquired it in between
-            return False
-
-    def release(self):
-        if self.acquired and os.path.exists(self.lockfile):
-            try:
-                os.remove(self.lockfile)
-            except OSError:
-                pass  # lock already removed elsewhere
-            self.acquired = False
-
-    def __enter__(self):
-        return self.acquire()
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.release()
-
-
-class JSONInventoryStore:
-    def __init__(self, json_path=JSON_INVENTORY_PATH, lock_path=JSON_INVENTORY_LOCK_PATH):
-        self.json_path = json_path
-        self.lock = JsonFileLock(lock_path, timeout=5000)
+class AccountJSONStore:
+    def __init__(self, email):
+        self.email = email
+        self.path = Path(JSON_INVENTORY_PATH)
+        self.path.mkdir(parents=True, exist_ok=True)  # ensure directory exists
+        self.file_path = self.path / f"{self.email}.json"
+        self.backup_path = self.file_path.with_suffix(".json.bak")
 
     def _read(self):
+        if not self.file_path.exists():
+            return {"Characters": OrderedDict(), "Storage": OrderedDict()}
         try:
-            with open(self.json_path, "r") as f:
+            with open(self.file_path, "r") as f:
                 return json.load(f, object_pairs_hook=OrderedDict)
-        except FileNotFoundError:
-            return OrderedDict()
+        except json.JSONDecodeError:
+            if self.backup_path.exists():
+                try:
+                    with open(self.backup_path, "r") as f:
+                        return json.load(f, object_pairs_hook=OrderedDict)
+                except Exception:
+                    pass
+            return {"Characters": OrderedDict(), "Storage": OrderedDict()}
 
     def _write_nonblocking(self, data):
-        """
-        Non-blocking write: yields control between attempts.
-        """
-        temp_file = f"{self.json_path}.tmp"
-        backup_file = f"{self.json_path}.bak"
+        """Generator that writes JSON safely without blocking the main coroutine."""
+        temp_file = self.file_path.with_suffix(".tmp")
+        backup_file = self.backup_path
 
-        # Write to temp file first
-        with open(temp_file, "w") as f:
-            json.dump(data, f, indent=2)
-
-        # Sanity check
+        # 1️⃣ Write temp file fully
         try:
-            with open(temp_file, "r") as f:
-                json.load(f)
-        except json.JSONDecodeError as e:
-            ConsoleLog("FileLock", f"[ERROR] Temp JSON failed sanity check: {e}")
-            try:
-                os.remove(temp_file)
-            except Exception:
-                pass
+            with open(temp_file, "w") as f:
+                json.dump(data, f, indent=2)
+        except Exception as e:
+            ConsoleLog("AccountJSONStore", f"[ERROR] Could not write temp file: {e}")
+            yield  # allow coroutine to continue
             return
 
-        # Backup current file if exists
-        if os.path.exists(self.json_path):
+        # 2️⃣ Yield control, temp file now exists
+        yield
+
+        # 3️⃣ Backup current file if it exists
+        if self.file_path.exists():
             try:
-                shutil.copy2(self.json_path, backup_file)
+                shutil.copy2(self.file_path, backup_file)
             except Exception as e:
-                ConsoleLog("FileLock", f"[WARN] Could not create backup: {e}")
+                ConsoleLog("AccountJSONStore", f"[WARN] Could not create backup: {e}")
+        yield
 
-        # Attempt atomic replace with retries
-        max_attempts = 5
-        attempt = 0
-        backoff = ThrottledTimer(50)  # 50ms
-
-        while attempt < max_attempts:
+        # 4️⃣ Atomic replace of original file
+        if temp_file.exists():
             try:
-                os.replace(temp_file, self.json_path)
-                return
-            except PermissionError:
-                if backoff.IsExpired():
-                    attempt += 1
-                    backoff.Reset()
+                # On Windows, shutil.move works reliably for overwriting existing files
+                shutil.move(str(temp_file), str(self.file_path))
             except Exception as e:
-                ConsoleLog("FileLock", f"[WARN] Unexpected write error: {e}")
-                break
+                ConsoleLog("AccountJSONStore", f"[WARN] Could not replace file: {e}")
+        else:
+            ConsoleLog("AccountJSONStore", "[WARN] Temp file missing, skipping replace")
+        yield
 
-            yield  # yield control between retries
+    # --- Public API ---
+    def load(self):
+        return self._read()
 
-        # Clean up if failed
-        try:
-            os.remove(temp_file)
-        except Exception:
-            pass
-        ConsoleLog("FileLock", f"[WARN] Could not safely write {self.json_path} after {max_attempts} attempts.")
-
-    def store(self, callback):
-        """
-        Thread/process safe store method.
-        callback receives the current data dict and should modify it in-place.
-        """
-        with self.lock:
-            data = self._read()
-            callback(data)
-            self._write_nonblocking(data)
-
-    # --- Example operations using store() ---
-    def save_bag(self, email, char_name=None, storage_name=None, bag_name=None, bag_items={}):
+    def save_bag(self, char_name=None, storage_name=None, bag_name=None, bag_items={}):
+        data = self._read()
         changed = False
 
-        def updater(data):
-            nonlocal changed
-            if email not in data:
-                data[email] = {"Characters": OrderedDict(), "Storage": OrderedDict()}
+        if char_name:
+            chars = data["Characters"]
+            if char_name not in chars:
+                chars[char_name] = {"Inventory": OrderedDict()}
+            inv = chars[char_name]["Inventory"]
+            if inv.get(bag_name) != bag_items:
+                inv[bag_name] = bag_items
+                changed = True
+        elif storage_name:
+            storage = data["Storage"]
+            if storage.get(storage_name) != bag_items:
+                storage[storage_name] = bag_items
+                changed = True
 
-            if char_name:
-                characters = data[email]["Characters"]
-                if char_name not in characters:
-                    characters[char_name] = {"Inventory": OrderedDict()}
-                inv = characters[char_name]["Inventory"]
-                if inv.get(bag_name) != bag_items:
-                    inv[bag_name] = bag_items
-                    changed = True
-            else:
-                storage = data[email]["Storage"]
-                if storage.get(storage_name) != bag_items:
-                    storage[storage_name] = bag_items
-                    changed = True
+        if changed:
+            return self._write_nonblocking(data)
 
+        # if nothing changed, return an empty generator
+        def dummy_gen():
+            yield
+
+        return dummy_gen()
+
+    # --- Other API remains unchanged ---
+    def clear_character(self, char_name):
         data = self._read()
-        updater(data)
+        chars = data.get("Characters", {})
+        if char_name in chars:
+            del chars[char_name]
+            return self._write_nonblocking(data)
 
-        if not changed:
-            return  # nothing to yield
+        def dummy_gen():
+            yield
 
-        # yield from non-blocking write
-        yield from self._write_nonblocking(data)
+        return dummy_gen()
 
-    def clear_account(self, email):
-        def updater(data):
-            data.pop(email, None)  # safely remove account if it exists
+    def clear_storage(self, storage_name):
+        data = self._read()
+        storage = data.get("Storage", {})
+        if storage_name in storage:
+            del storage[storage_name]
+            return self._write_nonblocking(data)
 
-        self.store(updater)
+        def dummy_gen():
+            yield
 
-    def clear_all_data(self):
-        def updater(data):
-            data.clear()  # remove all accounts, characters, storage
+        return dummy_gen()
 
-        self.store(updater)
+    def clear_account(self):
+        if self.file_path.exists():
+            self.file_path.unlink()
+        if self.backup_path.exists():
+            self.backup_path.unlink()
 
-    def clear_character(self, email, char_name):
-        """Clear a single character from an account"""
+        def dummy_gen():
+            yield
 
-        def updater(data):
-            chars = data.get(email, {}).get("Characters", {})
-            if char_name in chars:
-                del chars[char_name]
+        return dummy_gen()
 
-        self.store(updater)
+
+class MultiAccountInventoryStore:
+    def __init__(self):
+        self.inventory_dir = Path(JSON_INVENTORY_PATH)
+        self.inventory_dir.mkdir(exist_ok=True)
+
+    def account_store(self, email):
+        return AccountJSONStore(email)
 
     def load_all(self):
-        # just read safely
-        with self.lock:
-            return self._read()
+        """Load all account JSON files and merge into a dict"""
+        merged = OrderedDict()
+        for file_path in self.inventory_dir.glob("*.json"):
+            if file_path.suffix != ".json":
+                continue
+            email = file_path.stem
+            store = AccountJSONStore(email)
+            account_data = store.load()
+            merged[email] = account_data
+        return merged
+
+    def clear_all_data(self):
+        """Remove all account JSON files and their backups"""
+        for file_path in self.inventory_dir.glob("*.json"):
+            backup_path = file_path.with_suffix(".json.bak")
+            try:
+                if file_path.exists():
+                    file_path.unlink()
+                if backup_path.exists():
+                    backup_path.unlink()
+            except Exception as e:
+                ConsoleLog("MultiAccountInventoryStore", f"[WARN] Failed to delete {file_path}: {e}")
 
 
-store = JSONInventoryStore()
+multi_store = MultiAccountInventoryStore()
 
 
 def get_character_name():
@@ -287,25 +272,25 @@ def get_character_name():
 
 
 def get_character_bag_items_coroutine(bag, email, char_name, bag_name):
-    global store
+    store = AccountJSONStore(email)
     """Updates recorded_data[email]["Characters"][char_name]["Inventory"][bag_name]"""
 
     if not email or not char_name:
         return
 
     bag_items = yield from _collect_bag_items(bag)
-    yield from store.save_bag(email, char_name=char_name, bag_name=bag_name, bag_items=bag_items)
+    yield from store.save_bag(char_name=char_name, bag_name=bag_name, bag_items=bag_items)
 
 
 def get_storage_bag_items_coroutine(bag, email, storage_name):
-    global store
+    store = AccountJSONStore(email)
     """Updates recorded_data[email]["Storage"][bag_name]"""
 
     if not email:
         return
 
     bag_items = yield from _collect_bag_items(bag)
-    yield from store.save_bag(email, storage_name=storage_name, bag_items=bag_items)
+    yield from store.save_bag(storage_name=storage_name, bag_items=bag_items)
 
 
 def _collect_bag_items(bag):
@@ -446,7 +431,7 @@ def draw_widget():
     global on_first_load
     global recorded_data
     global current_character_name
-    global store
+    global multi_store
 
     if first_run:
         PyImGui.set_next_window_pos(window_x, window_y)
@@ -458,13 +443,15 @@ def draw_widget():
 
     if on_first_load:
         on_first_load = False
-        recorded_data = store.load_all()
+
+        # Load all accounts for search
+        recorded_data = multi_store.load_all()
 
     # === AUTO-POLL (Refresh inventory snapshot) ===
     if inventory_poller_timer.IsExpired():
         GLOBAL_CACHE.Coroutines.append(record_data())
         # Reload memory view
-        recorded_data = store.load_all()
+        recorded_data = multi_store.load_all()
         inventory_poller_timer.Reset()
 
     PyImGui.set_next_window_size(1000, 1000)
@@ -754,9 +741,10 @@ def draw_widget():
                     login_number = GLOBAL_CACHE.Party.Players.GetLoginNumberByAgentID(GLOBAL_CACHE.Player.GetAgentID())
                     char_name = GLOBAL_CACHE.Party.Players.GetPlayerNameByLoginNumber(login_number)
                     if current_email and char_name:
-                        store.clear_character(current_email, char_name)
+                        store = AccountJSONStore(current_email)
+                        store.clear_character(char_name)
                         ConsoleLog("Inventory Recorder", f"Cleared character {char_name} for {current_email}.")
-                        recorded_data = store.load_all()
+                        recorded_data = multi_store.load_all()
                     else:
                         ConsoleLog("Inventory Recorder", "No data found for this character.")
                 PyImGui.pop_style_color(3)
@@ -770,9 +758,10 @@ def draw_widget():
                 if PyImGui.button("Clear Current account", width=col_width):
                     current_email = GLOBAL_CACHE.Player.GetAccountEmail()
                     if current_email:
-                        store.clear_account(current_email)
+                        store = AccountJSONStore(current_email)
+                        store.clear_account()
                         ConsoleLog("Inventory Recorder", f"Cleared recorded data for {current_email}.")
-                        recorded_data = store.load_all()
+                        recorded_data = multi_store.load_all()
                     else:
                         ConsoleLog("Inventory Recorder", "No data found for this account.")
                 PyImGui.pop_style_color(3)
@@ -784,8 +773,8 @@ def draw_widget():
                 PyImGui.push_style_color(PyImGui.ImGuiCol.ButtonHovered, red_hover)
                 PyImGui.push_style_color(PyImGui.ImGuiCol.ButtonActive, red_active)
                 if PyImGui.button("Clear all accounts", width=col_width):
-                    store.clear_all_data()
-                    recorded_data = store.load_all()
+                    multi_store.clear_all_data()
+                    recorded_data = multi_store.load_all()
                 PyImGui.pop_style_color(3)
                 PyImGui.end_table()
 
