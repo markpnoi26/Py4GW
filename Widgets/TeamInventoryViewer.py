@@ -24,7 +24,6 @@ from Py4GWCoreLib.enums import ModelID
 script_directory = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(script_directory, os.pardir))
 
-first_run = True
 
 BASE_DIR = os.path.join(project_root, "Widgets/Config")
 DB_BASE_DIR = os.path.join(project_root, "Widgets/Data")
@@ -50,7 +49,8 @@ window_x = ini_window.read_int(MODULE_NAME, X_POS, 100)
 window_y = ini_window.read_int(MODULE_NAME, Y_POS, 100)
 window_collapsed = ini_window.read_bool(MODULE_NAME, COLLAPSED, False)
 
-
+# View data
+first_run = True
 on_first_load = True
 all_accounts_search_query = ''
 search_query = ''
@@ -85,6 +85,7 @@ STORAGE_BAGS = {
 }
 
 
+# region JSONStore
 class AccountJSONStore:
     def __init__(self, email):
         self.email = email
@@ -224,29 +225,7 @@ class MultiAccountInventoryStore:
 multi_store = MultiAccountInventoryStore()
 
 
-def get_character_name():
-    agent_id = GLOBAL_CACHE.Player.GetAgentID()
-    GLOBAL_CACHE.Agent.RequestName(agent_id)
-
-    # Wait until all names are ready (with timeout safeguard)
-    timeout = 2.0  # seconds
-    poll_interval = 0.1
-    elapsed = 0.0
-
-    while elapsed < timeout:
-        if GLOBAL_CACHE.Agent.IsNameReady(agent_id):
-            break
-
-        yield from Routines.Yield.wait(int(poll_interval) * 1000)
-        elapsed += poll_interval
-
-    name = ''
-    # Populate agent_names dictionary
-    if GLOBAL_CACHE.Agent.IsNameReady(agent_id):
-        name = GLOBAL_CACHE.Agent.GetName(agent_id)
-    return name
-
-
+# region Generators
 def get_character_bag_items_coroutine(bag, email, char_name, bag_name):
     store = AccountJSONStore(email)
     """Updates recorded_data[email]["Characters"][char_name]["Inventory"][bag_name]"""
@@ -366,6 +345,7 @@ def record_account_data():
         )
 
 
+# region Helper functions
 def search(query: str, items: list[str]) -> list[str]:
     """Return items matching partially or with fuzzy similarity."""
     if not query:
@@ -396,7 +376,7 @@ def aggregate_items_by_model(items_dict):
     return agg
 
 
-# Pass in whatever your widget needs as argument
+# region Widget
 def draw_widget():
     global TEAM_INVENTORY_CACHE
     global window_x
@@ -409,23 +389,20 @@ def draw_widget():
     global current_character_name
     global multi_store
 
-    if first_run:
+    if on_first_load:
         PyImGui.set_next_window_size(1000, 1000)
         PyImGui.set_next_window_pos(window_x, window_y)
         PyImGui.set_next_window_collapsed(window_collapsed, 0)
-        first_run = False
-
-    new_collapsed = PyImGui.is_window_collapsed()
-    end_pos = PyImGui.get_window_pos()
-
-    if on_first_load:
         on_first_load = False
         # Load all accounts for search
         TEAM_INVENTORY_CACHE = multi_store.load_all()
 
-    # === AUTO-POLL (Refresh inventory snapshot) ===
+    new_collapsed = PyImGui.is_window_collapsed()
+    end_pos = PyImGui.get_window_pos()
+
+    # This triggers a reload of and save of bag data
     if inventory_write_timer.IsExpired():
-        GLOBAL_CACHE.Coroutines.append(record_account_data())
+        GLOBAL_CACHE.Coroutines.append(record_account_data())  # needs to be coroutine as bags data doesn't come all at once
         inventory_write_timer.Reset()
 
     if inventory_read_timer.IsExpired():
