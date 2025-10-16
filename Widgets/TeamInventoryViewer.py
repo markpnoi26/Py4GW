@@ -461,6 +461,7 @@ def draw_widget():
     global multi_store
 
     if first_run:
+        PyImGui.set_next_window_size(1000, 1000)
         PyImGui.set_next_window_pos(window_x, window_y)
         PyImGui.set_next_window_collapsed(window_collapsed, 0)
         first_run = False
@@ -483,7 +484,6 @@ def draw_widget():
         GLOBAL_CACHE.Coroutines.append(multi_store.load_all())
         inventory_reader_timer.Reset()
 
-    PyImGui.set_next_window_size(1000, 1000)
     if PyImGui.begin("Team Inventory Viewer"):
         PyImGui.text("Inventory + Storage Viewer")
         PyImGui.separator()
@@ -811,6 +811,7 @@ def draw_widget():
     if save_window_timer.HasElapsed(1000):
         # Position changed?
         if (end_pos[0], end_pos[1]) != (window_x, window_y):
+            print('has changed position!')
             window_x, window_y = int(end_pos[0]), int(end_pos[1])
             ini_window.write_key(MODULE_NAME, X_POS, str(window_x))
             ini_window.write_key(MODULE_NAME, Y_POS, str(window_y))
