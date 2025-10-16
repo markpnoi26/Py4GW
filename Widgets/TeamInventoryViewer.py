@@ -744,7 +744,7 @@ def draw_widget():
         PyImGui.text(f"{"Waiting for ..." if not current_character_name else current_character}")
         if PyImGui.collapsing_header("Advanced Clearing", True):
             PyImGui.text(
-                f'Save timer: {int(inventory_poller_timer.GetTimeRemaining() // 1000)}(s), Read timer: {int(inventory_reader_timer.GetTimeRemaining() // 1000)}(s)'
+                f'Save timer: {(inventory_poller_timer.GetTimeRemaining() / 1000):.1f}(s), Read timer: {(inventory_reader_timer.GetTimeRemaining() / 1000):.1f}(s)'
             )
             if PyImGui.begin_table("clear_buttons_table", 3, PyImGui.TableFlags.BordersInnerV):
                 # Define colors
