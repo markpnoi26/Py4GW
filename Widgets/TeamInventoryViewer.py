@@ -29,7 +29,7 @@ first_run = True
 BASE_DIR = os.path.join(project_root, "Widgets/Config")
 DB_BASE_DIR = os.path.join(project_root, "Widgets/Data")
 JSON_INVENTORY_PATH = os.path.join(DB_BASE_DIR, "Inventory")
-INI_WIDGET_WINDOW_PATH = os.path.join(BASE_DIR, "TeamInventoryViewer.ini")
+INI_WIDGET_WINDOW_PATH = os.path.join(BASE_DIR, "team_inventory_viewer.ini")
 os.makedirs(BASE_DIR, exist_ok=True)
 
 # ——— Window Persistence Setup ———
@@ -50,6 +50,7 @@ window_collapsed = ini_window.read_bool(MODULE_NAME, COLLAPSED, False)
 
 
 inventory_poller_timer = ThrottledTimer(3000)
+inventory_reader_timer = ThrottledTimer(5000)
 on_first_load = True
 all_accounts_search_query = ''
 search_query = ''
@@ -217,28 +218,58 @@ class MultiAccountInventoryStore:
         return AccountJSONStore(email)
 
     def load_all(self):
-        """Load all account JSON files and merge into a dict"""
+        global recorded_data
+        """Generator: Load all account JSON files and merge into a dict non-blocking."""
         merged = OrderedDict()
+
+        # Wait until map is valid before loading anything
+        while not Routines.Checks.Map.MapValid():
+            yield
+
         for file_path in self.inventory_dir.glob("*.json"):
             if file_path.suffix != ".json":
                 continue
+
             email = file_path.stem
             store = AccountJSONStore(email)
-            account_data = store.load()
-            merged[email] = account_data
-        return merged
+
+            # Small yield between file loads to stay non-blocking
+            yield
+
+            try:
+                account_data = store.load()
+                merged[email] = account_data
+            except Exception as e:
+                ConsoleLog("MultiAccountInventoryStore", f"[WARN] Failed to load {file_path}: {e}")
+
+            yield  # one more yield to spread out IO cost
+
+        recorded_data = merged
+        yield merged  # final yield so caller can retrieve result
 
     def clear_all_data(self):
-        """Remove all account JSON files and their backups"""
+        """Generator: Remove all account JSON files and their backups non-blocking."""
+        # Wait until map is valid
+        while not Routines.Checks.Map.MapValid():
+            yield
+
         for file_path in self.inventory_dir.glob("*.json"):
             backup_path = file_path.with_suffix(".json.bak")
             try:
                 if file_path.exists():
                     file_path.unlink()
+                    ConsoleLog("MultiAccountInventoryStore", f"Deleted {file_path.name}")
+                yield  # allow other coroutines to run
                 if backup_path.exists():
                     backup_path.unlink()
+                    ConsoleLog("MultiAccountInventoryStore", f"Deleted {backup_path.name}")
             except Exception as e:
                 ConsoleLog("MultiAccountInventoryStore", f"[WARN] Failed to delete {file_path}: {e}")
+
+            yield  # step between deletions
+
+        ConsoleLog("MultiAccountInventoryStore", "[INFO] All account data cleared.")
+        yield  # final yield before returning
 
 
 multi_store = MultiAccountInventoryStore()
@@ -441,14 +472,16 @@ def draw_widget():
         on_first_load = False
 
         # Load all accounts for search
-        recorded_data = multi_store.load_all()
+        GLOBAL_CACHE.Coroutines.append(multi_store.load_all())
 
     # === AUTO-POLL (Refresh inventory snapshot) ===
     if inventory_poller_timer.IsExpired():
         GLOBAL_CACHE.Coroutines.append(record_data())
-        # Reload memory view
-        recorded_data = multi_store.load_all()
         inventory_poller_timer.Reset()
+
+    if inventory_reader_timer.IsExpired():
+        GLOBAL_CACHE.Coroutines.append(multi_store.load_all())
+        inventory_reader_timer.Reset()
 
     PyImGui.set_next_window_size(1000, 1000)
     if PyImGui.begin("Team Inventory Viewer"):
@@ -710,7 +743,9 @@ def draw_widget():
         current_character = f'Current Character: {current_character_name}'
         PyImGui.text(f"{"Waiting for ..." if not current_character_name else current_character}")
         if PyImGui.collapsing_header("Advanced Clearing", True):
-            PyImGui.text(f'Polling in: {int(inventory_poller_timer.GetTimeRemaining() // 1000)}(s)')
+            PyImGui.text(
+                f'Save timer: {int(inventory_poller_timer.GetTimeRemaining() // 1000)}(s), Read timer: {int(inventory_reader_timer.GetTimeRemaining() // 1000)}(s)'
+            )
             if PyImGui.begin_table("clear_buttons_table", 3, PyImGui.TableFlags.BordersInnerV):
                 # Define colors
                 orange_color = Color(255, 165, 0, 255).to_tuple_normalized()  # orange
@@ -740,7 +775,6 @@ def draw_widget():
                         store = AccountJSONStore(current_email)
                         GLOBAL_CACHE.Coroutines.append(store.clear_character(char_name))
                         ConsoleLog("Inventory Recorder", f"Cleared character {char_name} for {current_email}.")
-                        recorded_data = multi_store.load_all()
                     else:
                         ConsoleLog("Inventory Recorder", "No data found for this character.")
                 PyImGui.pop_style_color(3)
@@ -757,7 +791,7 @@ def draw_widget():
                         store = AccountJSONStore(current_email)
                         GLOBAL_CACHE.Coroutines.append(store.clear_account())
                         ConsoleLog("Inventory Recorder", f"Cleared recorded data for {current_email}.")
-                        recorded_data = multi_store.load_all()
+                        GLOBAL_CACHE.Coroutines.append(multi_store.load_all())
                     else:
                         ConsoleLog("Inventory Recorder", "No data found for this account.")
                 PyImGui.pop_style_color(3)
@@ -769,8 +803,8 @@ def draw_widget():
                 PyImGui.push_style_color(PyImGui.ImGuiCol.ButtonHovered, red_hover)
                 PyImGui.push_style_color(PyImGui.ImGuiCol.ButtonActive, red_active)
                 if PyImGui.button("Clear all accounts", width=col_width):
-                    multi_store.clear_all_data()
-                    recorded_data = multi_store.load_all()
+                    GLOBAL_CACHE.Coroutines.append(multi_store.clear_all_data())
+                    GLOBAL_CACHE.Coroutines.append(multi_store.load_all())
                 PyImGui.pop_style_color(3)
                 PyImGui.end_table()
 
