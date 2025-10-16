@@ -447,7 +447,7 @@ def draw_widget():
         recorded_data = store.load_all()
         inventory_poller_timer.Reset()
 
-    PyImGui.set_next_window_size(1000, 800)
+    PyImGui.set_next_window_size(1000, 1000)
     if PyImGui.begin(MODULE_NAME):
         PyImGui.text("Inventory + Storage Viewer")
         PyImGui.separator()
@@ -528,10 +528,10 @@ def draw_widget():
                                 PyImGui.TableFlags.Borders | PyImGui.TableFlags.RowBg | PyImGui.TableFlags.ScrollY,
                             ):
                                 PyImGui.table_setup_column("Icon", 0, 30.0)
-                                PyImGui.table_setup_column("Item Name", 0, 200.0)
+                                PyImGui.table_setup_column("Item Name", 0, 300.0)
                                 PyImGui.table_setup_column("Count", 0, 50.0)
                                 PyImGui.table_setup_column("Location", 0, 150.0)
-                                PyImGui.table_setup_column("Account (Characters for reference)", 0, 300.0)
+                                PyImGui.table_setup_column("Account", 0, 150.0)
                                 PyImGui.table_headers_row()
 
                                 for index, entry in enumerate(search_results):
