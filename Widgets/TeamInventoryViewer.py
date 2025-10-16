@@ -113,7 +113,6 @@ class AccountJSONStore:
         temp_file = self.file_path.with_suffix(".tmp")
         backup_file = self.backup_path
 
-        # 1️⃣ Write temp file fully
         try:
             with open(temp_file, "w") as f:
                 json.dump(data, f, indent=2)
@@ -122,10 +121,8 @@ class AccountJSONStore:
             yield  # allow coroutine to continue
             return
 
-        # 2️⃣ Yield control, temp file now exists
         yield
 
-        # 3️⃣ Backup current file if it exists
         if self.file_path.exists():
             try:
                 shutil.copy2(self.file_path, backup_file)
@@ -133,7 +130,6 @@ class AccountJSONStore:
                 ConsoleLog("AccountJSONStore", f"[WARN] Could not create backup: {e}")
         yield
 
-        # 4️⃣ Atomic replace of original file
         if temp_file.exists():
             try:
                 # On Windows, shutil.move works reliably for overwriting existing files
@@ -742,7 +738,7 @@ def draw_widget():
                     char_name = GLOBAL_CACHE.Party.Players.GetPlayerNameByLoginNumber(login_number)
                     if current_email and char_name:
                         store = AccountJSONStore(current_email)
-                        store.clear_character(char_name)
+                        GLOBAL_CACHE.Coroutines.append(store.clear_character(char_name))
                         ConsoleLog("Inventory Recorder", f"Cleared character {char_name} for {current_email}.")
                         recorded_data = multi_store.load_all()
                     else:
@@ -759,7 +755,7 @@ def draw_widget():
                     current_email = GLOBAL_CACHE.Player.GetAccountEmail()
                     if current_email:
                         store = AccountJSONStore(current_email)
-                        store.clear_account()
+                        GLOBAL_CACHE.Coroutines.append(store.clear_account())
                         ConsoleLog("Inventory Recorder", f"Cleared recorded data for {current_email}.")
                         recorded_data = multi_store.load_all()
                     else:
