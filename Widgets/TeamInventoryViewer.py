@@ -36,6 +36,8 @@ os.makedirs(BASE_DIR, exist_ok=True)
 ini_window = IniHandler(INI_WIDGET_WINDOW_PATH)
 save_window_timer = Timer()
 save_window_timer.Start()
+inventory_write_timer = ThrottledTimer(3000)
+inventory_read_timer = ThrottledTimer(5000)
 
 # String consts
 MODULE_NAME = "TeamInventoryViewer"  # Change this Module name
@@ -49,15 +51,12 @@ window_y = ini_window.read_int(MODULE_NAME, Y_POS, 100)
 window_collapsed = ini_window.read_bool(MODULE_NAME, COLLAPSED, False)
 
 
-inventory_poller_timer = ThrottledTimer(3000)
-inventory_reader_timer = ThrottledTimer(5000)
 on_first_load = True
 all_accounts_search_query = ''
 search_query = ''
 current_character_name = ''
-last_seen_name = ''
-recorded_data = OrderedDict()
 
+TEAM_INVENTORY_CACHE = {}
 INVENTORY_BAGS = {
     "Backpack": Bags.Backpack.value,
     "BeltPouch": Bags.BeltPouch.value,
@@ -90,13 +89,14 @@ class AccountJSONStore:
     def __init__(self, email):
         self.email = email
         self.path = Path(JSON_INVENTORY_PATH)
-        self.path.mkdir(parents=True, exist_ok=True)  # ensure directory exists
+        self.path.mkdir(parents=True, exist_ok=True)
         self.file_path = self.path / f"{self.email}.json"
         self.backup_path = self.file_path.with_suffix(".json.bak")
 
     def _read(self):
         if not self.file_path.exists():
             return {"Characters": OrderedDict(), "Storage": OrderedDict()}
+
         try:
             with open(self.file_path, "r") as f:
                 return json.load(f, object_pairs_hook=OrderedDict)
@@ -109,41 +109,37 @@ class AccountJSONStore:
                     pass
             return {"Characters": OrderedDict(), "Storage": OrderedDict()}
 
-    def _write_nonblocking(self, data):
-        """Generator that writes JSON safely without blocking the main coroutine."""
+    def _write(self, data):
+        if not Routines.Checks.Map.MapValid():
+            # Skip writing while map is invalid
+            return False
+
         temp_file = self.file_path.with_suffix(".tmp")
-        backup_file = self.backup_path
 
         try:
             with open(temp_file, "w") as f:
                 json.dump(data, f, indent=2)
+            if self.file_path.exists():
+                shutil.copy2(self.file_path, self.backup_path)
+            os.replace(temp_file, self.file_path)
+            return True
         except Exception as e:
-            ConsoleLog("AccountJSONStore", f"[ERROR] Could not write temp file: {e}")
-            yield  # allow coroutine to continue
-            return
+            ConsoleLog("AccountJSONStore", f"[WARN] Failed to write {self.file_path}: {e}")
+            return False
 
-        yield
-
-        if self.file_path.exists():
-            try:
-                shutil.copy2(self.file_path, backup_file)
-            except Exception as e:
-                ConsoleLog("AccountJSONStore", f"[WARN] Could not create backup: {e}")
-        yield
-
-        if temp_file.exists():
-            try:
-                # On Windows, shutil.move works reliably for overwriting existing files
-                shutil.move(str(temp_file), str(self.file_path))
-            except Exception as e:
-                ConsoleLog("AccountJSONStore", f"[WARN] Could not replace file: {e}")
-        else:
-            ConsoleLog("AccountJSONStore", "[WARN] Temp file missing, skipping replace")
-        yield
-
-    # --- Public API ---
+    # --- Cached interface ---
     def load(self):
-        return self._read()
+        if self.email in TEAM_INVENTORY_CACHE:
+            return TEAM_INVENTORY_CACHE[self.email]
+
+        data = self._read()
+        TEAM_INVENTORY_CACHE[self.email] = data
+        return data
+
+    def save_to_disk(self):
+        if self.email not in TEAM_INVENTORY_CACHE:
+            return
+        self._write(TEAM_INVENTORY_CACHE[self.email])
 
     def save_bag(self, char_name=None, storage_name=None, bag_name=None, bag_items={}):
         data = self._read()
@@ -164,49 +160,34 @@ class AccountJSONStore:
                 changed = True
 
         if changed:
-            return self._write_nonblocking(data)
+            self._write(data)
 
-        # if nothing changed, return an empty generator
-        def dummy_gen():
-            yield
-
-        return dummy_gen()
-
-    # --- Other API remains unchanged ---
     def clear_character(self, char_name):
-        data = self._read()
-        chars = data.get("Characters", {})
-        if char_name in chars:
-            del chars[char_name]
-            return self._write_nonblocking(data)
+        if not self.file_path.exists():
+            return
 
-        def dummy_gen():
-            yield
-
-        return dummy_gen()
-
-    def clear_storage(self, storage_name):
-        data = self._read()
-        storage = data.get("Storage", {})
-        if storage_name in storage:
-            del storage[storage_name]
-            return self._write_nonblocking(data)
-
-        def dummy_gen():
-            yield
-
-        return dummy_gen()
+        try:
+            data = self._read()
+            chars = data.get("Characters", {})
+            if char_name in chars:
+                del chars[char_name]
+                self._write(data)
+                ConsoleLog("AccountJSONStore", f"Removed character {char_name} from {self.email}.")
+            else:
+                ConsoleLog("AccountJSONStore", f"[WARN] Character {char_name} not found for {self.email}.")
+        except Exception as e:
+            ConsoleLog("AccountJSONStore", f"[ERROR] clear_character: {e}")
 
     def clear_account(self):
-        if self.file_path.exists():
-            self.file_path.unlink()
-        if self.backup_path.exists():
-            self.backup_path.unlink()
+        try:
+            if self.file_path.exists():
+                self.file_path.unlink()
+            if self.backup_path.exists():
+                self.backup_path.unlink()
 
-        def dummy_gen():
-            yield
-
-        return dummy_gen()
+            ConsoleLog("AccountJSONStore", f"Cleared all data for {self.email}.")
+        except Exception as e:
+            ConsoleLog("AccountJSONStore", f"[WARN] Failed to clear account {self.email}: {e}")
 
 
 class MultiAccountInventoryStore:
@@ -218,58 +199,26 @@ class MultiAccountInventoryStore:
         return AccountJSONStore(email)
 
     def load_all(self):
-        global recorded_data
-        """Generator: Load all account JSON files and merge into a dict non-blocking."""
-        merged = OrderedDict()
-
-        # Wait until map is valid before loading anything
-        while not Routines.Checks.Map.MapValid():
-            yield
-
+        """Load all JSON files into global cache."""
         for file_path in self.inventory_dir.glob("*.json"):
             if file_path.suffix != ".json":
                 continue
-
             email = file_path.stem
-            store = AccountJSONStore(email)
+            AccountJSONStore(email).load()
 
-            # Small yield between file loads to stay non-blocking
-            yield
-
-            try:
-                account_data = store.load()
-                merged[email] = account_data
-            except Exception as e:
-                ConsoleLog("MultiAccountInventoryStore", f"[WARN] Failed to load {file_path}: {e}")
-
-            yield  # one more yield to spread out IO cost
-
-        recorded_data = merged
-        yield merged  # final yield so caller can retrieve result
+        return TEAM_INVENTORY_CACHE
 
     def clear_all_data(self):
-        """Generator: Remove all account JSON files and their backups non-blocking."""
-        # Wait until map is valid
-        while not Routines.Checks.Map.MapValid():
-            yield
-
+        """Delete all JSON files and clear cache."""
+        TEAM_INVENTORY_CACHE.clear()
         for file_path in self.inventory_dir.glob("*.json"):
-            backup_path = file_path.with_suffix(".json.bak")
             try:
-                if file_path.exists():
-                    file_path.unlink()
-                    ConsoleLog("MultiAccountInventoryStore", f"Deleted {file_path.name}")
-                yield  # allow other coroutines to run
+                file_path.unlink()
+                backup_path = file_path.with_suffix(".json.bak")
                 if backup_path.exists():
                     backup_path.unlink()
-                    ConsoleLog("MultiAccountInventoryStore", f"Deleted {backup_path.name}")
             except Exception as e:
                 ConsoleLog("MultiAccountInventoryStore", f"[WARN] Failed to delete {file_path}: {e}")
-
-            yield  # step between deletions
-
-        ConsoleLog("MultiAccountInventoryStore", "[INFO] All account data cleared.")
-        yield  # final yield before returning
 
 
 multi_store = MultiAccountInventoryStore()
@@ -306,7 +255,7 @@ def get_character_bag_items_coroutine(bag, email, char_name, bag_name):
         return
 
     bag_items = yield from _collect_bag_items(bag)
-    yield from store.save_bag(char_name=char_name, bag_name=bag_name, bag_items=bag_items)
+    store.save_bag(char_name=char_name, bag_name=bag_name, bag_items=bag_items)
 
 
 def get_storage_bag_items_coroutine(bag, email, storage_name):
@@ -317,7 +266,7 @@ def get_storage_bag_items_coroutine(bag, email, storage_name):
         return
 
     bag_items = yield from _collect_bag_items(bag)
-    yield from store.save_bag(storage_name=storage_name, bag_items=bag_items)
+    store.save_bag(storage_name=storage_name, bag_items=bag_items)
 
 
 def _collect_bag_items(bag):
@@ -379,7 +328,7 @@ def _collect_bag_items(bag):
     return bag_items
 
 
-def record_data():
+def record_account_data():
     global current_character_name
 
     current_email = GLOBAL_CACHE.Player.GetAccountEmail()
@@ -449,6 +398,7 @@ def aggregate_items_by_model(items_dict):
 
 # Pass in whatever your widget needs as argument
 def draw_widget():
+    global TEAM_INVENTORY_CACHE
     global window_x
     global window_y
     global window_collapsed
@@ -456,7 +406,6 @@ def draw_widget():
     global all_accounts_search_query
     global search_query
     global on_first_load
-    global recorded_data
     global current_character_name
     global multi_store
 
@@ -471,18 +420,17 @@ def draw_widget():
 
     if on_first_load:
         on_first_load = False
-
         # Load all accounts for search
-        GLOBAL_CACHE.Coroutines.append(multi_store.load_all())
+        TEAM_INVENTORY_CACHE = multi_store.load_all()
 
     # === AUTO-POLL (Refresh inventory snapshot) ===
-    if inventory_poller_timer.IsExpired():
-        GLOBAL_CACHE.Coroutines.append(record_data())
-        inventory_poller_timer.Reset()
+    if inventory_write_timer.IsExpired():
+        GLOBAL_CACHE.Coroutines.append(record_account_data())
+        inventory_write_timer.Reset()
 
-    if inventory_reader_timer.IsExpired():
-        GLOBAL_CACHE.Coroutines.append(multi_store.load_all())
-        inventory_reader_timer.Reset()
+    if inventory_read_timer.IsExpired():
+        TEAM_INVENTORY_CACHE = multi_store.load_all()
+        inventory_read_timer.Reset()
 
     if PyImGui.begin("Team Inventory Viewer"):
         PyImGui.text("Inventory + Storage Viewer")
@@ -494,7 +442,7 @@ def draw_widget():
         PyImGui.begin_child("ScrollableContent", (0.0, float(available_height)), True, 1)
 
         # === TABS BY ACCOUNT ===
-        if recorded_data:
+        if TEAM_INVENTORY_CACHE:
             if PyImGui.begin_tab_bar("AccountTabs"):
                 # === GLOBAL SEARCH TAB ===
                 if PyImGui.begin_tab_item("Search View"):
@@ -507,7 +455,7 @@ def draw_widget():
                     if all_accounts_search_query:
                         # === Gather all matching results across accounts ===
                         search_results = []
-                        for email, account_data in recorded_data.items():
+                        for email, account_data in TEAM_INVENTORY_CACHE.items():
                             # Build a neat identifier like: email — [Char1, Char2]
                             character_names = list(account_data.get("Characters", {}).keys())
                             if character_names:
@@ -607,7 +555,7 @@ def draw_widget():
                     else:
                         PyImGui.text("Type above to search across all accounts.")
                     PyImGui.end_tab_item()
-                for email, account_data in recorded_data.items():
+                for email, account_data in TEAM_INVENTORY_CACHE.items():
                     if PyImGui.begin_tab_item(email):
                         PyImGui.text(f"Account: {email}")
                         PyImGui.separator()
@@ -744,7 +692,7 @@ def draw_widget():
         PyImGui.text(f"{"Waiting for ..." if not current_character_name else current_character}")
         if PyImGui.collapsing_header("Advanced Clearing", True):
             PyImGui.text(
-                f'Save timer: {(inventory_poller_timer.GetTimeRemaining() / 1000):.1f}(s), Read timer: {(inventory_reader_timer.GetTimeRemaining() / 1000):.1f}(s)'
+                f'Save timer: {(inventory_write_timer.GetTimeRemaining() / 1000):.1f}(s), Read timer: {(inventory_read_timer.GetTimeRemaining() / 1000):.1f}(s)'
             )
             if PyImGui.begin_table("clear_buttons_table", 3, PyImGui.TableFlags.BordersInnerV):
                 # Define colors
@@ -773,7 +721,7 @@ def draw_widget():
                     char_name = GLOBAL_CACHE.Party.Players.GetPlayerNameByLoginNumber(login_number)
                     if current_email and char_name:
                         store = AccountJSONStore(current_email)
-                        GLOBAL_CACHE.Coroutines.append(store.clear_character(char_name))
+                        store.clear_character(char_name)
                         ConsoleLog("Inventory Recorder", f"Cleared character {char_name} for {current_email}.")
                     else:
                         ConsoleLog("Inventory Recorder", "No data found for this character.")
@@ -789,9 +737,9 @@ def draw_widget():
                     current_email = GLOBAL_CACHE.Player.GetAccountEmail()
                     if current_email:
                         store = AccountJSONStore(current_email)
-                        GLOBAL_CACHE.Coroutines.append(store.clear_account())
+                        store.clear_account()
                         ConsoleLog("Inventory Recorder", f"Cleared recorded data for {current_email}.")
-                        GLOBAL_CACHE.Coroutines.append(multi_store.load_all())
+                        TEAM_INVENTORY_CACHE = multi_store.load_all()
                     else:
                         ConsoleLog("Inventory Recorder", "No data found for this account.")
                 PyImGui.pop_style_color(3)
@@ -803,15 +751,14 @@ def draw_widget():
                 PyImGui.push_style_color(PyImGui.ImGuiCol.ButtonHovered, red_hover)
                 PyImGui.push_style_color(PyImGui.ImGuiCol.ButtonActive, red_active)
                 if PyImGui.button("Clear all accounts", width=col_width):
-                    GLOBAL_CACHE.Coroutines.append(multi_store.clear_all_data())
-                    GLOBAL_CACHE.Coroutines.append(multi_store.load_all())
+                    multi_store.clear_all_data()
+                    TEAM_INVENTORY_CACHE = multi_store.load_all()
                 PyImGui.pop_style_color(3)
                 PyImGui.end_table()
 
     if save_window_timer.HasElapsed(1000):
         # Position changed?
         if (end_pos[0], end_pos[1]) != (window_x, window_y):
-            print('has changed position!')
             window_x, window_y = int(end_pos[0]), int(end_pos[1])
             ini_window.write_key(MODULE_NAME, X_POS, str(window_x))
             ini_window.write_key(MODULE_NAME, Y_POS, str(window_y))
