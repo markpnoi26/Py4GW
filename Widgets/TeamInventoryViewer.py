@@ -3,7 +3,6 @@ import os
 import re
 import traceback
 from collections import OrderedDict
-import time
 
 import Py4GW  # type: ignore
 from Py4GWCoreLib import GLOBAL_CACHE
@@ -62,6 +61,8 @@ INVENTORY_BAGS = {
     "BeltPouch": Bags.BeltPouch.value,
     "Bag1": Bags.Bag1.value,
     "Bag2": Bags.Bag2.value,
+    "EquipmentPack": Bags.EquipmentPack.value,
+    "Equipped": Bags.EquippedItems.value,
 }
 
 STORAGE_BAGS = {
@@ -83,28 +84,46 @@ STORAGE_BAGS = {
 
 
 class SimpleFileLock:
-    def __init__(self, path, timeout=5):
-        self.lockfile = f"{path}.lock"
-        self.timeout = timeout
+    def __init__(self, path, timeout=5000):
+        self.lockfile = path
+        self.timeout = timeout  # milliseconds
+        self.acquired = False
+
+    def acquire(self):
+        timer = ThrottledTimer(self.timeout)
+        while os.path.exists(self.lockfile):
+            if timer.IsExpired():
+                return False  # could not acquire lock
+            return False  # non-blocking: check again later
+        # lock is free, acquire it
+        try:
+            with open(self.lockfile, "w") as f:
+                f.write("locked")
+            self.acquired = True
+            return True
+        except OSError:
+            # Another process may have acquired it in between
+            return False
+
+    def release(self):
+        if self.acquired and os.path.exists(self.lockfile):
+            try:
+                os.remove(self.lockfile)
+            except OSError:
+                pass  # lock already removed elsewhere
+            self.acquired = False
 
     def __enter__(self):
-        start = time.time()
-        while os.path.exists(self.lockfile):
-            if time.time() - start > self.timeout:
-                raise TimeoutError("Could not acquire lock")
-            time.sleep(0.05)
-        with open(self.lockfile, "w") as f:
-            f.write("locked")
+        return self.acquire()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        if os.path.exists(self.lockfile):
-            os.remove(self.lockfile)
+        self.release()
 
 
 class JSONInventoryStore:
     def __init__(self, json_path=JSON_INVENTORY_PATH, lock_path=JSON_INVENTORY_LOCK_PATH):
         self.json_path = json_path
-        self.lock = SimpleFileLock(lock_path, timeout=5)
+        self.lock = SimpleFileLock(lock_path, timeout=5000)
 
     def _read(self):
         try:
@@ -115,9 +134,35 @@ class JSONInventoryStore:
 
     def _write(self, data):
         temp_file = f"{self.json_path}.tmp"
+
+        # Write JSON to a temp file first
         with open(temp_file, "w") as f:
             json.dump(data, f, indent=2)
-        os.replace(temp_file, self.json_path)  # atomic replace
+
+        max_attempts = 5
+        attempt = 0
+        backoff = ThrottledTimer(50)  # 50ms interval between attempts
+
+        while attempt < max_attempts:
+            try:
+                os.replace(temp_file, self.json_path)
+                return  # success
+            except PermissionError:
+                # If throttled timer expired, retry
+                if backoff.IsExpired():
+                    attempt += 1
+                    backoff.Reset()  # exponential backoff
+            except Exception:
+                ConsoleLog('Filelock', "[WARN] Unexpected write error: {e}")
+                break
+
+        # Clean up if we still failed after max_attempts
+        try:
+            os.remove(temp_file)
+        except Exception:
+            pass
+
+        ConsoleLog('FileLock', "[WARN] Could not safely write {self.json_path} after {max_attempts} attempts.")
 
     def store(self, callback):
         """
@@ -174,7 +219,14 @@ class JSONInventoryStore:
     def clear_all_data(self):
         def updater(data):
             data.clear()  # remove all accounts, characters, storage
+        self.store(updater)
 
+    def clear_character(self, email, char_name):
+        """Clear a single character from an account"""
+        def updater(data):
+            chars = data.get(email, {}).get("Characters", {})
+            if char_name in chars:
+                del chars[char_name]
         self.store(updater)
 
     def load_all(self):
@@ -392,7 +444,7 @@ def draw_widget():
 
     PyImGui.set_next_window_size(1000, 800)
     if PyImGui.begin(MODULE_NAME):
-        PyImGui.text("Inventory + Storage Recorder by Email / Character (SQLite Edition)")
+        PyImGui.text("Inventory + Storage Viewer")
         PyImGui.separator()
 
         # === SCROLLABLE AREA START ===
@@ -418,13 +470,10 @@ def draw_widget():
                             # Build a neat identifier like: email — [Char1, Char2]
                             character_names = list(account_data.get("Characters", {}).keys())
                             if character_names:
-                                # Limit to 3 characters for readability
-                                display_chars = character_names[:3]
-                                # Join each character name on its own new line, indented
-                                character_block = "\n".join(f"   - {name}" for name in display_chars)
-                                account_label = f"{email}\n{character_block}"
+                                character_block = "\n".join(f"   - {name}" for name in character_names)
+                                account_label = f"{character_block}"
                             else:
-                                account_label = f"[{email}]\n   [No Characters]"
+                                account_label = "[No Characters]"
 
                             # --- Characters ---
                             if "Characters" in account_data:
@@ -477,10 +526,10 @@ def draw_widget():
                                 PyImGui.table_setup_column("Item Name", 0, 200.0)
                                 PyImGui.table_setup_column("Count", 0, 50.0)
                                 PyImGui.table_setup_column("Location", 0, 150.0)
-                                PyImGui.table_setup_column("Account (Characters)", 0, 300.0)
+                                PyImGui.table_setup_column("Account (Characters for reference)", 0, 300.0)
                                 PyImGui.table_headers_row()
 
-                                for entry in search_results:
+                                for index, entry in enumerate(search_results):
                                     texture = get_texture_for_model(entry["model_id"])
                                     PyImGui.table_next_row()
 
@@ -502,13 +551,14 @@ def draw_widget():
                                     # === LOCATION ===
                                     PyImGui.table_next_column()
                                     if entry["location_type"] == "Character":
-                                        PyImGui.text(f"{entry['character']} - {entry['bag']}")
+                                        PyImGui.text(f"{entry['character']}\n  - {entry['bag']}")
                                     else:
-                                        PyImGui.text(f"Storage - {entry['bag']}")
+                                        PyImGui.text(f"Storage\n  - {entry['bag']}")
 
                                     # === ACCOUNT IDENTIFIER ===
                                     PyImGui.table_next_column()
-                                    PyImGui.text(entry["account_label"])
+                                    if PyImGui.collapsing_header(f'{entry["email"]}##{index}'):
+                                        PyImGui.text(entry["account_label"])
 
                                 PyImGui.end_table()
                         else:
@@ -653,7 +703,7 @@ def draw_widget():
             f"Refresh in {int(inventory_poller_timer.GetTimeRemaining() // 1000)}(s) for {"..." if not current_character_name else current_character_name}"
         )
         if PyImGui.collapsing_header("Advanced Clearing", True):
-            if PyImGui.begin_table("clear_buttons_table", 2, PyImGui.TableFlags.BordersInnerV):
+            if PyImGui.begin_table("clear_buttons_table", 3, PyImGui.TableFlags.BordersInnerV):
                 # Define colors
                 orange_color = Color(255, 165, 0, 255).to_tuple_normalized()  # orange
                 orange_hover = Color(255, 200, 50, 255).to_tuple_normalized()
@@ -663,10 +713,31 @@ def draw_widget():
                 red_hover = Color(255, 50, 80, 255).to_tuple_normalized()
                 red_active = Color(180, 0, 40, 255).to_tuple_normalized()
 
-                PyImGui.table_next_row()
+                green_color = Color(50, 205, 50, 255).to_tuple_normalized()  # lime green
+                green_hover = Color(80, 230, 80, 255).to_tuple_normalized()
+                green_active = Color(0, 180, 0, 255).to_tuple_normalized()
 
-                # === Column 1: CLEAR CURRENT ACCOUNT ===
+                PyImGui.table_next_row()
+                # === CLEAR CHARACTER ===
                 PyImGui.table_set_column_index(0)
+                col_width = PyImGui.get_content_region_avail()[0]
+                PyImGui.push_style_color(PyImGui.ImGuiCol.Button, green_color)
+                PyImGui.push_style_color(PyImGui.ImGuiCol.ButtonHovered, green_hover)
+                PyImGui.push_style_color(PyImGui.ImGuiCol.ButtonActive, green_active)
+                if PyImGui.button("Clear Character", width=col_width):
+                    current_email = GLOBAL_CACHE.Player.GetAccountEmail()
+                    login_number = GLOBAL_CACHE.Party.Players.GetLoginNumberByAgentID(GLOBAL_CACHE.Player.GetAgentID())
+                    char_name = GLOBAL_CACHE.Party.Players.GetPlayerNameByLoginNumber(login_number)
+                    if current_email and char_name:
+                        store.clear_character(current_email, char_name)
+                        ConsoleLog("Inventory Recorder", f"Cleared character {char_name} for {current_email}.")
+                        recorded_data = store.load_all()
+                    else:
+                        ConsoleLog("Inventory Recorder", "No data found for this character.")
+                PyImGui.pop_style_color(3)
+
+                # === CLEAR CURRENT ACCOUNT ===
+                PyImGui.table_set_column_index(1)
                 col_width = PyImGui.get_content_region_avail()[0]
                 PyImGui.push_style_color(PyImGui.ImGuiCol.Button, orange_color)
                 PyImGui.push_style_color(PyImGui.ImGuiCol.ButtonHovered, orange_hover)
@@ -681,8 +752,8 @@ def draw_widget():
                         ConsoleLog("Inventory Recorder", "No data found for this account.")
                 PyImGui.pop_style_color(3)
 
-                # === Column 2: CLEAR ALL ACCOUNTS ===
-                PyImGui.table_set_column_index(1)
+                # === CLEAR ALL ACCOUNTS ===
+                PyImGui.table_set_column_index(2)
                 col_width = PyImGui.get_content_region_avail()[0]
                 PyImGui.push_style_color(PyImGui.ImGuiCol.Button, red_color)
                 PyImGui.push_style_color(PyImGui.ImGuiCol.ButtonHovered, red_hover)
