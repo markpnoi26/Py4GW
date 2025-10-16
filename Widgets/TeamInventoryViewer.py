@@ -80,6 +80,7 @@ STORAGE_BAGS = {
     "Storage12": Bags.Storage12.value,
     "Storage13": Bags.Storage13.value,
     "Storage14": Bags.Storage14.value,
+    "MaterialStorage": Bags.MaterialStorage.value
 }
 
 
@@ -214,19 +215,23 @@ class JSONInventoryStore:
     def clear_account(self, email):
         def updater(data):
             data.pop(email, None)  # safely remove account if it exists
+
         self.store(updater)
 
     def clear_all_data(self):
         def updater(data):
             data.clear()  # remove all accounts, characters, storage
+
         self.store(updater)
 
     def clear_character(self, email, char_name):
         """Clear a single character from an account"""
+
         def updater(data):
             chars = data.get(email, {}).get("Characters", {})
             if char_name in chars:
                 del chars[char_name]
+
         self.store(updater)
 
     def load_all(self):
@@ -449,7 +454,7 @@ def draw_widget():
 
         # === SCROLLABLE AREA START ===
         # Compute space for footer
-        available_height = PyImGui.get_window_height() - 175  # leave room for buttons + footer
+        available_height = PyImGui.get_window_height() - 190  # leave room for buttons + footer
         PyImGui.begin_child("ScrollableContent", (0.0, float(available_height)), True, 1)
 
         # === TABS BY ACCOUNT ===
@@ -699,10 +704,10 @@ def draw_widget():
         PyImGui.end_child()  # End scrollable section
 
         PyImGui.separator()
-        PyImGui.text(
-            f"Refresh in {int(inventory_poller_timer.GetTimeRemaining() // 1000)}(s) for {"..." if not current_character_name else current_character_name}"
-        )
+        current_character = f'Current Character: {current_character_name}'
+        PyImGui.text(f"{"Waiting for ..." if not current_character_name else current_character}")
         if PyImGui.collapsing_header("Advanced Clearing", True):
+            PyImGui.text(f'Polling in: {int(inventory_poller_timer.GetTimeRemaining() // 1000)}(s)')
             if PyImGui.begin_table("clear_buttons_table", 3, PyImGui.TableFlags.BordersInnerV):
                 # Define colors
                 orange_color = Color(255, 165, 0, 255).to_tuple_normalized()  # orange
