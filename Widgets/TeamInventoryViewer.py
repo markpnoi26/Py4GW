@@ -1,10 +1,12 @@
 import json
 import os
 import re
+import sqlite3
 import shutil
 import traceback
 from collections import OrderedDict
 from pathlib import Path
+from contextlib import closing
 
 import Py4GW  # type: ignore
 from Py4GWCoreLib import GLOBAL_CACHE
@@ -83,6 +85,234 @@ STORAGE_BAGS = {
     "Storage14": Bags.Storage14.value,
     "MaterialStorage": Bags.MaterialStorage.value,
 }
+
+
+class Inventory:
+    def __init__(self):
+        self.path = os.path.join(JSON_INVENTORY_PATH, 'inventory.db')
+        with closing(sqlite3.connect(self.path, timeout=1.0)) as conn:
+            c = conn.cursor()
+
+            # === Accounts ===
+            c.execute(
+                """
+            CREATE TABLE IF NOT EXISTS accounts (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                email TEXT UNIQUE
+            )
+            """
+            )
+
+            # === Characters ===
+            c.execute(
+                """
+            CREATE TABLE IF NOT EXISTS characters (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                account_id INTEGER,
+                name TEXT,
+                UNIQUE(account_id, name),
+                FOREIGN KEY (account_id) REFERENCES accounts(id)
+            )
+            """
+            )
+
+            # === Items (for both inventory + storage) ===
+            c.execute(
+                """
+            CREATE TABLE IF NOT EXISTS items (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                account_id INTEGER,
+                character_id INTEGER,
+                storage_name TEXT,
+                bag_name TEXT,
+                item_name TEXT,
+                model_id INTEGER,
+                count INTEGER,
+                FOREIGN KEY (account_id) REFERENCES accounts(id),
+                FOREIGN KEY (character_id) REFERENCES characters(id)
+            )
+            """
+            )
+
+            conn.commit()
+
+    def get_account_id(self, conn, email):
+        c = conn.cursor()
+        c.execute("INSERT OR IGNORE INTO accounts (email) VALUES (?)", (email,))
+        conn.commit()
+        c.execute("SELECT id FROM accounts WHERE email = ?", (email,))
+        return c.fetchone()[0]
+
+    def get_character_id(self, conn, account_id, name):
+        c = conn.cursor()
+        c.execute("INSERT OR IGNORE INTO characters (account_id, name) VALUES (?, ?)", (account_id, name))
+        conn.commit()
+        c.execute("SELECT id FROM characters WHERE account_id = ? AND name = ?", (account_id, name))
+        result = c.fetchone()
+        if result:
+            return result[0]
+        return None
+
+    def save_bag(self, email, char_name=None, storage_name=None, bag_name=None, bag_items={}):
+        """Insert or update items directly in the DB for this bag."""
+        try:
+            with closing(sqlite3.connect(self.path, timeout=1.0)) as conn:
+                account_id = self.get_account_id(conn, email)
+                character_id = self.get_character_id(conn, account_id, char_name) if char_name else None
+                c = conn.cursor()
+
+                # Delete old items for this bag first
+                if char_name:
+                    c.execute(
+                        """
+                        DELETE FROM items
+                        WHERE account_id=? AND character_id=? AND bag_name=?
+                    """,
+                        (account_id, character_id, bag_name),
+                    )
+                else:
+                    c.execute(
+                        """
+                        DELETE FROM items
+                        WHERE account_id=? AND storage_name=?
+                    """,
+                        (account_id, storage_name),
+                    )
+
+                # Insert new items
+                for item_name, info in bag_items.items():
+                    c.execute(
+                        """
+                        INSERT INTO items
+                        (account_id, character_id, bag_name, storage_name, item_name, model_id, count)
+                        VALUES (?, ?, ?, ?, ?, ?, ?)
+                    """,
+                        (
+                            account_id,
+                            character_id,
+                            bag_name if char_name else None,
+                            storage_name if not char_name else None,
+                            item_name,
+                            info.get("model_id", 0),
+                            info.get("count", 1),
+                        ),
+                    )
+                conn.commit()
+        except sqlite3.OperationalError as e:
+            error = 'Database timeout'
+            if "database is locked" in str(e):
+                error = 'Database write lock timeout'
+            ConsoleLog(f"Inventory Recorder [{error}]", "Write lock timeout reached. Will try again later.")
+
+    def delete_current_account(self, email):
+        try:
+            with closing(sqlite3.connect(self.path)) as conn:
+                c = conn.cursor()
+                c.execute(
+                    "DELETE FROM items WHERE account_id = (SELECT id FROM accounts WHERE email = ?)",
+                    (email,),
+                )
+                conn.commit()
+            ConsoleLog("Inventory Recorder", f"Cleared recorded data for {email}.")
+        except sqlite3.Error as e:
+            ConsoleLog("Inventory Recorder", f"Error deleting account '{email}': {e}")
+
+    def delete_all_accounts(self):
+        try:
+            with closing(sqlite3.connect(self.path)) as conn:
+                c = conn.cursor()
+                c.execute("DELETE FROM items")
+                c.execute("DELETE FROM characters")
+                c.execute("DELETE FROM accounts")
+                conn.commit()
+            ConsoleLog("Inventory Recorder", "Cleared ALL recorded data.")
+        except sqlite3.Error as e:
+            ConsoleLog("Inventory Recorder", f"Error deleting all data: {e}")
+
+    def delete_character(self, email, char_name):
+        """Delete all recorded data for a specific character under an account."""
+        try:
+            with closing(sqlite3.connect(self.path)) as conn:
+                c = conn.cursor()
+
+                # Get account and character IDs
+                c.execute("SELECT id FROM accounts WHERE email = ?", (email,))
+                account_row = c.fetchone()
+                if not account_row:
+                    ConsoleLog("Inventory Recorder", f"No account found for {email}.")
+                    return
+
+                account_id = account_row[0]
+
+                c.execute("SELECT id FROM characters WHERE account_id = ? AND name = ?", (account_id, char_name))
+                char_row = c.fetchone()
+                if not char_row:
+                    ConsoleLog("Inventory Recorder", f"No character named '{char_name}' found for {email}.")
+                    return
+
+                char_id = char_row[0]
+
+                # Delete items and character entry
+                c.execute("DELETE FROM items WHERE account_id = ? AND character_id = ?", (account_id, char_id))
+                c.execute("DELETE FROM characters WHERE id = ?", (char_id,))
+                conn.commit()
+
+            ConsoleLog("Inventory Recorder", f"Deleted data for character '{char_name}' under {email}.")
+        except sqlite3.Error as e:
+            ConsoleLog("Inventory Recorder", f"Error deleting character '{char_name}': {e}")
+
+    def load(self):
+        """Load all accounts, characters, and items into the in-memory format used by the UI."""
+        with closing(sqlite3.connect(self.path)) as conn:
+            c = conn.cursor()
+
+            recorded_data = OrderedDict()
+
+            # === Get all accounts ===
+            c.execute("SELECT id, email FROM accounts")
+            accounts = c.fetchall()
+
+            for account_id, email in accounts:
+                recorded_data[email] = {"Characters": OrderedDict(), "Storage": OrderedDict()}
+
+                # === Characters ===
+                c.execute("SELECT id, name FROM characters WHERE account_id = ?", (account_id,))
+                characters = c.fetchall()
+
+                for char_id, char_name in characters:
+                    recorded_data[email]["Characters"][char_name] = {"Inventory": OrderedDict()}
+
+                    # === Inventory items ===
+                    c.execute(
+                        """
+                        SELECT bag_name, item_name, model_id, count
+                        FROM items
+                        WHERE account_id = ? AND character_id = ? AND bag_name IS NOT NULL
+                    """,
+                        (account_id, char_id),
+                    )
+                    for bag_name, item_name, model_id, count in c.fetchall():
+                        inv = recorded_data[email]["Characters"][char_name]["Inventory"]
+                        if bag_name not in inv:
+                            inv[bag_name] = OrderedDict()
+                        inv[bag_name][item_name] = {"model_id": model_id, "count": count}
+
+                # === Storage items ===
+                c.execute(
+                    """
+                    SELECT storage_name, item_name, model_id, count
+                    FROM items
+                    WHERE account_id = ? AND storage_name IS NOT NULL
+                """,
+                    (account_id,),
+                )
+                for storage_name, item_name, model_id, count in c.fetchall():
+                    storage = recorded_data[email]["Storage"]
+                    if storage_name not in storage:
+                        storage[storage_name] = OrderedDict()
+                    storage[storage_name][item_name] = {"model_id": model_id, "count": count}
+
+            return recorded_data
 
 
 # region JSONStore
@@ -223,29 +453,28 @@ class MultiAccountInventoryStore:
 
 
 multi_store = MultiAccountInventoryStore()
+inventory = Inventory()
 
 
 # region Generators
 def get_character_bag_items_coroutine(bag, email, char_name, bag_name):
-    store = AccountJSONStore(email)
     """Updates recorded_data[email]["Characters"][char_name]["Inventory"][bag_name]"""
 
     if not email or not char_name:
         return
 
     bag_items = yield from _collect_bag_items(bag)
-    store.save_bag(char_name=char_name, bag_name=bag_name, bag_items=bag_items)
+    inventory.save_bag(email=email, char_name=char_name, bag_name=bag_name, bag_items=bag_items)
 
 
 def get_storage_bag_items_coroutine(bag, email, storage_name):
-    store = AccountJSONStore(email)
     """Updates recorded_data[email]["Storage"][bag_name]"""
 
     if not email:
         return
 
     bag_items = yield from _collect_bag_items(bag)
-    store.save_bag(storage_name=storage_name, bag_items=bag_items)
+    inventory.save_bag(email=email, storage_name=storage_name, bag_items=bag_items)
 
 
 def _collect_bag_items(bag):
@@ -387,7 +616,7 @@ def draw_widget():
     global search_query
     global on_first_load
     global current_character_name
-    global multi_store
+    global inventory
 
     if on_first_load:
         PyImGui.set_next_window_size(1000, 1000)
@@ -395,18 +624,18 @@ def draw_widget():
         PyImGui.set_next_window_collapsed(window_collapsed, 0)
         on_first_load = False
         # Load all accounts for search
-        TEAM_INVENTORY_CACHE = multi_store.load_all()
+        TEAM_INVENTORY_CACHE = inventory.load()
 
     new_collapsed = PyImGui.is_window_collapsed()
     end_pos = PyImGui.get_window_pos()
 
     # This triggers a reload of and save of bag data
     if inventory_write_timer.IsExpired():
-        GLOBAL_CACHE.Coroutines.append(record_account_data())  # needs to be coroutine as bags data doesn't come all at once
+        GLOBAL_CACHE.Coroutines.append(record_account_data())
         inventory_write_timer.Reset()
 
     if inventory_read_timer.IsExpired():
-        TEAM_INVENTORY_CACHE = multi_store.load_all()
+        TEAM_INVENTORY_CACHE = inventory.load()
         inventory_read_timer.Reset()
 
     if PyImGui.begin("Team Inventory Viewer"):
@@ -697,9 +926,7 @@ def draw_widget():
                     login_number = GLOBAL_CACHE.Party.Players.GetLoginNumberByAgentID(GLOBAL_CACHE.Player.GetAgentID())
                     char_name = GLOBAL_CACHE.Party.Players.GetPlayerNameByLoginNumber(login_number)
                     if current_email and char_name:
-                        store = AccountJSONStore(current_email)
-                        store.clear_character(char_name)
-                        ConsoleLog("Inventory Recorder", f"Cleared character {char_name} for {current_email}.")
+                        inventory.delete_character(current_email, char_name)
                     else:
                         ConsoleLog("Inventory Recorder", "No data found for this character.")
                 PyImGui.pop_style_color(3)
@@ -713,10 +940,8 @@ def draw_widget():
                 if PyImGui.button("Clear Current account", width=col_width):
                     current_email = GLOBAL_CACHE.Player.GetAccountEmail()
                     if current_email:
-                        store = AccountJSONStore(current_email)
-                        store.clear_account()
-                        ConsoleLog("Inventory Recorder", f"Cleared recorded data for {current_email}.")
-                        TEAM_INVENTORY_CACHE = multi_store.load_all()
+                        inventory.delete_current_account(current_email)
+                        TEAM_INVENTORY_CACHE = inventory.load()
                     else:
                         ConsoleLog("Inventory Recorder", "No data found for this account.")
                 PyImGui.pop_style_color(3)
@@ -728,8 +953,8 @@ def draw_widget():
                 PyImGui.push_style_color(PyImGui.ImGuiCol.ButtonHovered, red_hover)
                 PyImGui.push_style_color(PyImGui.ImGuiCol.ButtonActive, red_active)
                 if PyImGui.button("Clear all accounts", width=col_width):
-                    multi_store.clear_all_data()
-                    TEAM_INVENTORY_CACHE = multi_store.load_all()
+                    inventory.delete_all_accounts()
+                    TEAM_INVENTORY_CACHE = inventory.load()
                 PyImGui.pop_style_color(3)
                 PyImGui.end_table()
 
