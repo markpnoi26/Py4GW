@@ -109,7 +109,7 @@ def JagaMoraineFarmRoutine(bot: Botting) -> None:
     bot.States.RemoveManagedCoroutine("HandleStuckJagaMoraine")
     bot.States.AddHeader("Loot Items")
     bot.Items.LootItems()
-    bot.Items.AutoIDAndSalvageItems()
+    # bot.Items.AutoIDAndSalvageItems()
     bot.States.AddCustomState(lambda: NeedsInventoryManagement(bot), "Needs Inventory Management")
     bot.Move.XYAndExitMap(15850,-20550, target_map_name="Bjora Marches")
     
@@ -165,7 +165,9 @@ def KillEnemies(bot: Botting):
         if GLOBAL_CACHE.Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
             ConsoleLog("Killing Routine", "Player is dead, restarting.", Py4GW.Console.MessageType.Warning)
             fsm = bot.config.FSM
-            fsm.jump_to_state_by_name("[H]Town Routines_1")   
+            fsm.jump_to_state_by_name("[H]Town Routines_1") 
+            return 
+             
         yield from Routines.Yield.wait(1000)
         enemy_array = Routines.Agents.GetFilteredEnemyArray(player_pos[0],player_pos[1],Range.Spellcast.value)
     
@@ -199,16 +201,16 @@ def EquipSkillBar(bot: Botting):
 
 def HandleInventory(bot: Botting) -> None:
     bot.States.AddHeader("Inventory Handling")
-    bot.Items.AutoIDAndSalvageAndDepositItems() #sort bags, auto id, salvage, deposit to bank
+    # bot.Items.AutoIDAndSalvageAndDepositItems() #sort bags, auto id, salvage, deposit to bank
     bot.Move.XYAndInteractNPC(-23110, 14942) # Merchant in Longeyes Ledge
-    bot.Wait.ForTime(500)
-    bot.Merchant.SellMaterialsToMerchant() # Sell materials to merchant, make space in inventory
-    bot.Merchant.Restock.IdentifyKits() #restock identify kits
-    bot.Merchant.Restock.SalvageKits() #restock salvage kits
-    bot.Items.AutoIDAndSalvageAndDepositItems() #sort bags again to make sure everything is deposited
-    bot.Merchant.SellMaterialsToMerchant() #Sell remaining materials again to make sure inventory is clear
-    bot.Merchant.Restock.IdentifyKits() #restock identify kits
-    bot.Merchant.Restock.SalvageKits() #restock salvage kits
+    bot.Wait.ForTime(1500)
+    # bot.Merchant.SellMaterialsToMerchant() # Sell materials to merchant, make space in inventory
+    # bot.Merchant.Restock.IdentifyKits() #restock identify kits
+    # bot.Merchant.Restock.SalvageKits() #restock salvage kits
+    # bot.Items.AutoIDAndSalvageAndDepositItems() #sort bags again to make sure everything is deposited
+    # bot.Merchant.SellMaterialsToMerchant() #Sell remaining materials again to make sure inventory is clear
+    # bot.Merchant.Restock.IdentifyKits() #restock identify kits
+    # bot.Merchant.Restock.SalvageKits() #restock salvage kits
     bot.Items.Restock.BirthdayCupcake() #restock birthday cupcake
     
 def WaitforLeftAggroBall(bot : Botting):

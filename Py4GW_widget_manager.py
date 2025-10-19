@@ -31,6 +31,7 @@ class WidgetHandler:
         resolved_path = widgets_path or os.path.join(base_dir, "Widgets")
         self.widgets_path = os.path.abspath(resolved_path)
         self.show_widget_ui = True
+        self.__show_widget_ui = True
         
         self.widgets = {}
         self.widget_data_cache = {}
@@ -116,7 +117,10 @@ class WidgetHandler:
         style = ImGui.Selected_Style.pyimgui_style
         alpha = style.Alpha
         
-        if not self.show_widget_ui:
+        if self.show_widget_ui != self.__show_widget_ui:
+            self.__show_widget_ui = self.show_widget_ui
+        
+        if not self.__show_widget_ui:
             style.Alpha = 0.0
             style.Push()
         
@@ -129,9 +133,12 @@ class WidgetHandler:
                 ConsoleLog("WidgetHandler", f"Error executing widget {widget_name}: {str(e)}", Py4GW.Console.MessageType.Error)
                 ConsoleLog("WidgetHandler", f"Stack trace: {traceback.format_exc()}", Py4GW.Console.MessageType.Error)
 
-        if not self.show_widget_ui:
+        if not self.__show_widget_ui:
             style.Alpha = alpha
             style.Push()
+    
+    def set_widget_ui_visibility(self, visible: bool):
+        self.show_widget_ui = visible
             
     def execute_configuring_widgets(self):
         for widget_name, widget_info in self.widgets.items():

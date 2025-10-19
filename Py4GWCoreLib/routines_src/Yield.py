@@ -1113,23 +1113,26 @@ class Yield:
             from .Checks import Checks
             
             if len(item_array) == 0:
+                ConsoleLog("Yield LootItems", "No items to loot.", Console.MessageType.Info, True)
                 return True
             
             yield from Yield.wait(1000)
             if not Checks.Map.MapValid():
                 item_array.clear()
                 ActionQueueManager().ResetAllQueues()
+                ConsoleLog("Yield LootItems", "Map not valid, stopping loot.", Console.MessageType.Warning, True)
                 return False
             
             total_items = len(item_array)
             while len (item_array) > 0:
                 item_id = item_array.pop(0)
                 if item_id == 0:
+                    ConsoleLog("Yield LootItems", "Invalid item ID, skipping.", Console.MessageType.Warning, True)
                     continue
                 
                 free_slots_in_inventory = GLOBAL_CACHE.Inventory.GetFreeSlotCount()
                 if free_slots_in_inventory <= 0:
-                    ConsoleLog("LootItems", "No free slots in inventory, stopping loot.", Console.MessageType.Warning)
+                    ConsoleLog("Yield LootItems", "No free slots in inventory, stopping loot.", Console.MessageType.Warning, True)
                     item_array.clear()
                     ActionQueueManager().ResetAllQueues()
                     return False
@@ -1137,15 +1140,17 @@ class Yield:
                 if not Checks.Map.MapValid():
                     item_array.clear()
                     ActionQueueManager().ResetAllQueues()
+                    ConsoleLog("Yield LootItems", "Map not valid, stopping loot.", Console.MessageType.Warning, True)
                     return False
                 
                 if not GLOBAL_CACHE.Agent.IsValid(item_id):
+                    ConsoleLog("Yield LootItems", "Invalid item ID, skipping.", Console.MessageType.Warning, True)
                     continue
                 
                 item_x, item_y = GLOBAL_CACHE.Agent.GetXY(item_id)
                 item_reached = yield from Yield.Movement.FollowPath([(item_x, item_y)], timeout=pickup_timeout)
                 if not item_reached:
-                    ConsoleLog("LootItems", "Failed to reach item, stopping loot.", Console.MessageType.Warning)
+                    ConsoleLog("Yield LootItems", "Failed to reach item, stopping loot.", Console.MessageType.Warning, True)
                     item_array.clear()
                     ActionQueueManager().ResetAllQueues()
                     return False
@@ -1153,6 +1158,7 @@ class Yield:
                 if not Checks.Map.MapValid():
                     item_array.clear()
                     ActionQueueManager().ResetAllQueues()
+                    ConsoleLog("Yield LootItems", "Map not valid, stopping loot.", Console.MessageType.Warning, True)
                     return False
                 if GLOBAL_CACHE.Agent.IsValid(item_id):
                     yield from Yield.Player.InteractAgent(item_id)
@@ -1161,13 +1167,16 @@ class Yield:
                         live_items  = AgentArray.GetItemArray()
                         if item_id not in live_items :
                             break
-
+                else:
+                    ConsoleLog("Yield LootItems", "Item no longer valid, skipping.", Console.MessageType.Warning, True)
                     
                 if progress_callback and total_items > 0:
                     progress_callback(1 - len(item_array) / total_items)
-            if log and len(item_array) > 0:
-                ConsoleLog("LootItems", f"Looted {len(item_array)} items.", Console.MessageType.Info)
+            
+            if len(item_array) > 0:
+                ConsoleLog("Yield LootItems", f"Looted {len(item_array)} items.", Console.MessageType.Info, True)
                 
+            
             return True
 
         @staticmethod

@@ -34,6 +34,10 @@ class SharedCommandType(IntEnum):
     RequestAttention = 29
     SetTransparentClickThrough = 30
     SetOpacity = 31
+    
+    ActivateClient = 996 # privately Handled Command, by Frenkey
+    MoveClient = 997 # privately Handled Command, by Frenkey
+    MultiBoxing = 998 # privately Handled Command, by Frenkey
     LootEx = 999 # privately Handled Command, by Frenkey
     
 
