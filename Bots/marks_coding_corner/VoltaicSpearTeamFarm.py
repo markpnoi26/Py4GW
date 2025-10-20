@@ -193,7 +193,7 @@ def open_final_chest():
     yield
 
 
-def clear_item_id_blacklist_and_attempt_loot_again():
+def clear_item_id_blacklist_and_attempt_open_chest_again():
     LootConfig().ClearItemIDBlacklist()
     sender_email = GLOBAL_CACHE.Player.GetAccountEmail()
     accounts = GLOBAL_CACHE.ShMem.GetAllAccountData()
@@ -227,14 +227,21 @@ def clear_item_id_blacklist_and_attempt_loot_again():
         # Interacting with chest
         while command_type_routine_in_message_is_active(account.AccountEmail, SharedCommandType.InteractWithTarget):
             yield from Routines.Yield.wait(1000)
+        hero_ai_options.Combat = True
 
+
+def team_loot_items():
+    sender_email = GLOBAL_CACHE.Player.GetAccountEmail()
+    accounts = GLOBAL_CACHE.ShMem.GetAllAccountData()
+    for account in accounts:
+        if not account.AccountEmail or sender_email == account.AccountEmail:
+            continue
         GLOBAL_CACHE.ShMem.SendMessage(sender_email, account.AccountEmail, SharedCommandType.PickUpLoot, (0, 0, 0, 0))
         yield from Routines.Yield.wait(1000)
 
         # Looting
         while command_type_routine_in_message_is_active(account.AccountEmail, SharedCommandType.PickUpLoot):
             yield from Routines.Yield.wait(1000)
-        hero_ai_options.Combat = True
 
 
 def handle_on_danger_flagging(bot: Botting):
@@ -436,8 +443,9 @@ def farm_dungeon(bot: Botting) -> None:
     bot.Wait.ForTime(5000)
     bot.Interact.WithGadgetAtXY(-17461.00, -14258.00, "Main runner claim rewards")
     bot.States.AddCustomState(open_final_chest, "Open final chest")
-    bot.States.AddCustomState(clear_item_id_blacklist_and_attempt_loot_again, "Clears item blacklist, to loot again")
-    bot.Wait.ForTime(10000)
+    bot.States.AddCustomState(clear_item_id_blacklist_and_attempt_open_chest_again, "Clears item blacklist, to open chest again")
+    bot.States.AddCustomState(team_loot_items, "Clears item blacklist, to open chest again")
+    bot.Wait.ForTime(5000)
     bot.States.AddCustomState(
         lambda: toggle_hero_ai_team_combat(True), "Enable combat for rewards claim (in case of disabled)"
     )

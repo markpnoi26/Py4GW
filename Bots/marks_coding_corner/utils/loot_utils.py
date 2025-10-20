@@ -45,6 +45,14 @@ VIABLE_LOOT = {
     ModelID.Monstrous_Eye,
     # Lockpick
     ModelID.Lockpick,
+    # Halloween
+    ModelID.Candy_Apple,
+    ModelID.Pumpkin_Cookie,
+    ModelID.Candy_Corn,
+    ModelID.Squash_Serum,
+    ModelID.Trick_Or_Treat_Bag,
+    ModelID.Vial_Of_Absinthe,
+    ModelID.Witchs_Brew,
 }
 
 
@@ -97,9 +105,9 @@ def get_valid_salvagable_loot_array(viable_loot=VIABLE_LOOT):
     )
 
     item_array_salv = []
-    item_array_salv = AgentArray.Filter.ByCondition(
-        agent_array, lambda agent_id: Item.Usage.IsSalvageable(Agent.GetItemAgent(agent_id).item_id)
-    )
+    # item_array_salv = AgentArray.Filter.ByCondition(
+    #     agent_array, lambda agent_id: Item.Usage.IsSalvageable(Agent.GetItemAgent(agent_id).item_id)
+    # )
 
     item_array = list(set(item_array_model + item_array_salv))
     item_array = AgentArray.Sort.ByDistance(item_array, GLOBAL_CACHE.Player.GetXY())
