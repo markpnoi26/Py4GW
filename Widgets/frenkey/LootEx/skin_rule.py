@@ -50,6 +50,7 @@ class SkinRule:
     def __init__(self, skin_name: str = "", action: ItemAction = ItemAction.Stash):
         self.skin: str = skin_name
         self.action: ItemAction = action
+        self.full_stack_only: bool = False
         self.models: list[ItemModelInfo] = []
         self.rarities: dict[Rarity, bool] = {
             rarity: True for rarity in Rarity
@@ -66,6 +67,7 @@ class SkinRule:
         return {
             "skin": self.skin,
             "action": self.action.name,
+            "full_stack_only": self.full_stack_only,
             "model_ids": [model_id.to_dict() for model_id in self.models],
             "rarities": {rarity.name: enabled for rarity, enabled in self.rarities.items()},
             "requirements": self.requirements.to_dict() if self.requirements else None,
@@ -79,6 +81,8 @@ class SkinRule:
             skin_name=data["skin"],
             action=ItemAction[data["action"]]
         )
+
+        rule.full_stack_only = data.get("full_stack_only", False)
 
         rule.models = [
             ItemModelInfo.from_dict(model_id) for model_id in data.get("model_ids", [])
@@ -165,11 +169,21 @@ class SkinRule:
                     
             if self.mods:
                 inherent_mods = [
-                    mod for mod in item.weapon_mods if mod.mod_type == enum.ModType.Inherent]
+                    mod for mod in item.weapon_mods if mod.WeaponMod.mod_type == enum.ModType.Inherent]
 
                 if self.mods and (not inherent_mods or not any(
-                    mod.identifier in self.mods for mod in inherent_mods
+                    mod.WeaponMod.identifier in self.mods for mod in inherent_mods
                 )):
                     return False
 
         return True
+
+    def get_action(self, target_item) -> ItemAction: 
+        from Widgets.frenkey.LootEx import cache
+        item : cache.Cached_Item = target_item
+                
+        if self.action is ItemAction.Stash and item.is_stackable and self.full_stack_only:
+            if item.quantity < 250:
+                return ItemAction.Hold
+                
+        return self.action

@@ -22,7 +22,7 @@
             "SpellcastingWeapon"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 10248,
@@ -48,7 +48,7 @@
             "Offhand"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 8648,
@@ -84,7 +84,7 @@
             "Weapon"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 8376,
@@ -129,7 +129,7 @@
             "OffhandOrShield"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 10328,
@@ -165,7 +165,7 @@
             "Weapon"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 8872,
@@ -201,7 +201,7 @@
             "Weapon"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 8856,
@@ -237,12 +237,13 @@
             "Weapon"
         ],
         "UpgradeExists": true,
-        "StaffModifier": 
-            {
+        "ItemTypeSpecific": {
+            "Staff": {
                 "Identifier": 9522,
                 "Arg1": 3,
                 "Arg2": 186
-            },
+            }
+        },
         "Modifiers": [
             {
                 "Identifier": 8712,
@@ -278,7 +279,7 @@
             "SpellcastingWeapon"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 8984,
@@ -304,7 +305,7 @@
             "Offhand"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 8632,
@@ -340,7 +341,7 @@
             "Offhand"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 8600,
@@ -376,7 +377,7 @@
             "OffhandOrShield"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 10328,
@@ -412,7 +413,7 @@
             "Offhand"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 10280,
@@ -448,7 +449,7 @@
             "Weapon"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 8808,
@@ -484,7 +485,7 @@
             "Offhand"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 8616,
@@ -520,7 +521,7 @@
             "SpellcastingWeapon"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 8968,
@@ -556,7 +557,7 @@
             "SpellcastingWeapon"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 8952,
@@ -592,7 +593,7 @@
             "OffhandOrShield"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 10328,
@@ -628,7 +629,7 @@
             "SpellcastingWeapon"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9000,
@@ -664,7 +665,7 @@
             "MartialWeapon"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 8920,
@@ -700,7 +701,7 @@
             "Offhand"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 8456,
@@ -735,7 +736,7 @@
             "Offhand"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 8584,
@@ -771,7 +772,7 @@
             "OffhandOrShield"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 41240,
@@ -807,7 +808,7 @@
             "MartialWeapon"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9128,
@@ -833,7 +834,7 @@
             "Offhand"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 8456,
@@ -878,7 +879,7 @@
             "OffhandOrShield"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 41240,
@@ -914,7 +915,7 @@
             "Offhand"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 8920,
@@ -959,7 +960,7 @@
             "OffhandOrShield"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 8312,
@@ -985,7 +986,7 @@
             "Offhand"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 8488,
@@ -1021,7 +1022,7 @@
             "OffhandOrShield"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 10296,
@@ -1057,7 +1058,7 @@
             "EquippableItem"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9736,
@@ -1083,7 +1084,7 @@
             "Offhand"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 8568,
@@ -1119,7 +1120,7 @@
             "OffhandOrShield"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 41240,
@@ -1155,7 +1156,7 @@
             "OffhandOrShield"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 8344,
@@ -1191,7 +1192,7 @@
             "OffhandOrShield"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 10328,
@@ -1227,7 +1228,7 @@
             "OffhandOrShield"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 10328,
@@ -1263,7 +1264,7 @@
             "OffhandOrShield"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 41240,
@@ -1299,7 +1300,7 @@
             "OffhandOrShield"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 8360,
@@ -1335,7 +1336,7 @@
             "SpellcastingWeapon"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 8920,
@@ -1380,7 +1381,7 @@
             "Offhand"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9128,
@@ -1416,7 +1417,7 @@
             "OffhandOrShield"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 8328,
@@ -1452,7 +1453,7 @@
             "EquippableItem"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9720,
@@ -1488,7 +1489,7 @@
             "OffhandOrShield"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 41240,
@@ -1524,7 +1525,7 @@
             "OffhandOrShield"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 10328,
@@ -1560,7 +1561,7 @@
             "Weapon"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 8824,
@@ -1596,7 +1597,7 @@
             "OffhandOrShield"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 10328,
@@ -1632,7 +1633,7 @@
             "Offhand"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 8536,
@@ -1668,7 +1669,7 @@
             "OffhandOrShield"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 10328,
@@ -1704,7 +1705,7 @@
             "OffhandOrShield"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 41240,
@@ -1740,7 +1741,7 @@
             "OffhandOrShield"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 41240,
@@ -1776,7 +1777,7 @@
             "Weapon"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 8760,
@@ -1821,7 +1822,7 @@
             "Weapon"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 8792,
@@ -1857,7 +1858,7 @@
             "Weapon"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 8840,
@@ -1883,7 +1884,7 @@
             "Staff"
         ],
         "UpgradeExists": false,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -1909,7 +1910,7 @@
             "Staff"
         ],
         "UpgradeExists": false,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -1935,7 +1936,7 @@
             "Staff"
         ],
         "UpgradeExists": false,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -1961,7 +1962,7 @@
             "Staff"
         ],
         "UpgradeExists": false,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -1987,7 +1988,7 @@
             "Staff"
         ],
         "UpgradeExists": false,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -2013,7 +2014,7 @@
             "Staff"
         ],
         "UpgradeExists": false,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -2039,7 +2040,7 @@
             "Staff"
         ],
         "UpgradeExists": false,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -2065,7 +2066,7 @@
             "Staff"
         ],
         "UpgradeExists": false,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -2091,7 +2092,7 @@
             "Staff"
         ],
         "UpgradeExists": false,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -2117,7 +2118,7 @@
             "Staff"
         ],
         "UpgradeExists": false,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -2143,7 +2144,7 @@
             "Staff"
         ],
         "UpgradeExists": false,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -2169,7 +2170,7 @@
             "Staff"
         ],
         "UpgradeExists": false,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -2195,7 +2196,7 @@
             "Staff"
         ],
         "UpgradeExists": false,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -2221,7 +2222,7 @@
             "Staff"
         ],
         "UpgradeExists": false,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -2247,7 +2248,7 @@
             "OffhandOrShield"
         ],
         "UpgradeExists": false,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9336,
@@ -2273,7 +2274,7 @@
             "Staff"
         ],
         "UpgradeExists": false,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -2299,7 +2300,7 @@
             "Staff"
         ],
         "UpgradeExists": false,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -2325,7 +2326,7 @@
             "Staff"
         ],
         "UpgradeExists": false,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -2351,7 +2352,7 @@
             "Staff"
         ],
         "UpgradeExists": false,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -2377,7 +2378,7 @@
             "Weapon"
         ],
         "UpgradeExists": false,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 8760,
@@ -2412,7 +2413,7 @@
             "Staff"
         ],
         "UpgradeExists": false,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -2438,7 +2439,7 @@
             "Weapon"
         ],
         "UpgradeExists": false,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 8760,
@@ -2460,32 +2461,6 @@
             }
         ]
     },
-    "vs. Charr": {
-        "Identifier": "vs. Charr",
-        "Descriptions": {
-            "English": "Armor +{arg2} vs. Charr"
-        },
-        "Names": {
-            "English": "vs. Charr"
-        },
-        "ModType": "Inherent",
-        "TargetTypes": [
-            "OffhandOrShield"
-        ],
-        "UpgradeExists": false,
-        "StaffModifier": null,
-        "Modifiers": [
-            {
-                "Identifier": 8520,
-                "Arg1": 1,
-                "Arg2": 10,
-                "Arg": 266,
-                "ModifierValueArg": "Arg2",
-                "Min": 5,
-                "Max": 10
-            }
-        ]
-    },
     "vs. Blunt damage": {
         "Identifier": "vs. Blunt damage",
         "Descriptions": {
@@ -2499,65 +2474,39 @@
             "OffhandOrShield"
         ],
         "UpgradeExists": false,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 8472,
                 "Arg1": 0,
                 "Arg2": 10,
-                "Arg": 2058,
+                "Arg": 10,
                 "ModifierValueArg": "Arg2",
                 "Min": 5,
                 "Max": 10
             }
         ]
     },
-    "vs. Piercing damage": {
-        "Identifier": "vs. Piercing damage",
+    "vs. Charr": {
+        "Identifier": "vs. Charr",
         "Descriptions": {
-            "English": "Armor +{arg2} vs. Piercing damage"
+            "English": "Armor +{arg2} vs. Charr"
         },
         "Names": {
-            "English": "vs. Piercing damage"
+            "English": "vs. Charr"
         },
         "ModType": "Inherent",
         "TargetTypes": [
             "OffhandOrShield"
         ],
         "UpgradeExists": false,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
-                "Identifier": 8472,
+                "Identifier": 8520,
                 "Arg1": 1,
                 "Arg2": 10,
-                "Arg": 2058,
-                "ModifierValueArg": "Arg2",
-                "Min": 5,
-                "Max": 10
-            }
-        ]
-    },
-    "vs. Slashing damage": {
-        "Identifier": "vs. Slashing damage",
-        "Descriptions": {
-            "English": "Armor +{arg2} vs. Slashing damage"
-        },
-        "Names": {
-            "English": "vs. Slashing damage"
-        },
-        "ModType": "Inherent",
-        "TargetTypes": [
-            "OffhandOrShield"
-        ],
-        "UpgradeExists": false,
-        "StaffModifier": null,
-        "Modifiers": [
-            {
-                "Identifier": 8472,
-                "Arg1": 2,
-                "Arg2": 10,
-                "Arg": 2058,
+                "Arg": 266,
                 "ModifierValueArg": "Arg2",
                 "Min": 5,
                 "Max": 10
@@ -2577,91 +2526,13 @@
             "OffhandOrShield"
         ],
         "UpgradeExists": false,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 8472,
                 "Arg1": 3,
                 "Arg2": 10,
-                "Arg": 2058,
-                "ModifierValueArg": "Arg2",
-                "Min": 5,
-                "Max": 10
-            }
-        ]
-    },
-    "vs. Lightning damage": {
-        "Identifier": "vs. Lightning damage",
-        "Descriptions": {
-            "English": "Armor +{arg2} vs. Lightning damage"
-        },
-        "Names": {
-            "English": "vs. Lightning damage"
-        },
-        "ModType": "Inherent",
-        "TargetTypes": [
-            "OffhandOrShield"
-        ],
-        "UpgradeExists": false,
-        "StaffModifier": null,
-        "Modifiers": [
-            {
-                "Identifier": 8472,
-                "Arg1": 4,
-                "Arg2": 10,
-                "Arg": 2058,
-                "ModifierValueArg": "Arg2",
-                "Min": 5,
-                "Max": 10
-            }
-        ]
-    },
-    "vs. Fire damage": {
-        "Identifier": "vs. Fire damage",
-        "Descriptions": {
-            "English": "Armor +{arg2} vs. Fire damage"
-        },
-        "Names": {
-            "English": "vs. Fire damage"
-        },
-        "ModType": "Inherent",
-        "TargetTypes": [
-            "OffhandOrShield"
-        ],
-        "UpgradeExists": false,
-        "StaffModifier": null,
-        "Modifiers": [
-            {
-                "Identifier": 8472,
-                "Arg1": 5,
-                "Arg2": 10,
-                "Arg": 2058,
-                "ModifierValueArg": "Arg2",
-                "Min": 5,
-                "Max": 10
-            }
-        ]
-    },
-    "vs. Earth damage": {
-        "Identifier": "vs. Earth damage",
-        "Descriptions": {
-            "English": "Armor +{arg2} vs. Earth damage"
-        },
-        "Names": {
-            "English": "vs. Earth damage"
-        },
-        "ModType": "Inherent",
-        "TargetTypes": [
-            "OffhandOrShield"
-        ],
-        "UpgradeExists": false,
-        "StaffModifier": null,
-        "Modifiers": [
-            {
-                "Identifier": 8472,
-                "Arg1": 11,
-                "Arg2": 10,
-                "Arg": 2058,
+                "Arg": 778,
                 "ModifierValueArg": "Arg2",
                 "Min": 5,
                 "Max": 10
@@ -2681,7 +2552,7 @@
             "OffhandOrShield"
         ],
         "UpgradeExists": false,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 8520,
@@ -2707,7 +2578,7 @@
             "OffhandOrShield"
         ],
         "UpgradeExists": false,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 8520,
@@ -2733,13 +2604,65 @@
             "OffhandOrShield"
         ],
         "UpgradeExists": false,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 8520,
                 "Arg1": 6,
                 "Arg2": 10,
                 "Arg": 1546,
+                "ModifierValueArg": "Arg2",
+                "Min": 5,
+                "Max": 10
+            }
+        ]
+    },
+    "vs. Earth damage": {
+        "Identifier": "vs. Earth damage",
+        "Descriptions": {
+            "English": "Armor +{arg2} vs. Earth damage"
+        },
+        "Names": {
+            "English": "vs. Earth damage"
+        },
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "OffhandOrShield"
+        ],
+        "UpgradeExists": false,
+        "ItemTypeSpecific": {},
+        "Modifiers": [
+            {
+                "Identifier": 8472,
+                "Arg1": 11,
+                "Arg2": 10,
+                "Arg": 2826,
+                "ModifierValueArg": "Arg2",
+                "Min": 5,
+                "Max": 10
+            }
+        ]
+    },
+    "vs. Fire damage": {
+        "Identifier": "vs. Fire damage",
+        "Descriptions": {
+            "English": "Armor +{arg2} vs. Fire damage"
+        },
+        "Names": {
+            "English": "vs. Fire damage"
+        },
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "OffhandOrShield"
+        ],
+        "UpgradeExists": false,
+        "ItemTypeSpecific": {},
+        "Modifiers": [
+            {
+                "Identifier": 8472,
+                "Arg1": 5,
+                "Arg2": 10,
+                "Arg": 1290,
                 "ModifierValueArg": "Arg2",
                 "Min": 5,
                 "Max": 10
@@ -2759,13 +2682,39 @@
             "OffhandOrShield"
         ],
         "UpgradeExists": false,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 8520,
                 "Arg1": 5,
                 "Arg2": 10,
                 "Arg": 1290,
+                "ModifierValueArg": "Arg2",
+                "Min": 5,
+                "Max": 10
+            }
+        ]
+    },
+    "vs. Lightning damage": {
+        "Identifier": "vs. Lightning damage",
+        "Descriptions": {
+            "English": "Armor +{arg2} vs. Lightning damage"
+        },
+        "Names": {
+            "English": "vs. Lightning damage"
+        },
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "OffhandOrShield"
+        ],
+        "UpgradeExists": false,
+        "ItemTypeSpecific": {},
+        "Modifiers": [
+            {
+                "Identifier": 8472,
+                "Arg1": 4,
+                "Arg2": 10,
+                "Arg": 1034,
                 "ModifierValueArg": "Arg2",
                 "Min": 5,
                 "Max": 10
@@ -2785,13 +2734,39 @@
             "OffhandOrShield"
         ],
         "UpgradeExists": false,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 8520,
                 "Arg1": 10,
                 "Arg2": 10,
                 "Arg": 2570,
+                "ModifierValueArg": "Arg2",
+                "Min": 5,
+                "Max": 10
+            }
+        ]
+    },
+    "vs. Piercing damage": {
+        "Identifier": "vs. Piercing damage",
+        "Descriptions": {
+            "English": "Armor +{arg2} vs. Piercing damage"
+        },
+        "Names": {
+            "English": "vs. Piercing damage"
+        },
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "OffhandOrShield"
+        ],
+        "UpgradeExists": false,
+        "ItemTypeSpecific": {},
+        "Modifiers": [
+            {
+                "Identifier": 8472,
+                "Arg1": 1,
+                "Arg2": 10,
+                "Arg": 266,
                 "ModifierValueArg": "Arg2",
                 "Min": 5,
                 "Max": 10
@@ -2811,7 +2786,7 @@
             "OffhandOrShield"
         ],
         "UpgradeExists": false,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 8520,
@@ -2837,13 +2812,39 @@
             "OffhandOrShield"
         ],
         "UpgradeExists": false,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 8520,
                 "Arg1": 4,
                 "Arg2": 10,
                 "Arg": 1034,
+                "ModifierValueArg": "Arg2",
+                "Min": 5,
+                "Max": 10
+            }
+        ]
+    },
+    "vs. Slashing damage": {
+        "Identifier": "vs. Slashing damage",
+        "Descriptions": {
+            "English": "Armor +{arg2} vs. Slashing damage"
+        },
+        "Names": {
+            "English": "vs. Slashing damage"
+        },
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "OffhandOrShield"
+        ],
+        "UpgradeExists": false,
+        "ItemTypeSpecific": {},
+        "Modifiers": [
+            {
+                "Identifier": 8472,
+                "Arg1": 2,
+                "Arg2": 10,
+                "Arg": 522,
                 "ModifierValueArg": "Arg2",
                 "Min": 5,
                 "Max": 10
@@ -2863,7 +2864,7 @@
             "OffhandOrShield"
         ],
         "UpgradeExists": false,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 8520,
@@ -2889,7 +2890,7 @@
             "OffhandOrShield"
         ],
         "UpgradeExists": false,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 8520,
@@ -2915,7 +2916,7 @@
             "OffhandOrShield"
         ],
         "UpgradeExists": false,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 8520,
@@ -2951,7 +2952,7 @@
             "Staff"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 10248,
@@ -2992,7 +2993,7 @@
             "Spear"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9320,
@@ -3033,7 +3034,7 @@
             "Spear"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9320,
@@ -3074,7 +3075,7 @@
             "Spear"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9320,
@@ -3110,10 +3111,12 @@
             "Staff"
         ],
         "UpgradeExists": true,
-        "StaffModifier": {
-            "Identifier": 9520,
-            "Arg1": 1,
-            "Arg2": 34
+        "ItemTypeSpecific": {
+            "Staff": {
+                "Identifier": 9520,
+                "Arg1": 1,
+                "Arg2": 34
+            }
         },
         "Modifiers": [
             {
@@ -3150,7 +3153,7 @@
             "MartialWeapon"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9400,
@@ -3186,7 +3189,7 @@
             "MartialWeapon"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9400,
@@ -3227,7 +3230,7 @@
             "Spear"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9144,
@@ -3263,10 +3266,12 @@
             "Staff"
         ],
         "UpgradeExists": true,
-        "StaffModifier": {
-            "Identifier": 9520,
-            "Arg1": 1,
-            "Arg2": 58
+        "ItemTypeSpecific": {
+            "Staff": {
+                "Identifier": 9520,
+                "Arg1": 1,
+                "Arg2": 58
+            }
         },
         "Modifiers": [
             {
@@ -3306,7 +3311,7 @@
             "Spear"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9320,
@@ -3342,7 +3347,7 @@
             "MartialWeapon"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9400,
@@ -3378,7 +3383,7 @@
             "Staff"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 8920,
@@ -3419,7 +3424,7 @@
             "Spear"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9320,
@@ -3455,7 +3460,7 @@
             "MartialWeapon"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9400,
@@ -3493,7 +3498,7 @@
             "Spear"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9320,
@@ -3529,7 +3534,7 @@
             "MartialWeapon"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9208,
@@ -3565,12 +3570,13 @@
             "Staff"
         ],
         "UpgradeExists": true,
-        "StaffModifier": 
-            {
+        "ItemTypeSpecific": {
+            "Staff": {
                 "Identifier": 9520,
                 "Arg1": 4,
                 "Arg2": 30
-            },
+            }
+        },
         "Modifiers": [
             {
                 "Identifier": 8712,
@@ -3608,7 +3614,7 @@
             "Scythe"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9512,
@@ -3656,7 +3662,7 @@
             "Spear"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9512,
@@ -3701,7 +3707,7 @@
             "MartialWeapon"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9496,
@@ -3746,7 +3752,7 @@
             "Staff"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -3782,7 +3788,7 @@
             "Offhand"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 10248,
@@ -3818,7 +3824,7 @@
             "Axe"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -3844,7 +3850,7 @@
             "Staff"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -3880,7 +3886,7 @@
             "Staff"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -3910,7 +3916,7 @@
             "Staff"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 32896,
@@ -3945,7 +3951,7 @@
             "Staff"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -3971,7 +3977,7 @@
             "Staff"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -4007,7 +4013,7 @@
             "Daggers"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -4033,7 +4039,7 @@
             "Staff"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -4073,7 +4079,7 @@
             "Staff"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 32896,
@@ -4119,10 +4125,12 @@
             "Staff"
         ],
         "UpgradeExists": true,
-        "StaffModifier": {
-            "Identifier": 9520,
-            "Arg1": 1,
-            "Arg2": 165
+        "ItemTypeSpecific": {
+            "Staff": {
+                "Identifier": 9520,
+                "Arg1": 1,
+                "Arg2": 165
+            }
         },
         "Modifiers": [
             {
@@ -4163,7 +4171,7 @@
             "Staff"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 32896,
@@ -4210,7 +4218,7 @@
             "Offhand"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9064,
@@ -4236,7 +4244,7 @@
             "Staff"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -4262,7 +4270,7 @@
             "Staff"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -4292,7 +4300,7 @@
             "Staff"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 32896,
@@ -4331,7 +4339,7 @@
             "Staff"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 32896,
@@ -4366,7 +4374,7 @@
             "Staff"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -4403,7 +4411,7 @@
             "Staff"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 8888,
@@ -4441,7 +4449,7 @@
             "Offhand"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9096,
@@ -4477,7 +4485,7 @@
             "Staff"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -4516,10 +4524,12 @@
             "Offhand"
         ],
         "UpgradeExists": true,
-        "StaffModifier": {
-            "Identifier": 9520,
-            "Arg1": 1,
-            "Arg2": 185
+        "ItemTypeSpecific": {
+            "Staff": {
+                "Identifier": 9520,
+                "Arg1": 1,
+                "Arg2": 185
+            }
         },
         "Modifiers": [
             {
@@ -4550,7 +4560,7 @@
             "Staff"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 32896,
@@ -4595,7 +4605,7 @@
             "Hammer"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -4621,7 +4631,7 @@
             "Staff"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -4647,7 +4657,7 @@
             "Staff"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -4683,7 +4693,7 @@
             "Staff"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -4719,7 +4729,7 @@
             "Bow"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -4755,7 +4765,7 @@
             "Staff"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 10296,
@@ -4791,7 +4801,7 @@
             "Wand"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 10280,
@@ -4821,7 +4831,7 @@
             "Staff"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 32896,
@@ -4856,7 +4866,7 @@
             "Staff"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -4896,7 +4906,7 @@
             "Staff"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 32896,
@@ -4941,7 +4951,7 @@
             "Wand"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9128,
@@ -4977,7 +4987,7 @@
             "Staff"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -5013,7 +5023,7 @@
             "Scythe"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -5050,7 +5060,7 @@
             "Staff"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 8536,
@@ -5080,7 +5090,7 @@
             "Staff"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 32896,
@@ -5125,7 +5135,7 @@
             "Staff"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -5151,7 +5161,7 @@
             "Staff"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -5187,7 +5197,7 @@
             "Staff"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -5223,7 +5233,7 @@
             "Spear"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -5259,7 +5269,7 @@
             "Offhand"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 8712,
@@ -5295,7 +5305,7 @@
             "Sword"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -5325,7 +5335,7 @@
             "Staff"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 32896,
@@ -5364,7 +5374,7 @@
             "Staff"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 32896,
@@ -5411,7 +5421,7 @@
             "Offhand"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9080,
@@ -5448,7 +5458,7 @@
             "Staff"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 8488,
@@ -5474,7 +5484,7 @@
             "Staff"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -5512,7 +5522,7 @@
             "Staff"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 10408,
@@ -5550,7 +5560,7 @@
             "Staff"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 10408,
@@ -5578,7 +5588,7 @@
             "Staff"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 10408,
@@ -5616,7 +5626,7 @@
             "Staff"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 10408,
@@ -5654,7 +5664,7 @@
             "Staff"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 10408,
@@ -5692,7 +5702,7 @@
             "Staff"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 10408,
@@ -5730,7 +5740,7 @@
             "Staff"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 10408,
@@ -5768,7 +5778,7 @@
             "Staff"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 10408,
@@ -5806,7 +5816,7 @@
             "Staff"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 10408,
@@ -5844,7 +5854,7 @@
             "Staff"
         ],
         "UpgradeExists": true,
-        "StaffModifier": null,
+        "ItemTypeSpecific": {},
         "Modifiers": [
             {
                 "Identifier": 10408,

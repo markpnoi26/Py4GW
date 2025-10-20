@@ -592,6 +592,14 @@ class BaseModifierInfo:
             "Arg2": self.arg2
         }
     
+    @staticmethod
+    def from_dict(data: dict) -> 'BaseModifierInfo':
+        return BaseModifierInfo(
+            identifier=data.get("Identifier", 0),
+            arg1=data.get("Arg1", 0),
+            arg2=data.get("Arg2", 0)
+        )
+    
 @dataclass
 class ModifierInfo(BaseModifierInfo):        
     modifier_value_arg: ModifierValueArg = ModifierValueArg.None_
@@ -1057,7 +1065,7 @@ class Rune(ItemMod):
 class WeaponMod(ItemMod):
     _mod_identifier_lookup: dict[str, str] = field(default_factory=dict)    
     target_types : list[ItemType] = field(default_factory=list)
-    staff_modifier : Optional[BaseModifierInfo] = None
+    item_type_specific : dict[ItemType, BaseModifierInfo] = field(default_factory=dict)
 
     ## extracted weapon mods share the same modelid, thus we need to check the item type it belongs to through ModifierIdentifier.ItemType which gives us a ModTargetType
 
@@ -1123,10 +1131,11 @@ class WeaponMod(ItemMod):
         """
         results : list[tuple[int, int, int]] = []
         
-        if item_type == ItemType.Staff and self.staff_modifier:
-            staff_modifier = next(((identifier, arg1, arg2) for identifier, arg1, arg2 in modifiers if identifier == self.staff_modifier.identifier and arg1 == self.staff_modifier.arg1 and arg2 == self.staff_modifier.arg2), None)
-
-            if not staff_modifier:
+        if item_type in self.item_type_specific:
+            item_type_specific = self.item_type_specific[item_type]
+            
+            matches = any(identifier == item_type_specific.identifier and arg1 == item_type_specific.arg1 and arg2 == item_type_specific.arg2 for identifier, arg1, arg2 in modifiers)
+            if not matches:
                 return []
         
         for mod in self.modifiers: #The modifiers stored in the Item Mod json   
@@ -1253,7 +1262,7 @@ class WeaponMod(ItemMod):
             'ModType': self.mod_type.name,
             'TargetTypes': [target_type.name for target_type in self.target_types],      
             'UpgradeExists': self.upgrade_exists, 
-            'StaffModifier': self.staff_modifier.to_dict() if self.staff_modifier else None,
+            'ItemTypeSpecific': {item_type.name: mod_info.to_dict() for item_type, mod_info in self.item_type_specific.items()} if self.item_type_specific else {},
             'Modifiers': [
                 {
                     'Identifier': modifier.identifier,
@@ -1289,11 +1298,7 @@ class WeaponMod(ItemMod):
             mod_type=ModType[json["ModType"]],
             target_types=[ItemType[target_type] for target_type in json["TargetTypes"]] if "TargetTypes" in json else [],
             upgrade_exists=json["UpgradeExists"],
-            staff_modifier=BaseModifierInfo(
-                identifier=json["StaffModifier"]["Identifier"],
-                arg1=json["StaffModifier"]["Arg1"],
-                arg2=json["StaffModifier"]["Arg2"]
-            ) if json.get("StaffModifier") else None,
+            item_type_specific={ItemType[item_type]: BaseModifierInfo.from_dict(mod_info) for item_type, mod_info in json.get("ItemTypeSpecific", {}).items()},
             modifiers=[
                 ModifierInfo(
                     identifier=modifier["Identifier"],
@@ -1337,13 +1342,62 @@ class ModInfo:
         
         return mod
 
-class WeaponModInfo():
+class BaseModInfo():
     def __init__(self):
-        self.WeaponMod : WeaponMod
+        self.Mod : ItemMod
         self.Modifiers : list[tuple[int, int, int]] = []
         self.IsMaxed : bool = False
         self.Value : int = 0
+        
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, BaseModInfo):
+            return NotImplemented
+        return self.Modifiers == other.Modifiers
+
+    def __hash__(self) -> int:
+        # convert list of tuples to a tuple of tuples so it’s hashable
+        return hash(tuple(self.Modifiers))
+
+    def __lt__(self, other: "BaseModInfo") -> bool:
+        """Optional: allows sorting ModInfos (for example by Value or Modifier count)."""
+        if not isinstance(other, BaseModInfo):
+            return NotImplemented
+        return (self.Value, len(self.Modifiers)) < (other.Value, len(other.Modifiers))
+
     
+class RuneModInfo(BaseModInfo):
+    @property
+    def Rune(self) -> Rune:
+        return self.Mod  # type: ignore
+    
+    @staticmethod
+    def get_from_modifiers(modifiers: list[tuple[int, int, int]], item_type: ItemType = ItemType.Unknown) -> list["RuneModInfo"] | None:
+        if not modifiers:
+            return None
+        
+        from Widgets.frenkey.LootEx.data import Data
+        data = Data()
+        
+        mod_infos : list["RuneModInfo"] = []
+        for rune in data.Runes.values():
+            matches, is_maxed = rune.matches_modifiers(modifiers)
+            if not matches:
+                continue
+                    
+            rune_mod_info = RuneModInfo()
+            rune_mod_info.Mod = rune
+            rune_mod_info.Modifiers = modifiers
+            rune_mod_info.IsMaxed = is_maxed
+            
+            mod_infos.append(rune_mod_info) 
+        
+        return mod_infos   
+
+class WeaponModInfo(BaseModInfo):       
+    @property
+    def WeaponMod(self) -> WeaponMod:
+        return self.Mod  # type: ignore
+     
     @staticmethod
     def get_from_modifiers(modifiers: list[tuple[int, int, int]], item_type: ItemType = ItemType.Unknown) -> list["WeaponModInfo"] | None:
         if not modifiers:
@@ -1352,7 +1406,7 @@ class WeaponModInfo():
         from Widgets.frenkey.LootEx.data import Data
         data = Data()
         
-        mod_infos : list[WeaponModInfo] = []
+        mod_infos : list["WeaponModInfo"] = []
         
         for weapon_mod in data.Weapon_Mods.values():
             matching_modifiers = weapon_mod.get_matching_modifiers(modifiers, item_type)
@@ -1361,7 +1415,7 @@ class WeaponModInfo():
                 continue
                     
             weapon_mod_info = WeaponModInfo()
-            weapon_mod_info.WeaponMod = weapon_mod
+            weapon_mod_info.Mod = weapon_mod
             weapon_mod_info.Modifiers = matching_modifiers
             
             def get_variable_mod_info() -> Optional[ModifierInfo]:

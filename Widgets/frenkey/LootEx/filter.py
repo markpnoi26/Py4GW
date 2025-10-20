@@ -13,6 +13,7 @@ class Filter:
         self.materials: dict[int, bool] = {}
         self.action: ItemAction = ItemAction.Stash
         self.salvage_item_max_vendorvalue = 1500
+        self.full_stack_only: bool = False
 
     def handles_item(self, target_item) -> bool:
         from Widgets.frenkey.LootEx import cache
@@ -25,10 +26,10 @@ class Filter:
 
         if not self.rarities.get(item.rarity, False) or self.rarities[item.rarity] is False:
             return False
-
-        if item.is_rare_weapon and self.action is not ItemAction.Loot:
+        
+        if item.is_rare_weapon_to_keep and self.action is not ItemAction.Loot:
             return False
-                
+    
         if self.action == ItemAction.Sell_To_Merchant:
             if item.value <= 0:
                 return False
@@ -59,11 +60,12 @@ class Filter:
 
         return True
 
-    def get_action(self, item) -> ItemAction:
-        if item.action != ItemAction.NONE:
-            return item.action
+    def get_action(self, item) -> ItemAction:                
+        if self.handles_item(item):                
+            if item.is_stackable and self.full_stack_only:
+                if item.quantity < 250:
+                    return ItemAction.Hold
                 
-        if self.handles_item(item):
             return self.action
 
         return ItemAction.NONE
@@ -76,7 +78,8 @@ class Filter:
             "rarities": {rarity.name: value for rarity, value in data.rarities.items()},
             "materials": {material: value for material, value in data.materials.items()},
             "salvage_item_max_vendorvalue": data.salvage_item_max_vendorvalue,
-            "action": data.action.name
+            "action": data.action.name,
+            "full_stack_only": data.full_stack_only
         }
 
     @staticmethod
@@ -90,6 +93,8 @@ class Filter:
 
         action = ItemAction[data.get("action", "Stash")]
         loot_filter.action = action
+        
+        loot_filter.full_stack_only = data.get("full_stack_only", False)
        
         loot_filter.salvage_item_max_vendorvalue = data.get(
             "salvage_item_max_vendorvalue", 1500)

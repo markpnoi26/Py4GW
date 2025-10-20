@@ -2108,6 +2108,15 @@ class ImGui:
                 search_font_size = int(height * 0.25) + 1
                 padding = (height - search_font_size) / 2
                                     
+                placeholder_rect = (item_rect[0] + current_frame_padding.value1, item_rect[1], inputfield_size[0] - (current_frame_padding.value1 * 2), inputfield_size[1])
+                PyImGui.push_clip_rect(
+                    placeholder_rect[0],
+                    placeholder_rect[1],
+                    placeholder_rect[2],
+                    placeholder_rect[3],
+                    False,
+                )
+                
                 ImGui.push_font("Regular", search_font_size)
                 search_icon_size = PyImGui.calc_text_size(IconsFontAwesome5.ICON_SEARCH)
                 PyImGui.draw_list_add_text(
@@ -2128,6 +2137,8 @@ class ImGui:
                         style.Text.color_int,
                         placeholder,
                     )
+                    
+                PyImGui.pop_clip_rect()
         #NON THEMED
         style = ImGui.get_style()
         current_frame_padding = style.FramePadding.get_current()

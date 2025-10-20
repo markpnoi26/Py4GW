@@ -77,9 +77,9 @@ class WeaponRule:
             case enum.ActionModsType.Old_School:
                 if item.is_inscribable:
                     return False   
-                    
-        ## get the inherent mod from item.assigned_modifiers
-        inherent_mod = next((mod for mod in item.assigned_modifiers if mod.WeaponMod.mod_type == enum.ModType.Inherent), None)
+
+        ## get the inherent mod from item.weapon_mods
+        inherent_mod = next((mod for mod in item.weapon_mods if mod.WeaponMod.mod_type == enum.ModType.Inherent), None)
         
         if not inherent_mod:
             return False

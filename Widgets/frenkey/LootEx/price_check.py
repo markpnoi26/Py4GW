@@ -1,14 +1,11 @@
 import datetime
-from Widgets.frenkey.LootEx import enum, settings, utility, models
-from Widgets.frenkey.LootEx.models import Material
+from Widgets.frenkey.LootEx import enum, utility
 from Py4GWCoreLib import Item, Merchant, Console
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.Py4GWcorelib import ActionQueueNode, ConsoleLog
 from Py4GWCoreLib.enums import ItemType
 
 
-from Widgets.frenkey.LootEx.data import Data
-data = Data()
 
 trader_queue = ActionQueueNode(175)
 checked_items: list[str] = []
@@ -16,6 +13,9 @@ checked_items: list[str] = []
 class PriceCheck:
     @staticmethod 
     def get_material_prices_from_trader():
+        from Widgets.frenkey.LootEx.data import Data
+        data = Data()
+        
         if not trader_queue.action_queue.is_empty():
             trader_queue.clear()
             ConsoleLog(
@@ -137,6 +137,9 @@ class PriceCheck:
                     Merchant.Trading.Trader.RequestQuote(item)
 
                 def get_quote_for_item(item):
+                    from Widgets.frenkey.LootEx.data import Data
+                    data = Data()
+
                     price = Merchant.Trading.Trader.GetQuotedValue()
 
                     if price is not None:
@@ -167,6 +170,9 @@ class PriceCheck:
             create_quotes_for_item(item)
 
         def check_for_missing_runes():
+            from Widgets.frenkey.LootEx.data import Data
+            data = Data()
+            
             for rune in data.Runes.values():
                 profession_match = profession is not None and rune.profession == profession
 

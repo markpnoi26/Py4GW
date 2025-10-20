@@ -221,7 +221,7 @@ class Data():
             ],
 
             ItemType.SpellcastingWeapon: [
-                ItemType.Offhand,
+                # ItemType.Offhand,
                 ItemType.Staff,
                 ItemType.Wand
             ],

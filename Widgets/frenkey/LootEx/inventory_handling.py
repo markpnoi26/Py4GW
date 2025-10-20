@@ -97,6 +97,7 @@ class InventoryHandler:
         self.ResetSalvageWindow()
         self.__init__(reset=True)
         
+        self.inventory_changed = True
         self.actions.clear()
         self.cached_inventory.clear()
         
@@ -635,22 +636,22 @@ class InventoryHandler:
 
         return False
 
-    def HasModToKeep(self, item: cache.Cached_Item) -> tuple[bool, list[models.WeaponMod], list[models.Rune]]:
+    def HasModToKeep(self, item: cache.Cached_Item) -> tuple[bool, list[models.WeaponModInfo], list[models.RuneModInfo]]:
         from Widgets.frenkey.LootEx.settings import Settings
         settings = Settings()
-        runes_to_keep: list[models.Rune] = []
-        mods_to_keep: list[models.WeaponMod] = []
+        runes_to_keep: list[models.RuneModInfo] = []
+        mods_to_keep: list[models.WeaponModInfo] = []
 
         if settings.profile is not None and settings.profile.weapon_mods is not None:
 
             for rune in item.max_runes:
-                if rune.identifier in settings.profile.runes:
-                    if settings.profile.runes[rune.identifier]:
+                if rune.Rune.identifier in settings.profile.runes:
+                    if settings.profile.runes[rune.Rune.identifier]:
                         runes_to_keep.append(rune)
 
             for mod in item.max_weapon_mods:
-                if mod.identifier in settings.profile.weapon_mods:
-                    if settings.profile.weapon_mods[mod.identifier].get(item.item_type.name, False):
+                if mod.WeaponMod.identifier in settings.profile.weapon_mods:
+                    if settings.profile.weapon_mods[mod.WeaponMod.identifier].get(item.item_type.name, False):
                         mods_to_keep.append(mod)
 
         return True if runes_to_keep or mods_to_keep else False, mods_to_keep, runes_to_keep
@@ -866,10 +867,11 @@ class InventoryHandler:
                     return
        
     def IsSalvageAction(self, action: ItemAction) -> bool:
-        return action in (ItemAction.Salvage_Common_Materials, ItemAction.Salvage_Rare_Materials, ItemAction.Salvage, ItemAction.Salvage_Mods, ItemAction.Salvage)
+        return action in (ItemAction.Salvage_Common_Materials, ItemAction.Salvage_Rare_Materials, ItemAction.Salvage, ItemAction.Salvage_Mods)
 
-    def ProcessSalvageList(self):
-        if self.salvage_queue and len(self.salvage_queue) > 0:
+    def ProcessSalvageList(self):        
+        
+        if self.salvage_queue and len(self.salvage_queue) > 0:            
             self.salvage_queue = {
                 item_id: item for item_id, item in self.salvage_queue.items() if not item.IsSalvaged()[0]
             } 
@@ -883,7 +885,6 @@ class InventoryHandler:
             return
 
         salvaged, remaining = salvage_item.IsSalvaged()
-
         if salvaged:
             if remaining <= 0:
                 ConsoleLog(
@@ -967,14 +968,14 @@ class InventoryHandler:
                                     
                                     if salvage_item.is_weapon:
                                         prefix = next(
-                                            (mod for mod in salvage_item.max_weapon_mods if mod.mod_type == ModType.Prefix), None)
+                                            (mod for mod in salvage_item.max_weapon_mods if mod.WeaponMod.mod_type == ModType.Prefix), None)
                                     elif salvage_item.is_armor:
                                         prefix = next(
-                                            (rune for rune in salvage_item.max_runes if rune.mod_type == ModType.Prefix), None)
+                                            (rune for rune in salvage_item.max_runes if rune.Rune.mod_type == ModType.Prefix), None)
                                     
                                     if prefix:
                                         ConsoleLog(
-                                            "LootEx", f"Confirming salvage option: {salvage_item.salvage_option.name} for {salvage_item.model_name} ({salvage_item.id}) to extract {prefix.name}", Console.MessageType.Info)
+                                            "LootEx", f"Confirming salvage option: {salvage_item.salvage_option.name} for {salvage_item.model_name} ({salvage_item.id}) to extract {prefix.Mod.name}", Console.MessageType.Info)
                                     else:
                                         ConsoleLog(
                                             "LootEx", f"Confirming salvage option: {salvage_item.salvage_option.name} for {salvage_item.model_name} ({salvage_item.id}) to extract 'Unkown Upgrade'", Console.MessageType.Info)
@@ -983,14 +984,14 @@ class InventoryHandler:
                                     
                                     if salvage_item.is_weapon:
                                         suffix = next(
-                                            (mod for mod in salvage_item.max_weapon_mods if mod.mod_type == ModType.Suffix), None)
+                                            (mod for mod in salvage_item.max_weapon_mods if mod.WeaponMod.mod_type == ModType.Suffix), None)
                                     elif salvage_item.is_armor:
                                         suffix = next(
-                                            (rune for rune in salvage_item.max_runes if rune.mod_type == ModType.Suffix), None)
+                                            (rune for rune in salvage_item.max_runes if rune.Rune.mod_type == ModType.Suffix), None)
                                     
                                     if suffix:
                                         ConsoleLog(
-                                            "LootEx", f"Confirming salvage option: {salvage_item.salvage_option.name} for {salvage_item.model_name} ({salvage_item.id}) to extract {suffix.name}", Console.MessageType.Info)
+                                            "LootEx", f"Confirming salvage option: {salvage_item.salvage_option.name} for {salvage_item.model_name} ({salvage_item.id}) to extract {suffix.Mod.name}", Console.MessageType.Info)
                                     else:
                                         ConsoleLog(
                                             "LootEx", f"Confirming salvage option: {salvage_item.salvage_option.name} for {salvage_item.model_name} ({salvage_item.id}) to extract 'Unkown Upgrade'", Console.MessageType.Info)
@@ -999,7 +1000,7 @@ class InventoryHandler:
                                     
                                     if salvage_item.is_weapon:
                                         inherent = next(
-                                            (mod for mod in salvage_item.max_weapon_mods if mod.mod_type == ModType.Inherent), None)
+                                            (mod for mod in salvage_item.max_weapon_mods if mod.WeaponMod.mod_type == ModType.Inherent), None)
                                         
                                     elif salvage_item.is_armor:
                                         ConsoleLog(
@@ -1008,7 +1009,7 @@ class InventoryHandler:
                                     
                                     if inherent:
                                         ConsoleLog(
-                                            "LootEx", f"Confirming salvage option: {salvage_item.salvage_option.name} for {salvage_item.model_name} ({salvage_item.id}) to extract {inherent.name}", Console.MessageType.Info)
+                                            "LootEx", f"Confirming salvage option: {salvage_item.salvage_option.name} for {salvage_item.model_name} ({salvage_item.id}) to extract {inherent.Mod.name}", Console.MessageType.Info)
                                     else:
                                         ConsoleLog(
                                             "LootEx", f"Confirming salvage option: {salvage_item.salvage_option.name} for {salvage_item.model_name} ({salvage_item.id}) to extract 'Unkown Upgrade'", Console.MessageType.Info)
@@ -1167,7 +1168,7 @@ class InventoryHandler:
                 if item.runes_to_keep and len(item.runes_to_keep) > 1:
                     return True  
 
-            if item.is_rare_weapon:
+            if item.is_rare_weapon_to_keep:
                 return True
             
             if item.matches_weapon_rule:
@@ -1211,7 +1212,6 @@ class InventoryHandler:
                 elif item.item_type == ItemType.Salvage:
                     if item.runes_to_keep and len(item.runes_to_keep) >= 1:
                         return True   
-                                   
                                     
             if item.item_type == ItemType.Rune_Mod:
                 if item.runes_to_keep:
@@ -1329,6 +1329,9 @@ class InventoryHandler:
                 if item.is_identified and existing_item.action == ItemAction.Identify:
                     return False
                 
+                if existing_item.action == ItemAction.Deposit_Material and self.deposited:
+                    return False
+                
                 if item.mods != existing_item.mods:
                     return False
 
@@ -1396,7 +1399,7 @@ class InventoryHandler:
                             
             if item.matches_skin_rule and item.skin_rule:
                 if item.skin_rule.action != ItemAction.NONE and (not item.is_inventory_item or item.skin_rule.action != ItemAction.Loot):
-                    item.action = item.skin_rule.action
+                    item.action = item.skin_rule.get_action(item)
 
                     if self.IsSalvageAction(item.action):
                         if not item.is_identified:
@@ -1423,11 +1426,11 @@ class InventoryHandler:
                         continue
                     
                     if item.runes_to_keep:
-                        item.action = settings.profile.rune_action if settings.profile else ItemAction.Hold
+                        item.action = settings.profile.rune_action
                         continue
                     
                     if item.weapon_mods_to_keep:
-                        item.action = settings.profile.weapon_mod_action if settings.profile else ItemAction.Hold
+                        item.action = settings.profile.weapon_mod_action
                         continue
                 
                 if not item.is_salvageable:
@@ -1442,7 +1445,7 @@ class InventoryHandler:
                     if item.weapon_mods_to_keep and len(item.weapon_mods_to_keep) == 1:
                         item.action = ItemAction.Salvage_Mods
                         item.salvage_option = utility.Util.GetSalvageOptionFromModType(
-                            item.weapon_mods_to_keep[0].mod_type)
+                            item.weapon_mods_to_keep[0].WeaponMod.mod_type)
                         item.salvage_requires_confirmation = True
                         if not item in result.salvage_queue:
                             result.salvage_queue[item.id] = item
@@ -1453,7 +1456,7 @@ class InventoryHandler:
                     if item.runes_to_keep and len(item.runes_to_keep) == 1:
                         item.action = ItemAction.Salvage_Mods
                         item.salvage_option = utility.Util.GetSalvageOptionFromModType(
-                            item.runes_to_keep[0].mod_type)
+                            item.runes_to_keep[0].Rune.mod_type)
                         item.salvage_requires_confirmation = True
                         
                         if not item in result.salvage_queue:
@@ -1497,34 +1500,28 @@ class InventoryHandler:
             if (self.IsSalvageAction(item.action) and not item.is_identified):
                 item.action = ItemAction.Identify
                 continue
-            
-            if item.action != ItemAction.NONE:
-                continue
 
-            if ShouldSalvageItem(item):
-                salvage_option = self.GetSalvageOption(item)
-                ConsoleLog(
-                    "LootEx", f"Salvage option for item {item.model_name} with action {item.action} is {salvage_option.name if salvage_option else 'None'}", Console.MessageType.Debug)
+            # if ShouldSalvageItem(item):
+            #     salvage_option = self.GetSalvageOption(item)
+            #     if salvage_option is None:
+            #         continue
 
-                if salvage_option is None:
-                    continue
+            #     if self.IsSalvageAction(item.action):
+            #         # self.salvage_option = salvage_option
 
-                if self.IsSalvageAction(item.action):
-                    # self.salvage_option = salvage_option
+            #         rarity_requires_confirmation = item.rarity >= Rarity.Blue
+            #         mods_require_confirmation = item.has_mods and salvage_option is not SalvageOption.LesserCraftingMaterials
 
-                    rarity_requires_confirmation = item.rarity >= Rarity.Blue
-                    mods_require_confirmation = item.has_mods and salvage_option is not SalvageOption.LesserCraftingMaterials
-
-                    item.salvage_option = salvage_option
-                    item.salvage_requires_confirmation = rarity_requires_confirmation or mods_require_confirmation
-                    item.salvage_requires_material_confirmation = item.has_mods and (salvage_option is SalvageOption.RareCraftingMaterials or salvage_option is SalvageOption.CraftingMaterials)
+            #         item.salvage_option = salvage_option
+            #         item.salvage_requires_confirmation = rarity_requires_confirmation or mods_require_confirmation
+            #         item.salvage_requires_material_confirmation = item.has_mods and (salvage_option is SalvageOption.RareCraftingMaterials or salvage_option is SalvageOption.CraftingMaterials)
                     
-                    if not item in result.salvage_queue:
-                        result.salvage_queue[item.id] = item
+            #         if not item in result.salvage_queue:
+            #             result.salvage_queue[item.id] = item
                         
-                    # ConsoleLog(
-                    #     "LootEx", f"Adding item {item.model_name} ({item.id}) to salvage queue with option {salvage_option.name}", Console.MessageType.Debug)
-                    continue
+            #         # ConsoleLog(
+            #         #     "LootEx", f"Adding item {item.model_name} ({item.id}) to salvage queue with option {salvage_option.name}", Console.MessageType.Debug)
+            #         continue
 
             if ShouldSellItemToMerchant(item):
                 item.action = ItemAction.Sell_To_Merchant
@@ -1625,7 +1622,7 @@ class InventoryHandler:
             self.perfect_salvage_kits = result.perfect_salvage_kits
             self.identification_kits = result.identification_kits
             self.inventory_materials = result.inventory_materials
-            self.inventory_changed = result.inventory_changed
+            self.inventory_changed = result.inventory_changed or self.inventory_changed
             self.inventory_array = result.inventory_array
             self.inventory_sizes = result.inventory_sizes
             self.actions = result.actions
@@ -1641,7 +1638,6 @@ class InventoryHandler:
                 if item.action == ItemAction.Sell_To_Trader:
                     if item.id not in self.trader_queue:
                         self.trader_queue[item.id] = InventoryHandler.TraderAction(item, self.GetTraderType(item), InventoryHandler.TraderAction.ActionType.Sell) 
-            
 
             if self.merchant_timer.IsExpired():
                 self.merchant_timer.Reset()
@@ -1729,7 +1725,8 @@ class InventoryHandler:
                 self.deposited = True
                 
             if self.inventory_changed:
-                self.CompactInventory()
+                if not self.CompactInventory():
+                    self.inventory_changed = False
 
             time_delta = datetime.now() - global_time
             # self.TrackTime(time_delta, time_results, "Global")

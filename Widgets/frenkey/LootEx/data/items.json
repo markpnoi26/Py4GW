@@ -15857,6 +15857,27 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "11688": {
+            "ModelID": 11688,
+            "Names": {
+                "English": "Cleaver"
+            },
+            "ItemType": "Axe",
+            "DropInfo": "",
+            "Attributes": [
+                "AxeMastery"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Cleaver",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
         "1347": {
             "ModelID": 1347,
             "Names": {
@@ -16719,6 +16740,27 @@
             "Category": null,
             "SubCategory": null,
             "WikiScraped": true
+        },
+        "2205": {
+            "ModelID": 2205,
+            "Names": {
+                "English": "Hand Axe"
+            },
+            "ItemType": "Axe",
+            "DropInfo": "",
+            "Attributes": [
+                "AxeMastery"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Hand_Axe",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
         },
         "124": {
             "ModelID": 124,
@@ -17704,6 +17746,50 @@
         },
         "123": {
             "ModelID": 123,
+            "Names": {
+                "English": "Tribal Axe"
+            },
+            "ItemType": "Axe",
+            "DropInfo": "",
+            "Attributes": [
+                "AxeMastery"
+            ],
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                },
+                "Wood Plank": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 946,
+                    "MaterialName": "Wood Plank"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tribal_Axe",
+            "InventoryIcon": "Tribal Axe.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/3/36/Tribal_Axe.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "2209": {
+            "ModelID": 2209,
             "Names": {
                 "English": "Tribal Axe"
             },
@@ -19305,16 +19391,24 @@
             "Attributes": [
                 "Marksmanship"
             ],
-            "CommonSalvage": {},
+            "CommonSalvage": {
+                "Wood Plank": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 946,
+                    "MaterialName": "Wood Plank"
+                }
+            },
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Composite_Shortbow",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
+            "InventoryIcon": "Composite Shortbow.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/0/02/Composite_Shortbow.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": false
+            "WikiScraped": true
         },
         "141": {
             "ModelID": 141,
@@ -19729,16 +19823,24 @@
             "Attributes": [
                 "Marksmanship"
             ],
-            "CommonSalvage": {},
+            "CommonSalvage": {
+                "Wood Plank": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 946,
+                    "MaterialName": "Wood Plank"
+                }
+            },
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Forked_Hornbow",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
+            "InventoryIcon": "Forked Hornbow.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/d/db/Forked_Hornbow.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": false
+            "WikiScraped": true
         },
         "134": {
             "ModelID": 134,
@@ -19789,16 +19891,24 @@
             "Attributes": [
                 "Marksmanship"
             ],
-            "CommonSalvage": {},
+            "CommonSalvage": {
+                "Wood Plank": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 946,
+                    "MaterialName": "Wood Plank"
+                }
+            },
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Half_Moon",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
+            "InventoryIcon": "Half Moon.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/3/39/Half_Moon.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": false
+            "WikiScraped": true
         },
         "135": {
             "ModelID": 135,
@@ -20203,6 +20313,27 @@
             "Category": null,
             "SubCategory": null,
             "WikiScraped": true
+        },
+        "11689": {
+            "ModelID": 11689,
+            "Names": {
+                "English": "Longbow"
+            },
+            "ItemType": "Bow",
+            "DropInfo": "",
+            "Attributes": [
+                "Marksmanship"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Longbow",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
         },
         "27943": {
             "ModelID": 27943,
@@ -20907,6 +21038,27 @@
             "Category": null,
             "SubCategory": null,
             "WikiScraped": true
+        },
+        "11690": {
+            "ModelID": 11690,
+            "Names": {
+                "English": "Shortbow"
+            },
+            "ItemType": "Bow",
+            "DropInfo": "",
+            "Attributes": [
+                "Marksmanship"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Shortbow",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
         },
         "1372": {
             "ModelID": 1372,
@@ -23289,16 +23441,31 @@
             "Attributes": [
                 "AirMagic"
             ],
-            "CommonSalvage": {},
+            "CommonSalvage": {
+                "Pile of Glittering Dust": {
+                    "Amount": 1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 929,
+                    "MaterialName": "Pile of Glittering Dust"
+                },
+                "Tanned Hide Square": {
+                    "Amount": 1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 940,
+                    "MaterialName": "Tanned Hide Square"
+                }
+            },
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Balthazar's_Focus",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
+            "InventoryIcon": "Balthazar's Focus.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/d/da/Balthazar%27s_Focus.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": false
+            "WikiScraped": true
         },
         "37877": {
             "ModelID": 37877,
@@ -23310,16 +23477,31 @@
             "Attributes": [
                 "EarthMagic"
             ],
-            "CommonSalvage": {},
+            "CommonSalvage": {
+                "Pile of Glittering Dust": {
+                    "Amount": 1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 929,
+                    "MaterialName": "Pile of Glittering Dust"
+                },
+                "Tanned Hide Square": {
+                    "Amount": 1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 940,
+                    "MaterialName": "Tanned Hide Square"
+                }
+            },
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Balthazar's_Focus",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
+            "InventoryIcon": "Balthazar's Focus.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/d/da/Balthazar%27s_Focus.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": false
+            "WikiScraped": true
         },
         "37878": {
             "ModelID": 37878,
@@ -23331,16 +23513,31 @@
             "Attributes": [
                 "EnergyStorage"
             ],
-            "CommonSalvage": {},
+            "CommonSalvage": {
+                "Pile of Glittering Dust": {
+                    "Amount": 1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 929,
+                    "MaterialName": "Pile of Glittering Dust"
+                },
+                "Tanned Hide Square": {
+                    "Amount": 1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 940,
+                    "MaterialName": "Tanned Hide Square"
+                }
+            },
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Balthazar's_Focus",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
+            "InventoryIcon": "Balthazar's Focus.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/d/da/Balthazar%27s_Focus.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": false
+            "WikiScraped": true
         },
         "37879": {
             "ModelID": 37879,
@@ -23352,16 +23549,31 @@
             "Attributes": [
                 "FireMagic"
             ],
-            "CommonSalvage": {},
+            "CommonSalvage": {
+                "Pile of Glittering Dust": {
+                    "Amount": 1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 929,
+                    "MaterialName": "Pile of Glittering Dust"
+                },
+                "Tanned Hide Square": {
+                    "Amount": 1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 940,
+                    "MaterialName": "Tanned Hide Square"
+                }
+            },
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Balthazar's_Focus",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
+            "InventoryIcon": "Balthazar's Focus.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/d/da/Balthazar%27s_Focus.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": false
+            "WikiScraped": true
         },
         "37880": {
             "ModelID": 37880,
@@ -23373,16 +23585,31 @@
             "Attributes": [
                 "WaterMagic"
             ],
-            "CommonSalvage": {},
+            "CommonSalvage": {
+                "Pile of Glittering Dust": {
+                    "Amount": 1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 929,
+                    "MaterialName": "Pile of Glittering Dust"
+                },
+                "Tanned Hide Square": {
+                    "Amount": 1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 940,
+                    "MaterialName": "Tanned Hide Square"
+                }
+            },
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Balthazar's_Focus",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
+            "InventoryIcon": "Balthazar's Focus.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/d/da/Balthazar%27s_Focus.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": false
+            "WikiScraped": true
         },
         "894": {
             "ModelID": 894,
@@ -23766,16 +23993,39 @@
             "Attributes": [
                 "InspirationMagic"
             ],
-            "CommonSalvage": {},
-            "RareSalvage": {},
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                },
+                "Pile of Glittering Dust": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 929,
+                    "MaterialName": "Pile of Glittering Dust"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
             "WikiURL": "https://wiki.guildwars.com/wiki/Butterfly_Mirror",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
+            "InventoryIcon": "Butterfly Mirror.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/4/4a/Butterfly_Mirror.png",
             "NickIndex": null,
             "Profession": "Mesmer",
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": false
+            "WikiScraped": true
         },
         "1055": {
             "ModelID": 1055,
@@ -31964,6 +32214,50 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "2228": {
+            "ModelID": 2228,
+            "Names": {
+                "English": "Ball Hammer"
+            },
+            "ItemType": "Hammer",
+            "DropInfo": "",
+            "Attributes": [
+                "HammerMastery"
+            ],
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                },
+                "Wood Plank": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 946,
+                    "MaterialName": "Wood Plank"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Ball_Hammer",
+            "InventoryIcon": "Ball Hammer.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/5/5d/Ball_Hammer.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
         "37889": {
             "ModelID": 37889,
             "Names": {
@@ -32103,6 +32397,35 @@
                 "Polish": "Miażdżyciel",
                 "Russian": "Bludgeoner",
                 "BorkBorkBork": "Bloodgeuner"
+            },
+            "ItemType": "Hammer",
+            "DropInfo": "",
+            "Attributes": [
+                "HammerMastery"
+            ],
+            "CommonSalvage": {
+                "Wood Plank": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 946,
+                    "MaterialName": "Wood Plank"
+                }
+            },
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Bludgeoner",
+            "InventoryIcon": "Bludgeoner.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/4/42/Bludgeoner.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "11692": {
+            "ModelID": 11692,
+            "Names": {
+                "English": "Bludgeoner"
             },
             "ItemType": "Hammer",
             "DropInfo": "",
@@ -33825,16 +34148,39 @@
             "Attributes": [
                 "HammerMastery"
             ],
-            "CommonSalvage": {},
-            "RareSalvage": {},
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                },
+                "Wood Plank": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 946,
+                    "MaterialName": "Wood Plank"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
             "WikiURL": "https://wiki.guildwars.com/wiki/Runic_Hammer",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
+            "InventoryIcon": "Runic Hammer.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/b/bf/Runic_Hammer.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": false
+            "WikiScraped": true
         },
         "725": {
             "ModelID": 725,
@@ -36605,16 +36951,31 @@
             "Attributes": [
                 "AirMagic"
             ],
-            "CommonSalvage": {},
+            "CommonSalvage": {
+                "Plant Fiber": {
+                    "Amount": 1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 934,
+                    "MaterialName": "Plant Fiber"
+                },
+                "Wood Plank": {
+                    "Amount": 1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 946,
+                    "MaterialName": "Wood Plank"
+                }
+            },
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Balthazar's_Rod",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
+            "InventoryIcon": "Balthazar's Rod.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/e/e7/Balthazar%27s_Rod.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": false
+            "WikiScraped": true
         },
         "37899": {
             "ModelID": 37899,
@@ -36626,16 +36987,31 @@
             "Attributes": [
                 "EarthMagic"
             ],
-            "CommonSalvage": {},
+            "CommonSalvage": {
+                "Plant Fiber": {
+                    "Amount": 1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 934,
+                    "MaterialName": "Plant Fiber"
+                },
+                "Wood Plank": {
+                    "Amount": 1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 946,
+                    "MaterialName": "Wood Plank"
+                }
+            },
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Balthazar's_Rod",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
+            "InventoryIcon": "Balthazar's Rod.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/e/e7/Balthazar%27s_Rod.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": false
+            "WikiScraped": true
         },
         "37900": {
             "ModelID": 37900,
@@ -36647,16 +37023,31 @@
             "Attributes": [
                 "EnergyStorage"
             ],
-            "CommonSalvage": {},
+            "CommonSalvage": {
+                "Plant Fiber": {
+                    "Amount": 1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 934,
+                    "MaterialName": "Plant Fiber"
+                },
+                "Wood Plank": {
+                    "Amount": 1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 946,
+                    "MaterialName": "Wood Plank"
+                }
+            },
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Balthazar's_Rod",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
+            "InventoryIcon": "Balthazar's Rod.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/e/e7/Balthazar%27s_Rod.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": false
+            "WikiScraped": true
         },
         "37901": {
             "ModelID": 37901,
@@ -36668,16 +37059,31 @@
             "Attributes": [
                 "FireMagic"
             ],
-            "CommonSalvage": {},
+            "CommonSalvage": {
+                "Plant Fiber": {
+                    "Amount": 1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 934,
+                    "MaterialName": "Plant Fiber"
+                },
+                "Wood Plank": {
+                    "Amount": 1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 946,
+                    "MaterialName": "Wood Plank"
+                }
+            },
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Balthazar's_Rod",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
+            "InventoryIcon": "Balthazar's Rod.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/e/e7/Balthazar%27s_Rod.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": false
+            "WikiScraped": true
         },
         "37902": {
             "ModelID": 37902,
@@ -36689,16 +37095,31 @@
             "Attributes": [
                 "WaterMagic"
             ],
-            "CommonSalvage": {},
+            "CommonSalvage": {
+                "Plant Fiber": {
+                    "Amount": 1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 934,
+                    "MaterialName": "Plant Fiber"
+                },
+                "Wood Plank": {
+                    "Amount": 1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 946,
+                    "MaterialName": "Wood Plank"
+                }
+            },
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Balthazar's_Rod",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
+            "InventoryIcon": "Balthazar's Rod.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/e/e7/Balthazar%27s_Rod.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": false
+            "WikiScraped": true
         },
         "730": {
             "ModelID": 730,
@@ -45035,6 +45456,80 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "11693": {
+            "ModelID": 11693,
+            "Names": {
+                "English": "Bronze Shield"
+            },
+            "ItemType": "Shield",
+            "DropInfo": "",
+            "Attributes": [
+                "Strength"
+            ],
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Bronze_Shield",
+            "InventoryIcon": "Bronze Shield.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/2/21/Bronze_Shield.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "11694": {
+            "ModelID": 11694,
+            "Names": {
+                "English": "Bronze Shield"
+            },
+            "ItemType": "Shield",
+            "DropInfo": "",
+            "Attributes": [
+                "Tactics"
+            ],
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Bronze_Shield",
+            "InventoryIcon": "Bronze Shield.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/2/21/Bronze_Shield.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
         "943": {
             "ModelID": 943,
             "Names": {
@@ -45279,16 +45774,32 @@
             "Attributes": [
                 "Motivation"
             ],
-            "CommonSalvage": {},
-            "RareSalvage": {},
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
             "WikiURL": "https://wiki.guildwars.com/wiki/Daedal_Shield",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
+            "InventoryIcon": "Daedal Shield.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/c/c8/Daedal_Shield.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": false
+            "WikiScraped": true
         },
         "18853": {
             "ModelID": 18853,
@@ -45394,16 +45905,32 @@
             "Attributes": [
                 "Strength"
             ],
-            "CommonSalvage": {},
-            "RareSalvage": {},
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
             "WikiURL": "https://wiki.guildwars.com/wiki/Ebonhand_Aegis",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
+            "InventoryIcon": "Ebonhand Aegis.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/b/b4/Ebonhand_Aegis.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": false
+            "WikiScraped": true
         },
         "944": {
             "ModelID": 944,
@@ -45640,16 +46167,32 @@
             "Attributes": [
                 "Command"
             ],
-            "CommonSalvage": {},
-            "RareSalvage": {},
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
             "WikiURL": "https://wiki.guildwars.com/wiki/Equine_Aegis",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
+            "InventoryIcon": "Equine Aegis.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/c/cd/Equine_Aegis.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": false
+            "WikiScraped": true
         },
         "2410": {
             "ModelID": 2410,
@@ -45661,16 +46204,32 @@
             "Attributes": [
                 "Tactics"
             ],
-            "CommonSalvage": {},
-            "RareSalvage": {},
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
             "WikiURL": "https://wiki.guildwars.com/wiki/Equine_Aegis",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
+            "InventoryIcon": "Equine Aegis.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/c/cd/Equine_Aegis.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": false
+            "WikiScraped": true
         },
         "332": {
             "ModelID": 332,
@@ -46511,6 +47070,80 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "2413": {
+            "ModelID": 2413,
+            "Names": {
+                "English": "Oaken Aegis"
+            },
+            "ItemType": "Shield",
+            "DropInfo": "",
+            "Attributes": [
+                "Strength"
+            ],
+            "CommonSalvage": {
+                "Wood Plank": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 946,
+                    "MaterialName": "Wood Plank"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Oaken_Aegis",
+            "InventoryIcon": "Oaken Aegis.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/9/90/Oaken_Aegis.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "2414": {
+            "ModelID": 2414,
+            "Names": {
+                "English": "Oaken Aegis"
+            },
+            "ItemType": "Shield",
+            "DropInfo": "",
+            "Attributes": [
+                "Tactics"
+            ],
+            "CommonSalvage": {
+                "Wood Plank": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 946,
+                    "MaterialName": "Wood Plank"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Oaken_Aegis",
+            "InventoryIcon": "Oaken Aegis.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/9/90/Oaken_Aegis.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
         "326": {
             "ModelID": 326,
             "Names": {
@@ -46582,16 +47215,46 @@
             "Attributes": [
                 "Strength"
             ],
-            "CommonSalvage": {},
-            "RareSalvage": {},
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                },
+                "Tanned Hide Square": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 940,
+                    "MaterialName": "Tanned Hide Square"
+                },
+                "Wood Plank": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 946,
+                    "MaterialName": "Wood Plank"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
             "WikiURL": "https://wiki.guildwars.com/wiki/Ornate_Buckler",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
+            "InventoryIcon": "Ornate Buckler.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/c/cf/Ornate_Buckler.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": false
+            "WikiScraped": true
         },
         "2401": {
             "ModelID": 2401,
@@ -46819,16 +47482,32 @@
             "Attributes": [
                 "Strength"
             ],
-            "CommonSalvage": {},
-            "RareSalvage": {},
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
             "WikiURL": "https://wiki.guildwars.com/wiki/Plated_Shield",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
+            "InventoryIcon": "Plated Shield.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/f/f4/Plated_Shield.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": false
+            "WikiScraped": true
         },
         "327": {
             "ModelID": 327,
@@ -46887,16 +47566,32 @@
             "Attributes": [
                 "Tactics"
             ],
-            "CommonSalvage": {},
-            "RareSalvage": {},
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
             "WikiURL": "https://wiki.guildwars.com/wiki/Reinforced_Buckler",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
+            "InventoryIcon": "Reinforced Buckler.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/3/3d/Reinforced_Buckler.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": false
+            "WikiScraped": true
         },
         "335": {
             "ModelID": 335,
@@ -48012,16 +48707,32 @@
             "Attributes": [
                 "Tactics"
             ],
-            "CommonSalvage": {},
-            "RareSalvage": {},
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
             "WikiURL": "https://wiki.guildwars.com/wiki/Tall_Shield",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
+            "InventoryIcon": "Tall Shield.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/9/9c/Tall_Shield.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": false
+            "WikiScraped": true
         },
         "2817": {
             "ModelID": 2817,
@@ -49420,6 +50131,27 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "11700": {
+            "ModelID": 11700,
+            "Names": {
+                "English": "Air Staff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "AirMagic"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Air_Staff",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
         "784": {
             "ModelID": 784,
             "Names": {
@@ -49561,16 +50293,31 @@
             "Attributes": [
                 "FastCasting"
             ],
-            "CommonSalvage": {},
+            "CommonSalvage": {
+                "Pile of Glittering Dust": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 929,
+                    "MaterialName": "Pile of Glittering Dust"
+                },
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                }
+            },
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Arcane_Staff",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
+            "InventoryIcon": "Arcane Staff.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/4/43/Arcane_Staff.png",
             "NickIndex": null,
             "Profession": "Mesmer",
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": false
+            "WikiScraped": true
         },
         "25105": {
             "ModelID": 25105,
@@ -50518,16 +51265,31 @@
             "Attributes": [
                 "FastCasting"
             ],
-            "CommonSalvage": {},
+            "CommonSalvage": {
+                "Pile of Glittering Dust": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 929,
+                    "MaterialName": "Pile of Glittering Dust"
+                },
+                "Wood Plank": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 946,
+                    "MaterialName": "Wood Plank"
+                }
+            },
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Aureate_Staff",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
+            "InventoryIcon": "Aureate Staff.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/c/c8/Aureate_Staff.png",
             "NickIndex": null,
             "Profession": "Mesmer",
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": false
+            "WikiScraped": true
         },
         "37925": {
             "ModelID": 37925,
@@ -50539,16 +51301,24 @@
             "Attributes": [
                 "AirMagic"
             ],
-            "CommonSalvage": {},
+            "CommonSalvage": {
+                "Pile of Glittering Dust": {
+                    "Amount": 1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 929,
+                    "MaterialName": "Pile of Glittering Dust"
+                }
+            },
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Balthazar's_Staff",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
+            "InventoryIcon": "Balthazar's Staff.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/9/93/Balthazar%27s_Staff.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": false
+            "WikiScraped": true
         },
         "37926": {
             "ModelID": 37926,
@@ -50560,16 +51330,24 @@
             "Attributes": [
                 "EarthMagic"
             ],
-            "CommonSalvage": {},
+            "CommonSalvage": {
+                "Pile of Glittering Dust": {
+                    "Amount": 1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 929,
+                    "MaterialName": "Pile of Glittering Dust"
+                }
+            },
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Balthazar's_Staff",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
+            "InventoryIcon": "Balthazar's Staff.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/9/93/Balthazar%27s_Staff.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": false
+            "WikiScraped": true
         },
         "37927": {
             "ModelID": 37927,
@@ -50581,16 +51359,24 @@
             "Attributes": [
                 "EnergyStorage"
             ],
-            "CommonSalvage": {},
+            "CommonSalvage": {
+                "Pile of Glittering Dust": {
+                    "Amount": 1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 929,
+                    "MaterialName": "Pile of Glittering Dust"
+                }
+            },
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Balthazar's_Staff",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
+            "InventoryIcon": "Balthazar's Staff.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/9/93/Balthazar%27s_Staff.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": false
+            "WikiScraped": true
         },
         "37928": {
             "ModelID": 37928,
@@ -50602,16 +51388,24 @@
             "Attributes": [
                 "FireMagic"
             ],
-            "CommonSalvage": {},
+            "CommonSalvage": {
+                "Pile of Glittering Dust": {
+                    "Amount": 1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 929,
+                    "MaterialName": "Pile of Glittering Dust"
+                }
+            },
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Balthazar's_Staff",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
+            "InventoryIcon": "Balthazar's Staff.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/9/93/Balthazar%27s_Staff.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": false
+            "WikiScraped": true
         },
         "37929": {
             "ModelID": 37929,
@@ -51760,6 +52554,27 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "11699": {
+            "ModelID": 11699,
+            "Names": {
+                "English": "Bone Staff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "DeathMagic"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Bone_Staff",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
         "1400": {
             "ModelID": 1400,
             "Names": {
@@ -51902,6 +52717,35 @@
             "InventoryIconURL": "https://wiki.guildwars.com/images/8/8b/Channeling_Staff.png",
             "NickIndex": null,
             "Profession": "Ritualist",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "11710": {
+            "ModelID": 11710,
+            "Names": {
+                "English": "Channeling Staff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "ChannelingMagic"
+            ],
+            "CommonSalvage": {
+                "Wood Plank": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 946,
+                    "MaterialName": "Wood Plank"
+                }
+            },
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Channeling_Staff",
+            "InventoryIcon": "Channeling Staff.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/8/8b/Channeling_Staff.png",
+            "NickIndex": null,
+            "Profession": null,
             "Category": null,
             "SubCategory": null,
             "WikiScraped": true
@@ -52763,6 +53607,50 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "11695": {
+            "ModelID": 11695,
+            "Names": {
+                "English": "Clairvoyant Staff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "DominationMagic"
+            ],
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                },
+                "Pile of Glittering Dust": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 929,
+                    "MaterialName": "Pile of Glittering Dust"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Clairvoyant_Staff",
+            "InventoryIcon": "Clairvoyant Staff.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/5/57/Clairvoyant_Staff.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
         "786": {
             "ModelID": 786,
             "Names": {
@@ -52811,6 +53699,27 @@
             "Category": null,
             "SubCategory": null,
             "WikiScraped": true
+        },
+        "11708": {
+            "ModelID": 11708,
+            "Names": {
+                "English": "Communing Staff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "Communing"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Communing_Staff",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
         },
         "891": {
             "ModelID": 891,
@@ -54435,6 +55344,27 @@
             "SubCategory": null,
             "WikiScraped": false
         },
+        "11701": {
+            "ModelID": 11701,
+            "Names": {
+                "English": "Earth Staff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "EarthMagic"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Earth_Staff",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
         "600": {
             "ModelID": 600,
             "Names": {
@@ -54776,6 +55706,43 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "11697": {
+            "ModelID": 11697,
+            "Names": {
+                "English": "Evil Eye Staff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "BloodMagic"
+            ],
+            "CommonSalvage": {
+                "Wood Plank": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 946,
+                    "MaterialName": "Wood Plank"
+                }
+            },
+            "RareSalvage": {
+                "Monstrous Eye": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 931,
+                    "MaterialName": "Monstrous Eye"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Evil_Eye_Staff",
+            "InventoryIcon": "Evil Eye Staff.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/9/99/Evil_Eye_Staff.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
         "27001": {
             "ModelID": 27001,
             "Names": {
@@ -55044,6 +56011,27 @@
             "Category": null,
             "SubCategory": null,
             "WikiScraped": true
+        },
+        "11702": {
+            "ModelID": 11702,
+            "Names": {
+                "English": "Fire Staff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "FireMagic"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Fire_Staff",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
         },
         "1953": {
             "ModelID": 1953,
@@ -55928,6 +56916,27 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "11705": {
+            "ModelID": 11705,
+            "Names": {
+                "English": "Healing Staff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "DivineFavor"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Healing_Staff",
+            "InventoryIcon": "Healing Staff.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/f/f6/Healing_Staff.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
         "961": {
             "ModelID": 961,
             "Names": {
@@ -56178,6 +57187,35 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "11704": {
+            "ModelID": 11704,
+            "Names": {
+                "English": "Holy Staff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "DivineFavor"
+            ],
+            "CommonSalvage": {
+                "Wood Plank": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 946,
+                    "MaterialName": "Wood Plank"
+                }
+            },
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Holy_Staff",
+            "InventoryIcon": "Holy Staff.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/c/c9/Holy_Staff.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
         "2479": {
             "ModelID": 2479,
             "Names": {
@@ -56283,6 +57321,43 @@
             "InventoryIconURL": "https://wiki.guildwars.com/images/b/b3/Hypnotic_Staff.png",
             "NickIndex": null,
             "Profession": "Mesmer",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "11696": {
+            "ModelID": 11696,
+            "Names": {
+                "English": "Hypnotic Staff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "IllusionMagic"
+            ],
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Hypnotic_Staff",
+            "InventoryIcon": "Hypnotic Staff.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/b/b3/Hypnotic_Staff.png",
+            "NickIndex": null,
+            "Profession": null,
             "Category": null,
             "SubCategory": null,
             "WikiScraped": true
@@ -58000,6 +59075,50 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "11706": {
+            "ModelID": 11706,
+            "Names": {
+                "English": "Protective Staff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "DivineFavor"
+            ],
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                },
+                "Wood Plank": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 946,
+                    "MaterialName": "Wood Plank"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Protective_Staff",
+            "InventoryIcon": "Protective Staff.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/1/1d/Protective_Staff.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
         "17750": {
             "ModelID": 17750,
             "Names": {
@@ -58858,6 +59977,27 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "15242": {
+            "ModelID": 15242,
+            "Names": {
+                "English": "Restoration Staff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "SpawningPower"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Restoration_Staff",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
         "1495": {
             "ModelID": 1495,
             "Names": {
@@ -59240,6 +60380,35 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "11707": {
+            "ModelID": 11707,
+            "Names": {
+                "English": "Smiting Staff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "SmitingPrayers"
+            ],
+            "CommonSalvage": {
+                "Wood Plank": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 946,
+                    "MaterialName": "Wood Plank"
+                }
+            },
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Smiting_Staff",
+            "InventoryIcon": "Smiting Staff.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/3/33/Smiting_Staff.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
         "2451": {
             "ModelID": 2451,
             "Names": {
@@ -59268,6 +60437,35 @@
             "NickIndex": null,
             "Profession": null,
             "Category": "RareWeapon",
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "11709": {
+            "ModelID": 11709,
+            "Names": {
+                "English": "Spawning Staff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "SpawningPower"
+            ],
+            "CommonSalvage": {
+                "Wood Plank": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 946,
+                    "MaterialName": "Wood Plank"
+                }
+            },
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Spawning_Staff",
+            "InventoryIcon": "Spawning Staff.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/d/d3/Spawning_Staff.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
             "SubCategory": null,
             "WikiScraped": true
         },
@@ -60550,6 +61748,48 @@
             "InventoryIconURL": "https://wiki.guildwars.com/images/b/b7/Water_Staff_%28metal%29.png",
             "NickIndex": null,
             "Profession": "Elementalist",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "11703": {
+            "ModelID": 11703,
+            "Names": {
+                "English": "Water Staff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "WaterMagic"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Water_Staff",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
+        "11698": {
+            "ModelID": 11698,
+            "Names": {
+                "English": "Wicked Staff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "Curses"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Wicked_Staff",
+            "InventoryIcon": "Wicked Staff.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/6/6f/Wicked_Staff.png",
+            "NickIndex": null,
+            "Profession": null,
             "Category": null,
             "SubCategory": null,
             "WikiScraped": true
@@ -63334,6 +64574,43 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "11711": {
+            "ModelID": 11711,
+            "Names": {
+                "English": "Katana"
+            },
+            "ItemType": "Sword",
+            "DropInfo": "",
+            "Attributes": [
+                "Swordsmanship"
+            ],
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Katana",
+            "InventoryIcon": "Katana.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/e/e9/Katana.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
         "2304": {
             "ModelID": 2304,
             "Names": {
@@ -63794,16 +65071,32 @@
             "Attributes": [
                 "Swordsmanship"
             ],
-            "CommonSalvage": {},
-            "RareSalvage": {},
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
             "WikiURL": "https://wiki.guildwars.com/wiki/Mammoth_Blade",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
+            "InventoryIcon": "Mammoth Blade.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/a/ab/Mammoth_Blade.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": false
+            "WikiScraped": true
         },
         "26943": {
             "ModelID": 26943,
@@ -67167,16 +68460,32 @@
             "Attributes": [
                 "DaggerMastery"
             ],
-            "CommonSalvage": {},
-            "RareSalvage": {},
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
             "WikiURL": "https://wiki.guildwars.com/wiki/Golden_Talons",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
+            "InventoryIcon": "Golden Talons.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/2/27/Golden_Talons.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": false
+            "WikiScraped": true
         },
         "986": {
             "ModelID": 986,
@@ -67828,6 +69137,43 @@
                 "Polish": "Sai",
                 "Russian": "Sai",
                 "BorkBorkBork": "Saeee"
+            },
+            "ItemType": "Daggers",
+            "DropInfo": "",
+            "Attributes": [
+                "DaggerMastery"
+            ],
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Sai",
+            "InventoryIcon": "Sai.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/d/d3/Sai.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "11691": {
+            "ModelID": 11691,
+            "Names": {
+                "English": "Sai"
             },
             "ItemType": "Daggers",
             "DropInfo": "",
@@ -72271,25 +73617,6 @@
         }
     },
     "Usable": {
-        "28434": {
-            "ModelID": 28434,
-            "Names": {
-                "English": "250 Trick-or-Treat Bags"
-            },
-            "ItemType": "Usable",
-            "DropInfo": "",
-            "Attributes": [],
-            "CommonSalvage": {},
-            "RareSalvage": {},
-            "WikiURL": "https://wiki.guildwars.com/wiki/Trick-or-Treat_Bag",
-            "InventoryIcon": "Trick-or-Treat Bag.png",
-            "InventoryIconURL": "https://wiki.guildwars.com/images/4/4c/Trick-or-Treat_Bag.png",
-            "NickIndex": null,
-            "Profession": null,
-            "Category": null,
-            "SubCategory": null,
-            "WikiScraped": true
-        },
         "30646": {
             "ModelID": 30646,
             "Names": {
@@ -76589,6 +77916,25 @@
             "WikiURL": "https://wiki.guildwars.com/wiki/Trapdoor_Tonic",
             "InventoryIcon": "Trapdoor Tonic.png",
             "InventoryIconURL": "https://wiki.guildwars.com/images/0/08/Trapdoor_Tonic.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "28434": {
+            "ModelID": 28434,
+            "Names": {
+                "English": "Trick-or-Treat Bag"
+            },
+            "ItemType": "Usable",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Trick-or-Treat_Bag",
+            "InventoryIcon": "Trick-or-Treat Bag.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/4/4c/Trick-or-Treat_Bag.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,
@@ -88511,6 +89857,25 @@
             "WikiURL": "https://wiki.guildwars.com/wiki/Rare_Antique_Elonian_Vase",
             "InventoryIcon": "Rare Antique Elonian Vase.png",
             "InventoryIconURL": "https://wiki.guildwars.com/images/a/a4/Rare_Antique_Elonian_Vase.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "24635": {
+            "ModelID": 24635,
+            "Names": {
+                "English": "Spectral Crystal"
+            },
+            "ItemType": "Quest_Item",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Spectral_Crystal",
+            "InventoryIcon": "Spectral Crystal.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/d/dc/Spectral_Crystal.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,

@@ -84,6 +84,8 @@ class Profile:
         self.changed : bool = False
         self.polling_interval : float = 1  # Default polling interval in seconds
         self.loot_range : int = 4800
+                
+        self.deposit_full_stacks: bool = False
 
         # Collection of Filters
         self.filters: list[filter.Filter] = []
@@ -116,6 +118,10 @@ class Profile:
         self.weapon_mod_action: ItemAction = ItemAction.Hold
         self.weapon_mods: dict[str, dict[str, bool]] = {}
         self.blacklist: dict[ItemType, dict[int, bool]] = {}
+        
+        self.rare_weapons : dict[str, bool] = {}
+        from Widgets.frenkey.LootEx.data import Data
+        self.rare_weapons = {name: True for name in Data().Rare_Weapon_Names}
 
     def setup_lookups(self):
         self.filters_by_item_type.clear()
@@ -171,7 +177,10 @@ class Profile:
         self.changed = True
         
         profile_dict = {
-            "name": self.name,
+            "name": self.name,            
+            "polling_interval": self.polling_interval,
+            "loot_range": self.loot_range,
+            "deposit_full_stacks": self.deposit_full_stacks,
             "dyes": {dye.name: value for dye, value in self.dyes.items()},
             "identification_kits": self.identification_kits,
             "salvage_kits": self.salvage_kits,
@@ -181,6 +190,7 @@ class Profile:
             "nick_action": self.nick_action.name,
             "nick_weeks_to_keep": self.nick_weeks_to_keep,
             "nick_items_to_keep": self.nick_items_to_keep,
+            "rare_weapons": self.rare_weapons,
             "filters": [Filter.to_dict(filter) for filter in self.filters],
             "rules": [
                 rule.to_dict() for rule in self.skin_rules
@@ -189,8 +199,6 @@ class Profile:
                 item_type.name: weapon_rule.to_dict()
                 for item_type, weapon_rule in self.weapon_rules.items()
             },
-            "polling_interval": self.polling_interval,
-            "loot_range": self.loot_range,
             "rune_action": self.rune_action.name,
             "runes":  {
                 rune_identifier: rune_config.to_dict()
@@ -232,13 +240,9 @@ class Profile:
                 self.name = profile_dict.get("name", self.name)
                 self.polling_interval = profile_dict.get("polling_interval", self.polling_interval)
                 self.loot_range = profile_dict.get("loot_range", self.loot_range)
-                self.nick_action = ItemAction[profile_dict.get("nick_action", self.nick_action.name)]
-                self.nick_weeks_to_keep = profile_dict.get(
-                    "nick_weeks_to_keep", self.nick_weeks_to_keep)
-                self.nick_items_to_keep = profile_dict.get(
-                    "nick_items_to_keep", self.nick_items_to_keep)
+                self.deposit_full_stacks = profile_dict.get("deposit_full_stacks", self.deposit_full_stacks)  
                 self.dyes = {DyeColor[dye]: value for dye,
-                             value in profile_dict.get("dyes", {}).items()}
+                value in profile_dict.get("dyes", {}).items()}              
                 self.identification_kits = profile_dict.get(
                     "identification_kits", self.identification_kits)
                 self.salvage_kits = profile_dict.get(
@@ -247,9 +251,17 @@ class Profile:
                     "expert_salvage_kits", self.expert_salvage_kits)
                 self.lockpicks = profile_dict.get("lockpicks", self.lockpicks)
                 self.sell_threshold = profile_dict.get(
-                    "sell_threshold", self.sell_threshold)
+                    "sell_threshold", self.sell_threshold)                                
+                self.rare_weapons = profile_dict.get(
+                    "rare_weapons", self.rare_weapons)
+                self.nick_action = ItemAction[profile_dict.get("nick_action", self.nick_action.name)]
+                self.nick_weeks_to_keep = profile_dict.get(
+                    "nick_weeks_to_keep", self.nick_weeks_to_keep)
+                self.nick_items_to_keep = profile_dict.get(
+                    "nick_items_to_keep", self.nick_items_to_keep)
                 self.filters = [Filter.from_dict(
                     filter) for filter in profile_dict.get("filters", [])]
+                
                 self.skin_rules = [
                     skin_rule.SkinRule.from_dict(rule) for rule in profile_dict.get("rules", [])
                 ]

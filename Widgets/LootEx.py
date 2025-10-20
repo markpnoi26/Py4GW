@@ -109,6 +109,7 @@ def main():
     if not Routines.Checks.Map.MapValid():
         map_timer.Reset()
         map_timer.Start()
+        ui.action_summary = None
         
         inventory_handler.reset()
         current_character = ""
@@ -116,13 +117,13 @@ def main():
         return
 
     if not map_timer.IsStopped():
-        if map_timer.GetElapsedTime() < 5000:
+        if map_timer.GetElapsedTime() < 500:
             if not map_changed_reported:
-                ConsoleLog(MODULE_NAME, "Map changed. Waiting a bit ...", Console.MessageType.Warning)
+                # ConsoleLog(MODULE_NAME, "Map changed. Waiting a bit ...", Console.MessageType.Warning)
                 map_changed_reported = True
             return
 
-        ConsoleLog(MODULE_NAME, "Waited for 5 seconds. Lets continue...", Console.MessageType.Warning)
+        # ConsoleLog(MODULE_NAME, "Waited for 5 seconds. Lets continue...", Console.MessageType.Warning)
         map_timer.Stop()
 
     if not current_account:

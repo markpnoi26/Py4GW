@@ -8,7 +8,7 @@ from Py4GWCoreLib.Py4GWcorelib import ConsoleLog
 from Py4GWCoreLib.enums import Attribute, Console, DyeColor, ItemType, ModelID, Rarity
 from Widgets.frenkey.LootEx.data import Data
 from Widgets.frenkey.LootEx.enum import ModType, ModifierIdentifier
-from Widgets.frenkey.LootEx.models import ModifierInfo
+from Widgets.frenkey.LootEx.models import ModifierInfo, RuneModInfo
 
 class Cached_Item:
     def __init__(self, item_id: int, slot: int = -1):
@@ -87,22 +87,22 @@ class Cached_Item:
         self.has_mods: bool = False
         self.modifiers: list[ItemModifier] = item.modifiers if item else []
 
-        self.assigned_modifiers: list[models.WeaponModInfo] = []
-        self.mods: list[models.Rune | models.WeaponMod] = []
-        self.runes: list[models.Rune] = []
-        self.weapon_mods: list[models.WeaponMod] = []
+        self.mods: list[models.RuneModInfo | models.WeaponModInfo] = []
+        self.runes: list[models.RuneModInfo] = []
+        self.weapon_mods: list[models.WeaponModInfo] = []
 
-        self.max_runes: list[models.Rune] = []
-        self.max_weapon_mods: list[models.WeaponMod] = []
-        
-        self.runes_to_keep: list[models.Rune] = []
-        self.runes_to_sell: list[models.Rune] = []
-        self.weapon_mods_to_keep: list[models.WeaponMod] = []
+        self.max_runes: list[models.RuneModInfo] = []
+        self.max_weapon_mods: list[models.WeaponModInfo] = []
+
+        self.runes_to_keep: list[models.RuneModInfo] = []
+        self.runes_to_sell: list[models.RuneModInfo] = []
+        self.weapon_mods_to_keep: list[models.WeaponModInfo] = []
         
         self.is_highly_salvageable: bool = False
         self.has_increased_value: bool = False
         
         self.is_rare_weapon : bool = utility.Util.IsRareWeapon(self.model_id) and self.rarity == Rarity.Gold
+        self.is_rare_weapon_to_keep : bool = self.is_rare_weapon and settings.profile.rare_weapons.get(self.data.name, False) if self.data and settings.profile else False
         
         self.GetModsFromModifiers()
                 
@@ -115,6 +115,7 @@ class Cached_Item:
             ), None)      
             
             self.matches_skin_rule = self.skin_rule.matches(self) if self.skin_rule else False
+            
         
         self.weapon_rule: weapon_rule.WeaponRule | None = None
         self.matches_weapon_rule: bool = False
@@ -188,7 +189,6 @@ class Cached_Item:
 
     def ResetMods(self):
         self.mods = []
-        self.assigned_modifiers = []
         self.runes = []
         self.weapon_mods = []
         self.has_mods = False
@@ -214,7 +214,6 @@ class Cached_Item:
 
         if not modifier_values:
             return
-                
             
         for identifier, arg1, arg2 in modifier_values:
             if identifier is None or arg1 is None or arg2 is None:
@@ -249,53 +248,24 @@ class Cached_Item:
                 self.is_highly_salvageable = True
                 
         if self.is_armor or self.is_rune:
-            # self.assigned_modifiers = RuneModInfo.get_from_modifiers(modifier_values, self.item_type) or []
+            runes = RuneModInfo.get_from_modifiers(modifier_values, self.item_type)
+            self.runes = runes if runes else []
+            self.max_runes = [rune for rune in self.runes if rune.IsMaxed]
+            self.runes_to_keep = []
+            self.runes_to_sell = []
             
-            for rune in data.Runes.values():
-                is_rune, is_max = rune.matches_modifiers(
-                    modifier_values)
+            for rune in self.runes:
+                setting = settings.profile.runes.get(rune.Rune.identifier, None) if settings.profile else None   
+                if setting and setting.valuable:
+                    self.runes_to_keep.append(rune)
 
-                if is_rune:
-                    self.runes.append(rune)
-                    
-                    if is_max:
-                        self.max_runes.append(rune)
-                        setting = settings.profile.runes.get(rune.identifier, None) if settings.profile else None
-                        
-                        if setting:
-                            if setting.valuable:
-                                self.runes_to_keep.append(rune)
-                            
-                            if setting.should_sell:
-                                self.runes_to_sell.append(rune)
+                if setting and setting.should_sell:
+                    self.runes_to_sell.append(rune)
 
         if self.is_weapon or (self.is_upgrade and not self.is_rune):            
-            self.assigned_modifiers = WeaponModInfo.get_from_modifiers(modifier_values, self.item_type) or []
-            self.max_weapon_mods = [mod.WeaponMod for mod in self.assigned_modifiers if mod.IsMaxed]
-            self.weapon_mods = [mod.WeaponMod for mod in self.assigned_modifiers]
-            self.weapon_mods_to_keep = [mod.WeaponMod for mod in self.assigned_modifiers if settings.profile and settings.profile.weapon_mods.get(mod.WeaponMod.identifier, {}).get(self.item_type.name, False)]
-                                        
-            # for weapon_mod in data.Weapon_Mods.values():
-            #     is_weapon_mod, is_max = weapon_mod.matches_modifiers(modifier_values, self.item_type)
-
-            #     if is_weapon_mod:
-            #         is_matching_type = any(utility.Util.IsMatchingItemType(self.target_item_type, target_item_type) for target_item_type in weapon_mod.target_types) if self.item_type == ItemType.Rune_Mod else any(
-            #             utility.Util.IsMatchingItemType(self.item_type, target_item_type) for target_item_type in weapon_mod.target_types)
-                        
-            #         if not is_matching_type:
-            #             continue
-                    
-            #         self.weapon_mods.append(weapon_mod)
-                        
-            #         if is_max:
-            #             self.max_weapon_mods.append(weapon_mod)
-                        
-            #             if settings.profile and settings.profile.weapon_mods.get(weapon_mod.identifier, {}).get(self.item_type.name, False):                                
-            #                 if (weapon_mod.mod_type == ModType.Inherent and not self.is_inscribable):
-            #                     continue
-            #                 else:
-            #                     self.weapon_mods_to_keep.append(weapon_mod)
-                        
+            self.weapon_mods = WeaponModInfo.get_from_modifiers(modifier_values, self.item_type) or []
+            self.max_weapon_mods = [mod for mod in self.weapon_mods if mod.IsMaxed and (mod.WeaponMod.mod_type != ModType.Inherent or (self.is_inscribable or self.is_upgrade))]
+            self.weapon_mods_to_keep = [mod for mod in self.max_weapon_mods if settings.profile and settings.profile.weapon_mods.get(mod.WeaponMod.identifier, {}).get(self.item_type.name, False)]
                             
         
         self.mods = self.runes + self.weapon_mods

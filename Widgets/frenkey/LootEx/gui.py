@@ -626,6 +626,7 @@ class UI:
 
         self.action_heights: dict[enum.ItemAction, float] = {
                             enum.ItemAction.Salvage: 250,
+                            enum.ItemAction.Stash: 75,
                         }
         self.selected_filter: Optional[ItemFilter] = None
         self.filters : list[ItemFilter] = [
@@ -904,8 +905,11 @@ class UI:
                     self.draw_low_req()
                     self.draw_weapon_mods()
                     self.draw_runes()
+                    self.draw_rare_weapons()
                     self.draw_blacklist()
                     self.draw_data_collector_tab()
+                    
+                    self.first_draw = False
 
                 ImGui.end_tab_bar()
 
@@ -928,7 +932,6 @@ class UI:
             self.settings.manual_window_visible = self.module_window.open
             self.settings.save()
             
-        self.first_draw = False
   
     def draw_vault_controls(self):    
         if not UIManager.IsWindowVisible(WindowID.WindowID_VaultBox):
@@ -970,6 +973,8 @@ class UI:
                     pass
                 else:
                     inventory_handling.InventoryHandler().CondenseStacks(Bag.Storage_1, Bag.Storage_14)
+                    inventory_handling.InventoryHandler().SortBags(Bag.Storage_1, Bag.Storage_14)
+                    
 
             ImGui.show_tooltip("Condense items to full stacks" +
                             "\nHold Ctrl to send message to all accounts" +
@@ -1012,6 +1017,7 @@ class UI:
             self._draw_date_collection_toggle_button(width)
             self._draw_manual_window_toggle_button(width)
             self._draw_xunlai_storage_button(width)
+            self._draw_sort_inventory_button(width)
 
             PyImGui.end()
 
@@ -1058,6 +1064,14 @@ class UI:
         #     "\nHold Ctrl to send message to all accounts" +
         #     "\nHold Shift to send message to all accounts excluding yourself"
         # )
+
+    def _draw_sort_inventory_button(self, width):
+        if UI.transparent_button(IconsFontAwesome5.ICON_SORT_ALPHA_DOWN, self.settings.automatic_inventory_handling, width, width):
+            inventory_handling.InventoryHandler().CompactInventory()      
+        
+        ImGui.show_tooltip(
+            "Sort/Compact Inventory" +
+            "\nAutomatically stacks items and sorts them in your inventory")                  
 
     def _draw_date_collection_toggle_button(self, width):
         if UI.transparent_button(IconsFontAwesome5.ICON_LANGUAGE, self.settings.collect_items, width, width):
@@ -1168,7 +1182,12 @@ class UI:
                     PyImGui.table_next_column()
                     
                     if cached_item.data and cached_item.data.inventory_icon:
-                        texture = os.path.join(self.item_textures_path, cached_item.data.inventory_icon)
+                        if cached_item.item_type == ItemType.Dye:
+                            dye = cached_item.dye_info.dye1.ToString()
+                            texture = os.path.join(self.item_textures_path, f"{dye} Dye.png")
+                        else:
+                            texture = os.path.join(self.item_textures_path, cached_item.data.inventory_icon)
+                            
                         ImGui.DrawTexture(
                             texture,
                             image_size[0], image_size[1]
@@ -1270,7 +1289,7 @@ class UI:
                             
                             PyImGui.table_next_column()
                             for mod in cached_item.weapon_mods_to_keep:
-                                ImGui.text(mod.name)
+                                ImGui.text(mod.WeaponMod.name)
                                 
                         if cached_item.runes_to_keep and len(cached_item.runes_to_keep) > 1:
                             PyImGui.table_next_column()
@@ -1278,7 +1297,7 @@ class UI:
                             
                             PyImGui.table_next_column()
                             for mod in cached_item.runes_to_keep:
-                                ImGui.text(mod.name)
+                                ImGui.text(mod.Rune.name)
                         
                         if cached_item.runes:
                             PyImGui.table_next_column()
@@ -1286,7 +1305,7 @@ class UI:
                             
                             PyImGui.table_next_column()
                             for mod in cached_item.runes:
-                                ImGui.text(utility.Util.reformat_string(mod.name))
+                                ImGui.text(utility.Util.reformat_string(mod.Rune.name))
                         
                         if cached_item.weapon_mods:
                             PyImGui.table_next_column()
@@ -1294,11 +1313,18 @@ class UI:
                             
                             PyImGui.table_next_column()
                             for mod in cached_item.weapon_mods:
-                                ImGui.text(utility.Util.reformat_string(mod.name))
+                                ImGui.text(utility.Util.reformat_string(mod.WeaponMod.name))
                         
                         if cached_item.is_rare_weapon:
                             PyImGui.table_next_column()
                             ImGui.text("Rare Weapon")
+
+                            PyImGui.table_next_column()
+                            ImGui.text_colored("Yes", (0, 1, 0, 1))
+                            
+                        if cached_item.is_rare_weapon_to_keep:
+                            PyImGui.table_next_column()
+                            ImGui.text("Keep Rare Weapon")
 
                             PyImGui.table_next_column()
                             ImGui.text_colored("Yes", (0, 1, 0, 1))
@@ -1463,9 +1489,9 @@ class UI:
                                 tuple_id = (identifier, arg1, arg2)                                
                                 mods.append(tuple_id)                        
                             return mods
-                        
-                        
-                        no_assigned_modifiers_staff = next((s for s in weapons if len(s.assigned_modifiers) == 0), None)
+
+
+                        no_assigned_modifiers_staff = next((s for s in weapons if len(s.weapon_mods) == 0), None)
                         if no_assigned_modifiers_staff:
                             shared_mods = get_modifier_tuples(no_assigned_modifiers_staff)       
                             # ConsoleLog("LootEx Test", f"Shared Mods || {shared_mods}", Console.MessageType.Info)     
@@ -1766,7 +1792,13 @@ class UI:
 
                 ImGui.text("General")
                 ImGui.separator()
-                if ImGui.begin_child("GeneralSettingsChildInner", (subtab_size[0], 75), True, PyImGui.WindowFlags.NoBackground):
+                if ImGui.begin_child("GeneralSettingsChildInner", (subtab_size[0], 75), True, PyImGui.WindowFlags.NoBackground):                    
+                    # deposit_full_stacks = ImGui.checkbox("Deposit Full Stacks", self.settings.profile.deposit_full_stacks)
+                    # if deposit_full_stacks != self.settings.profile.deposit_full_stacks:
+                    #     self.settings.profile.deposit_full_stacks = deposit_full_stacks
+                    #     self.settings.profile.save()
+                    # ImGui.show_tooltip("When a full stack of items is found in the inventory, it will be deposited automatically.")
+                        
                     polling_interval = ImGui.slider_float("Polling Interval (sec)", self.settings.profile.polling_interval, 0.1, 5)
                     
                     if polling_interval != self.settings.profile.polling_interval:
@@ -1783,7 +1815,10 @@ class UI:
                         self.settings.profile.save()
 
                     ImGui.show_tooltip(f"Loot Range: {loot_range} units")
+                
+                        
                 ImGui.end_child()
+                
                 
                 ImGui.text("Merchant Settings")
                 def draw_hint():
@@ -2194,16 +2229,24 @@ class UI:
                                         changed, selected = self.draw_material_selectable(material, filter.materials.get(material.model_id, False))
                                     
                                         if changed:
-                                            if not selected:
-                                                if material.model_id in filter.materials:
-                                                    del filter.materials[material.model_id]
+                                            if self.py_io.key_ctrl:
+                                                for mat in data.Common_Materials.values():
+                                                    if not selected:
+                                                        if mat.model_id in filter.materials:
+                                                            del filter.materials[mat.model_id]
+                                                    else:
+                                                        filter.materials[mat.model_id] = selected
+                                                            
                                             else:
-                                                filter.materials[material.model_id] = selected
+                                                if not selected:
+                                                    if material.model_id in filter.materials:
+                                                        del filter.materials[material.model_id]
+                                                else:
+                                                    filter.materials[material.model_id] = selected
                                             
                                             self.settings.profile.save()
                                     
                                     PyImGui.table_next_row()
-                                
                                 
                                 if filter.action == enum.ItemAction.Salvage:
                                     ypos = PyImGui.get_cursor_pos_y() + 2
@@ -2218,11 +2261,20 @@ class UI:
                                         changed, selected = self.draw_material_selectable(material, filter.materials.get(material.model_id, False))
                                     
                                         if changed:
-                                            if not selected:
-                                                if material.model_id in filter.materials:
-                                                    del filter.materials[material.model_id]
+                                            if self.py_io.key_ctrl:
+                                                for mat in data.Rare_Materials.values():
+                                                    if not selected:
+                                                        if mat.model_id in filter.materials:
+                                                            del filter.materials[mat.model_id]
+                                                    else:
+                                                        filter.materials[mat.model_id] = selected
+                                                            
                                             else:
-                                                filter.materials[material.model_id] = selected
+                                                if not selected:
+                                                    if material.model_id in filter.materials:
+                                                        del filter.materials[material.model_id]
+                                                else:
+                                                    filter.materials[material.model_id] = selected
                                             
                                             self.settings.profile.save()
                                     
@@ -2240,6 +2292,14 @@ class UI:
                             case enum.ItemAction.Salvage_Rare_Materials:
                                 draw_salvage_options()                                        
                                 pass
+                            
+                            case enum.ItemAction.Stash:                                        
+                                if filter.action == enum.ItemAction.Stash:
+                                    PyImGui.indent(25)
+                                    full_stack_only = ImGui.checkbox("Only stash full stacks", filter.full_stack_only)
+                                    if full_stack_only != filter.full_stack_only:
+                                        filter.full_stack_only = full_stack_only
+                                        self.settings.profile.save()
                             
                             case _:
                                 pass
@@ -3068,7 +3128,7 @@ class UI:
                                 
                         ImGui.end_child()                                
                                                                
-                    if ImGui.begin_child("rule action", (0, 45), True, PyImGui.WindowFlags.NoFlag):    
+                    if ImGui.begin_child("rule action", (0, 75 if rule.action == enum.ItemAction.Stash else 45), True, PyImGui.WindowFlags.NoFlag):    
                         action_info = self.action_infos.get(rule.action, None)
                         action_texture = action_info.icon if action_info else None
                         height = 24
@@ -3087,6 +3147,13 @@ class UI:
                             self.settings.profile.save()
                         
                         ImGui.show_tooltip((f"{self.action_infos.get_name(enum.ItemAction.Loot)} and " if rule.action not in [enum.ItemAction.NONE, enum.ItemAction.Loot, enum.ItemAction.Destroy] else "") + f"{self.action_infos.get_name(rule.action)}")
+                    
+                        if rule.action == enum.ItemAction.Stash:
+                            full_stack_only = ImGui.checkbox("Only stash full stacks", rule.full_stack_only)
+                            if full_stack_only != rule.full_stack_only:
+                                rule.full_stack_only = full_stack_only
+                                self.settings.profile.save()
+                    
                     ImGui.end_child()
                          
                     if ImGui.begin_child("rule_settings", (0, 0), False, PyImGui.WindowFlags.NoFlag):
@@ -3900,7 +3967,7 @@ class UI:
                 self.filter_weapon_mods()
         
             PyImGui.same_line(0, 5)    
-            action_info = self.action_infos.get(self.settings.profile.rune_action, None)
+            action_info = self.action_infos.get(self.settings.profile.weapon_mod_action, None)
             action_texture = action_info.icon if action_info else None
             if action_texture:
                 ImGui.DrawTexture(action_texture, height, height)
@@ -3908,13 +3975,13 @@ class UI:
                 PyImGui.dummy(height, height)
             PyImGui.same_line(0, 2)           
             
-            current_action_index = self.keep_actions.index(self.settings.profile.rune_action) if self.settings.profile.rune_action in self.keep_actions else 0
+            current_action_index = self.keep_actions.index(self.settings.profile.weapon_mod_action) if self.settings.profile.weapon_mod_action in self.keep_actions else 0
             PyImGui.push_item_width(combo_width)
-            action_index = ImGui.combo("##Rune Action", current_action_index, self.keep_action_names)
+            action_index = ImGui.combo("##Weapon Mod Action", current_action_index, self.keep_action_names)
             PyImGui.pop_item_width()
             
             if action_index != current_action_index:
-                self.settings.profile.rune_action = self.keep_actions[action_index]
+                self.settings.profile.weapon_mod_action = self.keep_actions[action_index]
                 self.settings.profile.save()
                 
             ImGui.show_tooltip(
@@ -4797,6 +4864,40 @@ class UI:
             elif PyImGui.is_mouse_clicked(0) and item.is_hovered:
                 item.is_clicked = True
                 item.time_stamp = datetime.now()
+
+    def draw_rare_weapons(self):
+        data = Data()
+        style = ImGui.get_style()
+        
+        if ImGui.begin_tab_item("Rare Weapons") and self.settings.profile:
+            ImGui.text("Select the rare weapons you want to keep")
+            ImGui.separator()
+            
+            if ImGui.begin_child("Rare Weapons#1", (0, 0), True, PyImGui.WindowFlags.NoFlag):
+                style.WindowPadding.push_style_var(5, 5)
+                for weapon_name in data.Rare_Weapon_Names:
+                    if ImGui.begin_child(f"RareWeaponSelectable{weapon_name}", (0, 34), True, PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
+                        # find the weapon info in data.Items.All
+                        weapon_info = next((weapon for weapon in data.Items.All if weapon.name == weapon_name), None)
+                        weapon_texture = os.path.join(self.item_textures_path, weapon_info.inventory_icon) if weapon_info and weapon_info.inventory_icon else None
+                        if weapon_texture:
+                            ImGui.image(weapon_texture, (24, 24))
+                        else:
+                            PyImGui.dummy(24, 24)
+                            
+                        PyImGui.same_line(0, 5)
+                        included = self.settings.profile.rare_weapons.get(weapon_name, False)
+                        checked = ImGui.checkbox(weapon_name, included)
+                        if checked != included:
+                            self.settings.profile.rare_weapons[weapon_name] = checked
+                            self.settings.profile.save()
+                        
+                    ImGui.end_child()
+                    
+                style.WindowPadding.pop_style_var()
+            ImGui.end_child()
+            ImGui.end_tab_item()
+
 
     # region general ui elements
     @staticmethod
