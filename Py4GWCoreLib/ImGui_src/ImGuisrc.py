@@ -2104,9 +2104,10 @@ class ImGui:
     @staticmethod
     def search_field(label: str, text : str, placeholder: str = "Search...", flags : int = PyImGui.InputTextFlags.NoFlag) -> tuple[bool, str]:
         def _functions_tail():
-            if not PyImGui.is_item_active() and not PyImGui.is_item_focused() and not text:
+            if not PyImGui.is_item_active() and not PyImGui.is_item_focused() and not text:    
                 search_font_size = int(height * 0.25) + 1
                 padding = (height - search_font_size) / 2
+                                    
                                     
                 placeholder_rect = (item_rect[0] + current_frame_padding.value1, item_rect[1], inputfield_size[0] - (current_frame_padding.value1 * 2), inputfield_size[1])
                 PyImGui.push_clip_rect(
@@ -2155,6 +2156,10 @@ class ImGui:
             width = item_rect_max[0] - item_rect_min[0] - (label_size[0] + 8 if label_size[0] > 0 else 0)
             height = item_rect_max[1] - item_rect_min[1]
             item_rect = (item_rect_min[0], item_rect_min[1], width, height - 4)
+            
+            label_rect = (item_rect_max[0] - (label_size[0] if label_size[0] > 0 else 0), item_rect_min[1] + ((height - label_size[1]) / 2) + 2, label_size[0], label_size[1])
+            inputfield_size = ((label_rect[0] - current_inner_spacing.value1) - item_rect_min[0] , item_rect[3])
+        
             _functions_tail()
             return new_value != text, new_value
            
