@@ -500,8 +500,11 @@ class Yield:
             if current_map == map_id:
                 # --- Subcase: Map is already valid ---
                 if not GLOBAL_CACHE.Map.IsMapLoading() and Checks.Map.MapValid():
-                        ConsoleLog("WaitforMapLoad", f"Already in {GLOBAL_CACHE.Map.GetMapName(current_map)}", log=log)
-                        yield from Yield.wait(500)
+                        ConsoleLog("WaitforMapLoad", f"Already in {GLOBAL_CACHE.Map.GetMapName(current_map)}", log=log)                        
+                        while GLOBAL_CACHE.Map.GetInstanceUptime() < 2000:
+                            yield from Yield.wait(200)
+                            
+                        yield from Yield.wait(1000)
                         return True
                 
                 # --- Subcase: Map is not yet valid and we are not loading anymore ---
@@ -516,8 +519,11 @@ class Yield:
                     
                     # --- Map is now loading or valid, proceed to case 3 ---
                     if Checks.Map.MapValid():
-                        ConsoleLog("WaitforMapLoad", f"We were already in {GLOBAL_CACHE.Map.GetMapName(current_map)} but had to wait for the map to load.", log=log)
-                        yield from Yield.wait(500)
+                        ConsoleLog("WaitforMapLoad", f"We were already in {GLOBAL_CACHE.Map.GetMapName(current_map)} but had to wait for the map to load.", log=log)                  
+                        while GLOBAL_CACHE.Map.GetInstanceUptime() < 2000:
+                            yield from Yield.wait(200)
+                            
+                        yield from Yield.wait(1000)
                         return True
                 
             # --- Case 2: wait for load phase to actually begin ---

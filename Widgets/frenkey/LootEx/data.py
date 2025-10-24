@@ -4,8 +4,9 @@ import os
 from typing import Optional
 
 from Py4GW import Console
+from Py4GWCoreLib.enums_src.GameData_enums import DyeColor
 from Widgets.frenkey.LootEx import models
-from Widgets.frenkey.LootEx.enum import ItemCategory
+from Widgets.frenkey.LootEx.enum import ItemCategory, ModType, ModsModels
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.Py4GWcorelib import ConsoleLog
 from Py4GWCoreLib.enums import Attribute, ServerLanguage
@@ -28,6 +29,179 @@ class Data():
         self._initialized = True
     
         self.is_loaded: bool = False
+
+        self.ColorNames: dict[ServerLanguage, dict[DyeColor, str]] = {
+            ServerLanguage.English: {
+                DyeColor.Blue: "Blue",
+                DyeColor.Green: "Green",
+                DyeColor.Purple: "Purple",
+                DyeColor.Red: "Red",
+                DyeColor.Yellow: "Yellow",
+                DyeColor.Brown: "Brown",
+                DyeColor.Orange: "Orange",
+                DyeColor.Silver: "Silver",
+                DyeColor.Black: "Black",
+                DyeColor.Gray: "Gray",
+                DyeColor.White: "White",
+                DyeColor.Pink: "Pink",
+            },
+            ServerLanguage.Korean: {
+                DyeColor.Blue: "파란색",
+                DyeColor.Green: "초록색",
+                DyeColor.Purple: "보라색",
+                DyeColor.Red: "빨간색",
+                DyeColor.Yellow: "노란색",
+                DyeColor.Brown: "갈색",
+                DyeColor.Orange: "주황색",
+                DyeColor.Silver: "은색",
+                DyeColor.Black: "검은색",
+                DyeColor.Gray: "회색",
+                DyeColor.White: "흰색",
+                DyeColor.Pink: "분홍색",
+            },
+            ServerLanguage.French: {
+                DyeColor.Blue: "Bleu",
+                DyeColor.Green: "Vert",
+                DyeColor.Purple: "Pourpre",
+                DyeColor.Red: "Rouge",
+                DyeColor.Yellow: "Jaune",
+                DyeColor.Brown: "Marrone",
+                DyeColor.Orange: "Orange",
+                DyeColor.Silver: "Argent",
+                DyeColor.Black: "Noir",
+                DyeColor.Gray: "Gris",
+                DyeColor.White: "Blanc",
+                DyeColor.Pink: "Rose",
+            },
+            ServerLanguage.German: {
+                DyeColor.Blue: "Blau",
+                DyeColor.Green: "Grün",
+                DyeColor.Purple: "Lila",
+                DyeColor.Red: "Rot",
+                DyeColor.Yellow: "Gelb",
+                DyeColor.Brown: "Braun",
+                DyeColor.Orange: "Orange",
+                DyeColor.Silver: "Silber",
+                DyeColor.Black: "Schwarz",
+                DyeColor.Gray: "Grau",
+                DyeColor.White: "Weiß",
+                DyeColor.Pink: "Rosa",
+            },
+            ServerLanguage.Italian: {
+                DyeColor.Blue: "Blu",
+                DyeColor.Green: "Verde",
+                DyeColor.Purple: "Porpora",
+                DyeColor.Red: "Rosso",
+                DyeColor.Yellow: "Giallo",
+                DyeColor.Brown: "Marrone",
+                DyeColor.Orange: "Arancione",
+                DyeColor.Silver: "Argento",
+                DyeColor.Black: "Nero",
+                DyeColor.Gray: "Grigio",
+                DyeColor.White: "Bianco",
+                DyeColor.Pink: "Rosa",
+            },
+            ServerLanguage.Spanish: {
+                DyeColor.Blue: "Azul",
+                DyeColor.Green: "Verde",
+                DyeColor.Purple: "Púrpura",
+                DyeColor.Red: "Rojo",
+                DyeColor.Yellow: "Amarillo",
+                DyeColor.Brown: "Marrón",
+                DyeColor.Orange: "Naranja",
+                DyeColor.Silver: "Plata",
+                DyeColor.Black: "Negro",
+                DyeColor.Gray: "Gris",
+                DyeColor.White: "Blanco",
+                DyeColor.Pink: "Rosa",
+            },
+            ServerLanguage.TraditionalChinese: {
+                DyeColor.Blue: "藍色",
+                DyeColor.Green: "綠色",
+                DyeColor.Purple: "紫色",
+                DyeColor.Red: "紅色",
+                DyeColor.Yellow: "黃色",
+                DyeColor.Brown: "棕色",
+                DyeColor.Orange: "橙色",
+                DyeColor.Silver: "銀色",
+                DyeColor.Black: "黑色",
+                DyeColor.Gray: "灰色",
+                DyeColor.White: "白色",
+                DyeColor.Pink: "粉紅色",
+            },
+            ServerLanguage.Japanese: {
+                DyeColor.Blue: "青",
+                DyeColor.Green: "緑",
+                DyeColor.Purple: "紫",
+                DyeColor.Red: "赤",
+                DyeColor.Yellow: "黄",
+                DyeColor.Brown: "茶色",
+                DyeColor.Orange: "オレンジ",
+                DyeColor.Silver: "銀",
+                DyeColor.Black: "黒",
+                DyeColor.Gray: "灰色",
+                DyeColor.White: "白",
+                DyeColor.Pink: "ピンク",
+            },
+            ServerLanguage.Polish: {
+                DyeColor.Blue: "Niebieski",
+                DyeColor.Green: "Zielony",
+                DyeColor.Purple: "Fioletowy",
+                DyeColor.Red: "Czerwony",
+                DyeColor.Yellow: "Żółty",
+                DyeColor.Brown: "Brązowy",
+                DyeColor.Orange: "Pomarańczowy",
+                DyeColor.Silver: "Srebrny",
+                DyeColor.Black: "Czarny",
+                DyeColor.Gray: "Szary",
+                DyeColor.White: "Biały",
+                DyeColor.Pink: "Różowy",
+            },
+            ServerLanguage.Russian: {
+                DyeColor.Blue: "Синий",
+                DyeColor.Green: "Зеленый",
+                DyeColor.Purple: "Пурпурный",
+                DyeColor.Red: "Красный",
+                DyeColor.Yellow: "Желтый",
+                DyeColor.Brown: "Коричневый",
+                DyeColor.Orange: "Оранжевый",
+                DyeColor.Silver: "Серебряный",
+                DyeColor.Black: "Черный",
+                DyeColor.Gray: "Серый",
+                DyeColor.White: "Белый",
+                DyeColor.Pink: "Розовый",
+            },
+            ServerLanguage.BorkBorkBork: {
+                DyeColor.Blue: "Blooe-a",
+                DyeColor.Green: "Greee",
+                DyeColor.Purple: "Poorple-a",
+                DyeColor.Red: "Red",
+                DyeColor.Yellow: "Yelloo",
+                DyeColor.Brown: "Broon",
+                DyeColor.Orange: "Oorunge-a",
+                DyeColor.Silver: "Seelfer",
+                DyeColor.Black: "Blaeck",
+                DyeColor.Gray: "Graey",
+                DyeColor.White: "Vheete-a",
+                DyeColor.Pink: "Peenk",
+            },
+
+        }
+        
+        self.ModsByItemType: dict[ItemType, models.ModsPair] = {
+            ItemType.Axe: models.ModsPair(ModsModels.AxeHaft, ModsModels.AxeGrip),
+            ItemType.Bow: models.ModsPair(ModsModels.BowString, ModsModels.BowGrip),
+            ItemType.Daggers: models.ModsPair(ModsModels.DaggerTang, ModsModels.DaggerHandle),
+            ItemType.Offhand: models.ModsPair(None, ModsModels.FocusCore),
+            ItemType.Hammer: models.ModsPair(ModsModels.HammerHaft, ModsModels.HammerGrip),
+            ItemType.Scythe: models.ModsPair(ModsModels.ScytheSnathe, ModsModels.ScytheGrip),
+            ItemType.Shield: models.ModsPair(None, ModsModels.ShieldHandle),
+            ItemType.Spear: models.ModsPair(ModsModels.Spearhead, ModsModels.SpearGrip),
+            ItemType.Staff: models.ModsPair(ModsModels.StaffHead, ModsModels.StaffWrapping),
+            ItemType.Sword: models.ModsPair(ModsModels.SwordPommel, ModsModels.SwordHilt),
+            ItemType.Wand: models.ModsPair(None, ModsModels.WandWrapping),
+        }
+
         self.DamageRanges: dict[ItemType, dict[int, models.IntRange]] = {
             ItemType.Axe: {
                 0:  models.IntRange(6, 12),
@@ -398,6 +572,26 @@ class Data():
                     "Stoneblade",
                     "Greater Stoneblade" 
                 ]
+
+    
+    def get_mods_models(self, item_type: ItemType) -> models.ModsPair | None:
+        try:
+            return self.ModsByItemType[item_type]
+        except KeyError:
+            return None
+
+    def get_mod_model(self, item_type: ItemType, mod_type: ModType) -> models.ModsModels | None:
+        try:
+            mods_pair = self.ModsByItemType.get(item_type, None)
+            
+            if mods_pair:
+                return mods_pair.get(mod_type)
+
+        except KeyError:
+            return None    
+        
+        return None
+        
 
     def UpdateLanguage(self, server_language: ServerLanguage):
         for item in self.Items.All:

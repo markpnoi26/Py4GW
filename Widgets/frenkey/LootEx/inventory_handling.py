@@ -276,7 +276,7 @@ class InventoryHandler:
             move_amount = min(250, amount)
 
             ConsoleLog(
-                "LootEx", f"Stashing item {move_amount} '{item.model_name}' {item.id} to storage {Bag(storage_index)} slot {storage_slot}", Console.MessageType.Info)
+                "LootEx", f"Stashing item {move_amount} '{item.name}' {item.id} to storage {Bag(storage_index)} slot {storage_slot}", Console.MessageType.Info)
 
             stash[index] = (item.id, item.item_type,
                             item.model_id, move_amount)
@@ -286,12 +286,12 @@ class InventoryHandler:
     def DropItem(self, item: cache.Cached_Item) -> bool:
         if item.is_inventory_item:
             ConsoleLog(
-                "LootEx", f"Dropping {item.quantity}x {item.model_name} ({item.id})", Console.MessageType.Info)
+                "LootEx", f"Dropping {item.quantity}x {item.name} ({item.id})", Console.MessageType.Info)
             GLOBAL_CACHE.Inventory.DropItem(item.id, 250)
             return True
         else:
             ConsoleLog(
-                "LootEx", f"Cannot drop item {item.model_name} ({item.id}), it is not an inventory item.", Console.MessageType.Warning)
+                "LootEx", f"Cannot drop item {item.name} ({item.id}), it is not an inventory item.", Console.MessageType.Warning)
             return False
         
     def WithdrawItem(self, item: cache.Cached_Item) -> bool:
@@ -316,7 +316,7 @@ class InventoryHandler:
                         bag, slot = self.GetBagFromSlot(inv_item.slot, bag_sizes)
                         
                         ConsoleLog(
-                            "LootEx", f"Withdrawing {move_amount}x {item.model_name} ({item.id}) to {inv_item.quantity}x {inv_item.model_name} in {bag.name} at slot {slot}", Console.MessageType.Info)                            
+                            "LootEx", f"Withdrawing {move_amount}x {item.name} ({item.id}) to {inv_item.quantity}x {inv_item.name} in {bag.name} at slot {slot}", Console.MessageType.Info)                            
                         
                         Inventory.MoveItem(
                             item.id, bag.value, slot, move_amount)
@@ -331,7 +331,7 @@ class InventoryHandler:
                     if inv_item is None or inv_item.id == 0:
                         bag, slot = self.GetBagFromSlot(inv_item.slot, bag_sizes)                        
                         ConsoleLog(
-                            "LootEx", f"Withdrawing {item.model_name} ({item.id}) to {bag.name} slot {slot}", Console.MessageType.Info)    
+                            "LootEx", f"Withdrawing {item.name} ({item.id}) to {bag.name} slot {slot}", Console.MessageType.Info)    
                         Inventory.MoveItem(item.id, bag.value, slot, item.quantity)
                         return True
                             
@@ -345,7 +345,7 @@ class InventoryHandler:
                     bag, slot = self.GetBagFromSlot(index, bag_sizes)
                     
                     ConsoleLog(
-                        "LootEx", f"Withdrawing {item.model_name} ({item.id}) to {bag.name} slot {slot}", Console.MessageType.Info)    
+                        "LootEx", f"Withdrawing {item.name} ({item.id}) to {bag.name} slot {slot}", Console.MessageType.Info)    
                     Inventory.MoveItem(item.id, bag.value, slot, item.quantity)
                     return True                                    
         
@@ -389,7 +389,7 @@ class InventoryHandler:
                         if utility.Util.get_color(id) == item.color:
                             move_amount = min(250 - slot_quantity, amount)
                             ConsoleLog(
-                                "LootEx", f"Stashing item  {move_amount} '{item.model_name}' {item.id} to storage {Bag(storage_index)} slot {storage_slot}", Console.MessageType.Info)
+                                "LootEx", f"Stashing item  {move_amount} '{item.name}' {item.id} to storage {Bag(storage_index)} slot {storage_slot}", Console.MessageType.Info)
                             Inventory.MoveItem(
                                 item.id, storage_index, storage_slot, move_amount)
                             amount -= move_amount
@@ -400,7 +400,7 @@ class InventoryHandler:
                     else:
                         move_amount = min(250 - slot_quantity, amount)
                         ConsoleLog(
-                            "LootEx", f"Stashing item {move_amount}x '{item.model_name}' {item.id} to storage {Bag(storage_index)} slot {storage_slot}", Console.MessageType.Info)
+                            "LootEx", f"Stashing item {move_amount}x '{item.name}' {item.id} to storage {Bag(storage_index)} slot {storage_slot}", Console.MessageType.Info)
                         Inventory.MoveItem(
                             item.id, storage_index, storage_slot, move_amount)
                         amount -= move_amount
@@ -775,7 +775,7 @@ class InventoryHandler:
 
         if not item.material:
             ConsoleLog(
-                "LootEx", f"Item {item.model_name} ({item.id}) does not have a material associated with it, cannot deposit to material storage.", Console.MessageType.Warning)
+                "LootEx", f"Item {item.name} ({item.id}) does not have a material associated with it, cannot deposit to material storage.", Console.MessageType.Warning)
             return False
 
         material_storage = self.GetMaterialStorage()
@@ -792,7 +792,7 @@ class InventoryHandler:
 
         if move_amount <= 0:
             # ConsoleLog(
-            #     "LootEx", f"Item {item.model_name} ({item.id}) cannot be deposited to material storage, not enough space.", Console.MessageType.Warning)
+            #     "LootEx", f"Item {item.name} ({item.id}) cannot be deposited to material storage, not enough space.", Console.MessageType.Warning)
             return False
 
         material_storage[item.material.material_storage_slot] = (
@@ -888,7 +888,7 @@ class InventoryHandler:
         if salvaged:
             if remaining <= 0:
                 ConsoleLog(
-                    f"LootEx", f"Salvaged {salvage_item.model_name} ({salvage_item.id})!", Console.MessageType.Debug)
+                    f"LootEx", f"Salvaged {salvage_item.name} ({salvage_item.id})!", Console.MessageType.Debug)
                 
                 self.salvage_queue.pop(salvage_item.id)  # Remove from salvage queue
                 
@@ -900,7 +900,7 @@ class InventoryHandler:
 
             else:
                 ConsoleLog(
-                    f"LootEx", f"Salvaged {salvage_item.model_name} ({salvage_item.id}), but still has {remaining} remaining.", Console.MessageType.Debug)
+                    f"LootEx", f"Salvaged {salvage_item.name} ({salvage_item.id}), but still has {remaining} remaining.", Console.MessageType.Debug)
                 salvage_item.salvage_started = None
                 return False
 
@@ -918,7 +918,7 @@ class InventoryHandler:
             salvage_item.savlage_tries += 1
             kit.uses -= 1            
             ConsoleLog(
-                "LootEx", f"Salvage {salvage_item.quantity}x {salvage_item.model_name} ({salvage_item.id}) with kit {kit.model_name} ({kit.id}) with salvage option {salvage_item.salvage_option.name}", Console.MessageType.Info)
+                "LootEx", f"Salvage {salvage_item.quantity}x {salvage_item.name} ({salvage_item.id}) with kit {kit.name} ({kit.id}) with salvage option {salvage_item.salvage_option.name}", Console.MessageType.Info)
             return True
 
         elif salvage_item.salvage_started:
@@ -928,7 +928,7 @@ class InventoryHandler:
              
             if time_since_salvage.total_seconds() > 3:
                 ConsoleLog(
-                    "LootEx", f"Salvage operation for {salvage_item.model_name} has timed out after {time_since_salvage.total_seconds()} seconds.", Console.MessageType.Warning)
+                    "LootEx", f"Salvage operation for {salvage_item.name} has timed out after {time_since_salvage.total_seconds()} seconds.", Console.MessageType.Warning)
                 self.ResetSalvageWindow()
                 salvage_item.salvage_started = None
 
@@ -944,7 +944,7 @@ class InventoryHandler:
                 if salvage_item.salvage_confirmed:
                     if ui_manager_extensions.UIManagerExtensions.ConfirmModMaterialSalvageVisible():
                         ConsoleLog(
-                            "LootEx", f"Confirming 'Salvage for Materials and destroy Mods' Option for {salvage_item.model_name} ({salvage_item.id})", Console.MessageType.Info)
+                            "LootEx", f"Confirming 'Salvage for Materials and destroy Mods' Option for {salvage_item.name} ({salvage_item.id})", Console.MessageType.Info)
                         ui_manager_extensions.UIManagerExtensions.ConfirmModMaterialSalvage()  
                         salvage_item.Update()
                         return True
@@ -954,7 +954,7 @@ class InventoryHandler:
                         case SalvageOption.LesserCraftingMaterials:
                             if self.is_confirm_materials_window_open:  
                                 ConsoleLog(
-                                    "LootEx", f"Confirming lesser salvage option: {salvage_item.salvage_option.name} for {salvage_item.model_name} ({salvage_item.id})", Console.MessageType.Info)
+                                    "LootEx", f"Confirming lesser salvage option: {salvage_item.salvage_option.name} for {salvage_item.name} ({salvage_item.id})", Console.MessageType.Info)
                                 
                                 ui_manager_extensions.UIManagerExtensions.ConfirmLesserSalvage()
                                 # salvage_item.salvage_requires_confirmation = False
@@ -975,10 +975,10 @@ class InventoryHandler:
                                     
                                     if prefix:
                                         ConsoleLog(
-                                            "LootEx", f"Confirming salvage option: {salvage_item.salvage_option.name} for {salvage_item.model_name} ({salvage_item.id}) to extract {prefix.Mod.name}", Console.MessageType.Info)
+                                            "LootEx", f"Confirming salvage option: {salvage_item.salvage_option.name} for {salvage_item.name} ({salvage_item.id}) to extract {prefix.Mod.name}", Console.MessageType.Info)
                                     else:
                                         ConsoleLog(
-                                            "LootEx", f"Confirming salvage option: {salvage_item.salvage_option.name} for {salvage_item.model_name} ({salvage_item.id}) to extract 'Unkown Upgrade'", Console.MessageType.Info)
+                                            "LootEx", f"Confirming salvage option: {salvage_item.salvage_option.name} for {salvage_item.name} ({salvage_item.id}) to extract 'Unkown Upgrade'", Console.MessageType.Info)
                                 elif salvage_item.salvage_option == SalvageOption.Suffix:
                                     suffix = None
                                     
@@ -991,10 +991,10 @@ class InventoryHandler:
                                     
                                     if suffix:
                                         ConsoleLog(
-                                            "LootEx", f"Confirming salvage option: {salvage_item.salvage_option.name} for {salvage_item.model_name} ({salvage_item.id}) to extract {suffix.Mod.name}", Console.MessageType.Info)
+                                            "LootEx", f"Confirming salvage option: {salvage_item.salvage_option.name} for {salvage_item.name} ({salvage_item.id}) to extract {suffix.Mod.name}", Console.MessageType.Info)
                                     else:
                                         ConsoleLog(
-                                            "LootEx", f"Confirming salvage option: {salvage_item.salvage_option.name} for {salvage_item.model_name} ({salvage_item.id}) to extract 'Unkown Upgrade'", Console.MessageType.Info)
+                                            "LootEx", f"Confirming salvage option: {salvage_item.salvage_option.name} for {salvage_item.name} ({salvage_item.id}) to extract 'Unkown Upgrade'", Console.MessageType.Info)
                                 elif salvage_item.salvage_option == SalvageOption.Inherent:
                                     inherent = None
                                     
@@ -1009,13 +1009,13 @@ class InventoryHandler:
                                     
                                     if inherent:
                                         ConsoleLog(
-                                            "LootEx", f"Confirming salvage option: {salvage_item.salvage_option.name} for {salvage_item.model_name} ({salvage_item.id}) to extract {inherent.Mod.name}", Console.MessageType.Info)
+                                            "LootEx", f"Confirming salvage option: {salvage_item.salvage_option.name} for {salvage_item.name} ({salvage_item.id}) to extract {inherent.Mod.name}", Console.MessageType.Info)
                                     else:
                                         ConsoleLog(
-                                            "LootEx", f"Confirming salvage option: {salvage_item.salvage_option.name} for {salvage_item.model_name} ({salvage_item.id}) to extract 'Unkown Upgrade'", Console.MessageType.Info)
+                                            "LootEx", f"Confirming salvage option: {salvage_item.salvage_option.name} for {salvage_item.name} ({salvage_item.id}) to extract 'Unkown Upgrade'", Console.MessageType.Info)
                                 else:
                                     ConsoleLog(
-                                        "LootEx", f"Confirming salvage option: {salvage_item.salvage_option.name} for {salvage_item.model_name}", Console.MessageType.Info)
+                                        "LootEx", f"Confirming salvage option: {salvage_item.salvage_option.name} for {salvage_item.name}", Console.MessageType.Info)
                                     
                                 ui_manager_extensions.UIManagerExtensions.SelectSalvageOptionAndSalvage(
                                     salvage_item.salvage_option)
@@ -1045,7 +1045,7 @@ class InventoryHandler:
                 case InventoryHandler.TraderAction.ActionType.Buy:
                     if not self.price_requested:
                         ConsoleLog(
-                            "LootEx", f"Requesting quote for buying item {self.item.model_name} ({self.item.id})", Console.MessageType.Info)
+                            "LootEx", f"Requesting quote for buying item {self.item.name} ({self.item.id})", Console.MessageType.Info)
                         GLOBAL_CACHE.Trading.Trader.RequestQuote(self.item.id)
                         self.price_requested = True
                         self.requested = datetime.now()
@@ -1063,14 +1063,14 @@ class InventoryHandler:
                             return False
                         
                         ConsoleLog(
-                            "LootEx", f"Buying item {self.item.model_name} ({self.item.id}) for {utility.Util.format_currency(self.price)}", Console.MessageType.Info)
+                            "LootEx", f"Buying item {self.item.name} ({self.item.id}) for {utility.Util.format_currency(self.price)}", Console.MessageType.Info)
                         GLOBAL_CACHE.Trading.Trader.BuyItem(self.item.id, self.price)
                         return True
                 
                 case InventoryHandler.TraderAction.ActionType.Sell:
                     if not self.price_requested:
                         ConsoleLog(
-                            "LootEx", f"Requesting quote for selling item {self.item.model_name} ({self.item.id})", Console.MessageType.Info)
+                            "LootEx", f"Requesting quote for selling item {self.item.name} ({self.item.id})", Console.MessageType.Info)
                         GLOBAL_CACHE.Trading.Trader.RequestSellQuote(self.item.id)
                         self.price_requested = True
                         self.requested = datetime.now()
@@ -1087,7 +1087,7 @@ class InventoryHandler:
                             return False
                         
                         ConsoleLog(
-                            "LootEx", f"Selling item {self.item.model_name} ({self.item.id}) for {utility.Util.format_currency(self.price)}", Console.MessageType.Info)
+                            "LootEx", f"Selling item {self.item.name} ({self.item.id}) for {utility.Util.format_currency(self.price)}", Console.MessageType.Info)
                         GLOBAL_CACHE.Trading.Trader.SellItem(self.item.id, self.price)
                         return True
             
@@ -1182,7 +1182,7 @@ class InventoryHandler:
 
             missing_language = item.data.has_missing_names()
             if missing_language:
-                # ConsoleLog("LootEx", f"Item '{item.model_name}' ({item.id}) has missing data for {missing_language}, collecting self.data.",
+                # ConsoleLog("LootEx", f"Item '{item.name}' ({item.id}) has missing data for {missing_language}, collecting self.data.",
                 #            Console.MessageType.Warning)
                 return True
 
@@ -1299,7 +1299,7 @@ class InventoryHandler:
             
             if (not item.is_inventory_item or item.quantity <= 0):
                 # ConsoleLog(
-                #     "LootEx", f"Item {item.model_name} ({item.id}) is not an inventory item or has no quantity, skipping.", Console.MessageType.Debug)
+                #     "LootEx", f"Item {item.name} ({item.id}) is not an inventory item or has no quantity, skipping.", Console.MessageType.Debug)
                 continue
             
             if not self.CanProcessItem(item):                
@@ -1371,7 +1371,7 @@ class InventoryHandler:
 
                 result.cached_inventory.remove(item)
                 # ConsoleLog(
-                #     "LootEx", f"Item {item.model_name} ({item.id}) is not an inventory item, skipping.", Console.MessageType.Debug)
+                #     "LootEx", f"Item {item.name} ({item.id}) is not an inventory item, skipping.", Console.MessageType.Debug)
                 continue
             
             if has_empty_slot:
@@ -1393,7 +1393,7 @@ class InventoryHandler:
                                     
             if ShouldDepositItem(item):
                 # ConsoleLog(
-                #     "LootEx", f"Item '{item.model_name}' ({item.id}) should be deposited to storage.", Console.MessageType.Info)
+                #     "LootEx", f"Item '{item.name}' ({item.id}) should be deposited to storage.", Console.MessageType.Info)
                 item.action = ItemAction.Stash
                 continue
                             
@@ -1465,7 +1465,7 @@ class InventoryHandler:
                         item.action = settings.profile.rune_action if settings.profile else ItemAction.Hold
                 
                 # ConsoleLog(
-                #     "LootEx", f"Extracting mods from item {item.model_name} ({item.id}) with option {item.salvage_option.name}", Console.MessageType.Debug)
+                #     "LootEx", f"Extracting mods from item {item.name} ({item.id}) with option {item.salvage_option.name}", Console.MessageType.Debug)
                 continue
             
             if ShouldSellToTrader(item):
@@ -1520,7 +1520,7 @@ class InventoryHandler:
             #             result.salvage_queue[item.id] = item
                         
             #         # ConsoleLog(
-            #         #     "LootEx", f"Adding item {item.model_name} ({item.id}) to salvage queue with option {salvage_option.name}", Console.MessageType.Debug)
+            #         #     "LootEx", f"Adding item {item.name} ({item.id}) to salvage queue with option {salvage_option.name}", Console.MessageType.Debug)
             #         continue
 
             if ShouldSellItemToMerchant(item):
@@ -1655,7 +1655,7 @@ class InventoryHandler:
 
                 if item.id == -1:
                     ConsoleLog(
-                        "LootEx", f"Processing item: '{item.model_name}' {item.id} with action: {item.action.name}", Console.MessageType.Debug)
+                        "LootEx", f"Processing item: '{item.name}' {item.id} with action: {item.action.name}", Console.MessageType.Debug)
 
 
                 match item.action:
@@ -1680,7 +1680,7 @@ class InventoryHandler:
                             continue
 
                         ConsoleLog(
-                            "LootEx", f"Identifying item: '{item.model_name}' ({item.id}) with kit {identificationKit.model_name} ({identificationKit.id})", Console.MessageType.Info)
+                            "LootEx", f"Identifying item: '{item.name}' ({item.id}) with kit {identificationKit.name} ({identificationKit.id})", Console.MessageType.Info)
                         Inventory.IdentifyItem(item.id, identificationKit.id)
                         identificationKit.uses -= 1
 
@@ -1700,7 +1700,7 @@ class InventoryHandler:
                     case ItemAction.Sell_To_Merchant:
                         if self.merchant_open and self.merchant_type == MerchantType.Merchant:
                             ConsoleLog(
-                                "LootEx", f"Selling item: '{item.model_name}' ({item.id}) to merchant for {utility.Util.format_currency(item.value * item.quantity)}", Console.MessageType.Info)
+                                "LootEx", f"Selling item: '{item.name}' ({item.id}) to merchant for {utility.Util.format_currency(item.value * item.quantity)}", Console.MessageType.Info)
                             Trading.Merchant.SellItem(
                                 item.id, item.quantity * item.value)
                             self.inventory_changed = True
@@ -1711,7 +1711,7 @@ class InventoryHandler:
                     
                     case ItemAction.Destroy:
                         ConsoleLog(
-                            "LootEx", f"Destroying item: '{item.model_name}' ({item.id})", Console.MessageType.Info)
+                            "LootEx", f"Destroying item: '{item.name}' ({item.id})", Console.MessageType.Info)
                         Inventory.DestroyItem(item.id)
                         self.inventory_changed = True
 

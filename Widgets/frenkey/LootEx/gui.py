@@ -934,7 +934,7 @@ class UI:
             
   
     def draw_vault_controls(self):    
-        if not UIManager.IsWindowVisible(WindowID.WindowID_VaultBox):
+        if not GLOBAL_CACHE.Inventory.IsStorageOpen():
             return
         
         storage_id = UIManager.GetFrameIDByHash(2315448754)  # "Xunlai Storage" frame hash
@@ -1120,7 +1120,7 @@ class UI:
             "\nHold Shift to send message to all accounts excluding yourself")
 
     def _draw_xunlai_storage_button(self, width):
-        xunlai_open = Inventory.IsStorageOpen()
+        xunlai_open = GLOBAL_CACHE.Inventory.IsStorageOpen()
 
         if UI.transparent_button(
             IconsFontAwesome5.ICON_BOX_OPEN if xunlai_open else IconsFontAwesome5.ICON_BOX, xunlai_open, width, width
@@ -1248,7 +1248,7 @@ class UI:
                     
                     ImGui.begin_tooltip()
                     if cached_item.data:
-                        self.draw_item_header(item_info=cached_item.data)
+                        self.draw_cached_item_header(item=cached_item)
                         
                     if PyImGui.is_rect_visible(0, 20):
                         ImGui.begin_table("ItemInfoTable", 2, PyImGui.TableFlags.Borders)
@@ -1457,8 +1457,69 @@ class UI:
                         wiki_scraper.WikiScraper.scrape_missing_entries()
                         pass
 
-                    if self.settings.development_mode and ImGui.button("Test 123", 160, 50):         
-                        # Data().SaveWeaponMods(True)                         
+                    if self.settings.development_mode and ImGui.button("Test 123", 160, 50):  
+                        cdata = Data()
+                        cdata.SaveWeaponMods(True)
+                        cdata.SaveItems(True)
+                        return
+                    
+                        if False:
+                            cdata = Data()
+                            
+                            for m in cdata.Weapon_Mods.values():
+                                if m.mod_type != enum.ModType.Inherent:
+                                    m.item_mods = {}
+                                    item_types = [cdata.ItemType_MetaTypes.get(target_type, []) for target_type in m.target_types]
+                                    # Flatten the list
+                                    item_types = [item for sublist in item_types for item in sublist]
+                                    
+                                    #Add all item types from m.target_types which have no defined metatype
+                                    for target_type in m.target_types:
+                                        if target_type not in cdata.ItemType_MetaTypes:
+                                            item_types.append(target_type)
+                                    
+                                    for type in item_types:
+                                        model_id = cdata.get_mod_model(type, m.mod_type)
+                                        
+                                        if model_id:
+                                            m.item_mods[type] = model_id
+                                        else:
+                                            ConsoleLog("LootEx Test", f"Missing Mod Model for {m.mod_type.name} on {type.name}", Console.MessageType.Warning)
+                                else:
+                                    m.item_mods = {}
+                                    model_id = None
+                                        
+                                    # Inscription_MartialWeapon = 15540
+                                    # Inscription_Offhand = 19123
+                                    # Inscription_OffhandOrShield = 15541
+                                    # Inscription_SpellcastingWeapon = 19122
+                                    # Inscription_Weapon = 15542
+                                    
+                                    
+                                    if m.target_types and len(m.target_types) > 1:
+                                        ConsoleLog("LootEx Test", f"Inherent Mod {m.mod_type.name} has multiple target types!", Console.MessageType.Warning)
+                                        continue
+                                    
+                                    elif m.target_types and len(m.target_types) == 1:
+                                        match_type = m.target_types[0]
+                                        match(match_type):
+                                            case ItemType.MartialWeapon:
+                                                model_id = enum.ModsModels.Inscription_MartialWeapon
+                                            case ItemType.Offhand:
+                                                model_id = enum.ModsModels.Inscription_Offhand
+                                            case ItemType.OffhandOrShield:
+                                                model_id = enum.ModsModels.Inscription_OffhandOrShield
+                                            case ItemType.SpellcastingWeapon:
+                                                model_id = enum.ModsModels.Inscription_SpellcastingWeapon
+                                            case ItemType.Weapon:
+                                                model_id = enum.ModsModels.Inscription_Weapon
+                                                
+                                        if model_id and match_type:
+                                            m.item_mods[match_type] = model_id
+
+                            cdata.SaveWeaponMods(True)
+                            return
+
                         from Widgets.frenkey.LootEx.cache import Cached_Item
                                                         
                         model_id = 17566
@@ -3858,6 +3919,82 @@ class UI:
             if ImGui.begin_child("item_details", (0, 0), False, PyImGui.WindowFlags.NoFlag):
                 if item_info:
                     ImGui.text("Name: " + item_info.name)
+
+                    ImGui.text("Model ID: " + str(item_info.model_id))
+                    ImGui.text("Type: " + utility.Util.GetItemType(item_info.item_type).name)
+                                    
+                    if item_info.nick_index:
+                        ImGui.text("Next Nick Week: " + str(item_info.next_nick_week) + " in " + str(item_info.weeks_until_next_nick) + " weeks")
+                                    
+                    if item_info.common_salvage:
+                        summaries = [salvage_info.summary for salvage_info in item_info.common_salvage.values()]                        
+                        ImGui.text("Salvage: " + ", ".join(summaries))
+                                    
+                    if item_info.rare_salvage:
+                        summaries = [salvage_info.summary for salvage_info in item_info.rare_salvage.values()]   
+                        ImGui.text("Rare Salvage: " + ", ".join(summaries))
+                        
+                    if item_info.category is not enum.ItemCategory.None_:
+                        ImGui.text("Category: " + str(utility.Util.reformat_string(item_info.category.name)))
+                        
+                    if item_info.sub_category is not enum.ItemSubCategory.None_:
+                        ImGui.text("Sub Category: " + str(utility.Util.reformat_string(item_info.sub_category.name)))
+                
+            ImGui.end_child()
+        ImGui.end_child()
+    
+    def draw_cached_item_header(self, item : cache.Cached_Item | None, border : bool = False, height : float | None = None, image_size : float = 110): 
+        if not item:
+            return
+        
+        image_size = min(image_size, 64)
+        item_info = item.data if item else None
+        height = height if height else self.get_tooltip_height(item_info) + (24 if border else 0) if item and item_info else 130
+        
+        if ImGui.begin_child("item_info", (0, max(height, image_size)), border, PyImGui.WindowFlags.NoFlag):            
+            if ImGui.begin_child("item_texture", (image_size, image_size), False, PyImGui.WindowFlags.NoFlag): 
+                if item_info:
+                    posX, posY = PyImGui.get_cursor_screen_pos()
+                    if GUI.is_mouse_in_rect((posX, posY, image_size, image_size)):                                
+                        if ImGui.button(IconsFontAwesome5.ICON_GLOBE, image_size, image_size) and item_info.wiki_url:
+                            Player.SendChatCommand(
+                                                "wiki " + item_info.name)
+
+                                            # start the url in the default browser
+                            webbrowser.open(
+                                                item_info.wiki_url)
+
+                        ImGui.show_tooltip(
+                                            "Open the wiki page for this item.\n" +
+                                            "If the item is not found, it will search for the item name in the wiki." if item_info.wiki_url else "This item does not have a wiki page set yet."
+                                        )
+                    else:
+                        color = Utils.RGBToColor(64, 64, 64, 255)
+                        PyImGui.push_style_color(
+                                            PyImGui.ImGuiCol.Button, Utils.ColorToTuple(color))
+                        PyImGui.push_style_color(
+                                            PyImGui.ImGuiCol.ButtonHovered, Utils.ColorToTuple(color))
+                        PyImGui.push_style_color(
+                                            PyImGui.ImGuiCol.ButtonActive, Utils.ColorToTuple(color))
+                        if item_info.inventory_icon:
+                            if item.item_type == ItemType.Dye:
+                                dye = item.dye_info.dye1.ToString()
+                                texture = os.path.join(self.item_textures_path, f"{dye} Dye.png")
+                                ImGui.DrawTexture(texture, image_size, image_size)
+                            else:
+                                ImGui.DrawTexture(os.path.join(self.item_textures_path, item_info.inventory_icon), image_size, image_size)
+                        else:
+                            ImGui.button(IconsFontAwesome5.ICON_SHIELD_ALT + "##" + str(
+                                                item_info.model_id), image_size, image_size)
+                        PyImGui.pop_style_color(3)                                    
+            ImGui.end_child()
+
+            PyImGui.same_line(0, 10)
+            PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() + 3)
+
+            if ImGui.begin_child("item_details", (0, 0), False, PyImGui.WindowFlags.NoFlag) and item:
+                if item_info:
+                    ImGui.text("Name: " + item.name)
 
                     ImGui.text("Model ID: " + str(item_info.model_id))
                     ImGui.text("Type: " + utility.Util.GetItemType(item_info.item_type).name)

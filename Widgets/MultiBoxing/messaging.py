@@ -17,7 +17,7 @@ def position_clients(account_mail, regions, accounts):
             (r for r in regions if r.account == acc.AccountEmail), None) if regions else None
 
         if region:
-            GLOBAL_CACHE.ShMem.SendMessage(account_mail, acc.AccountEmail, SharedCommandType.MoveClient, (region.x, region.y, region.w, region.h))
+            GLOBAL_CACHE.ShMem.SendMessage(account_mail, acc.AccountEmail, SharedCommandType.SetWindowGeometry, (region.x, region.y, region.w, region.h))
 
     pass
 

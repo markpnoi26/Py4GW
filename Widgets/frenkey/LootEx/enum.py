@@ -1,5 +1,6 @@
 from enum import Enum, IntEnum
 from Py4GWCoreLib.enums import ModelID
+from Py4GWCoreLib.enums_src.Item_enums import ItemType
 
 COMMON_MATERIALS: list[int] = [
     ModelID.Bone,
@@ -43,6 +44,33 @@ RARE_MATERIALS: list[int] = [
     ModelID.Jadeite_Shard
 ]
 
+class ModsModels(IntEnum):
+    AxeGrip = 905
+    AxeHaft = 893
+    BowGrip = 906
+    BowString = 894
+    DaggerHandle = 6331
+    DaggerTang = 6323
+    FocusCore = 15551
+    HammerGrip = 907
+    HammerHaft = 895
+    Inscription_EquippableItem = 17059
+    Inscription_MartialWeapon = 15540
+    Inscription_Offhand = 19123
+    Inscription_OffhandOrShield = 15541
+    Inscription_SpellcastingWeapon = 19122
+    Inscription_Weapon = 15542
+    ScytheGrip = 15553
+    ScytheSnathe = 15543
+    ShieldHandle = 15554
+    SpearGrip = 15555
+    Spearhead = 15544
+    StaffHead = 896
+    StaffWrapping = 908
+    SwordHilt = 897
+    SwordPommel = 909
+    WandWrapping = 15552        
+
 class ItemCategory(IntEnum):
     None_ = 0
     Sweet = 1
@@ -57,8 +85,7 @@ class ItemCategory(IntEnum):
     RewardTrophy = 10
     QuestItem = 11
     RareWeapon = 12
-    
-    
+        
 class ItemSubCategory(IntEnum):
     None_ = 0
     Points_1 = 1
@@ -78,7 +105,6 @@ class ItemSubCategory(IntEnum):
     CommonMaterial = 15
     RareMaterial = 16
     
-
 class MaterialType(IntEnum):
     None_ = 0
     Common = 1
@@ -110,8 +136,7 @@ class ItemAction(IntEnum):
     Sell_To_Trader = 11
     Destroy = 12
     Deposit_Material = 13
-    
-    
+        
 class ActionModsType(IntEnum):
     Any = 0
     Old_School = 1
@@ -122,7 +147,6 @@ class LootAction(IntEnum):
     Loot = 1
     IGNORE = 2
     LOOT_IF_STACKABLE = 3
-
 
 class LootItemMode(IntEnum):
     MODEL_ID = 0
