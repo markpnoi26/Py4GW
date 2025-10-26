@@ -37,7 +37,8 @@ class SharedCommandType(IntEnum):
     
     ActivateClient = 996 # privately Handled Command, by Frenkey
     MoveClient = 997 # privately Handled Command, by Frenkey
-    MultiBoxing = 998 # privately Handled Command, by Frenkey
+    MultiBoxing = 990 # privately Handled Command, by Frenkey
+    UseSkillCombatPrep = 998 #handled in CombatPrep only by Mark
     LootEx = 999 # privately Handled Command, by Frenkey
     
 
