@@ -15,16 +15,16 @@ def set_window_active(acc: AccountData, settings: Settings, ctrl_pressed: bool =
         ConsoleLog(MODULE_NAME, f"Setting window active for account: {acc.AccountEmail}", Console.MessageType.Info,False)
         account_mail = settings.get_account_mail()
         
-        GLOBAL_CACHE.ShMem.SendMessage(account_mail, acc.AccountEmail, SharedCommandType.ActivateClient, (0,0,0,0))
+        GLOBAL_CACHE.ShMem.SendMessage(account_mail, acc.AccountEmail, SharedCommandType.SetWindowActive, (0,0,0,0))
         
         if settings.move_slave_to_main and not ctrl_pressed:
             main_region = settings.main_region
             if main_region:
                 
                 if account_mail:
-                    GLOBAL_CACHE.ShMem.SendMessage(account_mail, acc.AccountEmail, SharedCommandType.MoveClient, (main_region.x, main_region.y, main_region.w, main_region.h))
+                    GLOBAL_CACHE.ShMem.SendMessage(account_mail, acc.AccountEmail, SharedCommandType.SetWindowGeometry, (main_region.x, main_region.y, main_region.w, main_region.h))
 
-        GLOBAL_CACHE.ShMem.SendMessage(account_mail, acc.AccountEmail, SharedCommandType.ActivateClient, (0,0,0,0))
+        GLOBAL_CACHE.ShMem.SendMessage(account_mail, acc.AccountEmail, SharedCommandType.SetWindowActive, (0,0,0,0))
     except Exception as e:
         ConsoleLog(MODULE_NAME, f"Error setting window active: {e}", message_type=1)
     pass
@@ -32,10 +32,10 @@ def set_window_active(acc: AccountData, settings: Settings, ctrl_pressed: bool =
 
 def is_window_active() -> bool:
     try:
-        user32 = ctypes.windll.user32
-        foreground_window = user32.GetForegroundWindow()
-        gw_window = Console.get_gw_window_handle()
-        return foreground_window == gw_window
+        # user32 = ctypes.windll.user32
+        # foreground_window = user32.GetForegroundWindow()
+        # gw_window = Console.get_gw_window_handle()
+        return Console.is_window_active()
     
     except Exception as e:
         ConsoleLog(MODULE_NAME, f"Error checking if window is active: {e}", Console.MessageType.Error)

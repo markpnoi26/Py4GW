@@ -1264,10 +1264,16 @@ class UI:
                         ImGui.text(str(cached_item.id) if cached_item.id > 0 else "N/A")
                         
                         PyImGui.table_next_column()
+                        ImGui.text(f"Model File Id")
+                        
+                        PyImGui.table_next_column()
+                        ImGui.text(str(cached_item.model_file_id) if cached_item.model_file_id > -1 else "N/A")
+                        
+                        PyImGui.table_next_column()
                         ImGui.text(f"Model Id")
                         
                         PyImGui.table_next_column()
-                        ImGui.text(str(cached_item.model_id) if cached_item.model_id > 0 else "N/A")
+                        ImGui.text(str(cached_item.model_id) if cached_item.model_id > -1 else "N/A")
                         
                         PyImGui.table_next_column()
                         ImGui.text(f"Quantity")

@@ -157,7 +157,7 @@ class UI:
                     
                     PyImGui.table_next_column()
                     
-                    if ImGui.ImageButton("##SpiritPrep", os.path.join(self.skill_textures_path, "[1240] - Soul Twisting.jpg"), button_size, button_size):
+                    if ImGui.image_button("##SpiritPrep", os.path.join(self.skill_textures_path, "[1240] - Soul Twisting.jpg"), button_size, button_size):
                         self.commands.prep_spirits()
                         
                     PyImGui.table_next_row()    

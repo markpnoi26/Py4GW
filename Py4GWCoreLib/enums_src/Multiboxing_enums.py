@@ -34,9 +34,12 @@ class SharedCommandType(IntEnum):
     RequestAttention = 29
     SetTransparentClickThrough = 30
     SetOpacity = 31
-    
-    ActivateClient = 996 # privately Handled Command, by Frenkey
-    MoveClient = 997 # privately Handled Command, by Frenkey
+    UseItem = 32
+    PauseWidgets = 33
+    ResumeWidgets = 34
+    SwitchCharacter = 35
+    LoadSkillTemplate = 36
+
     MultiBoxing = 990 # privately Handled Command, by Frenkey
     UseSkillCombatPrep = 998 #handled in CombatPrep only by Mark
     LootEx = 999 # privately Handled Command, by Frenkey

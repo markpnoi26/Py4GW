@@ -25,6 +25,7 @@ class Cached_Item:
         
         self.id: int = item_id
         self.model_id: int = item.model_id if item else -1
+        self.model_file_id: int = item.model_file_id if item else -1
         self.item_type: ItemType = ItemType(
             item.item_type.ToInt()) if item else ItemType.Unknown
         self.rarity: Rarity = Rarity(
