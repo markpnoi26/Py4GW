@@ -18,10 +18,11 @@ class PVESkills:
         #region ANNIVERSARY
 
         skill = CustomSkill()
-        skill.SkillID = GLOBAL_CACHE.Skill.GetID("Together_as_one")
+        skill.SkillID = GLOBAL_CACHE.Skill.GetID("Together_as_One")
         skill.SkillType = SkillType.Shout.value
         skill.TargetAllegiance = Skilltarget.Self.value
-        skill.Nature = SkillNature.Interrupt.value
+        skill.Nature = SkillNature.CustomA.value
+        skill.Conditions.IsOutOfCombat = True
         skill_data[skill.SkillID] = skill
 
         skill = CustomSkill()

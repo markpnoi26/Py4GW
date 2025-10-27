@@ -55,12 +55,37 @@ class Settings:
         
         self.account : str = ""
         self.accounts : list[AccountData] = []  # List of account objects
+        self.accounts_order : list[str] = []  # List of (account index, account email) tuples
+        
 
     @property
     def main_region(self) -> Region | None:
         main = next((r for r in self.regions if r.main), None) if self.regions else None
         
         return main
+    
+    def set_accounts(self, accounts: list[AccountData]):
+        self.accounts = accounts
+        
+        for acc in accounts:
+            if not acc.AccountEmail:
+                continue
+            
+            if acc.AccountEmail not in self.accounts_order:
+                self.accounts_order.append(acc.AccountEmail)
+                    
+    def move_account(self, from_index: int, to_index: int):
+        if from_index < 0 or from_index >= len(self.accounts_order):
+            return
+        if to_index < 0 or to_index >= len(self.accounts_order):
+            return
+
+        # Move the account
+        account = self.accounts_order.pop(from_index)
+        self.accounts_order.insert(to_index, account)
+
+        # Save new order
+        self.save_settings()
 
     def get_account_mail(self) -> str:
         from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
@@ -101,7 +126,8 @@ class Settings:
                 "hide_widgets_on_slave": self.hide_widgets_on_slave,
                 "snap_to_edges": self.snap_to_edges,
                 "edge_snap_distance": self.edge_snap_distance,
-                "layout": self.layout
+                "layout": self.layout,
+                "accounts_order": self.accounts_order
             }
             
             with open(f"{folder_path}\\settings.json", "w") as f:
@@ -131,7 +157,8 @@ class Settings:
                 self.hide_widgets_on_slave = settings_data.get("hide_widgets_on_slave", True)
                 self.snap_to_edges = settings_data.get("snap_to_edges", True)
                 self.edge_snap_distance = settings_data.get("edge_snap_distance", 15)
-                self.layout = settings_data.get("layout", "None")            
+                self.layout = settings_data.get("layout", "None")      
+                self.accounts_order = settings_data.get("accounts_order", [])      
                 
             ConsoleLog(MODULE_NAME, f"Settings loaded from {file_path}")
                 

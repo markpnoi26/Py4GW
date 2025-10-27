@@ -1,7 +1,9 @@
+import ctypes
 from typing import Optional
 from Py4GW import Console
 import PyImGui
 from Py4GWCoreLib import ImGui, Overlay
+from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.ImGui_src.Style import Style
 from Py4GWCoreLib.ImGui_src.IconsFontAwesome5 import IconsFontAwesome5
 from Py4GWCoreLib.enums_src.GameData_enums import Profession, ProfessionShort
@@ -115,287 +117,321 @@ class GUI:
             
             regions_width = 300
             header_height = 105
-                
-            if ImGui.begin_table("layout_table", 2, PyImGui.TableFlags.NoFlag, 0, 0):
-                PyImGui.table_setup_column("left", PyImGui.TableColumnFlags.NoFlag, 0.5)
-                PyImGui.table_setup_column("right", PyImGui.TableColumnFlags.WidthFixed, regions_width)
-                
-                PyImGui.table_next_row()
-                PyImGui.table_next_column()
-                card_background = style.WindowBg.opacify(0.6).to_tuple()
-                
-                def draw_configs():                    
-                    style.ChildBg.push_color(card_background)
-                    if ImGui.begin_child("configs", (300, header_height), border=True, flags=PyImGui.WindowFlags.NoScrollbar):      
-                        avail = PyImGui.get_content_region_avail()
-                        # draw_screen_size(avail)
-
-                        rename_to = ImGui.combo("Rename To", self.settings.rename_to.value, [e.name.replace("_", " ") for e in RenameClientType])
-                        if rename_to != self.settings.rename_to.value:
-                            self.settings.rename_to = RenameClientType(rename_to)
-                            self.settings.save_settings()
-
-                        append_gw = ImGui.checkbox("Append GW", self.settings.append_gw)
-                        if append_gw != self.settings.append_gw:
-                            self.settings.append_gw = append_gw
-                            self.settings.save_settings()
-                        
-                        PyImGui.spacing()
-                        snap_to_edges = ImGui.checkbox("Snap to edges", self.settings.snap_to_edges)
-                        if snap_to_edges != self.settings.snap_to_edges:
-                            self.settings.snap_to_edges = snap_to_edges
-                            self.settings.save_settings()
-                            
-                    style.ChildBg.pop_color()
-                    ImGui.end_child() 
-
-                def draw_screen_size(avail):
-                    ImGui.text_centered("Screen Size", avail[0])
+            
+            if ImGui.begin_tab_bar("multiboxing_config_tabs"):
+                if ImGui.begin_tab_item("Configuration"):
+        
+                    ImGui.text("Client Renaming", 16, "Bold")
                     ImGui.separator()
-                                
-                    style.ItemSpacing.push_style_var(0, 0)
-                    style.CellPadding.push_style_var(0, 0)
+                    
+                    rename_to = ImGui.combo("Rename To", self.settings.rename_to.value, [e.name.replace("_", " ") for e in RenameClientType])
+                    if rename_to != self.settings.rename_to.value:
+                        self.settings.rename_to = RenameClientType(rename_to)
+                        self.settings.save_settings()
+
+                    append_gw = ImGui.checkbox("Append GW", self.settings.append_gw)
+                    if append_gw != self.settings.append_gw:
+                        self.settings.append_gw = append_gw
+                        self.settings.save_settings()
                         
-                    if ImGui.begin_table("screen_size_table", 3, PyImGui.TableFlags.NoFlag, avail[0] - 5, 25):
-                        PyImGui.table_setup_column("Width", PyImGui.TableColumnFlags.NoFlag, 0.5)
-                        PyImGui.table_setup_column("x", PyImGui.TableColumnFlags.WidthFixed, 30)
-                        PyImGui.table_setup_column("Height", PyImGui.TableColumnFlags.NoFlag, 0.5)
+                    PyImGui.spacing()
+                    PyImGui.spacing()
+                    
+                    ImGui.text("Account Order", 16, "Bold")
+                    ImGui.separator()
+                    
+                    for pos, acc in enumerate(self.settings.accounts_order):
+                        if ImGui.begin_child(f"account_order_{acc}", (0, 25), border=False, flags=PyImGui.WindowFlags.NoFlag):
+                            if ImGui.icon_button(IconsFontAwesome5.ICON_ARROW_UP, 20, 20):
+                                self.settings.move_account(pos, pos - 1)
+                            ImGui.show_tooltip("Move account up")
                             
+                            PyImGui.same_line(0, 3)
+                            if ImGui.icon_button(IconsFontAwesome5.ICON_ARROW_DOWN, 20, 20):
+                                self.settings.move_account(pos, pos + 1)
+                            ImGui.show_tooltip("Move account down")
+                            
+                            PyImGui.same_line(0, 10)
+                            ImGui.text(acc)
+                            
+                        ImGui.end_child()
+                        
+                        
+                    
+                    ImGui.end_tab_item()
+                    
+                if ImGui.begin_tab_item("Layout"): 
+                    if ImGui.begin_table("layout_table", 2, PyImGui.TableFlags.NoFlag, 0, 0):
+                        PyImGui.table_setup_column("left", PyImGui.TableColumnFlags.NoFlag, 0.5)
+                        PyImGui.table_setup_column("right", PyImGui.TableColumnFlags.WidthFixed, regions_width)
+                        
                         PyImGui.table_next_row()
                         PyImGui.table_next_column()
-                            
-                        PyImGui.push_item_width(PyImGui.get_content_region_avail()[0] - 15)
-                        swidth = ImGui.input_int("##width", self.settings.screen_size[0], 800, 10, PyImGui.InputTextFlags.AutoSelectAll)
-                        if swidth != self.settings.screen_size[0]:
-                            self.settings.screen_size = (max(800, swidth), self.settings.screen_size[1])
-                            self.settings.screen_size_changed = True
-                                
-                        input_active = PyImGui.is_item_active()
-                                
-                        PyImGui.pop_item_width()
-                                
-                        PyImGui.table_next_column()
-                        ImGui.text("x")
-                        PyImGui.table_next_column()
-                            
-                        PyImGui.push_item_width(PyImGui.get_content_region_avail()[0])
-                        sheight = ImGui.input_int("##height", self.settings.screen_size[1], 600, 10, PyImGui.InputTextFlags.AutoSelectAll)
-                        if sheight != self.settings.screen_size[1]:
-                            self.settings.screen_size = (self.settings.screen_size[0], max(600, sheight))  
-                            self.settings.screen_size_changed = True        
-                            
-                        input_active = input_active or PyImGui.is_item_active()                    
-                            
-                        if not input_active and self.settings.screen_size_changed:
-                            self.settings.screen_size_changed = False
-                            self.ensure_regions_within_bounds(self.settings.regions)      
-                                
-                        PyImGui.pop_item_width()
-                        ImGui.end_table()
-                            
-                    style.CellPadding.pop_style_var()
-                    style.ItemSpacing.pop_style_var() 
-                
-                def draw_layout_presets():
-                    style.ChildBg.push_color(card_background)
-                    style.WindowPadding.push_style_var(0, 0)
-                    if ImGui.begin_child("layouts", (0, header_height), border=True, flags=PyImGui.WindowFlags.NoScrollbar): 
-                        style.ChildBg.pop_color()
-                        style.WindowPadding.pop_style_var()
+                        card_background = style.WindowBg.opacify(0.6).to_tuple()
                         
-                        if ImGui.begin_child("layouts edit", (PyImGui.get_content_region_avail()[0] / 2, header_height), border=True, flags=PyImGui.WindowFlags.NoScrollbar): 
-                            PyImGui.push_item_width(PyImGui.get_content_region_avail()[0] - 35) 
-                                
-                            self.draw_column_icon(30, 20, 5)      
-                            PyImGui.same_line(0, 5)          
-                            self.settings.layout_import_columns = ImGui.input_text("##Columns##layout_import_columns", self.settings.layout_import_columns, 0)  
-                            ImGui.show_tooltip("Define the column structure using space, comma or semicolon separated integers.\nE.g. '1 2 1' for 3 columns where the middle one is twice as wide as the others.")
+                        def draw_configs():                    
+                            style.ChildBg.push_color(card_background)
+                            if ImGui.begin_child("configs", (300, header_height), border=True, flags=PyImGui.WindowFlags.NoScrollbar):      
 
-                            self.draw_row_icon(30, 20)      
-                            PyImGui.same_line(0, 5)  
-                            self.settings.layout_import_rows = ImGui.input_text("##Rows##layout_import", self.settings.layout_import_rows, 0)
-                            ImGui.show_tooltip("Define the row structure using space, comma or semicolon separated integers.\nE.g. '1 2 1' for 3 rows where the middle one is twice as high as the others.")
-                            
-                            PyImGui.pop_item_width()
-                            
-                            if ImGui.button("Create Layout", PyImGui.get_content_region_avail()[0] - 5):
-                                try:
-                                    ## import from strings like "1,2,1", "1 2 1" "1;1;1;1"
-                                    cols = [int(x) for x in self.settings.layout_import_columns.replace(";", ",").replace(" ", ",").split(",") if x.strip().isdigit() and int(x.strip()) > 0] if self.settings.layout_import_columns.strip() else [1]
-                                    rows = [int(x) for x in self.settings.layout_import_rows.replace(";", ",").replace(" ", ",").split(",") if x.strip().isdigit() and int(x.strip()) > 0] if self.settings.layout_import_rows.strip() else [1]
-
-                                    if not cols or not rows:
-                                        ConsoleLog(MODULE_NAME, "Invalid layout import format. Please provide comma-separated integers for columns and rows.", message_type=1)
-                                        return
-
-                                    self.settings.clear_regions()
-                                    cell_widths = [self.settings.screen_size[0] // sum(cols) * c for c in cols]
-                                    cell_heights = [self.settings.screen_size[1] // sum(rows) * r for r in rows]
-
-                                    y_offset = 0
-                                    for rh in cell_heights:
-                                        x_offset = 0
-                                        for cw in cell_widths:
-                                            region = Region(x_offset, y_offset, cw, rh, name = f"Region {len(self.settings.regions) + 1}")
-                                            self.settings.add_region(region)
-                                            x_offset += cw
-                                        y_offset += rh
-
-                                    ConsoleLog(MODULE_NAME, f"Imported layout with {len(self.settings.regions)} regions.")
-                                except Exception as e:
-                                    ConsoleLog(MODULE_NAME, f"Error importing layout: {e}", message_type=1)
-                                    
-                        ImGui.end_child()
-                        
-                        PyImGui.same_line(0, 0)
-                        
-                        if ImGui.begin_child("layouts load and save", (0, header_height), border=True, flags=PyImGui.WindowFlags.NoScrollbar):
-                            avail = PyImGui.get_content_region_avail()[0]
-                            
-                            PyImGui.push_item_width(avail - 100)
-                            self.layout_index = self.settings.layouts.index(self.settings.layout) if self.settings.layout and self.settings.layouts else 0
-                            
-                            if self.layout_index > 0 and self.layout_name != self.settings.layout:
-                                self.layout_name = self.settings.layout
-                                
-                            layout_index = ImGui.combo("Selected Layout", min(self.layout_index, len(self.settings.layouts)), self.settings.layouts)
-                            PyImGui.pop_item_width()
-                            if layout_index != self.layout_index:
-                                self.layout_index = layout_index
-                                layout_name = self.settings.layouts[self.layout_index] if self.settings.layouts else self.layout_name
-
-                                if layout_name != "None":
-                                    self.settings.load_layout(layout_name)
-                                    
-                                    from Widgets.MultiBoxing.messaging import send_reload_settings
-                                    send_reload_settings(self.settings)
-                                    
-                                    self.layout_name = layout_name
-                                    
-                                elif self.layout_name != layout_name:
-                                    self.layout_name = "None"
-                                    self.settings.layout = "None"
+                                snap_to_edges = ImGui.checkbox("Snap to edges", self.settings.snap_to_edges)
+                                if snap_to_edges != self.settings.snap_to_edges:
+                                    self.settings.snap_to_edges = snap_to_edges
                                     self.settings.save_settings()
-
-
-                            PyImGui.push_item_width(avail - 105)
-                            self.layout_name = ImGui.input_text("Layout Name", self.layout_name, 0)
-                            PyImGui.pop_item_width()
-
-                            if ImGui.button("Save Layout", avail - 5):
-                                self.settings.save_layout(self.layout_name)
-                        
-                        ImGui.end_child()
-                    else:
-                        style.WindowPadding.pop_style_var()                    
-                        style.ChildBg.pop_color()
-                        
-                    ImGui.end_child()
-                                
-                def draw_regions_edit():
-                    style.ChildBg.push_color(card_background)
-                    if ImGui.begin_child("regions", (0, 0), border=True, flags=PyImGui.WindowFlags.NoScrollbar):                                               
-                        if ImGui.button("Add Region", PyImGui.get_content_region_avail()[0], 20):
-                            new_region = Region(0, 0, 1920, 1080, name = f"Region {len(self.settings.regions) + 1}")
-                            #center the new region
-                            new_region.x = (self.settings.screen_size[0] - new_region.w) // 2
-                            new_region.y = (self.settings.screen_size[1] - new_region.h) // 2
-
-                            self.settings.add_region(new_region)
-                            
-                        PyImGui.spacing()
-                        ImGui.separator()
-                        PyImGui.spacing()
-                        
-                        new_active = self.settings.active_region
-                        
-                        for region in self.settings.regions:
-                            if region == self.settings.active_region:       
-                                style.ChildBg.push_color(region.color.opacify(0.15).to_tuple())
-                                style.Border.push_color(region.color.to_tuple())
-                                if ImGui.begin_child("active_region_edit", (0, 285), border=True, flags=PyImGui.WindowFlags.NoScrollbar):
-                                    style.Border.pop_color()
-                                    style.ChildBg.pop_color()
-                                    ImGui.text_centered(region.name, PyImGui.get_content_region_avail()[0])
-                                    PyImGui.set_cursor_pos(250 - 2, 4)
-                                    if ImGui.icon_button(IconsFontAwesome5.ICON_TRASH, 25, 25):
-                                        self.settings.remove_region(region)
-                                        new_active = None
-                                        if self.settings.active_region == region:
-                                            self.settings.active_region = None
-                                        ImGui.end_child()
-                                        break
                                     
-                                    ImGui.show_tooltip("Delete this region")
-                                    
-                                    ImGui.separator()
-                                    
-                                    region.name = ImGui.input_text("Name", region.name, 0)
-                                    account_names = [acc.AccountEmail for acc in self.settings.accounts]
-                                    account_names.insert(0, "None")
-                                    
-                                    account_index = account_names.index(region.account) if region.account in account_names else 0
-                                    new_account = ImGui.combo("Account", account_index, account_names)
-                                    if new_account != account_index:
-                                        region.account = account_names[new_account]
+                            style.ChildBg.pop_color()
+                            ImGui.end_child() 
+
+                        def draw_screen_size(avail):
+                            ImGui.text_centered("Screen Size", avail[0])
+                            ImGui.separator()
                                         
-                                    region.x = ImGui.input_int("X", region.x, 10, 1, PyImGui.InputTextFlags.AutoSelectAll)
-                                    region.y = ImGui.input_int("Y", region.y, 10, 1, PyImGui.InputTextFlags.AutoSelectAll)
-                                    region.w = ImGui.input_int("Width", region.w, 10, 1, PyImGui.InputTextFlags.AutoSelectAll)
-                                    region.h = ImGui.input_int("Height", region.h, 10, 1, PyImGui.InputTextFlags.AutoSelectAll)           
-                                    color = PyImGui.color_edit4("Color", region.color.color_tuple)
-                                    if color != region.color.color_tuple:
-                                        region.color = Color.from_tuple(color)                   
-                                    region.main = ImGui.checkbox("Main Region", region.main)
+                            style.ItemSpacing.push_style_var(0, 0)
+                            style.CellPadding.push_style_var(0, 0)
+                                
+                            if ImGui.begin_table("screen_size_table", 3, PyImGui.TableFlags.NoFlag, avail[0] - 5, 25):
+                                PyImGui.table_setup_column("Width", PyImGui.TableColumnFlags.NoFlag, 0.5)
+                                PyImGui.table_setup_column("x", PyImGui.TableColumnFlags.WidthFixed, 30)
+                                PyImGui.table_setup_column("Height", PyImGui.TableColumnFlags.NoFlag, 0.5)
                                     
-                                    if region.main:
-                                        for r in self.settings.regions:
-                                            if r != region:
-                                                r.main = False
+                                PyImGui.table_next_row()
+                                PyImGui.table_next_column()
+                                    
+                                PyImGui.push_item_width(PyImGui.get_content_region_avail()[0] - 15)
+                                swidth = ImGui.input_int("##width", self.settings.screen_size[0], 800, 10, PyImGui.InputTextFlags.AutoSelectAll)
+                                if swidth != self.settings.screen_size[0]:
+                                    self.settings.screen_size = (max(800, swidth), self.settings.screen_size[1])
+                                    self.settings.screen_size_changed = True
+                                        
+                                input_active = PyImGui.is_item_active()
+                                        
+                                PyImGui.pop_item_width()
+                                        
+                                PyImGui.table_next_column()
+                                ImGui.text("x")
+                                PyImGui.table_next_column()
+                                    
+                                PyImGui.push_item_width(PyImGui.get_content_region_avail()[0])
+                                sheight = ImGui.input_int("##height", self.settings.screen_size[1], 600, 10, PyImGui.InputTextFlags.AutoSelectAll)
+                                if sheight != self.settings.screen_size[1]:
+                                    self.settings.screen_size = (self.settings.screen_size[0], max(600, sheight))  
+                                    self.settings.screen_size_changed = True        
+                                    
+                                input_active = input_active or PyImGui.is_item_active()                    
+                                    
+                                if not input_active and self.settings.screen_size_changed:
+                                    self.settings.screen_size_changed = False
+                                    self.ensure_regions_within_bounds(self.settings.regions)      
+                                        
+                                PyImGui.pop_item_width()
+                                ImGui.end_table()
+                                    
+                            style.CellPadding.pop_style_var()
+                            style.ItemSpacing.pop_style_var() 
+                        
+                        def draw_layout_presets():
+                            style.ChildBg.push_color(card_background)
+                            style.WindowPadding.push_style_var(0, 0)
+                            if ImGui.begin_child("layouts", (0, header_height), border=True, flags=PyImGui.WindowFlags.NoScrollbar): 
+                                style.ChildBg.pop_color()
+                                style.WindowPadding.pop_style_var()
+                                
+                                if ImGui.begin_child("layouts edit", (PyImGui.get_content_region_avail()[0] / 2, header_height), border=True, flags=PyImGui.WindowFlags.NoScrollbar): 
+                                    PyImGui.push_item_width(PyImGui.get_content_region_avail()[0] - 35) 
+                                        
+                                    self.draw_column_icon(30, 20, 5)      
+                                    PyImGui.same_line(0, 5)          
+                                    self.settings.layout_import_columns = ImGui.input_text("##Columns##layout_import_columns", self.settings.layout_import_columns, 0)  
+                                    ImGui.show_tooltip("Define the column structure using space, comma or semicolon separated integers.\nE.g. '1 2 1' for 3 columns where the middle one is twice as wide as the others.")
 
-                                else:
-                                    style.Border.pop_color()
-                                    style.ChildBg.pop_color()
+                                    self.draw_row_icon(30, 20)      
+                                    PyImGui.same_line(0, 5)  
+                                    self.settings.layout_import_rows = ImGui.input_text("##Rows##layout_import", self.settings.layout_import_rows, 0)
+                                    ImGui.show_tooltip("Define the row structure using space, comma or semicolon separated integers.\nE.g. '1 2 1' for 3 rows where the middle one is twice as high as the others.")
                                     
+                                    PyImGui.pop_item_width()
+                                    
+                                    if ImGui.button("Create Layout", PyImGui.get_content_region_avail()[0] - 5):
+                                        try:
+                                            ## import from strings like "1,2,1", "1 2 1" "1;1;1;1"
+                                            cols = [int(x) for x in self.settings.layout_import_columns.replace(";", ",").replace(" ", ",").split(",") if x.strip().isdigit() and int(x.strip()) > 0] if self.settings.layout_import_columns.strip() else [1]
+                                            rows = [int(x) for x in self.settings.layout_import_rows.replace(";", ",").replace(" ", ",").split(",") if x.strip().isdigit() and int(x.strip()) > 0] if self.settings.layout_import_rows.strip() else [1]
+
+                                            if not cols or not rows:
+                                                ConsoleLog(MODULE_NAME, "Invalid layout import format. Please provide comma-separated integers for columns and rows.", message_type=1)
+                                                return
+
+                                            self.settings.clear_regions()
+                                            cell_widths = [self.settings.screen_size[0] // sum(cols) * c for c in cols]
+                                            cell_heights = [self.settings.screen_size[1] // sum(rows) * r for r in rows]
+
+                                            y_offset = 0
+                                            for rh in cell_heights:
+                                                x_offset = 0
+                                                for cw in cell_widths:
+                                                    region = Region(x_offset, y_offset, cw, rh, name = f"Region {len(self.settings.regions) + 1}")
+                                                    self.settings.add_region(region)
+                                                    x_offset += cw
+                                                y_offset += rh
+
+                                            ConsoleLog(MODULE_NAME, f"Imported layout with {len(self.settings.regions)} regions.")
+                                        except Exception as e:
+                                            ConsoleLog(MODULE_NAME, f"Error importing layout: {e}", message_type=1)
+                                            
                                 ImGui.end_child()
-                                pass
+                                
+                                PyImGui.same_line(0, 0)
+                                
+                                if ImGui.begin_child("layouts load and save", (0, header_height), border=True, flags=PyImGui.WindowFlags.NoScrollbar):
+                                    avail = PyImGui.get_content_region_avail()[0]
+                                    
+                                    PyImGui.push_item_width(avail - 100)
+                                    self.layout_index = self.settings.layouts.index(self.settings.layout) if self.settings.layout and self.settings.layouts else 0
+                                    
+                                    if self.layout_index > 0 and self.layout_name != self.settings.layout:
+                                        self.layout_name = self.settings.layout
+                                        
+                                    layout_index = ImGui.combo("Selected Layout", min(self.layout_index, len(self.settings.layouts)), self.settings.layouts)
+                                    PyImGui.pop_item_width()
+                                    if layout_index != self.layout_index:
+                                        self.layout_index = layout_index
+                                        layout_name = self.settings.layouts[self.layout_index] if self.settings.layouts else self.layout_name
+
+                                        if layout_name != "None":
+                                            self.settings.load_layout(layout_name)
+                                            
+                                            from Widgets.MultiBoxing.messaging import send_reload_settings
+                                            send_reload_settings(self.settings)
+                                            
+                                            self.layout_name = layout_name
+                                            
+                                        elif self.layout_name != layout_name:
+                                            self.layout_name = "None"
+                                            self.settings.layout = "None"
+                                            self.settings.save_settings()
+
+
+                                    PyImGui.push_item_width(avail - 105)
+                                    self.layout_name = ImGui.input_text("Layout Name", self.layout_name, 0)
+                                    PyImGui.pop_item_width()
+
+                                    if ImGui.button("Save Layout", avail - 5):
+                                        self.settings.save_layout(self.layout_name)
+                                
+                                ImGui.end_child()
                             else:
-                                style.Button.push_color(region.color.rgb_tuple)
-                                style.ButtonTextureBackground.push_color(region.color.rgb_tuple)
-                                style.ButtonHovered.push_color(region.color.saturate(0.2).rgb_tuple)
-                                style.ButtonTextureBackgroundHovered.push_color(region.color.saturate(0.2).rgb_tuple)
-                                style.ButtonActive.push_color(region.color.saturate(0.4).rgb_tuple)
-                                style.ButtonTextureBackgroundActive.push_color(region.color.saturate(0.4).rgb_tuple)
+                                style.WindowPadding.pop_style_var()                    
+                                style.ChildBg.pop_color()
                                 
-                                if ImGui.button(f"{region.name} ({region.w}x{region.h} @ {region.x},{region.y})", PyImGui.get_content_region_avail()[0], 20):
-                                    new_active = region
+                            ImGui.end_child()
                                         
-                                style.Button.pop_color()
-                                style.ButtonTextureBackground.pop_color()
-                                style.ButtonHovered.pop_color()       
-                                style.ButtonTextureBackgroundHovered.pop_color()                     
-                                style.ButtonActive.pop_color()
-                                style.ButtonTextureBackgroundActive.pop_color()
+                        def draw_regions_edit():
+                            style.ChildBg.push_color(card_background)
+                            if ImGui.begin_child("regions", (0, 0), border=True, flags=PyImGui.WindowFlags.NoScrollbar):                                               
+                                if ImGui.button("Add Region", PyImGui.get_content_region_avail()[0], 20):
+                                    new_region = Region(0, 0, 1920, 1080, name = f"Region {len(self.settings.regions) + 1}")
+                                    #center the new region
+                                    new_region.x = (self.settings.screen_size[0] - new_region.w) // 2
+                                    new_region.y = (self.settings.screen_size[1] - new_region.h) // 2
+
+                                    self.settings.add_region(new_region)
+                                    
+                                PyImGui.spacing()
+                                ImGui.separator()
+                                PyImGui.spacing()
+                                
+                                new_active = self.settings.active_region
+                                
+                                for region in self.settings.regions:
+                                    if region == self.settings.active_region:       
+                                        style.ChildBg.push_color(region.color.opacify(0.15).to_tuple())
+                                        style.Border.push_color(region.color.to_tuple())
+                                        if ImGui.begin_child("active_region_edit", (0, 285), border=True, flags=PyImGui.WindowFlags.NoScrollbar):
+                                            style.Border.pop_color()
+                                            style.ChildBg.pop_color()
+                                            ImGui.text_centered(region.name, PyImGui.get_content_region_avail()[0])
+                                            PyImGui.set_cursor_pos(250 - 2, 4)
+                                            if ImGui.icon_button(IconsFontAwesome5.ICON_TRASH, 25, 25):
+                                                self.settings.remove_region(region)
+                                                new_active = None
+                                                if self.settings.active_region == region:
+                                                    self.settings.active_region = None
+                                                ImGui.end_child()
+                                                break
+                                            
+                                            ImGui.show_tooltip("Delete this region")
+                                            
+                                            ImGui.separator()
+                                            
+                                            region.name = ImGui.input_text("Name", region.name, 0)
+                                            account_names = [acc.AccountEmail for acc in self.settings.accounts]
+                                            account_names.insert(0, "None")
+                                            
+                                            account_index = account_names.index(region.account) if region.account in account_names else 0
+                                            new_account = ImGui.combo("Account", account_index, account_names)
+                                            if new_account != account_index:
+                                                region.account = account_names[new_account]
+                                                
+                                            region.x = ImGui.input_int("X", region.x, 10, 1, PyImGui.InputTextFlags.AutoSelectAll)
+                                            region.y = ImGui.input_int("Y", region.y, 10, 1, PyImGui.InputTextFlags.AutoSelectAll)
+                                            region.w = ImGui.input_int("Width", region.w, 10, 1, PyImGui.InputTextFlags.AutoSelectAll)
+                                            region.h = ImGui.input_int("Height", region.h, 10, 1, PyImGui.InputTextFlags.AutoSelectAll)           
+                                            color = PyImGui.color_edit4("Color", region.color.color_tuple)
+                                            if color != region.color.color_tuple:
+                                                region.color = Color.from_tuple(color)                   
+                                            region.main = ImGui.checkbox("Main Region", region.main)
+                                            
+                                            if region.main:
+                                                for r in self.settings.regions:
+                                                    if r != region:
+                                                        r.main = False
+
+                                        else:
+                                            style.Border.pop_color()
+                                            style.ChildBg.pop_color()
+                                            
+                                        ImGui.end_child()
+                                        pass
+                                    else:
+                                        style.Button.push_color(region.color.rgb_tuple)
+                                        style.ButtonTextureBackground.push_color(region.color.rgb_tuple)
+                                        style.ButtonHovered.push_color(region.color.saturate(0.2).rgb_tuple)
+                                        style.ButtonTextureBackgroundHovered.push_color(region.color.saturate(0.2).rgb_tuple)
+                                        style.ButtonActive.push_color(region.color.saturate(0.4).rgb_tuple)
+                                        style.ButtonTextureBackgroundActive.push_color(region.color.saturate(0.4).rgb_tuple)
+                                        
+                                        if ImGui.button(f"{region.name} ({region.w}x{region.h} @ {region.x},{region.y})", PyImGui.get_content_region_avail()[0], 20):
+                                            new_active = region
+                                                
+                                        style.Button.pop_color()
+                                        style.ButtonTextureBackground.pop_color()
+                                        style.ButtonHovered.pop_color()       
+                                        style.ButtonTextureBackgroundHovered.pop_color()                     
+                                        style.ButtonActive.pop_color()
+                                        style.ButtonTextureBackgroundActive.pop_color()
+                                
+                                if new_active != self.settings.active_region:
+                                    self.settings.active_region = new_active
+                                    for r in self.settings.regions:
+                                        r.selected = (r == self.settings.active_region)
+                                        
+                            style.ChildBg.pop_color()
+                            ImGui.end_child()
+                                                
+                        draw_configs()
+                        PyImGui.same_line(0, 5)
+                        draw_layout_presets()
+                        if ImGui.begin_child("region_canvas_container", (0, 0), border=False, flags=PyImGui.WindowFlags.NoScrollbar):
+                            self.draw_region_canvas(style, PyImGui.get_content_region_avail(), PyImGui.get_cursor_pos_y())
+                        ImGui.end_child()
                         
-                        if new_active != self.settings.active_region:
-                            self.settings.active_region = new_active
-                            for r in self.settings.regions:
-                                r.selected = (r == self.settings.active_region)
-                                
-                    style.ChildBg.pop_color()
-                    ImGui.end_child()
-                                        
-                draw_configs()
-                PyImGui.same_line(0, 5)
-                draw_layout_presets()
-                if ImGui.begin_child("region_canvas_container", (0, 0), border=False, flags=PyImGui.WindowFlags.NoScrollbar):
-                    self.draw_region_canvas(style, PyImGui.get_content_region_avail(), PyImGui.get_cursor_pos_y())
-                ImGui.end_child()
-                
-                PyImGui.table_next_column()
-                draw_regions_edit()
-                
-                ImGui.end_table()
+                        PyImGui.table_next_column()
+                        draw_regions_edit()
+                        
+                        ImGui.end_table()
+                        
+                    ImGui.end_tab_item()
+                    
+                ImGui.end_tab_bar()  
             style.CellPadding.pop_style_var()   
             
             
@@ -652,7 +688,6 @@ class GUI:
             border_thickness = 3
             PyImGui.draw_list_add_rect(drawing_area_screen_pos[0] - (border_thickness / 2), drawing_area_screen_pos[1] - (border_thickness / 2), drawing_area_screen_pos[0] + drawing_area_size[0] + (border_thickness / 2), drawing_area_screen_pos[1] + drawing_area_size[1] + (border_thickness / 2), border.color_int, 0, 0, border_thickness)
 
-
     def draw_account_button(self, style : Style, account, size : tuple[float, float] = (0, 0), is_current_account: bool = False, index: int = 0) -> bool:
         profession_colors ={
             Profession.Warrior: ColorPalette.GetColor("gw_warrior"),
@@ -742,22 +777,31 @@ class GUI:
             
             ImGui.text_centered("Accounts", window_width, header_size, font_size=18, font_style="Regular")
 
-            sorted_by_profession_and_character_name = sorted(self.settings.accounts, key=lambda acc: (acc.PlayerProfession if acc.PlayerProfession else 99, acc.CharacterName.lower() if acc.CharacterName else "", acc.SlotNumber if acc.SlotNumber else 0))
+            #sort accounts based on their order in settings.accounts_order
+            sorted_accounts = []
+            for account_email in self.settings.accounts_order:
+                account = next((acc for acc in self.settings.accounts if acc.AccountEmail == account_email), None)
+                
+                if account:
+                    sorted_accounts.append(account)
+                    
             own_region = next((r for r in self.settings.regions if r.account == self.settings.get_account_mail()), None) if self.settings.regions else None
             
-            for account in sorted_by_profession_and_character_name:
+            for account in sorted_accounts:
                 i += 1
 
                 is_current_account=account.AccountEmail == self.settings.get_account_mail()
                 ctrl_pressed = PyImGui.get_io().key_ctrl
                 
                 if self.draw_account_button(style=style, account=account, size=account_btn_size, is_current_account=is_current_account, index=i):
-                    if not is_current_account:                            
+                    if not is_current_account:         
                         set_window_active(account, self.settings, ctrl_pressed)
                         
                         if own_region and not ctrl_pressed:
                             ConsoleLog(MODULE_NAME, f"Moving own client to own region {own_region.name}.")
-                            Console.set_window_geometry(own_region.x, own_region.y, own_region.w, own_region.h)
+                            ctypes.windll.user32.SetWindowPos(Console.get_gw_window_handle(), -1, own_region.x, own_region.y, own_region.w, own_region.h, 0)
+                            # Console.set_window_geometry(own_region.x, own_region.y, own_region.w, own_region.h)
+                            # Console.set_borderless(False)
         
             PyImGui.set_cursor_pos(4, 4)
             if ImGui.icon_button(IconsFontAwesome5.ICON_GRIP, 25, 18):

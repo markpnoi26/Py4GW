@@ -1,7 +1,9 @@
 import ctypes
 
 from Py4GW import Console
+import PyImGui
 
+from Py4GWCoreLib import Routines
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.GlobalCache.SharedMemory import AccountData
 from Py4GWCoreLib.enums_src.Multiboxing_enums import SharedCommandType
@@ -15,14 +17,16 @@ def set_window_active(acc: AccountData, settings: Settings, ctrl_pressed: bool =
         ConsoleLog(MODULE_NAME, f"Setting window active for account: {acc.AccountEmail}", Console.MessageType.Info,False)
         account_mail = settings.get_account_mail()
         
-        GLOBAL_CACHE.ShMem.SendMessage(account_mail, acc.AccountEmail, SharedCommandType.SetWindowActive, (0,0,0,0))
-        
-        if settings.move_slave_to_main and not ctrl_pressed:
-            main_region = settings.main_region
-            if main_region:
+        # if ctrl_pressed:
+        #     while PyImGui.get_io().key_ctrl:
+        #         yield from Routines.Yield.wait(100)
                 
-                if account_mail:
-                    GLOBAL_CACHE.ShMem.SendMessage(account_mail, acc.AccountEmail, SharedCommandType.SetWindowGeometry, (main_region.x, main_region.y, main_region.w, main_region.h))
+        # if settings.move_slave_to_main and not ctrl_pressed:
+        #     main_region = settings.main_region
+        #     if main_region:
+                
+        #         if account_mail:
+        #             GLOBAL_CACHE.ShMem.SendMessage(account_mail, acc.AccountEmail, SharedCommandType.SetWindowGeometry, (main_region.x, main_region.y, main_region.w, main_region.h))
 
         GLOBAL_CACHE.ShMem.SendMessage(account_mail, acc.AccountEmail, SharedCommandType.SetWindowActive, (0,0,0,0))
     except Exception as e:
