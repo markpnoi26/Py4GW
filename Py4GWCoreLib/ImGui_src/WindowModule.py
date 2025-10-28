@@ -198,7 +198,7 @@ class WindowModule:
                 
                 self.__decorators_width = self.__decorators_right - self.__decorators_left
                 self.__decorators_height = self.__decorators_bottom - self.__decorators_top
-                self.__close_button_rect = (self.__decorators_right - 29, self.__decorators_top + 9, 11, 11)
+                self.__close_button_rect = (self.__decorators_right - 31, self.__decorators_top + 9, 13, 13)
 
                 PyImGui.push_clip_rect(self.__decorators_left, self.__decorators_top, self.__decorators_width, self.__decorators_height, False)   
                 state = TextureState.Normal
@@ -209,16 +209,6 @@ class WindowModule:
                     else:
                         state = TextureState.Hovered
                                         
-                # Draw the background
-                has_background = not self.window_flags or ((int(self.window_flags) & int(PyImGui.WindowFlags.NoBackground)) == 0)                
-                if has_background:
-                    ThemeTextures.Empty_Pixel.value.draw_in_drawlist(
-                        x=self.__decorators_left + 15,
-                        y=self.__decorators_top + 5,
-                        size=(self.__decorators_width - 30, self.__decorators_height - 15),
-                        tint=(0,0,0,215)
-                    )
-
                 if self.can_resize:
                     ThemeTextures.Window_Frame_Bottom.value.get_texture().draw_in_drawlist(
                         x=self.__decorators_left + 5,

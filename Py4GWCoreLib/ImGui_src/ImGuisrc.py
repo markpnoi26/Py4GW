@@ -2115,7 +2115,7 @@ class ImGui:
                     placeholder_rect[1],
                     placeholder_rect[2],
                     placeholder_rect[3],
-                    False,
+                    True,
                 )
                 
                 ImGui.push_font("Regular", search_font_size)

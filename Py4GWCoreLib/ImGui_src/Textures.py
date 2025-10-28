@@ -204,7 +204,7 @@ class ThemeTextures(Enum):
     )
 
     TravelCursor = MapTexture(
-        texture = os.path.join(TEXTURE_FOLDER, "travel_cursor.png"),
+        texture = os.path.join(TEXTURE_FOLDER, "Cursor", "travel_cursor.png"),
         texture_size=(32, 32),
         size=(32, 32),
         normal=(0, 0)
