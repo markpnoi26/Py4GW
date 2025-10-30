@@ -62,6 +62,44 @@ class AccountData(Structure):
         ("LastUpdated", c_uint),
     ]
     
+    # Type hints for IntelliSense
+    SlotNumber: int
+    IsSlotActive: bool
+    AccountEmail: str
+    AccountName: str
+    CharacterName: str
+    IsAccount: bool
+    IsHero: bool
+    IsPet: bool
+    IsNPC: bool
+    OwnerPlayerID: int
+    HeroID: int
+    MapID: int
+    MapRegion: int
+    MapDistrict: int
+    PlayerID: int
+    PlayerLevel: int
+    PlayerProfession: int
+    PlayerSecondaryProfession: int
+    PlayerHP: float
+    PlayerMaxHP: float
+    PlayerHealthRegen: float
+    PlayerEnergy: float
+    PlayerMaxEnergy: float
+    PlayerEnergyRegen: float
+    PlayerPosX: float
+    PlayerPosY: float
+    PlayerPosZ: float
+    PlayerFacingAngle: float
+    PlayerTargetID: int
+    PlayerLoginNumber: int
+    PlayerIsTicked: bool
+    PartyID: int
+    PartyPosition: int
+    PatyIsPartyLeader: bool
+    PlayerBuffs: list[int]
+    LastUpdated: int
+    
 class SharedMessage(Structure):
     _pack_ = 1
     _fields_ = [
@@ -74,6 +112,16 @@ class SharedMessage(Structure):
         ("Running", c_bool),
         ("Timestamp", c_uint), 
     ]
+    
+    # Type hints for IntelliSense
+    SenderEmail: str
+    ReceiverEmail: str
+    Command: int
+    Params: list[float]
+    ExtraData: list[str]
+    Active: bool
+    Running: bool
+    Timestamp: int
     
 class HeroAIOptionStruct(Structure):
     _pack_ = 1
@@ -90,6 +138,18 @@ class HeroAIOptionStruct(Structure):
         ("FlagFacingAngle", c_float),
     ] 
     
+    # Type hints for IntelliSense
+    Following : bool
+    Avoidance : bool
+    Looting : bool
+    Targeting : bool
+    Combat : bool
+    Skills : list[bool]
+    IsFlagged : bool
+    FlagPosX : float
+    FlagPosY : float
+    FlagFacingAngle : float
+    
 class AllAccounts(Structure):
     _pack_ = 1
     _fields_ = [
@@ -97,6 +157,15 @@ class AllAccounts(Structure):
         ("SharedMessage", SharedMessage * SHMEM_MAX_NUM_PLAYERS),  # Messages for each player
         ("HeroAIOptions", HeroAIOptionStruct * SHMEM_MAX_NUM_PLAYERS),  # Game options for HeroAI
     ]
+    
+    # Type hints for IntelliSense
+    AccountData: list[AccountData]
+    SharedMessage: list[SharedMessage]
+    HeroAIOptions: list[HeroAIOptionStruct]
+    
+    
+    
+    
         
 class Py4GWSharedMemoryManager:
     _instance = None  # Singleton instance
