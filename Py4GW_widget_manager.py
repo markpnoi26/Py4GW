@@ -206,8 +206,12 @@ class WidgetHandler:
                 ConsoleLog("WidgetHandler", f"Stack trace: {traceback.format_exc()}", Py4GW.Console.MessageType.Error)
 
         if not ui_enabled:
+        if not ui_enabled:
             style.Alpha = alpha
             style.Push()
+    
+    def set_widget_ui_visibility(self, visible: bool):
+        self.__show_widget_ui = visible
     
     def set_widget_ui_visibility(self, visible: bool):
         self.__show_widget_ui = visible
@@ -286,9 +290,11 @@ if "_Py4GW_GLOBAL_WIDGET_HANDLER" not in sys.modules:
     mod.handler = WidgetHandler()  # type: ignore[attr-defined]
     sys.modules["_Py4GW_GLOBAL_WIDGET_HANDLER"] = mod
 handler : WidgetHandler = sys.modules["_Py4GW_GLOBAL_WIDGET_HANDLER"].handler
+handler : WidgetHandler = sys.modules["_Py4GW_GLOBAL_WIDGET_HANDLER"].handler
 enable_all = ini_handler.read_bool(module_name, "enable_all", True)
 old_enable_all = enable_all
 
+window_module = ImGui.WindowModule(module_name, window_name="Widgets", window_size=(130, 100), window_flags=PyImGui.WindowFlags.AlwaysAutoResize)
 window_module = ImGui.WindowModule(module_name, window_name="Widgets", window_size=(130, 100), window_flags=PyImGui.WindowFlags.AlwaysAutoResize)
 
 window_x = ini_handler.read_int(module_name, "x", 100)
@@ -375,6 +381,7 @@ def draw_widget_ui():
     categorized_widgets = {}
     for name, info in handler.widgets.items():
         data = handler.widget_data_cache.get(name, {})        
+        data = handler.widget_data_cache.get(name, {})        
         cat = data.get("category", "Miscellaneous")
         sub = data.get("subcategory", "")
         categorized_widgets.setdefault(cat, {}).setdefault(sub, []).append(name)
@@ -420,6 +427,7 @@ def draw_widget_ui():
 
             ImGui.end_table()
             ImGui.tree_pop()
+
 
 
 def main():

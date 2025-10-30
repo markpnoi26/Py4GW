@@ -10,7 +10,7 @@ import time
 from Py4GWCoreLib.py4gwcorelib_src.Console import Console
 
 SHMEM_MAX_EMAIL_LEN = 64
-SHMEM_MAX_CHAR_LEN = 20
+SHMEM_MAX_CHAR_LEN = 30
 SHMEM_MAX_NUMBER_OF_BUFFS = 240
 SHMEM_MAX_NUM_PLAYERS = 64
 SMM_MODULE_NAME = "Py4GW - Shared Memory"
@@ -201,6 +201,8 @@ class Py4GWSharedMemoryManager:
         self._initialized = True
     
     def GetStruct(self) -> AllAccounts:
+        if self.shm.buf is None:
+            raise RuntimeError("Shared memory is not initialized.")
         return AllAccounts.from_buffer(self.shm.buf)
         
     def GetBaseTimestamp(self):
