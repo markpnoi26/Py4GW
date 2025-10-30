@@ -206,13 +206,9 @@ class WidgetHandler:
                 ConsoleLog("WidgetHandler", f"Stack trace: {traceback.format_exc()}", Py4GW.Console.MessageType.Error)
 
         if not ui_enabled:
-        if not ui_enabled:
             style.Alpha = alpha
             style.Push()
-    
-    def set_widget_ui_visibility(self, visible: bool):
-        self.__show_widget_ui = visible
-    
+        
     def set_widget_ui_visibility(self, visible: bool):
         self.__show_widget_ui = visible
             
