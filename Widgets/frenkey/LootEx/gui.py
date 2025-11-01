@@ -4199,8 +4199,6 @@ class UI:
                         base_color = style.Border if not is_in_profile else self.style.Selected_Colored_Item
                         return (base_color.r, base_color.g, base_color.b, (150 if is_in_profile else base_color.a))
 
-                    if is_in_profile:
-                        style.Text.push_color((255, 204, 85, 255))
 
                     color = get_frame_color()
                     style.Border.push_color(color)
@@ -4211,12 +4209,17 @@ class UI:
                     ImGui.begin_child(
                         id=f"ModSelectable{m.identifier}", size=(effective_column_width, self.mod_heights[m.identifier]), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse)
                                   
+                    style.Border.pop_color()
+                    
                     if m.is_inscription:
                         texture = self.inscription_type_textures.get(m.target_types[0], None)
                         if texture and os.path.exists(texture):
                             ImGui.DrawTextureExtended(texture_path=texture, size=(16, 16), tint=(255,255,255,255) if is_in_profile else (150,150,150, 255) if selectable.is_hovered else (100, 100, 100, 255))
                             PyImGui.same_line(0, 5)
                         pass
+                        
+                    if is_in_profile:
+                        style.Text.push_color((255, 204, 85, 255))
                         
                     ImGui.push_font("Regular", 16)
                     ImGui.text(m.applied_name)
@@ -4253,7 +4256,7 @@ class UI:
                                     PyImGui.dummy(texture_size, texture_size)
                                     continue
                                 
-                                if not m.has_item_type(weapon_type) or weapon_type in self.inscription_type_textures:
+                                if not m.has_item_type(weapon_type) or m.is_inscription:
                                     continue
 
                                 is_selected = m.identifier in self.settings.profile.weapon_mods and weapon_type.name in self.settings.profile.weapon_mods[
@@ -4328,8 +4331,6 @@ class UI:
                             self.settings.profile.save()
                             
                     selectable.is_hovered = PyImGui.is_item_hovered()
-
-                    style.Border.pop_color()
 
                     if not is_tooltip_visible:
                         UI.weapon_mod_tooltip(m)

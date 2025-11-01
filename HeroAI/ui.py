@@ -6,6 +6,7 @@ import random
 import PyImGui
 from HeroAI import windows
 from HeroAI.cache_data import CacheData
+from HeroAI.settings import Settings
 from HeroAI.utils import DrawHeroFlag, IsHeroFlagged
 from HeroAI.windows import DrawFlags, SubmitGameOptions
 from Py4GWCoreLib import Agent, ImGui
@@ -57,6 +58,7 @@ template_account: str = ""
 template_code = ""
 
 flag_account = ""
+settings = Settings()
 
 def get_frame_texture_for_effect(skill_id: int) -> tuple[(SplitTexture | MapTexture), TextureState, int]:
     is_elite = GLOBAL_CACHE.Skill.Flags.IsElite(skill_id)
@@ -498,7 +500,7 @@ def draw_skill_bar(height: float, account_data: AccountData, cached_data: CacheD
     pass  # Implementation of skill bar drawing logic goes here
 
 def draw_buffs_bar(account_data: AccountData, win_pos: tuple, win_size: tuple, message_queue: list[tuple[int, SharedMessage]], skill_size: float = 28):
-    if not account_data.PlayerEffects:
+    if not settings.ShowHeroEffects and not settings.ShowHeroUpkeeps:
         return
 
     style = ImGui.get_style()
@@ -587,35 +589,37 @@ def draw_buffs_bar(account_data: AccountData, win_pos: tuple, win_size: tuple, m
                 f"Effect ID: {effect.skill_id}\nName: {effect.name}")
             PyImGui.same_line(0, 0)
 
-        for index, upkeep_id in enumerate(account_data.PlayerUpkeeps):
-            if upkeep_id == 0:
-                continue
+        if settings.ShowHeroUpkeeps:
+            for index, upkeep_id in enumerate(account_data.PlayerUpkeeps):
+                if upkeep_id == 0:
+                    continue
 
-            if not upkeep_id in skill_cache:
-                skill_cache[upkeep_id] = CachedSkillInfo(upkeep_id)
+                if not upkeep_id in skill_cache:
+                    skill_cache[upkeep_id] = CachedSkillInfo(upkeep_id)
 
-            effect = skill_cache[upkeep_id]
-            duration = account_data.PlayerEffectsDuration[index]
-            remaining = account_data.PlayerEffectsRemaining[index]
+                effect = skill_cache[upkeep_id]
+                duration = account_data.PlayerEffectsDuration[index]
+                remaining = account_data.PlayerEffectsRemaining[index]
 
-            draw_buff(effect, duration, remaining, False, 24)
+                draw_buff(effect, duration, remaining, False, 24)
 
-        if any(account_data.PlayerUpkeeps) and any(account_data.PlayerEffects):
-            PyImGui.new_line()
-            PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() - 4)
+            if any(account_data.PlayerUpkeeps) and any(account_data.PlayerEffects) and settings.ShowHeroEffects:
+                PyImGui.new_line()
+                PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() - 4)
 
-        for index, effect_id in enumerate(account_data.PlayerEffects):
-            if effect_id == 0:
-                continue
+        if settings.ShowHeroEffects:
+            for index, effect_id in enumerate(account_data.PlayerEffects):
+                if effect_id == 0:
+                    continue
 
-            if not effect_id in skill_cache:
-                skill_cache[effect_id] = CachedSkillInfo(effect_id)
+                if not effect_id in skill_cache:
+                    skill_cache[effect_id] = CachedSkillInfo(effect_id)
 
-            effect = skill_cache[effect_id]
-            duration = account_data.PlayerEffectsDuration[index]
-            remaining = account_data.PlayerEffectsRemaining[index]
+                effect = skill_cache[effect_id]
+                duration = account_data.PlayerEffectsDuration[index]
+                remaining = account_data.PlayerEffectsRemaining[index]
 
-            draw_buff(effect, duration, remaining, True, 28)
+                draw_buff(effect, duration, remaining, True, 28)
 
     PyImGui.end()
     pass  # Implementation of buffs bar drawing logic goes here
@@ -782,6 +786,16 @@ def draw_buttons(account_data: AccountData, cached_data: CacheData, message_queu
              IconsFontAwesome5.ICON_USER_PLUS,
              "Invite" if same_map else "Summon",
              SharedCommandType.InviteToParty if same_map else SharedCommandType.TravelToMap, invite_player),
+            
+            ("focus client",
+             IconsFontAwesome5.ICON_DESKTOP,
+             "Focus client",
+             SharedCommandType.SetWindowActive, lambda: GLOBAL_CACHE.ShMem.SendMessage(
+                player_email,
+                account_email,
+                SharedCommandType.SetWindowActive,
+                (0, 0, 0, 0),
+             )),
         ]
 
         for btn in buttons:
@@ -823,6 +837,16 @@ def draw_buttons(account_data: AccountData, cached_data: CacheData, message_queu
 
             ("clear flag", IconsFontAwesome5.ICON_CIRCLE_XMARK, "Clear Flag",
              SharedCommandType.NoCommand, clear_hero_flag, lambda: False),
+            
+            ("focus client",
+             IconsFontAwesome5.ICON_DESKTOP,
+             "Focus client",
+             SharedCommandType.SetWindowActive, lambda: GLOBAL_CACHE.ShMem.SendMessage(
+                player_email,
+                account_email,
+                SharedCommandType.SetWindowActive,
+                (0, 0, 0, 0),
+             )),
         ]
         
         for btn in buttons:
@@ -887,30 +911,58 @@ def draw_hero_panel(window: WindowModule, account_data: AccountData, cached_data
     ImGui.pop_font()
     PyImGui.pop_clip_rect()
 
+    pos = window.window_pos
+    collapsed = window.collapse
+    
     if open and window.open and not window.collapse:
         if style.Theme == StyleTheme.Guild_Wars:
             PyImGui.spacing()
 
         avail = PyImGui.get_content_region_avail()
 
-        if ImGui.begin_child("##bars", (225, 60)):
-            curr_avail = PyImGui.get_content_region_avail()
-            draw_health_bar(curr_avail[0], 13, account_data.PlayerMaxHP,
-                            account_data.PlayerHP, account_data.PlayerHealthRegen)
-            PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() - 4)
-            draw_energy_bar(curr_avail[0], 13, account_data.PlayerMaxEnergy,
-                            account_data.PlayerEnergy, account_data.PlayerEnergyRegen)
+        height = 28 if settings.ShowHeroSkills else 0
+        height += 28 if settings.ShowHeroBars else 0
+        height += 4 if settings.ShowHeroBars and settings.ShowHeroSkills else 0
 
-            PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() - 4)
-            draw_skill_bar(28, account_data, cached_data, messages)
+        if height > 0:
+            if ImGui.begin_child("##bars", (225, height)):
+                curr_avail = PyImGui.get_content_region_avail()
+                if settings.ShowHeroBars:
+                    draw_health_bar(curr_avail[0], 13, account_data.PlayerMaxHP,
+                                    account_data.PlayerHP, account_data.PlayerHealthRegen)
+                    PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() - 4)
+                    draw_energy_bar(curr_avail[0], 13, account_data.PlayerMaxEnergy,
+                                    account_data.PlayerEnergy, account_data.PlayerEnergyRegen)
+                
+                if settings.ShowHeroSkills:
+                    if settings.ShowHeroBars:
+                        PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() - 4)
+                    
+                    draw_skill_bar(28, account_data, cached_data, messages)
 
-        ImGui.end_child()
+            ImGui.end_child()
 
-        PyImGui.same_line(0, 2)
-        draw_buttons(account_data, cached_data, messages, 28)
+        if (settings.ShowHeroBars or settings.ShowHeroSkills) and settings.ShowHeroButtons:
+            PyImGui.same_line(0, 2)
+            
+        if settings.ShowHeroButtons:
+            draw_buttons(account_data, cached_data, messages, 28)
 
         draw_buffs_bar(account_data, win_pos, win_size, messages, 28)
-
+        window.process_window()
+        
+        
+    
+    collapsed = PyImGui.is_window_collapsed()
+    pos = PyImGui.get_window_pos()
+    
+    if window.collapse != collapsed or window.window_pos != pos:
+        window.collapse = collapsed
+        window.window_pos = pos
+        
+        settings.HeroPanelPositions[account_data.AccountEmail] = (int(pos[0]), int(pos[1]), collapsed)
+        settings.save_settings()
+        
     window.end()
 
     if flag_account == account_data.AccountEmail and flag_account:    
