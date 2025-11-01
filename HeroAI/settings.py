@@ -27,6 +27,7 @@ class Settings:
         self.ShowHeroBars = True
         self.ShowHeroSkills = True
         self.ShowFloatingTargets = True
+        self.ShowPartyPanelUI = True
         self.HeroPanelPositions : dict[str, tuple[int, int, bool]] = {}
         
         
@@ -41,6 +42,7 @@ class Settings:
         self.ini_handler.write_key("General", "ShowHeroBars", str(self.ShowHeroBars))
         self.ini_handler.write_key("General", "ShowFloatingTargets", str(self.ShowFloatingTargets))
         self.ini_handler.write_key("General", "ShowHeroSkills", str(self.ShowHeroSkills))
+        self.ini_handler.write_key("General", "ShowPartyPanelUI", str(self.ShowPartyPanelUI))
 
         for hero_email, (x, y, collapsed) in self.HeroPanelPositions.items():
             self.ini_handler.write_key("HeroPanelPositions", hero_email, f"{x},{y},{collapsed}")
@@ -56,6 +58,7 @@ class Settings:
         self.ShowHeroBars = self.ini_handler.read_bool("General", "ShowHeroBars", True)
         self.ShowFloatingTargets = self.ini_handler.read_bool("General", "ShowFloatingTargets", True)
         self.ShowHeroSkills = self.ini_handler.read_bool("General", "ShowHeroSkills", True)
+        self.ShowPartyPanelUI = self.ini_handler.read_bool("General", "ShowPartyPanelUI", True)
 
         self.HeroPanelPositions.clear()        
         items = self.ini_handler.list_keys("HeroPanelPositions")

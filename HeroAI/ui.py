@@ -3,6 +3,7 @@ from collections.abc import Callable
 import math
 import os
 import random
+from Py4GW import Console
 import PyImGui
 from HeroAI import windows
 from HeroAI.cache_data import CacheData
@@ -898,7 +899,7 @@ def get_display_name(account_data: AccountData) -> str:
         title_names[name] = "Frenkey " + random.choice(titles)
         
     name = title_names[name]
-    return name
+    return account_data.CharacterName
 
 def draw_combined_hero_panel(account_data: AccountData, cached_data: CacheData, messages: list[tuple[int, SharedMessage]], open: bool = True):
     name = get_display_name(account_data)
@@ -1036,9 +1037,11 @@ def draw_hero_panel(window: WindowModule, account_data: AccountData, cached_data
     
     if window.collapse != collapsed or window.window_pos != pos:
         window.window_pos = pos
-        
-        settings.HeroPanelPositions[account_data.AccountEmail] = (int(pos[0]), int(pos[1]), window.collapse)
-        settings.save_settings()
+        window.collapse = collapsed if style.Theme != StyleTheme.Guild_Wars else window.collapse
+            
+        if Console.is_window_active():
+            settings.HeroPanelPositions[account_data.AccountEmail] = (int(pos[0]), int(pos[1]), window.collapse)
+            settings.save_settings()
         
     window.end()
 

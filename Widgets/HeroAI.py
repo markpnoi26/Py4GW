@@ -73,7 +73,7 @@ FOLLOW_COMBAT_DISTANCE = 25.0  # if body blocked, we get close enough.
 LEADER_FLAG_TOUCH_RANGE_THRESHOLD_VALUE = Range.Touch.value * 1.1
 LOOT_THROTTLE_CHECK = ThrottledTimer(250)
 MESSAGE_THROTTLE = ThrottledTimer(500)
-ACCOUNT_THROTTLE = ThrottledTimer(150)
+ACCOUNT_THROTTLE = ThrottledTimer(500)
 
 cached_data = CacheData()
 messages : list[tuple[int, SharedMessage]] = []
@@ -374,6 +374,9 @@ def DrawFramedContent(cached_data: CacheData, content_frame_id):
 
 
 def DrawEmbeddedWindow(cached_data: CacheData):
+    if not settings.ShowPartyPanelUI:
+        return
+    
     global selected_tab
     parent_frame_id = UIManager.GetFrameIDByHash(PARTY_WINDOW_HASH)
     outpost_content_frame_id = UIManager.GetChildFrameID(PARTY_WINDOW_HASH, PARTY_WINDOW_FRAME_OUTPOST_OFFSETS)
@@ -426,10 +429,9 @@ def DrawEmbeddedWindow(cached_data: CacheData):
     ImGui.PopTransparentWindow()
     DrawFramedContent(cached_data, content_frame_id)
 
-account_data : list[AccountData] = []
 
 def UpdateStatus(cached_data: CacheData):
-    global hero_windows, messages, account_data
+    global hero_windows, messages
                 
     RegisterPlayer(cached_data)
     RegisterHeroes(cached_data)
@@ -441,11 +443,7 @@ def UpdateStatus(cached_data: CacheData):
     if MESSAGE_THROTTLE.IsExpired():
         messages = GLOBAL_CACHE.ShMem.GetAllMessages()
         MESSAGE_THROTTLE.Reset()
-        
-    if ACCOUNT_THROTTLE.IsExpired():
-        account_data = GLOBAL_CACHE.ShMem.GetAllAccountData()
-        ACCOUNT_THROTTLE.Reset()
-            
+                    
     own_data = GLOBAL_CACHE.ShMem.GetAccountDataFromEmail(cached_data.account_email)
     if not own_data:
         return
@@ -453,46 +451,47 @@ def UpdateStatus(cached_data: CacheData):
     identifier = "combined_hero_panel"
     
     if not settings.ShowPanelOnlyOnLeaderAccount or own_data.PlayerIsPartyLeader:
-        if settings.CombinePanels:            
-            if not identifier in hero_windows:
-                stored = settings.HeroPanelPositions.get(identifier, (200, 200, False))
-                hero_windows[identifier] = WindowModule(
-                    module_name=f"HeroAI - {identifier}",
-                    window_name=f"Heroes##HeroAI - {identifier}",
-                    window_size=(200, 100),
-                    window_pos=(stored[0], stored[1]),
-                    collapse=stored[2],
-                    can_close=True,
-                )
-                
-            open = hero_windows[identifier].begin(True, PyImGui.WindowFlags.AlwaysAutoResize)
-        
-        for account in account_data:
-            if not account.AccountEmail:
-                continue
-        
-            if account.AccountEmail == GLOBAL_CACHE.Player.GetAccountEmail():
-                continue
-            
-            if not settings.CombinePanels:
-                if not account.AccountEmail in hero_windows:
-                    stored = settings.HeroPanelPositions.get(account.AccountEmail.lower(), (200, 200, False))
-                    hero_windows[account.AccountEmail] = WindowModule(
-                        module_name=f"HeroAI - {account.AccountEmail}",
-                        window_name=f"##HeroAI - {account.AccountEmail}",
+        if settings.ShowHeroPanels:
+            if settings.CombinePanels:            
+                if not identifier in hero_windows:
+                    stored = settings.HeroPanelPositions.get(identifier, (200, 200, False))
+                    hero_windows[identifier] = WindowModule(
+                        module_name=f"HeroAI - {identifier}",
+                        window_name=f"Heroes##HeroAI - {identifier}",
                         window_size=(200, 100),
                         window_pos=(stored[0], stored[1]),
                         collapse=stored[2],
-                        can_close=False,
+                        can_close=True,
                     )
                     
-                draw_hero_panel(hero_windows[account.AccountEmail], account, cached_data, messages)
-            else:                    
-                draw_combined_hero_panel(account, cached_data, messages)
-                
-        if settings.CombinePanels:
-            hero_windows[identifier].end()
+                open = hero_windows[identifier].begin(True, PyImGui.WindowFlags.AlwaysAutoResize)
             
+            for account in GLOBAL_CACHE.ShMem.GetAllAccountData():
+                if not account.AccountEmail:
+                    continue
+            
+                if account.AccountEmail == GLOBAL_CACHE.Player.GetAccountEmail():
+                    continue
+                
+                if not settings.CombinePanels:
+                    if not account.AccountEmail in hero_windows:
+                        stored = settings.HeroPanelPositions.get(account.AccountEmail.lower(), (200, 200, False))
+                        hero_windows[account.AccountEmail] = WindowModule(
+                            module_name=f"HeroAI - {account.AccountEmail}",
+                            window_name=f"##HeroAI - {account.AccountEmail}",
+                            window_size=(200, 100),
+                            window_pos=(stored[0], stored[1]),
+                            collapse=stored[2],
+                            can_close=False,
+                        )
+                        
+                    draw_hero_panel(hero_windows[account.AccountEmail], account, cached_data, messages)
+                else:                    
+                    draw_combined_hero_panel(account, cached_data, messages)
+                    
+            if settings.CombinePanels:
+                hero_windows[identifier].end()
+                
     DrawEmbeddedWindow(cached_data)
     if cached_data.ui_state_data.show_classic_controls:
         DrawMainWindow(cached_data)
@@ -580,6 +579,11 @@ def configure():
     configure_window.open = module_info.configuring if module_info else False
     
     if configure_window.begin():
+        show_party_panel_ui = ImGui.checkbox("Show Party Panel UI", settings.ShowPartyPanelUI)
+        if show_party_panel_ui != settings.ShowPartyPanelUI:
+            settings.ShowPartyPanelUI = show_party_panel_ui
+            settings.save_settings()
+        
         show_on_leader = ImGui.checkbox("Show only on Leader", settings.ShowPanelOnlyOnLeaderAccount)
         if show_on_leader != settings.ShowPanelOnlyOnLeaderAccount:
             settings.ShowPanelOnlyOnLeaderAccount = show_on_leader
