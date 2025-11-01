@@ -6,6 +6,8 @@ import Py4GW
 from PyMap import PyMap
 
 from HeroAI.ui import draw_hero_panel
+from Py4GWCoreLib.GlobalCache.SharedMemory import AccountData, SharedMessage
+from Py4GWCoreLib.ImGui_src.WindowModule import WindowModule
 from Py4GWCoreLib.py4gwcorelib_src.Console import ConsoleLog
 
 
@@ -67,8 +69,11 @@ from Py4GWCoreLib import Utils
 FOLLOW_COMBAT_DISTANCE = 25.0  # if body blocked, we get close enough.
 LEADER_FLAG_TOUCH_RANGE_THRESHOLD_VALUE = Range.Touch.value * 1.1
 LOOT_THROTTLE_CHECK = ThrottledTimer(250)
+MESSAGE_THROTTLE = ThrottledTimer(500)
 
 cached_data = CacheData()
+messages : list[tuple[int, SharedMessage]] = []
+hero_windows : dict[str, WindowModule] = {}
 
 
 def HandleOutOfCombat(cached_data: CacheData):
@@ -406,6 +411,9 @@ def DrawEmbeddedWindow(cached_data: CacheData):
 
 
 def UpdateStatus(cached_data: CacheData):
+    global hero_windows, messages
+    data_copy = GLOBAL_CACHE.ShMem.GetAllAccountData().copy()
+                
     RegisterPlayer(cached_data)
     RegisterHeroes(cached_data)
     UpdatePlayers(cached_data)
@@ -413,11 +421,26 @@ def UpdateStatus(cached_data: CacheData):
 
     cached_data.UpdateGameOptions()
     
-    for account in GLOBAL_CACHE.ShMem.GetAllAccountData():
-        if account.AccountEmail == cached_data.account_email:
-            draw_hero_panel(account)
-            break
+    if MESSAGE_THROTTLE.IsExpired():
+        messages = GLOBAL_CACHE.ShMem.GetAllMessages()
+        MESSAGE_THROTTLE.Reset()
     
+    for account in data_copy:
+        if not account.AccountEmail:
+            continue
+        
+        if not account.AccountEmail in hero_windows:
+            hero_windows[account.AccountEmail] = WindowModule(
+                module_name="HeroAI - {account.AccountEmail}",
+                window_name=f"##HeroAI - {account.AccountEmail}",
+                window_size=(200, 100),
+                window_pos=(100, 100),
+                can_close=True,
+            )
+        
+        
+        draw_hero_panel(hero_windows[account.AccountEmail], account, cached_data, messages)
+            
     DrawEmbeddedWindow(cached_data)
     if cached_data.ui_state_data.show_classic_controls:
         DrawMainWindow(cached_data)

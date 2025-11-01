@@ -686,6 +686,36 @@ class ThemeTextures(Enum):
     )),
     )
 
+    Pip_Regen = ThemeTexture(
+    (StyleTheme.Minimalus,  MapTexture(
+        texture = os.path.join(MINIMALUS_FOLDER, "ui_pips.png"),
+        texture_size = (32, 16),
+        size = (10, 16),
+        normal=(10, 0),
+    )),
+    (StyleTheme.Guild_Wars,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER, "ui_pips.png"),
+        texture_size = (32, 16),
+        size = (10, 16),
+        normal=(10, 0),
+    )),
+    )
+
+    Pip_Degen = ThemeTexture(
+    (StyleTheme.Minimalus,  MapTexture(
+        texture = os.path.join(MINIMALUS_FOLDER, "ui_pips.png"),
+        texture_size = (32, 16),
+        size = (10, 16),
+        normal=(0, 0),
+    )),
+    (StyleTheme.Guild_Wars,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER, "ui_pips.png"),
+        texture_size = (32, 16),
+        size = (10, 16),
+        normal=(0, 0),
+    )),
+    )
+
     Close_Button = ThemeTexture(
     (StyleTheme.Minimalus,  MapTexture(
         texture = os.path.join(TEXTURE_FOLDER, "ui_close_button_atlas.png"),
@@ -824,20 +854,111 @@ class ThemeTextures(Enum):
 
     ProgressBarFrame = ThemeTexture(
     (StyleTheme.Minimalus,  SplitTexture(
-        texture = os.path.join(TEXTURE_FOLDER, "ui_progress_frame.png"),
+        texture = os.path.join(TEXTURE_FOLDER, "ui_progressbar_frame.png"),
         texture_size=(16, 16),
         left= (1, 1, 2, 14),
         mid= (3, 1, 12, 14),
         right= (13, 1, 14, 14),
     )),
     (StyleTheme.Guild_Wars,  SplitTexture(
-        texture = os.path.join(TEXTURE_FOLDER, "ui_progress_frame.png"),
+        texture = os.path.join(TEXTURE_FOLDER, "ui_progressbar_frame.png"),
         texture_size=(16, 16),
         left= (1, 1, 2, 14),
         mid= (3, 1, 12, 14),
         right= (13, 1, 14, 14),
     )),
     )
+    
+    HealthBarFill = ThemeTexture(
+    (StyleTheme.Minimalus,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER,"Progressbar", "ui_progress_health.png"),
+        texture_size=(16, 16),
+        size=(3, 16),
+        normal= (0, 0),
+    )),
+    (StyleTheme.Guild_Wars,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER,"Progressbar", "ui_progress_health.png"),
+        texture_size=(16, 16),
+        size=(3, 16),
+        normal= (0, 0),
+    )),
+    )
+    
+    HealthBarCursor = ThemeTexture(
+    (StyleTheme.Minimalus,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER,"Progressbar", "ui_progress_health.png"),
+        texture_size=(16, 16),
+        size=(4, 16),
+        normal= (3, 0),
+    )),
+    (StyleTheme.Guild_Wars,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER, "Progressbar", "ui_progress_health.png"),
+        texture_size=(16, 16),
+        size=(4, 16),
+        normal= (3, 0),
+    )),
+    )
+    
+    HealthBarEmpty = ThemeTexture(
+    (StyleTheme.Minimalus,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER,"Progressbar", "ui_progress_health.png"),
+        texture_size=(16, 16),
+        size=(9, 16),
+        normal= (7, 0),
+    )),
+    (StyleTheme.Guild_Wars,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER,"Progressbar", "ui_progress_health.png"),
+        texture_size=(16, 16),
+        size=(9, 16),
+        normal= (7, 0),
+    )),
+    )
+    
+    EnergyBarFill = ThemeTexture(
+    (StyleTheme.Minimalus,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER,"Progressbar", "ui_progress_energy.png"),
+        texture_size=(16, 16),
+        size=(3, 16),
+        normal= (0, 0),
+    )),
+    (StyleTheme.Guild_Wars,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER,"Progressbar", "ui_progress_energy.png"),
+        texture_size=(16, 16),
+        size=(3, 16),
+        normal= (0, 0),
+    )),
+    )
+    
+    EnergyBarCursor = ThemeTexture(
+    (StyleTheme.Minimalus,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER,"Progressbar", "ui_progress_energy.png"),
+        texture_size=(16, 16),
+        size=(4, 16),
+        normal= (3, 0),
+    )),
+    (StyleTheme.Guild_Wars,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER, "Progressbar", "ui_progress_energy.png"),
+        texture_size=(16, 16),
+        size=(4, 16),
+        normal= (3, 0),
+    )),
+    )
+    
+    EnergyBarEmpty = ThemeTexture(
+    (StyleTheme.Minimalus,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER,"Progressbar", "ui_progress_energy.png"),
+        texture_size=(16, 16),
+        size=(9, 16),
+        normal= (7, 0),
+    )),
+    (StyleTheme.Guild_Wars,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER,"Progressbar", "ui_progress_energy.png"),
+        texture_size=(16, 16),
+        size=(9, 16),
+        normal= (7, 0),
+    )),
+    )
+    
 
     ProgressBarProgressCursor = ThemeTexture(
     (StyleTheme.Minimalus,  MapTexture(
@@ -898,3 +1019,293 @@ class ThemeTextures(Enum):
         normal = (0, 0),
     )),
     )   
+
+    #Skill
+    Skill_Slot_Empty = ThemeTexture(
+    (StyleTheme.Minimalus,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER, "ui_empty_skill_slot.png"),
+        texture_size = (64, 64),
+        size = (56, 56),
+        normal = (4, 4),
+    )),
+    (StyleTheme.Guild_Wars,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER, "ui_empty_skill_slot.png"),
+        texture_size = (64, 64),
+        size = (56, 56),
+        normal = (4, 4),
+    )),
+    )
+    
+    Skill_Frame = ThemeTexture(
+    (StyleTheme.Minimalus,  MapTexture(
+        texture = os.path.join(MINIMALUS_FOLDER, "ui_skill_frames.png"),
+        texture_size = (256, 256),
+        size = (56, 56),
+        normal = (0, 0),
+        active = (56, 0),
+    )),
+    (StyleTheme.Guild_Wars,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER, "ui_skill_frames.png"),
+        texture_size = (256, 256),
+        size = (56, 56),
+        normal = (0, 0),
+        active = (56, 0),
+    )),
+    )
+    
+    Effect_Frame_Skill = ThemeTexture(
+    (StyleTheme.Minimalus,  MapTexture(
+        texture = os.path.join(MINIMALUS_FOLDER, "ui_skill_frames.png"),
+        texture_size = (256, 256),
+        size = (56, 56),
+        normal = (112, 0),
+        active= (168, 0),
+    )),
+    (StyleTheme.Guild_Wars,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER, "ui_skill_frames.png"),
+        texture_size = (256, 256),
+        size = (56, 56),
+        normal = (112, 0),
+        active= (168, 0),
+    )),
+    )
+    
+    Effect_Frame_Condition = ThemeTexture(
+    (StyleTheme.Minimalus,  MapTexture(
+        texture = os.path.join(MINIMALUS_FOLDER, "ui_skill_frames.png"),
+        texture_size = (256, 256),
+        size = (56, 56),
+        normal = (0, 56),
+        active = (56, 56),
+    )),
+    (StyleTheme.Guild_Wars,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER, "ui_skill_frames.png"),
+        texture_size = (256, 256),
+        size = (56, 56),
+        normal = (0, 56),
+        active = (56, 56),
+    )),
+    )
+    
+    Effect_Frame_Enchantment = ThemeTexture(
+    (StyleTheme.Minimalus,  MapTexture(
+        texture = os.path.join(MINIMALUS_FOLDER, "ui_skill_frames.png"),
+        texture_size = (256, 256),
+        size = (56, 56),
+        normal = (112, 56),
+        active = (168, 56),
+    )),
+    (StyleTheme.Guild_Wars,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER, "ui_skill_frames.png"),
+        texture_size = (256, 256),
+        size = (56, 56),
+        normal = (112, 56),
+        active = (168, 56),
+    )),
+    )
+
+    Effect_Frame_Hex = ThemeTexture(
+    (StyleTheme.Minimalus,  MapTexture(
+        texture = os.path.join(MINIMALUS_FOLDER, "ui_skill_frames.png"),
+        texture_size = (256, 256),
+        size = (56, 56),
+        normal = (0, 112),
+        active = (56, 112),
+    )),
+    (StyleTheme.Guild_Wars,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER, "ui_skill_frames.png"),
+        texture_size = (256, 256),
+        size = (56, 56),
+        normal = (0, 112),
+        active = (56, 112),
+    )),
+    )
+    
+    Effect_Frame_Blue = ThemeTexture(
+    (StyleTheme.Minimalus,  MapTexture(
+        texture = os.path.join(MINIMALUS_FOLDER, "ui_skill_frames.png"),
+        texture_size = (256, 256),
+        size = (56, 56),
+        normal = (112, 112),
+        active= (168, 112),
+    )),
+    (StyleTheme.Guild_Wars,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER, "ui_skill_frames.png"),
+        texture_size = (256, 256),
+        size = (56, 56),
+        normal = (112, 112),
+        active= (168, 112),
+    )),
+    )
+
+    Dropdown_Button_Base = ThemeTexture(
+    (StyleTheme.Minimalus,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER, "ui_dropdown_button.png"),
+        texture_size = (64, 32),
+        size = (21, 21),
+        normal = (1, 1),
+        active= (25, 1),
+    )),
+    (StyleTheme.Guild_Wars,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER, "ui_dropdown_button.png"),
+        texture_size = (64, 32),
+        size = (21, 21),
+        normal = (1, 1),
+        active= (25, 1),
+    )),
+    )
+    
+    Hero_Panel_Toggle_Base = ThemeTexture(
+    (StyleTheme.Minimalus,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER, "ui_hero_panel_toggle.png"),
+        texture_size = (64, 32),
+        size = (17, 17),
+        normal = (1, 2),
+        active= (22, 2),
+    )),
+    (StyleTheme.Guild_Wars,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER, "ui_hero_panel_toggle.png"),
+        texture_size = (64, 32),
+        size = (17, 17),
+        normal = (1, 2),
+        active= (22, 2),
+    )),
+    )
+    
+    Check = ThemeTexture(
+    (StyleTheme.Minimalus,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER, "ui_check_cancel.png"),
+        texture_size = (64, 64),
+        size = (32, 32),
+        normal = (0, 0),
+        hovered= (32, 0),
+    )),
+    (StyleTheme.Guild_Wars,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER, "ui_check_cancel.png"),
+        texture_size = (64, 64),
+        size = (32, 32),
+        normal = (0, 0),
+        hovered= (32, 0),
+    )),
+    )
+    
+    Cancel = ThemeTexture(
+    (StyleTheme.Minimalus,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER, "ui_check_cancel.png"),
+        texture_size = (64, 64),
+        size = (32, 32),
+        normal = (0, 32),
+        hovered= (32, 32),
+    )),
+    (StyleTheme.Guild_Wars,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER, "ui_check_cancel.png"),
+        texture_size = (64, 64),
+        size = (32, 32),
+        normal = (0, 32),
+        hovered= (32, 32),
+    )),
+    )
+    
+    TemplateAction = ThemeTexture(
+    (StyleTheme.Minimalus,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER, "ui_template_actions.png"),
+        texture_size = (128, 64),
+        size = (21, 21),
+        hovered = (1, 1),
+        normal= (25, 1),
+    )),
+    (StyleTheme.Guild_Wars,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER, "ui_template_actions.png"),
+        texture_size = (128, 64),
+        size = (21, 21),
+        hovered = (1, 1),
+        normal= (25, 1),
+    )),
+    )
+    
+    TemplateLoad = ThemeTexture(
+    (StyleTheme.Minimalus,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER, "ui_template_actions.png"),
+        texture_size = (128, 64),
+        size = (21, 21),
+        hovered = (49, 1),
+        normal= (74, 1),
+    )),
+    (StyleTheme.Guild_Wars,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER, "ui_template_actions.png"),
+        texture_size = (128, 64),
+        size = (21, 21),
+        hovered = (49, 1),
+        normal= (74, 1),
+    )),
+    )
+    
+    TemplateSave = ThemeTexture(
+    (StyleTheme.Minimalus,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER, "ui_template_actions.png"),
+        texture_size = (128, 64),
+        size = (21, 21),
+        hovered = (97, 1),
+        normal= (2, 25),
+    )),
+    (StyleTheme.Guild_Wars,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER, "ui_template_actions.png"),
+        texture_size = (128, 64),
+        size = (21, 21),
+        hovered = (97, 1),
+        normal= (2, 25),
+    )),
+    )
+    
+    TemplateManage = ThemeTexture(
+    (StyleTheme.Minimalus,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER, "ui_template_actions.png"),
+        texture_size = (128, 64),
+        size = (21, 21),
+        hovered = (25, 25),
+        normal= (50, 25),
+    )),
+    (StyleTheme.Guild_Wars,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER, "ui_template_actions.png"),
+        texture_size = (128, 64),
+        size = (21, 21),
+        hovered = (25, 25),
+        normal= (50, 25),
+    )),
+    )
+    
+    TemplateCode = ThemeTexture(
+    (StyleTheme.Minimalus,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER, "ui_template_actions.png"),
+        texture_size = (128, 64),
+        size = (22, 22),
+        hovered = (72, 23),
+        normal= (97, 23),
+    )),
+    (StyleTheme.Guild_Wars,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER, "ui_template_actions.png"),
+        texture_size = (128, 64),
+        size = (22, 22),
+        hovered = (72, 23),
+        normal= (97, 23),
+    )),
+    )
+    
+    HeroPanelButtonBase = ThemeTexture(
+    (StyleTheme.Minimalus,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER, "ui_aggression.png"),
+        texture_size = (128, 64),
+        size = (29, 29),
+        normal= (66, 34),
+        active= (98, 34),
+    )),
+    (StyleTheme.Guild_Wars,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER, "ui_aggression.png"),
+        texture_size = (128, 64),
+        size = (29, 29),
+        normal= (66, 34),
+        active= (98, 34),
+    )),
+    )
+
+    
