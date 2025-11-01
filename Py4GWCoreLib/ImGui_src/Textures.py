@@ -1310,4 +1310,19 @@ class ThemeTextures(Enum):
     )),
     )
 
-    
+    HeaderLabelBackground = ThemeTexture(
+    (StyleTheme.Minimalus,  SplitTexture(
+        texture = os.path.join(MINIMALUS_FOLDER, "header_label.png"),
+        texture_size = (128, 32),
+        left= (0, 11, 21, 32),
+        mid= (21, 11, 107, 32),
+        right= (107, 11, 128, 32),
+    )),
+    (StyleTheme.Guild_Wars,  SplitTexture(
+        texture = os.path.join(TEXTURE_FOLDER, "header_label.png"),
+        texture_size = (128, 32),
+        left= (0, 11, 21, 32),
+        mid= (21, 11, 107, 32),
+        right= (107, 11, 128, 32),
+    )),
+    )

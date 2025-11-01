@@ -513,116 +513,129 @@ def draw_buffs_bar(account_data: AccountData, win_pos: tuple, win_size: tuple, m
     ImGui.PopTransparentWindow()
 
     if open:
-        def draw_buff(effect: CachedSkillInfo, duration: float, remaining: float, draw_effect_frame: bool = True, skill_size: float = skill_size):
-            ImGui.image(effect.texture_path, (skill_size, skill_size), uv0=(0.125, 0.125) if not draw_effect_frame else (
-                0.0625, 0.0625), uv1=(0.875, 0.875) if not draw_effect_frame else (0.9375, 0.9375))
-            item_rect_min = PyImGui.get_item_rect_min()
-            item_rect_max = PyImGui.get_item_rect_max()
+        draw_buffs_and_upkeeps(account_data, skill_size)
+        
+    PyImGui.end()
+    pass  # Implementation of buffs bar drawing logic goes here
 
-            if draw_effect_frame:
-                frame_texture, texture_state = effect.frame_texture, effect.texture_state
-                frame_texture.draw_in_drawlist(
-                    item_rect_min[0],
-                    item_rect_min[1],
-                    (skill_size, skill_size),
-                    state=texture_state
-                )
+def draw_buffs_and_upkeeps(account_data: AccountData, skill_size: float = 28):
+    style = ImGui.get_style()
+    
+    def draw_buff(effect: CachedSkillInfo, duration: float, remaining: float, draw_effect_frame: bool = True, skill_size: float = skill_size):
+        ImGui.image(effect.texture_path, (skill_size, skill_size), uv0=(0.125, 0.125) if not draw_effect_frame else (
+            0.0625, 0.0625), uv1=(0.875, 0.875) if not draw_effect_frame else (0.9375, 0.9375))
+        item_rect_min = PyImGui.get_item_rect_min()
+        item_rect_max = PyImGui.get_item_rect_max()
 
+        if draw_effect_frame:
+            frame_texture, texture_state = effect.frame_texture, effect.texture_state
+            frame_texture.draw_in_drawlist(
+                item_rect_min[0],
+                item_rect_min[1],
+                (skill_size, skill_size),
+                state=texture_state
+            )
+
+        duration = account_data.PlayerEffectsDuration[index]
+        remaining = account_data.PlayerEffectsRemaining[index]
+
+        if duration > 0 and remaining:
+            progress_background_rect = (
+                item_rect_min[0] + 2, item_rect_max[1] - 4, item_rect_max[0] - 2, item_rect_max[1] - 1)
+
+            PyImGui.draw_list_add_rect_filled(
+                progress_background_rect[0],
+                progress_background_rect[1],
+                progress_background_rect[2],
+                progress_background_rect[3],
+                Color(0, 0, 0, 255).color_int,
+                0,
+                0
+            )
+
+            progress_rect = (
+                progress_background_rect[0] + 1,
+                progress_background_rect[1] + 1,
+                progress_background_rect[2] - 2,
+                progress_background_rect[3] - 1
+            )
+
+            fraction = remaining / (duration * 1000.0)
+            progress_width = (
+                progress_rect[2] - progress_rect[0]) * fraction
+            PyImGui.draw_list_add_rect_filled(
+                progress_rect[0],
+                progress_rect[1],
+                progress_rect[0] + progress_width,
+                progress_rect[3],
+                effect.progress_color,
+                0,
+                0
+            )
+
+            text_size = PyImGui.calc_text_size(f"{int(remaining/1000)}")
+            offset_x = (skill_size - text_size[0]) / 2
+            offset_y = (skill_size - text_size[1]) / 2
+
+            PyImGui.draw_list_add_rect_filled(
+                item_rect_min[0] + offset_x - 1,
+                item_rect_min[1] + offset_y - 1,
+                item_rect_min[0] + offset_x + text_size[0] + 1,
+                item_rect_min[1] + offset_y + text_size[1] + 1,
+                Color(0, 0, 0, 150).color_int,
+                2,
+                0
+            )
+            PyImGui.draw_list_add_text(
+                item_rect_min[0] + offset_x,
+                item_rect_min[1] + offset_y,
+                style.Text.color_int,
+                f"{int(remaining/1000)}"
+            )
+
+        PyImGui.show_tooltip(
+            f"Effect ID: {effect.skill_id}\nName: {effect.name}")
+        PyImGui.same_line(0, 0)
+
+    if settings.ShowHeroUpkeeps:
+        PyImGui.dummy(0, 24)
+        PyImGui.same_line(0, 0)
+        
+        for index, upkeep_id in enumerate(account_data.PlayerUpkeeps):
+            if upkeep_id == 0:
+                continue
+
+            if not upkeep_id in skill_cache:
+                skill_cache[upkeep_id] = CachedSkillInfo(upkeep_id)
+
+            effect = skill_cache[upkeep_id]
             duration = account_data.PlayerEffectsDuration[index]
             remaining = account_data.PlayerEffectsRemaining[index]
 
-            if duration > 0 and remaining:
-                progress_background_rect = (
-                    item_rect_min[0] + 2, item_rect_max[1] - 4, item_rect_max[0] - 2, item_rect_max[1] - 1)
+            draw_buff(effect, duration, remaining, False, 24)
 
-                PyImGui.draw_list_add_rect_filled(
-                    progress_background_rect[0],
-                    progress_background_rect[1],
-                    progress_background_rect[2],
-                    progress_background_rect[3],
-                    Color(0, 0, 0, 255).color_int,
-                    0,
-                    0
-                )
+        if any(account_data.PlayerUpkeeps) and any(account_data.PlayerEffects) and settings.ShowHeroEffects:
+            PyImGui.new_line()
+            PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() - 4)
 
-                progress_rect = (
-                    progress_background_rect[0] + 1,
-                    progress_background_rect[1] + 1,
-                    progress_background_rect[2] - 2,
-                    progress_background_rect[3] - 1
-                )
+    if settings.ShowHeroEffects:                        
+        PyImGui.dummy(0, 28)
+        PyImGui.same_line(0, 0)
+        
+        for index, effect_id in enumerate(account_data.PlayerEffects):
+            if effect_id == 0:
+                continue
 
-                fraction = remaining / (duration * 1000.0)
-                progress_width = (
-                    progress_rect[2] - progress_rect[0]) * fraction
-                PyImGui.draw_list_add_rect_filled(
-                    progress_rect[0],
-                    progress_rect[1],
-                    progress_rect[0] + progress_width,
-                    progress_rect[3],
-                    effect.progress_color,
-                    0,
-                    0
-                )
+            if not effect_id in skill_cache:
+                skill_cache[effect_id] = CachedSkillInfo(effect_id)
 
-                text_size = PyImGui.calc_text_size(f"{int(remaining/1000)}")
-                offset_x = (skill_size - text_size[0]) / 2
-                offset_y = (skill_size - text_size[1]) / 2
+            effect = skill_cache[effect_id]
+            duration = account_data.PlayerEffectsDuration[index]
+            remaining = account_data.PlayerEffectsRemaining[index]
 
-                PyImGui.draw_list_add_rect_filled(
-                    item_rect_min[0] + offset_x - 1,
-                    item_rect_min[1] + offset_y - 1,
-                    item_rect_min[0] + offset_x + text_size[0] + 1,
-                    item_rect_min[1] + offset_y + text_size[1] + 1,
-                    Color(0, 0, 0, 150).color_int,
-                    2,
-                    0
-                )
-                PyImGui.draw_list_add_text(
-                    item_rect_min[0] + offset_x,
-                    item_rect_min[1] + offset_y,
-                    style.Text.color_int,
-                    f"{int(remaining/1000)}"
-                )
-
-            PyImGui.show_tooltip(
-                f"Effect ID: {effect.skill_id}\nName: {effect.name}")
-            PyImGui.same_line(0, 0)
-
-        if settings.ShowHeroUpkeeps:
-            for index, upkeep_id in enumerate(account_data.PlayerUpkeeps):
-                if upkeep_id == 0:
-                    continue
-
-                if not upkeep_id in skill_cache:
-                    skill_cache[upkeep_id] = CachedSkillInfo(upkeep_id)
-
-                effect = skill_cache[upkeep_id]
-                duration = account_data.PlayerEffectsDuration[index]
-                remaining = account_data.PlayerEffectsRemaining[index]
-
-                draw_buff(effect, duration, remaining, False, 24)
-
-            if any(account_data.PlayerUpkeeps) and any(account_data.PlayerEffects) and settings.ShowHeroEffects:
-                PyImGui.new_line()
-                PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() - 4)
-
-        if settings.ShowHeroEffects:
-            for index, effect_id in enumerate(account_data.PlayerEffects):
-                if effect_id == 0:
-                    continue
-
-                if not effect_id in skill_cache:
-                    skill_cache[effect_id] = CachedSkillInfo(effect_id)
-
-                effect = skill_cache[effect_id]
-                duration = account_data.PlayerEffectsDuration[index]
-                remaining = account_data.PlayerEffectsRemaining[index]
-
-                draw_buff(effect, duration, remaining, True, 28)
-
-    PyImGui.end()
-    pass  # Implementation of buffs bar drawing logic goes here
+            draw_buff(effect, duration, remaining, True, 28)
+        
+        PyImGui.new_line()
 
 def enter_skill_template_code(account_data : AccountData):
     global template_popup_open, template_code, template_account
@@ -678,7 +691,7 @@ def draw_buttons(account_data: AccountData, cached_data: CacheData, message_queu
     
     global messages, template_popup_open, template_account, flag_account
     is_explorable = GLOBAL_CACHE.Map.IsExplorable()
-    if not ImGui.begin_child("##buttons", (84, 58), False,
+    if not ImGui.begin_child("##buttons" + account_data.AccountEmail, (84, 58), False,
                              PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
         ImGui.end_child()
         return
@@ -856,27 +869,7 @@ def draw_buttons(account_data: AccountData, cached_data: CacheData, message_queu
 
 title_names: dict[str, str] = {}
 
-def draw_hero_panel(window: WindowModule, account_data: AccountData, cached_data: CacheData, messages: list[tuple[int, SharedMessage]], open: bool = True):
-    global flag_account, title_names
-    style = ImGui.get_style()
-    style.WindowPadding.push_style_var(4, 1)
-    open = window.begin(open, PyImGui.WindowFlags.AlwaysAutoResize)
-    style.WindowPadding.pop_style_var()
-
-    prof_primary, prof_secondary = "", ""
-    prof_primary = ProfessionShort(
-        account_data.PlayerProfession).name if account_data.PlayerProfession != 0 else ""
-    prof_secondary = ProfessionShort(
-        account_data.PlayerSecondaryProfession).name if account_data.PlayerSecondaryProfession != 0 else ""
-    win_size = PyImGui.get_window_size()
-    win_pos = PyImGui.get_window_pos()
-
-    text_pos = (win_pos[0] + 25, win_pos[1] - 23 +
-                7) if style.Theme == StyleTheme.Guild_Wars else (win_pos[0] + 25, win_pos[1] + 7)
-
-    PyImGui.push_clip_rect(
-        win_pos[0], win_pos[1] - 20, win_size[0] - 30, 50, False)
-    ImGui.push_font("Regular", 13)
+def get_display_name(account_data: AccountData) -> str:    
     name = account_data.CharacterName
     titles = [
         "the Brave",
@@ -902,9 +895,94 @@ def draw_hero_panel(window: WindowModule, account_data: AccountData, cached_data
     ]
     
     if not name in title_names:
-        title_names[name] = "Frenkey the " + random.choice(titles)
+        title_names[name] = "Frenkey " + random.choice(titles)
         
     name = title_names[name]
+    return name
+
+def draw_combined_hero_panel(account_data: AccountData, cached_data: CacheData, messages: list[tuple[int, SharedMessage]], open: bool = True):
+    name = get_display_name(account_data)
+    
+    style = ImGui.get_style()
+    PyImGui.dummy(int(PyImGui.get_content_region_avail()[0]), 22)
+    
+    item_rect_min = PyImGui.get_item_rect_min()
+    item_rect_max = PyImGui.get_item_rect_max()
+    item_rect = (item_rect_min[0], item_rect_min[1] + 5, item_rect_max[0] - item_rect_min[0], item_rect_max[1] - item_rect_min[1])
+    
+    ThemeTextures.HeaderLabelBackground.value.get_texture().draw_in_drawlist(
+        item_rect[0],
+        item_rect[1] - 0,
+        (item_rect[2], item_rect[3]),
+        tint=(225, 225, 225, 200) if style.Theme is StyleTheme.Guild_Wars else (255, 255, 255, 255)
+    )
+    
+    text_size = PyImGui.calc_text_size(name)
+    text_pos = (item_rect[0] + (item_rect[2] - text_size[0]) / 2, item_rect[1] + 2 + (item_rect[3] - text_size[1]) / 2)
+    ImGui.push_font("Regular", 14)
+    PyImGui.draw_list_add_text(
+        text_pos[0],
+        text_pos[1],
+        style.Text.color_int,
+        name
+    )
+    ImGui.pop_font()
+    
+    height = 28 if settings.ShowHeroSkills else 0
+    height += 28 if settings.ShowHeroBars else 0
+    height += 4 if settings.ShowHeroBars and settings.ShowHeroSkills else 0
+
+    if height > 0:
+        if ImGui.begin_child("##bars" + account_data.AccountEmail, (225, height)):
+            curr_avail = PyImGui.get_content_region_avail()
+            if settings.ShowHeroBars:
+                draw_health_bar(curr_avail[0], 13, account_data.PlayerMaxHP,
+                                account_data.PlayerHP, account_data.PlayerHealthRegen)
+                PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() - 4)
+                draw_energy_bar(curr_avail[0], 13, account_data.PlayerMaxEnergy,
+                                account_data.PlayerEnergy, account_data.PlayerEnergyRegen)
+            
+            if settings.ShowHeroSkills:
+                if settings.ShowHeroBars:
+                    PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() - 4)
+                
+                draw_skill_bar(28, account_data, cached_data, messages)
+
+        ImGui.end_child()
+
+    if (settings.ShowHeroBars or settings.ShowHeroSkills) and settings.ShowHeroButtons:
+        PyImGui.same_line(0, 2)
+        
+    if settings.ShowHeroButtons:
+        draw_buttons(account_data, cached_data, messages, 28)
+
+    draw_buffs_and_upkeeps(account_data, 28)    
+
+def draw_hero_panel(window: WindowModule, account_data: AccountData, cached_data: CacheData, messages: list[tuple[int, SharedMessage]], open: bool = True):
+    global flag_account, title_names
+    style = ImGui.get_style()
+    style.WindowPadding.push_style_var(4, 1)
+    
+    collapsed = window.collapse
+    open = window.begin(open, PyImGui.WindowFlags.AlwaysAutoResize)
+    style.WindowPadding.pop_style_var()
+
+    prof_primary, prof_secondary = "", ""
+    prof_primary = ProfessionShort(
+        account_data.PlayerProfession).name if account_data.PlayerProfession != 0 else ""
+    prof_secondary = ProfessionShort(
+        account_data.PlayerSecondaryProfession).name if account_data.PlayerSecondaryProfession != 0 else ""
+    win_size = PyImGui.get_window_size()
+    win_pos = PyImGui.get_window_pos()
+
+    text_pos = (win_pos[0] + 25, win_pos[1] - 23 +
+                7) if style.Theme == StyleTheme.Guild_Wars else (win_pos[0] + 25, win_pos[1] + 7)
+
+    PyImGui.push_clip_rect(
+        win_pos[0], win_pos[1] - 20, win_size[0] - 30, 50, False)
+    ImGui.push_font("Regular", 13)
+        
+    name = get_display_name(account_data)
 
     PyImGui.draw_list_add_text(text_pos[0], text_pos[1], style.Text.color_int,
                                f"{prof_primary}{("/" if prof_secondary else "")}{prof_secondary}{account_data.PlayerLevel} {name}")
@@ -925,7 +1003,7 @@ def draw_hero_panel(window: WindowModule, account_data: AccountData, cached_data
         height += 4 if settings.ShowHeroBars and settings.ShowHeroSkills else 0
 
         if height > 0:
-            if ImGui.begin_child("##bars", (225, height)):
+            if ImGui.begin_child("##bars" + account_data.AccountEmail, (225, height)):
                 curr_avail = PyImGui.get_content_region_avail()
                 if settings.ShowHeroBars:
                     draw_health_bar(curr_avail[0], 13, account_data.PlayerMaxHP,
@@ -950,17 +1028,16 @@ def draw_hero_panel(window: WindowModule, account_data: AccountData, cached_data
 
         draw_buffs_bar(account_data, win_pos, win_size, messages, 28)
         window.process_window()
-        
-        
     
     collapsed = PyImGui.is_window_collapsed()
     pos = PyImGui.get_window_pos()
     
+    window.process_window()
+    
     if window.collapse != collapsed or window.window_pos != pos:
-        window.collapse = collapsed
         window.window_pos = pos
         
-        settings.HeroPanelPositions[account_data.AccountEmail] = (int(pos[0]), int(pos[1]), collapsed)
+        settings.HeroPanelPositions[account_data.AccountEmail] = (int(pos[0]), int(pos[1]), window.collapse)
         settings.save_settings()
         
     window.end()

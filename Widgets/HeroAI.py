@@ -6,10 +6,12 @@ import Py4GW
 from PyMap import PyMap
 
 from HeroAI.settings import Settings
-from HeroAI.ui import draw_hero_panel
+from HeroAI.ui import draw_combined_hero_panel, draw_hero_panel
 from Py4GWCoreLib.GlobalCache.SharedMemory import AccountData, SharedMessage
 from Py4GWCoreLib.ImGui_src.WindowModule import WindowModule
+from Py4GWCoreLib.Skillbar import SkillBar
 from Py4GWCoreLib.py4gwcorelib_src.Console import ConsoleLog
+from Py4GW_widget_manager import WidgetHandler
 
 
 MODULE_NAME = "HeroAI"
@@ -71,7 +73,7 @@ FOLLOW_COMBAT_DISTANCE = 25.0  # if body blocked, we get close enough.
 LEADER_FLAG_TOUCH_RANGE_THRESHOLD_VALUE = Range.Touch.value * 1.1
 LOOT_THROTTLE_CHECK = ThrottledTimer(250)
 MESSAGE_THROTTLE = ThrottledTimer(500)
-ACCOUNT_THROTTLE = ThrottledTimer(250)
+ACCOUNT_THROTTLE = ThrottledTimer(150)
 
 cached_data = CacheData()
 messages : list[tuple[int, SharedMessage]] = []
@@ -84,7 +86,8 @@ configure_window : WindowModule = WindowModule(
     window_pos=(200, 200),
     can_close=True,
 )
-
+widget_handler = WidgetHandler()
+module_info = None
 
 def HandleOutOfCombat(cached_data: CacheData):
     if not cached_data.data.is_combat_enabled:  # halt operation if combat is disabled
@@ -424,6 +427,7 @@ def DrawEmbeddedWindow(cached_data: CacheData):
     DrawFramedContent(cached_data, content_frame_id)
 
 account_data : list[AccountData] = []
+
 def UpdateStatus(cached_data: CacheData):
     global hero_windows, messages, account_data
                 
@@ -446,7 +450,23 @@ def UpdateStatus(cached_data: CacheData):
     if not own_data:
         return
     
+    identifier = "combined_hero_panel"
+    
     if not settings.ShowPanelOnlyOnLeaderAccount or own_data.PlayerIsPartyLeader:
+        if settings.CombinePanels:            
+            if not identifier in hero_windows:
+                stored = settings.HeroPanelPositions.get(identifier, (200, 200, False))
+                hero_windows[identifier] = WindowModule(
+                    module_name=f"HeroAI - {identifier}",
+                    window_name=f"Heroes##HeroAI - {identifier}",
+                    window_size=(200, 100),
+                    window_pos=(stored[0], stored[1]),
+                    collapse=stored[2],
+                    can_close=True,
+                )
+                
+            open = hero_windows[identifier].begin(True, PyImGui.WindowFlags.AlwaysAutoResize)
+        
         for account in account_data:
             if not account.AccountEmail:
                 continue
@@ -454,24 +474,25 @@ def UpdateStatus(cached_data: CacheData):
             if account.AccountEmail == GLOBAL_CACHE.Player.GetAccountEmail():
                 continue
             
-            if not account.AccountEmail in hero_windows:
-                stored = settings.HeroPanelPositions.get(account.AccountEmail.lower(), (200, 200, False))
-                hero_windows[account.AccountEmail] = WindowModule(
-                    module_name=f"HeroAI - {account.AccountEmail}",
-                    window_name=f"##HeroAI - {account.AccountEmail}",
-                    window_size=(200, 100),
-                    window_pos=(stored[0], stored[1]),
-                    collapse=stored[2],
-                    can_close=True,
-                )
-                        
-                hero_windows[account.AccountEmail].first_run = True
+            if not settings.CombinePanels:
+                if not account.AccountEmail in hero_windows:
+                    stored = settings.HeroPanelPositions.get(account.AccountEmail.lower(), (200, 200, False))
+                    hero_windows[account.AccountEmail] = WindowModule(
+                        module_name=f"HeroAI - {account.AccountEmail}",
+                        window_name=f"##HeroAI - {account.AccountEmail}",
+                        window_size=(200, 100),
+                        window_pos=(stored[0], stored[1]),
+                        collapse=stored[2],
+                        can_close=False,
+                    )
+                    
+                draw_hero_panel(hero_windows[account.AccountEmail], account, cached_data, messages)
+            else:                    
+                draw_combined_hero_panel(account, cached_data, messages)
                 
-                ConsoleLog("HeroAI", f"Created Hero Panel for {account.AccountEmail} at position {stored[0]}, {stored[1]} collapsed: {stored[2]}")
+        if settings.CombinePanels:
+            hero_windows[identifier].end()
             
-            
-            draw_hero_panel(hero_windows[account.AccountEmail], account, cached_data, messages)
-                
     DrawEmbeddedWindow(cached_data)
     if cached_data.ui_state_data.show_classic_controls:
         DrawMainWindow(cached_data)
@@ -551,10 +572,22 @@ def UpdateStatus(cached_data: CacheData):
 
 
 def configure():
+    global module_info
+    
+    if not module_info:
+        module_info = widget_handler.get_widget_info(MODULE_NAME)
+        
+    configure_window.open = module_info.configuring if module_info else False
+    
     if configure_window.begin():
         show_on_leader = ImGui.checkbox("Show only on Leader", settings.ShowPanelOnlyOnLeaderAccount)
         if show_on_leader != settings.ShowPanelOnlyOnLeaderAccount:
             settings.ShowPanelOnlyOnLeaderAccount = show_on_leader
+            settings.save_settings()
+        
+        combine_panels = ImGui.checkbox("Combine Hero Panels", settings.CombinePanels)
+        if combine_panels != settings.CombinePanels:
+            settings.CombinePanels = combine_panels
             settings.save_settings()
             
         show_command_panel = ImGui.checkbox("Show Command Panel", settings.ShowCommandPanel)
@@ -598,7 +631,11 @@ def configure():
             settings.save_settings()
                    
     
-    configure_window.end()    
+    configure_window.end()  
+    
+    if not configure_window.open:
+        WidgetHandler().set_widget_configuring(MODULE_NAME, False)
+          
     pass
 
 

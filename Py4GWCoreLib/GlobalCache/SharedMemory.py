@@ -1,6 +1,6 @@
 import Py4GW
 from Py4GWCoreLib import ConsoleLog, Map, Party, Player, Agent, Effects, SharedCommandType, Skill, ThrottledTimer
-from ctypes import Array, Structure, c_int, c_uint, c_float, c_bool, c_wchar
+from ctypes import Array, Structure, addressof, c_int, c_uint, c_float, c_bool, c_wchar, memmove
 from multiprocessing import shared_memory
 import ctypes
 from ctypes import sizeof
@@ -134,6 +134,12 @@ class AccountData(Structure):
     PlayerSkillRecharge: list[float]
     
     LastUpdated: int
+        
+    def clone(self) -> "AccountData":
+        """Return a deep copy of this AccountData as a real ctypes structure."""
+        clone = type(self)()  # new AccountData()
+        memmove(addressof(clone), addressof(self), sizeof(self))
+        return clone
     
 class SharedMessage(Structure):
     _pack_ = 1
@@ -534,57 +540,39 @@ class Py4GWSharedMemoryManager:
             effects_instance = Effects.get_instance(self.player_instance.id)
             buff_list = effects_instance.GetBuffs()
             effect_list = effects_instance.GetEffects()
+            
+            combined_list = buff_list + effect_list
             for j in range(SHMEM_MAX_NUMBER_OF_BUFFS):
-                player.PlayerBuffs[j] = 0
-                player.PlayerEffects[j] = 0
-                player.PlayerEffectsDuration[j] = 0
-                player.PlayerEffectsRemaining[j] = 0
-                player.PlayerUpkeeps[j] = 0
+                buff = combined_list[j] if j < len(combined_list) else None
+                player.PlayerBuffs[j] = buff.skill_id if buff else 0                         
 
-            index = 0
-
-            for buff in buff_list:
-                if index >= SHMEM_MAX_NUMBER_OF_BUFFS:
-                    break
-                player.PlayerBuffs[index] = buff.skill_id
-                player.PlayerUpkeeps[index] = buff.skill_id
-                index += 1
-
-            for effect in effect_list:
-                if index >= SHMEM_MAX_NUMBER_OF_BUFFS:
-                    break
-                player.PlayerBuffs[index] = effect.skill_id
-                player.PlayerEffects[index] = effect.skill_id
-                player.PlayerEffectsDuration[index] = effect.duration < FLOAT32_MAX and effect.duration > FLOAT32_MIN and effect.duration or -1.0
-                player.PlayerEffectsRemaining[index] = effect.time_remaining < FLOAT32_MAX and effect.time_remaining > FLOAT32_MIN and effect.time_remaining or -1.0
-                index += 1
+            # Upkeeps
+            for i in range(SHMEM_MAX_NUMBER_OF_BUFFS):
+                upkeep = buff_list[i] if i < len(buff_list) else None
+                player.PlayerUpkeeps[i] = upkeep.skill_id if upkeep else 0
+                
+            # Effects
+            for i in range(SHMEM_MAX_NUMBER_OF_BUFFS):
+                effect = effect_list[i] if i < len(effect_list) else None
+                
+                player.PlayerEffects[i] = effect.skill_id if effect else 0
+                player.PlayerEffectsDuration[i] = effect.duration < FLOAT32_MAX and effect.duration > FLOAT32_MIN and effect.duration or -1.0 if effect else 0.0
+                player.PlayerEffectsRemaining[i] = effect.time_remaining < FLOAT32_MAX and effect.time_remaining > FLOAT32_MIN and effect.time_remaining or -1.0 if effect else 0.0
                 
             # Attributes
             attributes = Agent.GetAttributes(agent_id)
-
-            for j in range(SHMEM_NUMBER_OF_ATTRIBUTES):
-                player.PlayerAttributeIDs[j] = 0
-                player.PlayerAttributeValues[j] = 0
-                player.PlayerAttributeBaseValues[j] = 0
-                            
-            for attr in attributes:
-                attr_id = int(attr.attribute_id)
+            for attribute_id in range(SHMEM_NUMBER_OF_ATTRIBUTES):
+                attribute = next((attr for attr in attributes if int(attr.attribute_id) == attribute_id), None)
+                player.PlayerAttributeIDs[attribute_id] = attribute_id if attribute else 0
+                player.PlayerAttributeValues[attribute_id] = attribute.level if attribute else 0
+                player.PlayerAttributeBaseValues[attribute_id] = attribute.level_base if attribute else 0
                 
-                if 0 <= attr_id < SHMEM_NUMBER_OF_ATTRIBUTES:                    
-                    player.PlayerAttributeIDs[attr_id] = attr_id
-                    player.PlayerAttributeValues[attr_id] = attr.level
-                    player.PlayerAttributeBaseValues[attr_id] = attr.level_base
-
-            # Skills
-            for j in range(SHMEM_NUMBER_OF_SKILLS):
-                player.PlayerSkillIDs[j] = 0
-                player.PlayerSkillRecharge[j] = 0.0
-                
+            # Skills                
             skills = SkillBar.GetZeroFilledSkillbar()
-            for slot, skill_id in skills.items():
-                if 1 <= slot <= SHMEM_NUMBER_OF_SKILLS:
-                    player.PlayerSkillIDs[slot - 1] = skill_id
-                    player.PlayerSkillRecharge[slot - 1] = SkillBar.GetSkillData(slot).get_recharge
+            for slot in range(SHMEM_NUMBER_OF_SKILLS):
+                skill_id = skills.get(slot + 1, 0)
+                player.PlayerSkillIDs[slot] = skill_id
+                player.PlayerSkillRecharge[slot] = SkillBar.GetSkillData(slot + 1).get_recharge if skill_id != 0 else 0.0                
 
         else:
             ConsoleLog(SMM_MODULE_NAME, "No empty slot available for new player data.", Py4GW.Console.MessageType.Error)
@@ -655,58 +643,39 @@ class Py4GWSharedMemoryManager:
             effects_instance = Effects.get_instance(agent_id)
             buff_list = effects_instance.GetBuffs()
             effect_list = effects_instance.GetEffects()
+            
+            combined_list = buff_list + effect_list
             for j in range(SHMEM_MAX_NUMBER_OF_BUFFS):
-                hero.PlayerBuffs[j] = 0
-                hero.PlayerEffects[j] = 0
-                hero.PlayerEffectsDuration[j] = 0
-                hero.PlayerEffectsRemaining[j] = 0
-                hero.PlayerUpkeeps[j] = 0
-                
-            index = 0
+                buff = combined_list[j] if j < len(combined_list) else None
+                hero.PlayerBuffs[j] = buff.skill_id if buff else 0                         
 
-            for buff in buff_list:
-                if index >= SHMEM_MAX_NUMBER_OF_BUFFS:
-                    break
-                hero.PlayerBuffs[index] = buff.skill_id
-                hero.PlayerUpkeeps[index] = buff.skill_id
-                index += 1
-
-            for effect in effect_list:
-                if index >= SHMEM_MAX_NUMBER_OF_BUFFS:
-                    break
-                hero.PlayerBuffs[index] = effect.skill_id
-                hero.PlayerEffects[index] = effect.skill_id
-                hero.PlayerEffectsDuration[index] = effect.duration < FLOAT32_MAX and effect.duration > FLOAT32_MIN and effect.duration or -1.0
-                hero.PlayerEffectsRemaining[index] = effect.time_remaining < FLOAT32_MAX and effect.time_remaining > FLOAT32_MIN and effect.time_remaining or -1.0
-                index += 1
+            # Upkeeps
+            for i in range(SHMEM_MAX_NUMBER_OF_BUFFS):
+                upkeep = buff_list[i] if i < len(buff_list) else None
+                hero.PlayerUpkeeps[i] = upkeep.skill_id if upkeep else 0
                 
+            # Effects
+            for i in range(SHMEM_MAX_NUMBER_OF_BUFFS):
+                effect = effect_list[i] if i < len(effect_list) else None
+
+                hero.PlayerEffects[i] = effect.skill_id if effect else 0
+                hero.PlayerEffectsDuration[i] = effect.duration < FLOAT32_MAX and effect.duration > FLOAT32_MIN and effect.duration or -1.0 if effect else 0.0
+                hero.PlayerEffectsRemaining[i] = effect.time_remaining < FLOAT32_MAX and effect.time_remaining > FLOAT32_MIN and effect.time_remaining or -1.0 if effect else 0.0
+
             # Attributes
             attributes = Agent.GetAttributes(agent_id)
-
-            for j in range(SHMEM_NUMBER_OF_ATTRIBUTES):
-                hero.PlayerAttributeIDs[j] = 0
-                hero.PlayerAttributeValues[j] = 0
-                hero.PlayerAttributeBaseValues[j] = 0
-                            
-            for attr in attributes:
-                attr_id = int(attr.attribute_id)
+            for attribute_id in range(SHMEM_NUMBER_OF_ATTRIBUTES):
+                attribute = next((attr for attr in attributes if int(attr.attribute_id) == attribute_id), None)
+                hero.PlayerAttributeIDs[attribute_id] = attribute_id if attribute else 0
+                hero.PlayerAttributeValues[attribute_id] = attribute.level if attribute else 0
+                hero.PlayerAttributeBaseValues[attribute_id] = attribute.level_base if attribute else 0
                 
-                if 0 <= attr_id < SHMEM_NUMBER_OF_ATTRIBUTES:                    
-                    hero.PlayerAttributeIDs[attr_id] = attr_id
-                    hero.PlayerAttributeValues[attr_id] = attr.level
-                    hero.PlayerAttributeBaseValues[attr_id] = attr.level_base
-
-            # Skills
-            for j in range(SHMEM_NUMBER_OF_SKILLS):
-                hero.PlayerSkillIDs[j] = 0
-                hero.PlayerSkillRecharge[j] = 0.0
-                
-            skills = SkillBar.GetHeroSkillbar(index)
-            for slot, skill in enumerate(skills):
-                if 1 <= slot <= SHMEM_NUMBER_OF_SKILLS:
-                    hero.PlayerSkillIDs[slot - 1] = skill.id.id
-                    hero.PlayerSkillRecharge[slot - 1] = skill.get_recharge
-
+            # Skills                
+            skills = SkillBar.GetZeroFilledSkillbar()
+            for slot in range(SHMEM_NUMBER_OF_SKILLS):
+                skill_id = skills.get(slot + 1, 0)
+                hero.PlayerSkillIDs[slot] = skill_id
+                hero.PlayerSkillRecharge[slot] = SkillBar.GetSkillData(slot + 1).get_recharge if skill_id != 0 else 0.0
         else:
             ConsoleLog(SMM_MODULE_NAME, "No empty slot available for new hero data.", Py4GW.Console.MessageType.Error)
             
@@ -777,31 +746,39 @@ class Py4GWSharedMemoryManager:
             effects_instance = Effects.get_instance(self.player_instance.id)
             buff_list = effects_instance.GetBuffs()
             effect_list = effects_instance.GetEffects()
+                        
+            combined_list = buff_list + effect_list
             for j in range(SHMEM_MAX_NUMBER_OF_BUFFS):
-                pet.PlayerBuffs[j] = 0
-                pet.PlayerEffects[j] = 0
-                pet.PlayerEffectsDuration[j] = 0
-                pet.PlayerEffectsRemaining[j] = 0
-                pet.PlayerUpkeeps[j] = 0
+                buff = combined_list[j] if j < len(combined_list) else None
+                pet.PlayerBuffs[j] = buff.skill_id if buff else 0
+
+            # Upkeeps
+            for i in range(SHMEM_MAX_NUMBER_OF_BUFFS):
+                upkeep = buff_list[i] if i < len(buff_list) else None
+                pet.PlayerUpkeeps[i] = upkeep.skill_id if upkeep else 0
                 
-            index = 0
+            # Effects
+            for i in range(SHMEM_MAX_NUMBER_OF_BUFFS):
+                effect = effect_list[i] if i < len(effect_list) else None
 
-            for buff in buff_list:
-                if index >= SHMEM_MAX_NUMBER_OF_BUFFS:
-                    break
-                pet.PlayerBuffs[index] = buff.skill_id
-                pet.PlayerUpkeeps[index] = buff.skill_id
-                index += 1
+                pet.PlayerEffects[i] = effect.skill_id if effect else 0
+                pet.PlayerEffectsDuration[i] = effect.duration < FLOAT32_MAX and effect.duration > FLOAT32_MIN and effect.duration or -1.0 if effect else 0.0
+                pet.PlayerEffectsRemaining[i] = effect.time_remaining < FLOAT32_MAX and effect.time_remaining > FLOAT32_MIN and effect.time_remaining or -1.0 if effect else 0.0
 
-            for effect in effect_list:
-                if index >= SHMEM_MAX_NUMBER_OF_BUFFS:
-                    break
-                pet.PlayerBuffs[index] = effect.skill_id
-                pet.PlayerEffects[index] = effect.skill_id
-                pet.PlayerEffectsDuration[index] = effect.duration < FLOAT32_MAX and effect.duration > FLOAT32_MIN and effect.duration or -1.0
-                pet.PlayerEffectsRemaining[index] = effect.time_remaining < FLOAT32_MAX and effect.time_remaining > FLOAT32_MIN and effect.time_remaining or -1.0
-                index += 1
-            
+            # Attributes
+            attributes = Agent.GetAttributes(agent_id)
+            for attribute_id in range(SHMEM_NUMBER_OF_ATTRIBUTES):
+                attribute = next((attr for attr in attributes if int(attr.attribute_id) == attribute_id), None)
+                pet.PlayerAttributeIDs[attribute_id] = attribute_id if attribute else 0
+                pet.PlayerAttributeValues[attribute_id] = attribute.level if attribute else 0
+                pet.PlayerAttributeBaseValues[attribute_id] = attribute.level_base if attribute else 0
+                
+            # Skills                
+            skills = SkillBar.GetZeroFilledSkillbar()
+            for slot in range(SHMEM_NUMBER_OF_SKILLS):
+                skill_id = skills.get(slot + 1, 0)
+                pet.PlayerSkillIDs[slot] = skill_id
+                pet.PlayerSkillRecharge[slot] = SkillBar.GetSkillData(slot + 1).get_recharge if skill_id != 0 else 0.0
         else:
             ConsoleLog(SMM_MODULE_NAME, "No empty slot available for new Pet data.", Py4GW.Console.MessageType.Error)
         

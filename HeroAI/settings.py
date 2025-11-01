@@ -18,6 +18,7 @@ class Settings:
         self.ini_handler = IniHandler(os.path.join(base_path, "Widgets", "Config", "HeroAI.ini"))
         
         self.ShowPanelOnlyOnLeaderAccount = False
+        self.CombinePanels = False
         self.ShowCommandPanel = True
         self.ShowHeroPanels = True
         self.ShowHeroEffects = True
@@ -31,6 +32,7 @@ class Settings:
         
     def save_settings(self):
         self.ini_handler.write_key("General", "ShowPanelOnlyOnLeaderAccount", str(self.ShowPanelOnlyOnLeaderAccount))
+        self.ini_handler.write_key("General", "CombinePanels", str(self.CombinePanels))
         self.ini_handler.write_key("General", "ShowCommandPanel", str(self.ShowCommandPanel))
         self.ini_handler.write_key("General", "ShowHeroPanels", str(self.ShowHeroPanels))
         self.ini_handler.write_key("General", "ShowHeroEffects", str(self.ShowHeroEffects))
@@ -45,6 +47,7 @@ class Settings:
         
     def load_settings(self):
         self.ShowPanelOnlyOnLeaderAccount = self.ini_handler.read_bool("General", "ShowPanelOnlyOnLeaderAccount", False)
+        self.CombinePanels = self.ini_handler.read_bool("General", "CombinePanels", False)
         self.ShowCommandPanel = self.ini_handler.read_bool("General", "ShowCommandPanel", True)
         self.ShowHeroPanels = self.ini_handler.read_bool("General", "ShowHeroPanels", True)
         self.ShowHeroEffects = self.ini_handler.read_bool("General", "ShowHeroEffects", True)
