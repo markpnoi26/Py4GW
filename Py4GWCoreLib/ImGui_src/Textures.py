@@ -81,22 +81,22 @@ class SplitTexture:
         )
 
     def draw_in_background_drawlist(self, x: float, y: float, size: tuple[float, float], tint=(255, 255, 255, 255), overlay_name : str = ""):        
-        Overlay().BeginDraw(overlay_name)
+        from .ImGuisrc import ImGui
+        ImGui.overlay_instance.BeginDraw(overlay_name)
 
         # Draw left part
-        Overlay().DrawTexturedRectExtended((x, y), (self.left_width, size[1]), self.texture, self.left_offset[:2], self.left_offset[2:], tint)
+        ImGui.overlay_instance.DrawTexturedRectExtended((x, y), (self.left_width, size[1]), self.texture, self.left_offset[:2], self.left_offset[2:], tint)
 
         # Draw mid part
         mid_x = x + self.left_width
         mid_width = size[0] - self.left_width - self.right_width
-        Overlay().DrawTexturedRectExtended((mid_x, y), (mid_width, size[1]), self.texture, self.mid_offset[:2], self.mid_offset[2:], tint)
+        ImGui.overlay_instance.DrawTexturedRectExtended((mid_x, y), (mid_width, size[1]), self.texture, self.mid_offset[:2], self.mid_offset[2:], tint)
 
         # Draw right part
         right_x = x + size[0] - self.right_width
-        Overlay().DrawTexturedRectExtended((right_x, y), (self.right_width, size[1]), self.texture, self.right_offset[:2], self.right_offset[2:], tint)
+        ImGui.overlay_instance.DrawTexturedRectExtended((right_x, y), (self.right_width, size[1]), self.texture, self.right_offset[:2], self.right_offset[2:], tint)
 
-
-        Overlay().EndDraw()
+        ImGui.overlay_instance.EndDraw()
 
 class MapTexture:
     """
@@ -166,12 +166,14 @@ class MapTexture:
         tint=(255, 255, 255, 255),
         overlay_name: str = ""
     ):
+        from .ImGuisrc import ImGui
+        
         uv = self.get_uv(state)
-        Overlay().BeginDraw(overlay_name)
+        ImGui.overlay_instance.BeginDraw(overlay_name)
 
-        Overlay().DrawTexturedRectExtended((x, y), size, self.texture, uv[:2], uv[2:], tint)
+        ImGui.overlay_instance.DrawTexturedRectExtended((x, y), size, self.texture, uv[:2], uv[2:], tint)
 
-        Overlay().EndDraw()
+        ImGui.overlay_instance.EndDraw()
 
 class ThemeTexture:
     PlaceHolderTexture = MapTexture(
