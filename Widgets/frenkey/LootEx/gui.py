@@ -1463,7 +1463,50 @@ class UI:
                         wiki_scraper.WikiScraper.scrape_missing_entries()
                         pass
 
-                    if self.settings.development_mode and ImGui.button("Test 123", 160, 50):  
+                    def on_test_button_clicked(): 
+                        ids = range(3600, 3650)
+                        invalid_ids = [
+                            3400,
+                            3432,
+                            3531,
+                            3532,
+                        ]
+
+                        chunk_size = 100
+                        for i in range(0, len(ids), chunk_size):
+                            chunk = ids[i:i + chunk_size]
+                            ConsoleLog("LootEx Test", f"Getting skill names for IDs {chunk[0]} to {chunk[-1]}", Console.MessageType.Info)
+
+                            # define a closure to capture 'chunk' properly
+                            def make_action(chunk_ids):
+                                def action():
+                                    names = []
+                                    for id in chunk_ids:
+                                        ConsoleLog("LootEx Test", f"Processing Skill ID {id}", Console.MessageType.Info)
+                                        path = SkillTextureMap.get(id, None) 
+                                        name = GLOBAL_CACHE.Skill.GetName(id) if not id in invalid_ids and not path else ""
+                                        new_path = path if path else f"[{id}] - {name.replace('_', ' ')}.jpg" if name else None   
+                                        
+                                        if new_path:
+                                            ConsoleLog("LootEx Test", f"ID {id} - Name: '{name}' - Path: '{new_path}'", Console.MessageType.Info)
+                                            names.append(f"\t{id}: \"{new_path}\",")
+                                    
+                                    #write to file
+                                    path = "C:\\Users\\lasse\\OneDrive\\Programmieren\\Frenkey\\Guild Wars\\Py4GW\\Widgets\\frenkey\\Core\\data\\skill_textures.txt"
+                                    with open(path, "a", encoding="utf-8") as f:
+                                        for line in names:
+                                            f.write(line + "\n")
+                                            f.flush()
+                                            
+                                            
+                                return action
+
+                            # queue the action
+                            GLOBAL_CACHE._ActionQueueManager.AddAction("ACTION", make_action(chunk))
+                            GLOBAL_CACHE._ActionQueueManager.AddAction("ACTION", lambda: False)
+
+                        return
+                        
                         cdata = Data()
                         cdata.SaveWeaponMods(True)
                         cdata.SaveItems(True)
@@ -1575,8 +1618,9 @@ class UI:
                             
                                 
                         pass
-                    
-                        
+
+                    if self.settings.development_mode and ImGui.button("Test 123", 160, 50):
+                        on_test_button_clicked()
                                                  
                 ImGui.end_child()
             

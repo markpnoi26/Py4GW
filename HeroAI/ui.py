@@ -37,6 +37,13 @@ class CachedSkillInfo:
         self.name = GLOBAL_CACHE.Skill.GetNameFromWiki(skill_id)
         self.description = GLOBAL_CACHE.Skill.GetDescription(skill_id)
         self.texture_path = GLOBAL_CACHE.Skill.ExtraData.GetTexturePath(skill_id)
+        
+        if not os.path.exists(self.texture_path):
+            self.texture_path = ""
+        
+        if not self.texture_path and self.skill_id != 0:
+            self.texture_path = ThemeTexture.PlaceHolderTexture.texture
+            
         self.is_elite = GLOBAL_CACHE.Skill.Flags.IsElite(skill_id)
         self.is_hex = GLOBAL_CACHE.Skill.Flags.IsHex(skill_id)
         self.is_title = GLOBAL_CACHE.Skill.Flags.IsTitle(skill_id)
@@ -739,7 +746,9 @@ def draw_buffs_and_upkeeps(account_data: AccountData, skill_size: float = 28):
                     0
                 )
 
-                text_size = PyImGui.calc_text_size(f"{int(remaining/1000)}")
+                remaining_text = f"{remaining/1000:.0f}" if remaining >= 1000 else f"{remaining/1000:.1f}".lstrip("0")
+                    
+                text_size = PyImGui.calc_text_size(remaining_text)
                 offset_x = (skill_size - text_size[0]) / 2
                 offset_y = (skill_size - text_size[1]) / 2
 
@@ -756,7 +765,7 @@ def draw_buffs_and_upkeeps(account_data: AccountData, skill_size: float = 28):
                     item_rect_min[0] + offset_x,
                     item_rect_min[1] + offset_y,
                     style.Text.color_int,
-                    f"{int(remaining/1000)}"
+                    remaining_text
                 )
 
         PyImGui.show_tooltip(
