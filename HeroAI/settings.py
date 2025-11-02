@@ -22,6 +22,8 @@ class Settings:
         self.ShowCommandPanel = True
         self.ShowHeroPanels = True
         self.ShowHeroEffects = True
+        self.ShowEffectDurations = False
+        self.ShowShortEffectDurations = True
         self.ShowHeroUpkeeps = True
         self.ShowHeroButtons = True
         self.ShowHeroBars = True
@@ -36,8 +38,12 @@ class Settings:
         self.ini_handler.write_key("General", "CombinePanels", str(self.CombinePanels))
         self.ini_handler.write_key("General", "ShowCommandPanel", str(self.ShowCommandPanel))
         self.ini_handler.write_key("General", "ShowHeroPanels", str(self.ShowHeroPanels))
+        
         self.ini_handler.write_key("General", "ShowHeroEffects", str(self.ShowHeroEffects))
+        self.ini_handler.write_key("General", "ShowEffectDurations", str(self.ShowEffectDurations))
+        self.ini_handler.write_key("General", "ShowShortEffectDurations", str(self.ShowShortEffectDurations))
         self.ini_handler.write_key("General", "ShowHeroUpkeeps", str(self.ShowHeroUpkeeps))
+        
         self.ini_handler.write_key("General", "ShowHeroButtons", str(self.ShowHeroButtons))
         self.ini_handler.write_key("General", "ShowHeroBars", str(self.ShowHeroBars))
         self.ini_handler.write_key("General", "ShowFloatingTargets", str(self.ShowFloatingTargets))
@@ -52,8 +58,12 @@ class Settings:
         self.CombinePanels = self.ini_handler.read_bool("General", "CombinePanels", False)
         self.ShowCommandPanel = self.ini_handler.read_bool("General", "ShowCommandPanel", True)
         self.ShowHeroPanels = self.ini_handler.read_bool("General", "ShowHeroPanels", True)
+        
         self.ShowHeroEffects = self.ini_handler.read_bool("General", "ShowHeroEffects", True)
+        self.ShowEffectDurations = self.ini_handler.read_bool("General", "ShowEffectDurations", True)
+        self.ShowShortEffectDurations = self.ini_handler.read_bool("General", "ShowShortEffectDurations", True)
         self.ShowHeroUpkeeps = self.ini_handler.read_bool("General", "ShowHeroUpkeeps", True)
+        
         self.ShowHeroButtons = self.ini_handler.read_bool("General", "ShowHeroButtons", True)
         self.ShowHeroBars = self.ini_handler.read_bool("General", "ShowHeroBars", True)
         self.ShowFloatingTargets = self.ini_handler.read_bool("General", "ShowFloatingTargets", True)
@@ -64,8 +74,6 @@ class Settings:
         items = self.ini_handler.list_keys("HeroPanelPositions")
         
         for key, value in items.items():
-            ConsoleLog("HeroAI", f"Found HeroPanelPosition key: {key} with value: {value}")
-
             try:
                 x_str, y_str, collapsed_str = value.split(",")
                 x = int(x_str)

@@ -21,10 +21,13 @@ from Py4GWCoreLib.ImGui_src.types import TEXTURE_FOLDER, StyleTheme
 from Py4GWCoreLib.Overlay import Overlay
 from Py4GWCoreLib.Player import Player
 from Py4GWCoreLib.Routines import Routines
-from Py4GWCoreLib.enums_src.GameData_enums import Attribute, Profession, ProfessionShort
+from Py4GWCoreLib.Skill import Skill
+from Py4GWCoreLib.Skillbar import SkillBar
+from Py4GWCoreLib.enums_src.GameData_enums import Allegiance, Attribute, Profession, ProfessionShort
 from Py4GWCoreLib.enums_src.Multiboxing_enums import SharedCommandType
 from Py4GWCoreLib.py4gwcorelib_src.Color import Color
 from Py4GWCoreLib.py4gwcorelib_src.Console import ConsoleLog
+from Py4GWCoreLib.py4gwcorelib_src.Timer import ThrottledTimer, Timer
 from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
 
 
@@ -32,13 +35,17 @@ class CachedSkillInfo:
     def __init__(self, skill_id: int):
         self.skill_id = skill_id
         self.name = GLOBAL_CACHE.Skill.GetNameFromWiki(skill_id)
-        self.texture_path = GLOBAL_CACHE.Skill.ExtraData.GetTexturePath(
-            skill_id)
+        self.description = GLOBAL_CACHE.Skill.GetDescription(skill_id)
+        self.texture_path = GLOBAL_CACHE.Skill.ExtraData.GetTexturePath(skill_id)
         self.is_elite = GLOBAL_CACHE.Skill.Flags.IsElite(skill_id)
         self.is_hex = GLOBAL_CACHE.Skill.Flags.IsHex(skill_id)
         self.is_title = GLOBAL_CACHE.Skill.Flags.IsTitle(skill_id)
         self.is_enchantment = GLOBAL_CACHE.Skill.Flags.IsEnchantment(skill_id)
+        self.is_shout = GLOBAL_CACHE.Skill.Flags.IsShout(skill_id)
+        self.is_skill = GLOBAL_CACHE.Skill.Flags.IsSkill(skill_id)
         self.is_condition = GLOBAL_CACHE.Skill.Flags.IsCondition(skill_id)
+        
+        self.adrenaline_cost = GLOBAL_CACHE.Skill.Data.GetAdrenaline(skill_id)
 
         frame_texture, texture_state, progress_color = get_frame_texture_for_effect(
             skill_id)
@@ -47,34 +54,37 @@ class CachedSkillInfo:
         self.progress_color = progress_color
 
         self.recharge_time = GLOBAL_CACHE.Skill.Data.GetRecharge(skill_id)
-        self.adrenaline_required = GLOBAL_CACHE.Skill.Data.GetAdrenaline(
-            skill_id)
 
 
 skill_cache: dict[int, CachedSkillInfo] = {}
-messages : dict[str, dict[SharedCommandType, list[int]]] = {}
-skill_messages: dict[int, int] = {}
+message_cache : dict[str, dict[SharedCommandType, dict[int, tuple]]] = {}
 template_popup_open: bool = False
 template_account: str = ""
 template_code = ""
 
 flag_account = ""
 settings = Settings()
+casting_animation_timer = Timer()
+casting_animation_timer.Start()
 
 def get_frame_texture_for_effect(skill_id: int) -> tuple[(SplitTexture | MapTexture), TextureState, int]:
     is_elite = GLOBAL_CACHE.Skill.Flags.IsElite(skill_id)
     texture_state = TextureState.Normal if not is_elite else TextureState.Active
 
+    theme = ImGui.get_style().Theme
+    if not theme in ImGui.Textured_Themes:
+        theme = StyleTheme.Guild_Wars
+
     if GLOBAL_CACHE.Skill.Flags.IsHex(skill_id):
-        frame_texture = ThemeTextures.Effect_Frame_Hex.value.get_texture()
+        frame_texture = ThemeTextures.Effect_Frame_Hex.value.get_texture(theme)
         progress_color = Color(215, 31, 158, 255).color_int
 
     elif GLOBAL_CACHE.Skill.Flags.IsTitle(skill_id):
-        frame_texture = ThemeTextures.Effect_Frame_Skill.value.get_texture()
+        frame_texture = ThemeTextures.Effect_Frame_Skill.value.get_texture(theme)
         progress_color = Color(75, 139, 69, 255).color_int
 
     elif GLOBAL_CACHE.Skill.Flags.IsEnchantment(skill_id):
-        frame_texture = ThemeTextures.Effect_Frame_Enchantment.value.get_texture()
+        frame_texture = ThemeTextures.Effect_Frame_Enchantment.value.get_texture(theme)
         progress_color = Color(178, 225, 47, 255).color_int
 
         profession, _ = GLOBAL_CACHE.Skill.GetProfession(skill_id)
@@ -83,16 +93,16 @@ def get_frame_texture_for_effect(skill_id: int) -> tuple[(SplitTexture | MapText
             progress_color = Color(74, 163, 193, 255).color_int
 
     elif GLOBAL_CACHE.Skill.Flags.IsCondition(skill_id):
-        frame_texture = ThemeTextures.Effect_Frame_Condition.value.get_texture()
+        frame_texture = ThemeTextures.Effect_Frame_Condition.value.get_texture(theme)
         progress_color = Color(221, 175, 52, 255).color_int
 
     else:
-        frame_texture = ThemeTextures.Effect_Frame_Skill.value.get_texture()
+        frame_texture = ThemeTextures.Effect_Frame_Skill.value.get_texture(theme)
         progress_color = Color(75, 139, 69, 255).color_int
 
     return frame_texture, texture_state, progress_color
 
-def draw_health_bar(width: float, height: float, max_health: float, current_health: float, regen: float):
+def draw_health_bar(width: float, height: float, max_health: float, current_health: float, regen: float) -> bool:
     style = ImGui.get_style()
     draw_textures = style.Theme in ImGui.Textured_Themes
     pips = Utils.calculate_health_pips(max_health, regen)
@@ -102,9 +112,9 @@ def draw_health_bar(width: float, height: float, max_health: float, current_heal
         style.FrameRounding.push_style_var(0)
         ImGui.progress_bar(current_health, width, height)
         style.FrameRounding.pop_style_var()
-        style.PlotHistogram.pop_color()
+        style.PlotHistogram.pop_color()            
     else:
-        PyImGui.dummy(int(width), int(height))
+        ImGui.dummy(width, height)
 
     fraction = (max(0.0, min(1.0, current_health))
                 if max_health > 0 else 0.0)
@@ -205,8 +215,10 @@ def draw_health_bar(width: float, height: float, max_health: float, current_heal
                 pip_string
             )
         ImGui.pop_font()
+        
+    return PyImGui.is_item_clicked(0)
 
-def draw_energy_bar(width: float, height: float, max_energy: float, current_energy: float, regen: float):
+def draw_energy_bar(width: float, height: float, max_energy: float, current_energy: float, regen: float) -> bool:
     style = ImGui.get_style()
     pips = Utils.calculate_energy_pips(max_energy, regen)
 
@@ -219,7 +231,7 @@ def draw_energy_bar(width: float, height: float, max_energy: float, current_ener
         style.FrameRounding.pop_style_var()
         style.PlotHistogram.pop_color()
     else:
-        PyImGui.dummy(int(width), int(height))
+        ImGui.dummy(width, height)
 
     fraction = (max(0.0, min(1.0, current_energy))
                 if max_energy > 0 else 0.0)
@@ -321,6 +333,8 @@ def draw_energy_bar(width: float, height: float, max_energy: float, current_ener
             )
         ImGui.pop_font()
 
+    return PyImGui.is_item_clicked(0)
+
 def DrawSquareCooldownEx(button_pos, button_size, progress, tint=0.1):
     """Smooth, non-overlapping, counter-clockwise square cooldown effect."""
     if isinstance(button_size, (int, float)):
@@ -386,12 +400,81 @@ def DrawSquareCooldownEx(button_pos, button_size, progress, tint=0.1):
         x3, y3 = unique_points[i + 1]
         PyImGui.draw_list_add_triangle_filled(x1, y1, x2, y2, x3, y3, color)
 
-def draw_skill_bar(height: float, account_data: AccountData, cached_data: CacheData, messages: list[tuple[int, SharedMessage]]):
-    global skill_cache, skill_messages
+def get_skill_target(account_data: AccountData, cached_skill: CachedSkillInfo) -> int | None:
+    py_io = PyImGui.get_io()
+    
+    if not cached_skill or cached_skill.skill_id == 0:
+        return None
+    
+    target_id = GLOBAL_CACHE.Player.GetTargetID()
+    is_gadget = GLOBAL_CACHE.Agent.IsGadget(target_id)
+    is_item = GLOBAL_CACHE.Agent.IsItem(target_id)
+    
+    if cached_skill.is_enchantment or cached_skill.is_shout:
+        allegiance, _ = GLOBAL_CACHE.Agent.GetAllegiance(target_id) if target_id != 0 else (Allegiance.Neutral, None)
+        
+        if allegiance in [Allegiance.Ally, Allegiance.Minion, Allegiance.SpiritPet]:
+            return target_id
+        else:
+            return GLOBAL_CACHE.Player.GetAgentID() if py_io.key_ctrl else account_data.PlayerID
+    else:
+        return GLOBAL_CACHE.Player.GetAgentID() if py_io.key_ctrl else target_id if not is_item and target_id else account_data.PlayerID
+
+def draw_casting_animation(
+    pos: tuple[float, float],
+    size: tuple[float, float],
+    min_alpha: int = 40
+):
+    """Draws lightweight concentric circles moving from outside toward the center (casting animation)."""
+    global casting_animation_timer
+
+    # Get elapsed time (ms → s)
+    t = casting_animation_timer.GetElapsedTime() / 1000.0
+
+    # Animation parameters
+    num_circles = 3               # number of simultaneous circles
+    cycle_duration = 1.25         # seconds per full travel (outside → center)
+    max_radius = max(size) * 0.75 # start slightly outside item bounds
+    min_radius = max(size) * 0.05 # small inner limit (center end)
+    center_x = pos[0] + size[0] / 2
+    center_y = pos[1] + size[1] / 2
+
+    # Clamp the minimum alpha to valid range
+    min_alpha = max(0, min(255, min_alpha))
+
+    for i in range(num_circles):
+        # Each circle’s start offset — evenly staggered
+        offset = i / num_circles
+
+        # Normalized progress (0 → 1), wraps every cycle
+        progress = (t / cycle_duration + offset) % 1.0
+
+        # Radius interpolates from max_radius → min_radius
+        radius = max_radius - (max_radius - min_radius) * progress
+
+        # Alpha goes from 255 → min_alpha (instead of fading to zero)
+        alpha = int(min_alpha + (255 - min_alpha) * (1.0 - progress) ** 1.5)
+        alpha = max(0, min(255, alpha))  # safety clamp
+
+        # Optional subtle rotation effect
+        swirl_angle = math.sin((t + i) * 2.0) * 0.1
+        cx = center_x + math.cos(swirl_angle) * 0.0
+        cy = center_y + math.sin(swirl_angle) * 0.0
+
+        color = Color.from_tuple((0, 0, 0, alpha / 255.0))
+
+        PyImGui.push_clip_rect(pos[0], pos[1], pos[0] + size[0], pos[1] + size[1], True)
+        PyImGui.draw_list_add_circle(cx, cy, radius, color.color_int, 36, 6.0)
+        PyImGui.pop_clip_rect()
+
+
+def draw_skill_bar(height: float, account_data: AccountData, cached_data: CacheData, message_queue: list[tuple[int, SharedMessage]]):
+    global skill_cache, messages
     style = ImGui.get_style()
     draw_textures = style.Theme in ImGui.Textured_Themes
 
     for slot, skill_id in enumerate(account_data.PlayerSkillIDs):
+        
         if skill_id not in skill_cache:
             skill_cache[skill_id] = CachedSkillInfo(skill_id)
 
@@ -399,7 +482,7 @@ def draw_skill_bar(height: float, account_data: AccountData, cached_data: CacheD
         skill_texture = skill.texture_path
 
         if not skill_texture:
-            PyImGui.dummy(int(height), int(height))
+            ImGui.dummy(height, height)
             item_rect_min = PyImGui.get_item_rect_min()
 
             PyImGui.draw_list_add_rect(
@@ -415,17 +498,56 @@ def draw_skill_bar(height: float, account_data: AccountData, cached_data: CacheD
             PyImGui.same_line(0, 0)
             continue
 
+        skill_recharge = account_data.PlayerSkillRecharge[slot]
+        adrenaline = account_data.PlayerSkillAdrenaline[slot]
+        enough_adrenaline = adrenaline >= skill.adrenaline_cost
+        
         ImGui.image(skill_texture, (height, height), uv0=(
             0.0625, 0.0625) if draw_textures else (0, 0), uv1=(0.9375, 0.9375) if draw_textures else (1, 1))
 
-        ImGui.show_tooltip(
-            f"Skill Slot {slot + 1}\nID: {skill.skill_id}\nName: {skill.name}\nRecharge: {skill.recharge_time}s")
+        if PyImGui.is_item_hovered():
+            PyImGui.set_next_window_size((300, 0), PyImGui.ImGuiCond.Always)
+            if ImGui.begin_tooltip():
+                ImGui.push_font("Regular", 14)
+                ImGui.text_colored(
+                    f"{skill.name} (ID: {skill.skill_id})",
+                    Color(227, 211, 165, 255).color_tuple                    
+                )
+                ImGui.pop_font()
+
+                ImGui.separator()
+                if skill.description:
+                    ImGui.text_wrapped(skill.description)
+                
+                PyImGui.spacing()
+                
+                gray_color = Color(150, 150, 150, 255)
+                
+                ImGui.push_font("Regular", 12)
+                ImGui.text_colored(
+                    "Click to use on current target",
+                    gray_color.color_tuple                  
+                )
+                PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() - 2)
+                
+                ImGui.text_colored(
+                    "Ctrl + Click to use on self",
+                    gray_color.color_tuple                
+                )
+                PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() - 2)
+                
+                ImGui.text_colored(
+                    "Shift + Click to toggle active/inactive",
+                    gray_color.color_tuple              
+                )
+                ImGui.pop_font()
+
+                ImGui.end_tooltip()
 
         item_rect_min = PyImGui.get_item_rect_min()
-        if not skill.adrenaline_required:
-            skill_recharge = account_data.PlayerSkillRecharge[slot]
-
-            if skill_recharge > 0:
+        casting_skill = account_data.PlayerCastingSkillID
+        
+        if skill_recharge > 0:
                 DrawSquareCooldownEx(
                     (item_rect_min[0], item_rect_min[1]),
                     height,
@@ -444,7 +566,34 @@ def draw_skill_bar(height: float, account_data: AccountData, cached_data: CacheD
                     ImGui.get_style().Text.color_int,
                     f"{int(skill_recharge/1000)}"
                 )
-
+        elif casting_skill == skill.skill_id:
+            draw_casting_animation(item_rect_min, (height, height))
+        
+        if not enough_adrenaline:             
+            adrenaline_fraction = adrenaline / skill.adrenaline_cost if skill.adrenaline_cost > 0 else 0.0
+            adrenaline_fraction = max(0.0, min(adrenaline_fraction, 1.0))  # Clamp between 0–1       
+                   
+            fill_rect = (item_rect_min[0], item_rect_min[1], height, height - (height * adrenaline_fraction))
+            
+            PyImGui.draw_list_add_rect_filled(
+                fill_rect[0],
+                fill_rect[1],
+                fill_rect[0] + fill_rect[2],
+                fill_rect[1] + fill_rect[3],
+                Color(0, 0, 0, 150).color_int,
+                0,
+                0
+            )
+            
+            PyImGui.draw_list_add_line(
+                fill_rect[0],
+                fill_rect[1] + fill_rect[3],
+                fill_rect[0] + fill_rect[2],
+                fill_rect[1] + fill_rect[3],
+                Color(0, 0, 0, 255).color_int,
+                1
+            )
+                
         hero_options = cached_data.HeroAI_vars.all_game_option_struct[account_data.PartyPosition]
         if not hero_options.Skills[slot].Active:
             hovered = PyImGui.is_item_hovered()
@@ -455,13 +604,12 @@ def draw_skill_bar(height: float, account_data: AccountData, cached_data: CacheD
                 state=TextureState.Hovered if hovered else TextureState.Normal
             )
 
-        if skill.skill_id in skill_messages:
-            account_email = GLOBAL_CACHE.Player.GetAccountEmail()
-
-            messages = [(index, msg) for index, msg in messages if msg.ReceiverEmail == account_email]
-            if not any(index == skill_messages[skill.skill_id] and msg.Active for index, msg in messages):
-                del skill_messages[skill.skill_id]
-            else:
+        account_email = GLOBAL_CACHE.Player.GetAccountEmail()
+        queued_skill_messages = message_cache.get(account_email, {}).get(SharedCommandType.UseSkill, {})
+        if queued_skill_messages:
+            queued_skill_usage = {index: msg for index, msg in message_queue if msg.Command == SharedCommandType.UseSkill and msg.ReceiverEmail == account_email and msg.Params[1] == float(skill.skill_id) and index in queued_skill_messages}
+                    
+            if queued_skill_usage:
                 hovered = PyImGui.is_item_hovered()
                 ThemeTextures.Check.value.get_texture().draw_in_drawlist(
                     PyImGui.get_item_rect_min()[0],
@@ -469,10 +617,13 @@ def draw_skill_bar(height: float, account_data: AccountData, cached_data: CacheD
                     (height, height),
                     state=TextureState.Hovered if hovered else TextureState.Normal
                 )
+            else:
+                #delete all queued messages for this skill that were not found in new messages (probably failed)
+                indices_to_delete = [index for index, msg in queued_skill_messages.items() if msg[1] == skill.skill_id]
+                for index in indices_to_delete:
+                    del queued_skill_messages[index]
 
-            pass
-
-        if PyImGui.is_item_clicked(0):
+        if PyImGui.is_item_clicked(0) and enough_adrenaline:
             io = PyImGui.get_io()
             if io.key_shift:
                 hero_ai_data = GLOBAL_CACHE.ShMem.GetGerHeroAIOptionsByPartyNumber(
@@ -481,10 +632,19 @@ def draw_skill_bar(height: float, account_data: AccountData, cached_data: CacheD
                     hero_ai_data.Skills[slot] = not hero_options.Skills[slot].Active
 
             else:
-                target_id = Player.GetTargetID() or Player.GetAgentID()
-                message_index = GLOBAL_CACHE.ShMem.SendMessage(GLOBAL_CACHE.Player.GetAccountEmail(
-                ), account_data.AccountEmail, SharedCommandType.UseSkill, (target_id, float(skill.skill_id)))
-                skill_messages[skill.skill_id] = message_index
+                target_id = get_skill_target(account_data, skill)
+                
+                if target_id is not None:
+                    message_index = GLOBAL_CACHE.ShMem.SendMessage(GLOBAL_CACHE.Player.GetAccountEmail(
+                    ), account_data.AccountEmail, SharedCommandType.UseSkill, (target_id, float(skill.skill_id)))
+
+                    if account_data.AccountEmail not in message_cache:
+                        message_cache[account_data.AccountEmail] = {}
+                        
+                    if SharedCommandType.UseSkill not in message_cache[account_data.AccountEmail]:
+                        message_cache[account_data.AccountEmail][SharedCommandType.UseSkill] = {}
+
+                    message_cache[account_data.AccountEmail][SharedCommandType.UseSkill][message_index] = (target_id, skill.skill_id)
 
         if draw_textures:
             texture_state = TextureState.Normal if not skill.is_elite else TextureState.Active
@@ -523,8 +683,12 @@ def draw_buffs_and_upkeeps(account_data: AccountData, skill_size: float = 28):
     style = ImGui.get_style()
     
     def draw_buff(effect: CachedSkillInfo, duration: float, remaining: float, draw_effect_frame: bool = True, skill_size: float = skill_size):
-        ImGui.image(effect.texture_path, (skill_size, skill_size), uv0=(0.125, 0.125) if not draw_effect_frame else (
-            0.0625, 0.0625), uv1=(0.875, 0.875) if not draw_effect_frame else (0.9375, 0.9375))
+        if not effect.texture_path:
+            ImGui.dummy(skill_size, skill_size)
+        else:
+            ImGui.image(effect.texture_path, (skill_size, skill_size), uv0=(0.125, 0.125) if not draw_effect_frame else (
+                0.0625, 0.0625), uv1=(0.875, 0.875) if not draw_effect_frame else (0.9375, 0.9375))
+            
         item_rect_min = PyImGui.get_item_rect_min()
         item_rect_max = PyImGui.get_item_rect_max()
 
@@ -537,69 +701,70 @@ def draw_buffs_and_upkeeps(account_data: AccountData, skill_size: float = 28):
                 state=texture_state
             )
 
-        duration = account_data.PlayerEffectsDuration[index]
-        remaining = account_data.PlayerEffectsRemaining[index]
+        if settings.ShowEffectDurations or settings.ShowShortEffectDurations:
+            duration = account_data.PlayerEffectsDuration[index]
+            remaining = account_data.PlayerEffectsRemaining[index]
 
-        if duration > 0 and remaining:
-            progress_background_rect = (
-                item_rect_min[0] + 2, item_rect_max[1] - 4, item_rect_max[0] - 2, item_rect_max[1] - 1)
+            if duration > 0 and remaining and (not settings.ShowShortEffectDurations or remaining < 60000):
+                progress_background_rect = (
+                    item_rect_min[0] + 2, item_rect_max[1] - 4, item_rect_max[0] - 2, item_rect_max[1] - 1)
 
-            PyImGui.draw_list_add_rect_filled(
-                progress_background_rect[0],
-                progress_background_rect[1],
-                progress_background_rect[2],
-                progress_background_rect[3],
-                Color(0, 0, 0, 255).color_int,
-                0,
-                0
-            )
+                PyImGui.draw_list_add_rect_filled(
+                    progress_background_rect[0],
+                    progress_background_rect[1],
+                    progress_background_rect[2],
+                    progress_background_rect[3],
+                    Color(0, 0, 0, 255).color_int,
+                    0,
+                    0
+                )
 
-            progress_rect = (
-                progress_background_rect[0] + 1,
-                progress_background_rect[1] + 1,
-                progress_background_rect[2] - 2,
-                progress_background_rect[3] - 1
-            )
+                progress_rect = (
+                    progress_background_rect[0] + 1,
+                    progress_background_rect[1] + 1,
+                    progress_background_rect[2] - 2,
+                    progress_background_rect[3] - 1
+                )
 
-            fraction = remaining / (duration * 1000.0)
-            progress_width = (
-                progress_rect[2] - progress_rect[0]) * fraction
-            PyImGui.draw_list_add_rect_filled(
-                progress_rect[0],
-                progress_rect[1],
-                progress_rect[0] + progress_width,
-                progress_rect[3],
-                effect.progress_color,
-                0,
-                0
-            )
+                fraction = remaining / (duration * 1000.0)
+                progress_width = (
+                    progress_rect[2] - progress_rect[0]) * fraction
+                PyImGui.draw_list_add_rect_filled(
+                    progress_rect[0],
+                    progress_rect[1],
+                    progress_rect[0] + progress_width,
+                    progress_rect[3],
+                    effect.progress_color,
+                    0,
+                    0
+                )
 
-            text_size = PyImGui.calc_text_size(f"{int(remaining/1000)}")
-            offset_x = (skill_size - text_size[0]) / 2
-            offset_y = (skill_size - text_size[1]) / 2
+                text_size = PyImGui.calc_text_size(f"{int(remaining/1000)}")
+                offset_x = (skill_size - text_size[0]) / 2
+                offset_y = (skill_size - text_size[1]) / 2
 
-            PyImGui.draw_list_add_rect_filled(
-                item_rect_min[0] + offset_x - 1,
-                item_rect_min[1] + offset_y - 1,
-                item_rect_min[0] + offset_x + text_size[0] + 1,
-                item_rect_min[1] + offset_y + text_size[1] + 1,
-                Color(0, 0, 0, 150).color_int,
-                2,
-                0
-            )
-            PyImGui.draw_list_add_text(
-                item_rect_min[0] + offset_x,
-                item_rect_min[1] + offset_y,
-                style.Text.color_int,
-                f"{int(remaining/1000)}"
-            )
+                PyImGui.draw_list_add_rect_filled(
+                    item_rect_min[0] + offset_x - 1,
+                    item_rect_min[1] + offset_y - 1,
+                    item_rect_min[0] + offset_x + text_size[0] + 1,
+                    item_rect_min[1] + offset_y + text_size[1] + 1,
+                    Color(0, 0, 0, 150).color_int,
+                    2,
+                    0
+                )
+                PyImGui.draw_list_add_text(
+                    item_rect_min[0] + offset_x,
+                    item_rect_min[1] + offset_y,
+                    style.Text.color_int,
+                    f"{int(remaining/1000)}"
+                )
 
         PyImGui.show_tooltip(
             f"Effect ID: {effect.skill_id}\nName: {effect.name}")
         PyImGui.same_line(0, 0)
 
     if settings.ShowHeroUpkeeps:
-        PyImGui.dummy(0, 24)
+        ImGui.dummy(0, 24)
         PyImGui.same_line(0, 0)
         
         for index, upkeep_id in enumerate(account_data.PlayerUpkeeps):
@@ -620,13 +785,13 @@ def draw_buffs_and_upkeeps(account_data: AccountData, skill_size: float = 28):
             PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() - 4)
 
     if settings.ShowHeroEffects:                        
-        PyImGui.dummy(0, 28)
+        ImGui.dummy(0, 28)
         PyImGui.same_line(0, 0)
         
         for index, effect_id in enumerate(account_data.PlayerEffects):
             if effect_id == 0:
                 continue
-
+            
             if not effect_id in skill_cache:
                 skill_cache[effect_id] = CachedSkillInfo(effect_id)
 
@@ -687,10 +852,11 @@ def flag_hero(account_data: AccountData, cached_data: CacheData):
         flag_account = ""
     
 def draw_buttons(account_data: AccountData, cached_data: CacheData, message_queue: list[tuple[int, SharedMessage]], btn_size: float = 28):
+    global message_cache
     style = ImGui.get_style()
     draw_textures = style.Theme in ImGui.Textured_Themes
     
-    global messages, template_popup_open, template_account, flag_account
+    global template_popup_open, template_account, flag_account
     is_explorable = GLOBAL_CACHE.Map.IsExplorable()
     if not ImGui.begin_child("##buttons" + account_data.AccountEmail, (84, 58), False,
                              PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
@@ -702,39 +868,51 @@ def draw_buttons(account_data: AccountData, cached_data: CacheData, message_queu
     player_email = GLOBAL_CACHE.Player.GetAccountEmail()
     account_email = account_data.AccountEmail
 
-    account_messages = {index: SharedCommandType(msg.Command) for index, msg in message_queue if msg.ReceiverEmail == account_email}
     btn_size = btn_size if draw_textures else btn_size - 1
 
-    def draw_button(id_suffix: str, icon: str, tooltip: str, command: SharedCommandType, send_message: Callable[[], int] = lambda: False, get_status: Callable[[], bool] = lambda: False, new_line: bool = False):
-        matching_messages = [index for index, cmd in account_messages.items() if cmd == command]
-        existing_messages = messages.get(account_data.AccountEmail, {})
-        pending_message = any(index in existing_messages.get(command, []) for index in matching_messages) if existing_messages else False
-        if not pending_message:
-            if account_data.AccountEmail not in messages:
-                messages[account_data.AccountEmail] = {}
-                
-            messages[account_data.AccountEmail][command] = []
+    def is_queued(command: SharedCommandType, clear: bool = False) -> bool:
+        cached_commands = message_cache.get(account_email, {}).get(command, {})
+
+        if cached_commands:
+            queued_commands = {index: msg for index, msg in message_queue if msg.Command == command and msg.ReceiverEmail == account_email and index in cached_commands} 
+            if not queued_commands:
+                if clear:
+                    cached_commands.clear()
+                           
+            return len(queued_commands) > 0
         
+        return False
+            
+    def draw_button(id_suffix: str, icon: str, tooltip: str, command: SharedCommandType, send_message: Callable[[], int] = lambda: False, get_status: Callable[[], bool] = lambda: False, new_line: bool = False):        
         """Reusable button creation logic with hover, icon, and tooltip."""
         btn_id = f"##{id_suffix}{account_email}"
+        status = get_status()
+        is_command_queued = is_queued(command, clear=True)
+        
         if (draw_textures and PyImGui.invisible_button(btn_id, btn_size, btn_size)) or (not draw_textures and ImGui.button(btn_id, btn_size, btn_size)):
-            message_index = send_message()
+            if is_command_queued:
+                ConsoleLog("HERO AI", f"Command {command.name} already queued for {account_email}, skipping send.")
+                return               
+            
+            message_index = send_message()            
             if message_index > -1:
-                if account_data.AccountEmail not in messages:
-                    messages[account_data.AccountEmail] = {}
-                if command not in messages[account_data.AccountEmail]:
-                    messages[account_data.AccountEmail][command] = []
-
-            messages[account_data.AccountEmail][command].append(message_index)
-
+                if account_data.AccountEmail not in message_cache:
+                    message_cache[account_data.AccountEmail] = {}
+                    
+                if command not in message_cache[account_data.AccountEmail]:
+                    message_cache[account_data.AccountEmail][command] = {}
                 
+                message_cache[account_data.AccountEmail][command][message_index] = ()
+
+
         hovered = PyImGui.is_item_hovered()
         item_rect_min = PyImGui.get_item_rect_min()
-        ThemeTextures.HeroPanelButtonBase.value.get_texture().draw_in_drawlist(
-            item_rect_min[0], item_rect_min[1], (btn_size, btn_size),
-            state=TextureState.Active if get_status() else TextureState.Normal,
-            tint=(255, 255, 255, 255) if hovered else (200, 200, 200, 255)
-        )
+        if draw_textures:
+            ThemeTextures.HeroPanelButtonBase.value.get_texture().draw_in_drawlist(
+                item_rect_min[0], item_rect_min[1], (btn_size, btn_size),
+                state=TextureState.Active if status else TextureState.Normal,
+                tint=(255, 255, 255, 255) if hovered else (200, 200, 200, 255)
+            )
 
         ImGui.push_font("Regular", 10)
         text_size = PyImGui.calc_text_size(icon)
@@ -783,34 +961,62 @@ def draw_buttons(account_data: AccountData, cached_data: CacheData, message_queu
             return -1       
             
         buttons = [
-            # (id_suffix, icon, tooltip, command, args)
-            ("pixel_stack", IconsFontAwesome5.ICON_COMPRESS_ARROWS_ALT, "Pixel Stack",
-             SharedCommandType.PixelStack, lambda: GLOBAL_CACHE.ShMem.SendMessage(player_email, account_email, SharedCommandType.PixelStack, (player_x, player_y, 0, 0))),
-
-            ("interact", IconsFontAwesome5.ICON_HAND_POINT_RIGHT, "Interact with Target",
-             SharedCommandType.InteractWithTarget, lambda: GLOBAL_CACHE.ShMem.SendMessage(player_email, account_email, SharedCommandType.InteractWithTarget, (target_id, 0, 0, 0))),
-
-            ("dialog", IconsFontAwesome5.ICON_COMMENT_DOTS, "Dialog with Target",
-             SharedCommandType.TakeDialogWithTarget, lambda: GLOBAL_CACHE.ShMem.SendMessage(player_email, account_email, SharedCommandType.TakeDialogWithTarget, (target_id, 1, 0, 0)), lambda: False,  True),
-            
-            ("load_template", IconsFontAwesome5.ICON_FILE_IMPORT, "Load Skill Template",
-             SharedCommandType.LoadSkillTemplate, load_template),
-
-            ("invite_summon",
-             IconsFontAwesome5.ICON_USER_PLUS,
-             "Invite" if same_map else "Summon",
-             SharedCommandType.InviteToParty if same_map else SharedCommandType.TravelToMap, invite_player),
-            
-            ("focus client",
-             IconsFontAwesome5.ICON_DESKTOP,
-             "Focus client",
-             SharedCommandType.SetWindowActive, lambda: GLOBAL_CACHE.ShMem.SendMessage(
-                player_email,
-                account_email,
+            (
+                "pixel_stack",
+                IconsFontAwesome5.ICON_COMPRESS_ARROWS_ALT,
+                "Pixel Stack",
+                SharedCommandType.PixelStack,
+                lambda: GLOBAL_CACHE.ShMem.SendMessage(player_email, account_email, SharedCommandType.PixelStack, (player_x, player_y, 0, 0)),
+                lambda: is_queued(SharedCommandType.PixelStack),
+            ),
+            (
+                "interact",
+                IconsFontAwesome5.ICON_HAND_POINT_RIGHT,
+                "Interact with Target",
+                SharedCommandType.InteractWithTarget,
+                lambda: GLOBAL_CACHE.ShMem.SendMessage(player_email, account_email, SharedCommandType.InteractWithTarget, (target_id, 0, 0, 0)),
+                lambda: is_queued(SharedCommandType.InteractWithTarget),
+            ),
+            (
+                "dialog",
+                IconsFontAwesome5.ICON_COMMENT_DOTS,
+                "Dialog with Target",
+                SharedCommandType.TakeDialogWithTarget,
+                lambda: GLOBAL_CACHE.ShMem.SendMessage(player_email, account_email, SharedCommandType.TakeDialogWithTarget, (target_id, 1, 0, 0)),
+                lambda: is_queued(SharedCommandType.TakeDialogWithTarget),
+                True,
+            ),
+            (
+                "load_template",
+                IconsFontAwesome5.ICON_FILE_IMPORT,
+                "Load Skill Template",
+                SharedCommandType.LoadSkillTemplate,
+                load_template,
+                lambda: is_queued(SharedCommandType.LoadSkillTemplate),
+            ),
+            (
+                "invite_summon",
+                IconsFontAwesome5.ICON_USER_PLUS,
+                "Invite" if same_map else "Summon",
+                SharedCommandType.InviteToParty if same_map else SharedCommandType.TravelToMap,
+                invite_player,
+                lambda: is_queued(SharedCommandType.InviteToParty) if same_map else is_queued(SharedCommandType.TravelToMap),
+            ),
+            (
+                "focus_client",
+                IconsFontAwesome5.ICON_DESKTOP,
+                "Focus client",
                 SharedCommandType.SetWindowActive,
-                (0, 0, 0, 0),
-             )),
+                lambda: GLOBAL_CACHE.ShMem.SendMessage(
+                    player_email,
+                    account_email,
+                    SharedCommandType.SetWindowActive,
+                    (0, 0, 0, 0),
+                ),
+                lambda: is_queued(SharedCommandType.SetWindowActive),
+            ),
         ]
+
 
         for btn in buttons:
             draw_button(*btn)
@@ -838,13 +1044,13 @@ def draw_buttons(account_data: AccountData, cached_data: CacheData, message_queu
         buttons = [
             # (id_suffix, icon, tooltip, command, args)
             ("pixel_stack", IconsFontAwesome5.ICON_COMPRESS_ARROWS_ALT, "Pixel Stack",
-             SharedCommandType.PixelStack, lambda: GLOBAL_CACHE.ShMem.SendMessage(player_email, account_email, SharedCommandType.PixelStack, (player_x, player_y, 0, 0))),
+             SharedCommandType.PixelStack, lambda: GLOBAL_CACHE.ShMem.SendMessage(player_email, account_email, SharedCommandType.PixelStack, (player_x, player_y, 0, 0)), lambda: is_queued(SharedCommandType.PixelStack)),
 
             ("interact", IconsFontAwesome5.ICON_HAND_POINT_RIGHT, "Interact with Target",
-             SharedCommandType.InteractWithTarget, lambda: GLOBAL_CACHE.ShMem.SendMessage(player_email, account_email, SharedCommandType.InteractWithTarget, (target_id, 0, 0, 0))),
+             SharedCommandType.InteractWithTarget, lambda: GLOBAL_CACHE.ShMem.SendMessage(player_email, account_email, SharedCommandType.InteractWithTarget, (target_id, 0, 0, 0)), lambda: is_queued(SharedCommandType.InteractWithTarget)),
 
             ("dialog", IconsFontAwesome5.ICON_COMMENT_DOTS, "Dialog with Target",
-             SharedCommandType.TakeDialogWithTarget, lambda: GLOBAL_CACHE.ShMem.SendMessage(player_email, account_email, SharedCommandType.TakeDialogWithTarget, (target_id, 1, 0, 0)), lambda: False, True),
+             SharedCommandType.TakeDialogWithTarget, lambda: GLOBAL_CACHE.ShMem.SendMessage(player_email, account_email, SharedCommandType.TakeDialogWithTarget, (target_id, 1, 0, 0)), lambda: is_queued(SharedCommandType.TakeDialogWithTarget), True),
 
             ("flag", IconsFontAwesome5.ICON_FLAG, "Flag Target",
              SharedCommandType.NoCommand, flag_hero_account, lambda: IsHeroFlagged(cached_data, account_data.PartyPosition)),
@@ -905,7 +1111,7 @@ def draw_combined_hero_panel(account_data: AccountData, cached_data: CacheData, 
     name = get_display_name(account_data)
     
     style = ImGui.get_style()
-    PyImGui.dummy(int(PyImGui.get_content_region_avail()[0]), 22)
+    ImGui.dummy(PyImGui.get_content_region_avail()[0], 22)
     
     item_rect_min = PyImGui.get_item_rect_min()
     item_rect_max = PyImGui.get_item_rect_max()
@@ -937,12 +1143,18 @@ def draw_combined_hero_panel(account_data: AccountData, cached_data: CacheData, 
         if ImGui.begin_child("##bars" + account_data.AccountEmail, (225, height)):
             curr_avail = PyImGui.get_content_region_avail()
             if settings.ShowHeroBars:
-                draw_health_bar(curr_avail[0], 13, account_data.PlayerMaxHP,
-                                account_data.PlayerHP, account_data.PlayerHealthRegen)
+                health_clicked = draw_health_bar(curr_avail[0], 13, account_data.PlayerMaxHP,
+                                account_data.PlayerHP, account_data.PlayerHealthRegen)                        
                 PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() - 4)
-                draw_energy_bar(curr_avail[0], 13, account_data.PlayerMaxEnergy,
+                energy_clicked = draw_energy_bar(curr_avail[0], 13, account_data.PlayerMaxEnergy,
                                 account_data.PlayerEnergy, account_data.PlayerEnergyRegen)
-            
+                
+                if health_clicked or energy_clicked:
+                            ConsoleLog("HERO AI", f"Switching target to hero {account_data.CharacterName}...")
+                            
+                            if GLOBAL_CACHE.Map.GetMapID() == account_data.MapID:
+                                GLOBAL_CACHE.Player.ChangeTarget(account_data.PlayerID)
+                                
             if settings.ShowHeroSkills:
                 if settings.ShowHeroBars:
                     PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() - 4)
@@ -1007,12 +1219,17 @@ def draw_hero_panel(window: WindowModule, account_data: AccountData, cached_data
             if ImGui.begin_child("##bars" + account_data.AccountEmail, (225, height)):
                 curr_avail = PyImGui.get_content_region_avail()
                 if settings.ShowHeroBars:
-                    draw_health_bar(curr_avail[0], 13, account_data.PlayerMaxHP,
+                    health_clicked = draw_health_bar(curr_avail[0], 13, account_data.PlayerMaxHP,
                                     account_data.PlayerHP, account_data.PlayerHealthRegen)
                     PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() - 4)
-                    draw_energy_bar(curr_avail[0], 13, account_data.PlayerMaxEnergy,
-                                    account_data.PlayerEnergy, account_data.PlayerEnergyRegen)
-                
+                    energy_clicked = draw_energy_bar(curr_avail[0], 13, account_data.PlayerMaxEnergy,
+                                                       account_data.PlayerEnergy, account_data.PlayerEnergyRegen)
+                    if health_clicked or energy_clicked:
+                        ConsoleLog("HERO AI", f"Switching target to hero {account_data.CharacterName}...")
+                        
+                        if GLOBAL_CACHE.Map.GetMapID() == account_data.MapID:
+                            GLOBAL_CACHE.Player.ChangeTarget(account_data.PlayerID)
+                            
                 if settings.ShowHeroSkills:
                     if settings.ShowHeroBars:
                         PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() - 4)
@@ -1044,7 +1261,7 @@ def draw_hero_panel(window: WindowModule, account_data: AccountData, cached_data
             settings.save_settings()
         
     window.end()
-
+    
     if flag_account == account_data.AccountEmail and flag_account:    
         flag_hero(account_data, cached_data)      
         

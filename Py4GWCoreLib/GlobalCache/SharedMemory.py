@@ -73,8 +73,10 @@ class AccountData(Structure):
         ("PlayerUpkeeps", c_uint * SHMEM_MAX_NUMBER_OF_BUFFS),  # Upkeep IDs
 
         # Skills
+        ("PlayerCastingSkillID", c_uint),
         ("PlayerSkillIDs", c_uint * SHMEM_NUMBER_OF_SKILLS),
         ("PlayerSkillRecharge", c_float * SHMEM_NUMBER_OF_SKILLS),
+        ("PlayerSkillAdrenaline", c_float * SHMEM_NUMBER_OF_SKILLS),
         
         # Attributes
         ("PlayerAttributeIDs", c_uint * SHMEM_NUMBER_OF_ATTRIBUTES),
@@ -130,8 +132,10 @@ class AccountData(Structure):
     PlayerAttributeValues: list[int]
     PlayerAttributeBaseValues: list[int]
     
+    PlayerCastingSkillID: int
     PlayerSkillIDs: list[int]
     PlayerSkillRecharge: list[float]
+    PlayerSkillAdrenaline: list[float]
     
     LastUpdated: int
         
@@ -319,16 +323,20 @@ class Py4GWSharedMemoryManager:
             player.PartyID = 0
             player.PartyPosition = 0
             player.PlayerIsPartyLeader = False
+            player.CastingSkillID = 0
+            
             for j in range(SHMEM_MAX_NUMBER_OF_BUFFS):
                 player.PlayerBuffs[j] = 0
                 player.PlayerEffects[j] = 0
                 player.PlayerEffectsDuration[j] = 0
                 player.PlayerEffectsRemaining[j] = 0                
                 player.PlayerUpkeeps[j] = 0
-                
+
+            player.CastingSkillID = 0
             for j in range(SHMEM_NUMBER_OF_SKILLS):
                 player.PlayerSkillIDs[j] = 0
                 player.PlayerSkillRecharge[j] = 0.0
+                player.PlayerSkillAdrenaline[j] = 0.0
                 
             for j in range(SHMEM_NUMBER_OF_ATTRIBUTES):
                 player.PlayerAttributeIDs[j] = 0
@@ -567,12 +575,15 @@ class Py4GWSharedMemoryManager:
                 player.PlayerAttributeValues[attribute_id] = attribute.level if attribute else 0
                 player.PlayerAttributeBaseValues[attribute_id] = attribute.level_base if attribute else 0
                 
-            # Skills                
+            # Skills
+            player.PlayerCastingSkillID = Agent.GetCastingSkill(agent_id)
+            
             skills = SkillBar.GetZeroFilledSkillbar()
             for slot in range(SHMEM_NUMBER_OF_SKILLS):
                 skill_id = skills.get(slot + 1, 0)
                 player.PlayerSkillIDs[slot] = skill_id
-                player.PlayerSkillRecharge[slot] = SkillBar.GetSkillData(slot + 1).get_recharge if skill_id != 0 else 0.0                
+                player.PlayerSkillRecharge[slot] = SkillBar.GetSkillData(slot + 1).get_recharge if skill_id != 0 else 0.0    
+                player.PlayerSkillAdrenaline[slot] = SkillBar.GetSkillData(slot + 1).adrenaline_a if skill_id != 0 else 0.0            
 
         else:
             ConsoleLog(SMM_MODULE_NAME, "No empty slot available for new player data.", Py4GW.Console.MessageType.Error)
@@ -671,11 +682,15 @@ class Py4GWSharedMemoryManager:
                 hero.PlayerAttributeBaseValues[attribute_id] = attribute.level_base if attribute else 0
                 
             # Skills                
+            hero.PlayerCastingSkillID = Agent.GetCastingSkill(agent_id)
+            
             skills = SkillBar.GetZeroFilledSkillbar()
             for slot in range(SHMEM_NUMBER_OF_SKILLS):
                 skill_id = skills.get(slot + 1, 0)
                 hero.PlayerSkillIDs[slot] = skill_id
                 hero.PlayerSkillRecharge[slot] = SkillBar.GetSkillData(slot + 1).get_recharge if skill_id != 0 else 0.0
+                hero.PlayerSkillAdrenaline[slot] = SkillBar.GetSkillData(slot + 1).adrenaline_a if skill_id != 0 else 0.0  
+                     
         else:
             ConsoleLog(SMM_MODULE_NAME, "No empty slot available for new hero data.", Py4GW.Console.MessageType.Error)
             
@@ -774,11 +789,13 @@ class Py4GWSharedMemoryManager:
                 pet.PlayerAttributeBaseValues[attribute_id] = attribute.level_base if attribute else 0
                 
             # Skills                
-            skills = SkillBar.GetZeroFilledSkillbar()
+            pet.PlayerCastingSkillID = Agent.GetCastingSkill(agent_id)
+            
             for slot in range(SHMEM_NUMBER_OF_SKILLS):
-                skill_id = skills.get(slot + 1, 0)
-                pet.PlayerSkillIDs[slot] = skill_id
-                pet.PlayerSkillRecharge[slot] = SkillBar.GetSkillData(slot + 1).get_recharge if skill_id != 0 else 0.0
+                pet.PlayerSkillIDs[slot] = 0
+                pet.PlayerSkillRecharge[slot] = 0.0
+                pet.PlayerSkillAdrenaline[slot] = 0.0       
+                
         else:
             ConsoleLog(SMM_MODULE_NAME, "No empty slot available for new Pet data.", Py4GW.Console.MessageType.Error)
         

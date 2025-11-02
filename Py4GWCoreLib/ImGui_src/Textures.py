@@ -177,7 +177,7 @@ class MapTexture:
 
 class ThemeTexture:
     PlaceHolderTexture = MapTexture(
-        texture = os.path.join(TEXTURE_FOLDER, "placeholder.png"),
+        texture = os.path.join(TEXTURE_FOLDER, "missing_texture.png"),
         texture_size = (1, 1),
         size = (1, 1),
         normal=(0, 0)
@@ -1324,5 +1324,18 @@ class ThemeTextures(Enum):
         left= (0, 11, 21, 32),
         mid= (21, 11, 107, 32),
         right= (107, 11, 128, 32),
+    )),
+    )
+    
+    AdrenalineBarFill = ThemeTexture(
+    (StyleTheme.Minimalus,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER, "ui_adrenaline_effect.png"),
+        texture_size = (64, 64),
+        size = (64, 64),
+    )),
+    (StyleTheme.Guild_Wars,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER, "ui_adrenaline_effect.png"),
+        texture_size = (64, 64),
+        size = (64, 64),
     )),
     )

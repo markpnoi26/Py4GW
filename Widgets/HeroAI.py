@@ -4,9 +4,6 @@ import traceback
 from enum import Enum
 import Py4GW
 from PyMap import PyMap
-
-from HeroAI.settings import Settings
-from HeroAI.ui import draw_combined_hero_panel, draw_hero_panel
 from Py4GWCoreLib.GlobalCache.SharedMemory import AccountData, SharedMessage
 from Py4GWCoreLib.ImGui_src.WindowModule import WindowModule
 from Py4GWCoreLib.Skillbar import SkillBar
@@ -17,7 +14,7 @@ from Py4GW_widget_manager import WidgetHandler
 MODULE_NAME = "HeroAI"
 for module_name in list(sys.modules.keys()):
     if module_name not in ("sys", "importlib", "cache_data"):
-        try:            
+        try:   
             if f"{MODULE_NAME}." in module_name:
                 Py4GW.Console.Log(MODULE_NAME, f"Reloading module: {module_name}", Py4GW.Console.MessageType.Info)
                 del sys.modules[module_name]
@@ -26,6 +23,8 @@ for module_name in list(sys.modules.keys()):
         except Exception as e:
             Py4GW.Console.Log(MODULE_NAME, f"Error reloading module {module_name}: {e}", Py4GW.Console.MessageType.Error)
 
+from HeroAI.settings import Settings
+from HeroAI.ui import draw_combined_hero_panel, draw_hero_panel
 from HeroAI.cache_data import CacheData
 from HeroAI.constants import FOLLOW_DISTANCE_OUT_OF_COMBAT
 from HeroAI.constants import MAX_NUM_PLAYERS
@@ -72,7 +71,7 @@ from Py4GWCoreLib import Utils
 FOLLOW_COMBAT_DISTANCE = 25.0  # if body blocked, we get close enough.
 LEADER_FLAG_TOUCH_RANGE_THRESHOLD_VALUE = Range.Touch.value * 1.1
 LOOT_THROTTLE_CHECK = ThrottledTimer(250)
-MESSAGE_THROTTLE = ThrottledTimer(500)
+MESSAGE_THROTTLE = ThrottledTimer(25)
 ACCOUNT_THROTTLE = ThrottledTimer(500)
 
 cached_data = CacheData()
@@ -439,11 +438,7 @@ def UpdateStatus(cached_data: CacheData):
     UpdateGameOptions(cached_data)
 
     cached_data.UpdateGameOptions()
-    
-    if MESSAGE_THROTTLE.IsExpired():
-        messages = GLOBAL_CACHE.ShMem.GetAllMessages()
-        MESSAGE_THROTTLE.Reset()
-                    
+                        
     own_data = GLOBAL_CACHE.ShMem.GetAccountDataFromEmail(cached_data.account_email)
     if not own_data:
         return
@@ -452,6 +447,8 @@ def UpdateStatus(cached_data: CacheData):
     
     if not settings.ShowPanelOnlyOnLeaderAccount or own_data.PlayerIsPartyLeader:
         if settings.ShowHeroPanels:
+            messages = GLOBAL_CACHE.ShMem.GetAllMessages()
+        
             if settings.CombinePanels:            
                 if not identifier in hero_windows:
                     stored = settings.HeroPanelPositions.get(identifier, (200, 200, False))
@@ -579,61 +576,96 @@ def configure():
     configure_window.open = module_info.configuring if module_info else False
     
     if configure_window.begin():
-        show_party_panel_ui = ImGui.checkbox("Show Party Panel UI", settings.ShowPartyPanelUI)
-        if show_party_panel_ui != settings.ShowPartyPanelUI:
-            settings.ShowPartyPanelUI = show_party_panel_ui
-            settings.save_settings()
+        if ImGui.collapsing_header("General"):
+            show_party_panel_ui = ImGui.checkbox("Show Party Panel UI", settings.ShowPartyPanelUI)
+            
+            if show_party_panel_ui != settings.ShowPartyPanelUI:
+                settings.ShowPartyPanelUI = show_party_panel_ui
+                settings.save_settings()
+                    
+            show_floating_targets = ImGui.checkbox("Show Floating Target Buttons", settings.ShowFloatingTargets)
+            if show_floating_targets != settings.ShowFloatingTargets:
+                settings.ShowFloatingTargets = show_floating_targets
+                settings.save_settings()
+                    
+            
+            show_command_panel = ImGui.checkbox("Show Command Panel", settings.ShowCommandPanel)
+            if show_command_panel != settings.ShowCommandPanel:
+                settings.ShowCommandPanel = show_command_panel
+                settings.save_settings()
+                
+                
+        if ImGui.collapsing_header("Hero Panels"):       
+            show_on_leader = ImGui.checkbox("Show only on Leader", settings.ShowPanelOnlyOnLeaderAccount)
+            if show_on_leader != settings.ShowPanelOnlyOnLeaderAccount:
+                settings.ShowPanelOnlyOnLeaderAccount = show_on_leader
+                settings.save_settings()
+            
+            combine_panels = ImGui.checkbox("Combine Hero Panels", settings.CombinePanels)
+            if combine_panels != settings.CombinePanels:
+                settings.CombinePanels = combine_panels
+                settings.save_settings()
+                
+            show_hero_panels = ImGui.checkbox("Show Hero Panels", settings.ShowHeroPanels)
+            if show_hero_panels != settings.ShowHeroPanels:
+                settings.ShowHeroPanels = show_hero_panels
+                settings.save_settings()
+                
+        if ImGui.collapsing_header("Health & Energy"):
+            show_hero_bars = ImGui.checkbox("Show Health and Energy", settings.ShowHeroBars)
+            if show_hero_bars != settings.ShowHeroBars:
+                settings.ShowHeroBars = show_hero_bars
+                settings.save_settings()
+                
+        if ImGui.collapsing_header("Hero Skills"):
+            show_hero_skills = ImGui.checkbox("Show Hero Skills", settings.ShowHeroSkills)
+            if show_hero_skills != settings.ShowHeroSkills:
+                settings.ShowHeroSkills = show_hero_skills
+                settings.save_settings()
         
-        show_on_leader = ImGui.checkbox("Show only on Leader", settings.ShowPanelOnlyOnLeaderAccount)
-        if show_on_leader != settings.ShowPanelOnlyOnLeaderAccount:
-            settings.ShowPanelOnlyOnLeaderAccount = show_on_leader
-            settings.save_settings()
-        
-        combine_panels = ImGui.checkbox("Combine Hero Panels", settings.CombinePanels)
-        if combine_panels != settings.CombinePanels:
-            settings.CombinePanels = combine_panels
-            settings.save_settings()
+        if ImGui.collapsing_header("Hero Effects & Upkeeps"):
+            show_hero_upkeeps = ImGui.checkbox("Show Hero Upkeeps", settings.ShowHeroUpkeeps)
+            if show_hero_upkeeps != settings.ShowHeroUpkeeps:
+                settings.ShowHeroUpkeeps = show_hero_upkeeps
+                settings.save_settings()
+                
+            show_hero_effects = ImGui.checkbox("Show Hero Effects", settings.ShowHeroEffects)
+            if show_hero_effects != settings.ShowHeroEffects:
+                settings.ShowHeroEffects = show_hero_effects
+                settings.save_settings()
+
             
-        show_command_panel = ImGui.checkbox("Show Command Panel", settings.ShowCommandPanel)
-        if show_command_panel != settings.ShowCommandPanel:
-            settings.ShowCommandPanel = show_command_panel
-            settings.save_settings()
-            
-        show_hero_panels = ImGui.checkbox("Show Hero Panels", settings.ShowHeroPanels)
-        if show_hero_panels != settings.ShowHeroPanels:
-            settings.ShowHeroPanels = show_hero_panels
-            settings.save_settings()
-            
-        show_hero_bars = ImGui.checkbox("Show Health and Energy", settings.ShowHeroBars)
-        if show_hero_bars != settings.ShowHeroBars:
-            settings.ShowHeroBars = show_hero_bars
-            settings.save_settings()
-            
-        show_hero_skills = ImGui.checkbox("Show Hero Skills", settings.ShowHeroSkills)
-        if show_hero_skills != settings.ShowHeroSkills:
-            settings.ShowHeroSkills = show_hero_skills
-            settings.save_settings()
-            
-        show_hero_buttons = ImGui.checkbox("Show Hero Buttons", settings.ShowHeroButtons)
-        if show_hero_buttons != settings.ShowHeroButtons:
-            settings.ShowHeroButtons = show_hero_buttons
-            settings.save_settings()
-                        
-        show_hero_upkeeps = ImGui.checkbox("Show Hero Upkeeps", settings.ShowHeroUpkeeps)
-        if show_hero_upkeeps != settings.ShowHeroUpkeeps:
-            settings.ShowHeroUpkeeps = show_hero_upkeeps
-            settings.save_settings()
-            
-        show_hero_effects = ImGui.checkbox("Show Hero Effects", settings.ShowHeroEffects)
-        if show_hero_effects != settings.ShowHeroEffects:
-            settings.ShowHeroEffects = show_hero_effects
-            settings.save_settings()
-            
-        show_floating_targets = ImGui.checkbox("Show Floating Target Buttons", settings.ShowFloatingTargets)
-        if show_floating_targets != settings.ShowFloatingTargets:
-            settings.ShowFloatingTargets = show_floating_targets
-            settings.save_settings()
-                   
+            radio_value = 0 if not settings.ShowEffectDurations and not settings.ShowShortEffectDurations else (1 if settings.ShowShortEffectDurations else 2)
+
+            radio_value = ImGui.radio_button("Show no durations", radio_value, 0)
+            radio_value = ImGui.radio_button("Show short durations", radio_value, 1)
+            radio_value = ImGui.radio_button("Show all durations", radio_value, 2)
+
+            if radio_value == 0:
+                if settings.ShowEffectDurations or settings.ShowShortEffectDurations:
+                    settings.ShowEffectDurations = False
+                    settings.ShowShortEffectDurations = False
+                    settings.save_settings()
+
+            elif radio_value == 1:
+                if settings.ShowEffectDurations or not settings.ShowShortEffectDurations:
+                    settings.ShowEffectDurations = False
+                    settings.ShowShortEffectDurations = True
+                    settings.save_settings()
+
+            elif radio_value == 2:
+                if not settings.ShowEffectDurations or settings.ShowShortEffectDurations:
+                    settings.ShowEffectDurations = True
+                    settings.ShowShortEffectDurations = False
+                    settings.save_settings()
+                
+                
+        if ImGui.collapsing_header("Hero Buttons"):
+            show_hero_buttons = ImGui.checkbox("Show Hero Buttons", settings.ShowHeroButtons)
+            if show_hero_buttons != settings.ShowHeroButtons:
+                settings.ShowHeroButtons = show_hero_buttons
+                settings.save_settings()
+                            
     
     configure_window.end()  
     

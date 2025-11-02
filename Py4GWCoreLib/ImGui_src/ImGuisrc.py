@@ -2,7 +2,7 @@ import math
 from ..Overlay import Overlay
 from ..enums import get_texture_for_model, ImguiFonts
 from ..Py4GWcorelib import Color, ColorPalette, ConsoleLog, Utils
-from typing import TypeAlias, Optional
+from typing import Tuple, TypeAlias, Optional, overload
 from .types import ImGuiStyleVar, StyleTheme, ControlAppearance, TextDecorator
 from .types import ImGuiStyleVar, StyleTheme, ControlAppearance, TextDecorator
 from .Style import Style
@@ -93,7 +93,6 @@ class ImGui:
 
     @staticmethod
     def pop_style_color(count: int = 1): PyImGui.pop_style_color(count)
-
 
     @staticmethod
     def is_mouse_in_rect(rect: tuple[float, float, float, float]) -> bool:
@@ -236,7 +235,31 @@ class ImGui:
 
     @staticmethod
     def new_line(): PyImGui.new_line()
+    
+    @staticmethod
+    def get_text_line_height() : PyImGui.get_text_line_height()
+    
+    @staticmethod
+    def get_text_line_height_with_spacing() : PyImGui.get_text_line_height_with_spacing()
+    
+    @staticmethod
+    def calc_text_size(text : str) : PyImGui.calc_text_size(text)
+    
+    @staticmethod
+    def invisible_button(label: str, width: float, height: float) : PyImGui.invisible_button(label, int(width), int(height))
+
+    @staticmethod
+    def selectable(label: str, selected: bool, flags: PyImGui.SelectableFlags = PyImGui.SelectableFlags.NoFlag, size: Tuple[float, float] = (0.0, 0.0)) : PyImGui.selectable(label, selected, flags, (int(size[0]), int(size[1])))
         
+    @staticmethod
+    def color_edit3(label: str, color: Tuple[float, float, float]) : PyImGui.color_edit3(label, color)
+    
+    @staticmethod
+    def color_edit4(label: str, color: Tuple[float, float, float, float]) : PyImGui.color_edit4(label, color)
+
+    @staticmethod
+    def dummy(width: float, height: float) : PyImGui.dummy(int(width), int(height))
+
     @staticmethod
     def _draw_decorator(decorator : TextDecorator, color_int : int | None = None) -> None:
         if decorator is TextDecorator.None_:
@@ -288,8 +311,7 @@ class ImGui:
                     0,
                     0,
                 )
-                
-    
+                    
     @staticmethod
     def _with_font(fn, text: str, font_size: int | None = None, font_style: str | None = None) -> None:
         if font_style is None: font_style = "Regular"
@@ -354,7 +376,7 @@ class ImGui:
     @staticmethod
     def text_unformatted(text : str, font_size : int | None = None, font_style: str | None = None):
         ImGui._with_font(PyImGui.text_unformatted, text, font_size, font_style)
-            
+                        
     @staticmethod
     def small_button(label: str, disabled: bool=False, appearance: ControlAppearance=ControlAppearance.Default) -> bool:
         #MATCHING IMGUI SIGNATURES AND USAGE
@@ -2912,24 +2934,6 @@ class ImGui:
     def end_combo():
         PyImGui.end_combo()
         
-    @staticmethod
-    def selectable(label: str, selected: bool, flags: PyImGui.SelectableFlags = PyImGui.SelectableFlags.NoFlag, size: tuple[float, float] = (0.0, 0.0)) -> bool:
-        clicked = PyImGui.selectable(label, selected, flags, size)
-
-        return clicked
-
-    @staticmethod
-    def color_edit3(label: str, color: tuple[float, float, float]) -> tuple[float, float, float]:
-        color = PyImGui.color_edit3(label, color)
-
-        return color
-
-    @staticmethod
-    def color_edit4(label: str, color: tuple[float, float, float, float]) -> tuple[float, float, float, float]:
-        color = PyImGui.color_edit4(label, color)
-
-        return color
-
     @staticmethod
     def begin_menu_bar() -> bool:
         opened = PyImGui.begin_menu_bar()
