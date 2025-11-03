@@ -384,7 +384,6 @@ class ImGui:
         if disabled: PyImGui.begin_disabled(disabled)
         
         style = ImGui.get_style()
-        #style.ButtonPadding.get_current().push_style_var()
         #NON THEMED
         if style.Theme not in ImGui.Textured_Themes:
             button_colors = []
@@ -412,7 +411,6 @@ class ImGui:
                 for button_color in button_colors:
                     button_color.pop_color()
 
-            #style.ButtonPadding.pop_style_var()
             if disabled: PyImGui.end_disabled()
             return clicked
 
@@ -485,7 +483,6 @@ class ImGui:
 
         PyImGui.pop_clip_rect()
                 
-        #style.ButtonPadding.pop_style_var()
         if disabled: PyImGui.end_disabled()
 
         return clicked
@@ -526,7 +523,11 @@ class ImGui:
         
         if disabled: PyImGui.begin_disabled(disabled)
         style = ImGui.get_style()
-        style.ButtonPadding.get_current().push_style_var()
+        current_style_var = style.ButtonPadding.get_current()
+        
+        if current_style_var.img_style_enum:
+            PyImGui.push_style_var2(current_style_var.img_style_enum, current_style_var.value1, current_style_var.value2 or 0) 
+            
         clicked = False
     
         default_font_size = int(PyImGui.get_text_line_height())
@@ -563,7 +564,8 @@ class ImGui:
             for button_color in button_colors:
                 button_color.pop_color()
 
-            style.ButtonPadding.pop_style_var()
+            if current_style_var.img_style_enum:
+                PyImGui.pop_style_var(1)
                 
             item_rect_min = PyImGui.get_item_rect_min()
             item_rect_max = PyImGui.get_item_rect_max()
@@ -704,8 +706,10 @@ class ImGui:
             ImGui.pop_font()
 
         PyImGui.pop_clip_rect()
-                
-        style.ButtonPadding.pop_style_var()
+
+        if current_style_var.img_style_enum:
+            PyImGui.pop_style_var(1)
+            
         if disabled:PyImGui.end_disabled()
         
         return clicked
@@ -746,7 +750,10 @@ class ImGui:
         
         if disabled: PyImGui.begin_disabled(disabled)
         style = ImGui.get_style()
-        style.ButtonPadding.get_current().push_style_var()
+        current_style_var = style.ButtonPadding.get_current()
+        if current_style_var.img_style_enum:
+            PyImGui.push_style_var2(current_style_var.img_style_enum, current_style_var.value1, current_style_var.value2 or 0)
+            
         clicked = False
     
         default_font_size = int(PyImGui.get_text_line_height())
@@ -776,7 +783,8 @@ class ImGui:
             for button_color in button_colors:
                 button_color.pop_color()
 
-            style.ButtonPadding.pop_style_var()
+            if current_style_var.img_style_enum:
+                PyImGui.pop_style_var(1)
                 
             item_rect_min = PyImGui.get_item_rect_min()
             item_rect_max = PyImGui.get_item_rect_max()
@@ -927,7 +935,9 @@ class ImGui:
 
         PyImGui.pop_clip_rect()
                 
-        style.ButtonPadding.pop_style_var()
+        if current_style_var.img_style_enum:
+            PyImGui.pop_style_var(1)
+            
         if disabled:PyImGui.end_disabled()
         
         if clicked:
@@ -943,8 +953,13 @@ class ImGui:
 
         if disabled: PyImGui.begin_disabled(disabled)
         style = ImGui.get_style()
-        style.ButtonPadding.get_current().push_style_var()
         
+        current_style_var = style.ButtonPadding.get_current()
+        btn_padding = (current_style_var.value1, current_style_var.value2 or 0)
+        
+        if current_style_var.img_style_enum:
+            PyImGui.push_style_var2(current_style_var.img_style_enum, btn_padding[0], btn_padding[1]) 
+
         if style.Theme not in ImGui.Textured_Themes:
             button_colors = []
                 
@@ -973,7 +988,9 @@ class ImGui:
                 for button_color in button_colors:
                     button_color.pop_color()
                     
-            style.ButtonPadding.pop_style_var()
+            if current_style_var.img_style_enum:
+                PyImGui.pop_style_var(1)
+                
             if disabled: PyImGui.end_disabled()
             
             return clicked
@@ -1024,8 +1041,8 @@ class ImGui:
         )
         
         text_size = PyImGui.calc_text_size(display_label)
-        text_x = button_rect[0] + (button_rect[2] - text_size[0]) / 2
-        text_y = button_rect[1] + (button_rect[3] - text_size[1]) / 2 + 1
+        text_x = button_rect[0] + (button_rect[2] - text_size[0]) / 2 + (btn_padding[0] / 2)
+        text_y = button_rect[1] + (button_rect[3] - text_size[1]) / 2 + (btn_padding[1] / 2)
     
         PyImGui.push_clip_rect(
             button_rect[0] + 6,
@@ -1044,7 +1061,9 @@ class ImGui:
 
         PyImGui.pop_clip_rect()
                 
-        style.ButtonPadding.pop_style_var()
+        if current_style_var.img_style_enum:
+            PyImGui.pop_style_var(1)
+            
         if disabled: PyImGui.end_disabled()
         
         return clicked
@@ -1062,7 +1081,11 @@ class ImGui:
         clicked = False
         if disabled: PyImGui.begin_disabled(disabled)
         style = ImGui.get_style()
-        style.ButtonPadding.get_current().push_style_var()
+        current_style_var = style.ButtonPadding.get_current()
+        btn_padding = (current_style_var.value1, current_style_var.value2 or 0)
+        
+        if current_style_var.img_style_enum:
+            PyImGui.push_style_var2(current_style_var.img_style_enum, btn_padding[0], btn_padding[1]) 
         
         #NON THEMED
         if style.Theme not in ImGui.Textured_Themes:
@@ -1092,7 +1115,8 @@ class ImGui:
             if clicked:
                 v = not v
                 
-            style.ButtonPadding.pop_style_var()
+            if current_style_var.img_style_enum:
+                PyImGui.pop_style_var(1)
             return v
         
         #THEMED
@@ -1113,7 +1137,6 @@ class ImGui:
         x,y = item_rect_min
         display_label = label.split("##")[0]
 
-        button_rect = (round(x), round(y), round(width), round(height))
         button_rect = (round(x), round(y), round(width), round(height))
         
         if not v:
@@ -1149,8 +1172,8 @@ class ImGui:
         )
         
         text_size = PyImGui.calc_text_size(display_label)
-        text_x = button_rect[0] + (button_rect[2] - text_size[0]) / 2
-        text_y = button_rect[1] + (button_rect[3] - text_size[1]) / 2 
+        text_x = button_rect[0] + (button_rect[2] - text_size[0]) / 2 + (btn_padding[0] / 2)
+        text_y = button_rect[1] + (button_rect[3] - text_size[1]) / 2 + (btn_padding[1] / 2)
     
         PyImGui.push_clip_rect(
             button_rect[0] + 6,
@@ -1170,7 +1193,9 @@ class ImGui:
         PyImGui.pop_clip_rect()
         style.Text.pop_color()
 
-        style.ButtonPadding.pop_style_var()
+        if current_style_var.img_style_enum:
+            PyImGui.pop_style_var(1)
+            
         if disabled:PyImGui.end_disabled()
         
         if clicked:
@@ -1195,7 +1220,12 @@ class ImGui:
         
         if disabled: PyImGui.begin_disabled(disabled)
         style = ImGui.get_style()
-        style.ButtonPadding.push_style_var(width / 8, height / 8)
+        
+        current_style_var = style.ButtonPadding.get_current()
+        btn_padding = (width / 8, height / 8)
+        
+        if current_style_var.img_style_enum:
+            PyImGui.push_style_var2(current_style_var.img_style_enum, btn_padding[0], btn_padding[1])             
         
         #NON THEMED
         if style.Theme not in ImGui.Textured_Themes:
@@ -1233,9 +1263,9 @@ class ImGui:
 
             x,y = item_rect_min
             button_rect = (x, y, width, height)
-            
-            texture_pos = (button_rect[0] + style.ButtonPadding.get_current().value1, button_rect[1] + (style.ButtonPadding.get_current().value2 or 0))
-            texture_size = (width - (style.ButtonPadding.get_current().value1 * 2), height - ((style.ButtonPadding.get_current().value2 or 0) * 2))
+
+            texture_pos = (button_rect[0] + btn_padding[0], button_rect[1] + (btn_padding[1] or 0))
+            texture_size = (width - (btn_padding[0] * 2), height - ((btn_padding[1] or 0) * 2))
             texture_tint = (255, 255, 255, 255) if enabled else (255, 255, 255, 155)
             ImGui.DrawTextureInDrawList(
                 texture_pos,
@@ -1248,7 +1278,9 @@ class ImGui:
                 for button_color in button_colors:
                     button_color.pop_color()
 
-            style.ButtonPadding.pop_style_var()
+            if current_style_var.img_style_enum:
+                PyImGui.pop_style_var(1)
+                
             if disabled: PyImGui.end_disabled()
             return clicked
 
@@ -1289,8 +1321,8 @@ class ImGui:
         )
         
 
-        texture_pos = (button_rect[0] + style.ButtonPadding.get_current().value1 + 1, button_rect[1] + (style.ButtonPadding.get_current().value2 or 0))
-        texture_size = (width - (style.ButtonPadding.get_current().value1 * 2), height - ((style.ButtonPadding.get_current().value2 or 0) * 2))
+        texture_pos = (button_rect[0] + btn_padding[0] + 1, button_rect[1] + (btn_padding[1] or 0))
+        texture_size = (width - (btn_padding[0] * 2), height - ((btn_padding[1] or 0) * 2))
         texture_tint = (255, 255, 255, 255) if enabled else (255, 255, 255, 155)
         ImGui.DrawTextureInDrawList(
             texture_pos,
@@ -1317,7 +1349,9 @@ class ImGui:
         PyImGui.pop_clip_rect()
                 
 
-        style.ButtonPadding.pop_style_var()
+        if current_style_var.img_style_enum:
+            PyImGui.pop_style_var(1)
+            
         if disabled: PyImGui.end_disabled()
         
         return clicked
@@ -1329,7 +1363,13 @@ class ImGui:
         clicked = False
         if disabled: PyImGui.begin_disabled(disabled)
         style = ImGui.get_style()
-        style.ButtonPadding.push_style_var(width / 8, height / 8)
+        
+        current_style_var = style.ButtonPadding.get_current()
+        btn_padding = (width / 8, height / 8)
+        
+        if current_style_var.img_style_enum:
+            PyImGui.push_style_var2(current_style_var.img_style_enum, btn_padding[0], btn_padding[1])   
+            
         #NON THEMED
         if style.Theme not in ImGui.Textured_Themes:
             button_colors = [
@@ -1360,9 +1400,9 @@ class ImGui:
 
             x,y = item_rect_min
             button_rect = (x, y, width, height)
-            
-            texture_pos = (button_rect[0] + style.ButtonPadding.get_current().value1, button_rect[1] + (style.ButtonPadding.get_current().value2 or 0))
-            texture_size = (width - (style.ButtonPadding.get_current().value1 * 2), height - ((style.ButtonPadding.get_current().value2 or 0) * 2))
+
+            texture_pos = (button_rect[0] + btn_padding[0], button_rect[1] + (btn_padding[1] or 0))
+            texture_size = (width - (btn_padding[0] * 2), height - ((btn_padding[1] or 0) * 2))
             texture_tint = (255, 255, 255, (255 if enabled else 155)) if v else (128, 128, 128, (255 if enabled else 155))
             ImGui.DrawTextureInDrawList(
                 texture_pos,
@@ -1375,7 +1415,9 @@ class ImGui:
                 for button_color in button_colors:
                     button_color.pop_color()
 
-            style.ButtonPadding.pop_style_var()
+            if current_style_var.img_style_enum:
+                PyImGui.pop_style_var(1)
+                
             if disabled: PyImGui.end_disabled()
                 
             if clicked:
@@ -1423,8 +1465,8 @@ class ImGui:
         )
         
 
-        texture_pos = (button_rect[0] + style.ButtonPadding.get_current().value1 + 1, button_rect[1] + (style.ButtonPadding.get_current().value2 or 0))
-        texture_size = (width - (style.ButtonPadding.get_current().value1 * 2), height - ((style.ButtonPadding.get_current().value2 or 0) * 2))
+        texture_pos = (button_rect[0] + btn_padding[0] + 1, button_rect[1] + (btn_padding[1] or 0))
+        texture_size = (width - (btn_padding[0] * 2), height - ((btn_padding[1] or 0) * 2))
         texture_tint = (255, 255, 255, (255 if enabled else 155)) if v else (128, 128, 128, (255 if enabled else 155))
         
         ImGui.DrawTextureInDrawList(
@@ -1453,7 +1495,9 @@ class ImGui:
         PyImGui.pop_clip_rect()
                 
 
-        style.ButtonPadding.pop_style_var()
+        if current_style_var.img_style_enum:
+            PyImGui.pop_style_var(1)
+            
         if disabled:PyImGui.end_disabled()
             
         if clicked:

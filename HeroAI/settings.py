@@ -16,10 +16,15 @@ class Settings:
             return
         base_path = Console.get_projects_path()
         self.ini_handler = IniHandler(os.path.join(base_path, "Widgets", "Config", "HeroAI.ini"))
+        self.save_requested = False
+        
+        self.ShowCommandPanel = True
+        self.ShowCommandPanelOnlyOnLeaderAccount = True
         
         self.ShowPanelOnlyOnLeaderAccount = False
+        self.DisableAutomationOnLeaderAccount = False
+        
         self.CombinePanels = False
-        self.ShowCommandPanel = True
         self.ShowHeroPanels = True
         self.ShowHeroEffects = True
         self.ShowEffectDurations = False
@@ -30,14 +35,25 @@ class Settings:
         self.ShowHeroSkills = True
         self.ShowFloatingTargets = True
         self.ShowPartyPanelUI = True
-        self.HeroPanelPositions : dict[str, tuple[int, int, bool]] = {}
+        self.HeroPanelPositions : dict[str, tuple[int, int, int, int, bool]] = {}
         
         
     def save_settings(self):
-        self.ini_handler.write_key("General", "ShowPanelOnlyOnLeaderAccount", str(self.ShowPanelOnlyOnLeaderAccount))
-        self.ini_handler.write_key("General", "CombinePanels", str(self.CombinePanels))
+        self.save_requested = True
+        
+    def write_settings(self):
+        if not self.save_requested:
+            return
+        
         self.ini_handler.write_key("General", "ShowCommandPanel", str(self.ShowCommandPanel))
+        self.ini_handler.write_key("General", "ShowCommandPanelOnlyOnLeaderAccount", str(self.ShowCommandPanelOnlyOnLeaderAccount))
+        
+        self.ini_handler.write_key("General", "ShowPanelOnlyOnLeaderAccount", str(self.ShowPanelOnlyOnLeaderAccount))
+        self.ini_handler.write_key("General", "DisableAutomationOnLeaderAccount", str(self.DisableAutomationOnLeaderAccount))
+        
+        self.ini_handler.write_key("General", "CombinePanels", str(self.CombinePanels))
         self.ini_handler.write_key("General", "ShowHeroPanels", str(self.ShowHeroPanels))
+        
         
         self.ini_handler.write_key("General", "ShowHeroEffects", str(self.ShowHeroEffects))
         self.ini_handler.write_key("General", "ShowEffectDurations", str(self.ShowEffectDurations))
@@ -50,13 +66,17 @@ class Settings:
         self.ini_handler.write_key("General", "ShowHeroSkills", str(self.ShowHeroSkills))
         self.ini_handler.write_key("General", "ShowPartyPanelUI", str(self.ShowPartyPanelUI))
 
-        for hero_email, (x, y, collapsed) in self.HeroPanelPositions.items():
-            self.ini_handler.write_key("HeroPanelPositions", hero_email, f"{x},{y},{collapsed}")
+        for hero_email, (x, y, w, h, collapsed) in self.HeroPanelPositions.items():
+            self.ini_handler.write_key("HeroPanelPositions", hero_email, f"{x},{y},{w},{h},{collapsed}")
         
     def load_settings(self):
-        self.ShowPanelOnlyOnLeaderAccount = self.ini_handler.read_bool("General", "ShowPanelOnlyOnLeaderAccount", False)
-        self.CombinePanels = self.ini_handler.read_bool("General", "CombinePanels", False)
         self.ShowCommandPanel = self.ini_handler.read_bool("General", "ShowCommandPanel", True)
+        self.ShowCommandPanelOnlyOnLeaderAccount = self.ini_handler.read_bool("General", "ShowCommandPanelOnlyOnLeaderAccount", True)
+        
+        self.ShowPanelOnlyOnLeaderAccount = self.ini_handler.read_bool("General", "ShowPanelOnlyOnLeaderAccount", False)
+        self.DisableAutomationOnLeaderAccount = self.ini_handler.read_bool("General", "DisableAutomationOnLeaderAccount", False)
+        
+        self.CombinePanels = self.ini_handler.read_bool("General", "CombinePanels", False)
         self.ShowHeroPanels = self.ini_handler.read_bool("General", "ShowHeroPanels", True)
         
         self.ShowHeroEffects = self.ini_handler.read_bool("General", "ShowHeroEffects", True)
@@ -75,11 +95,13 @@ class Settings:
         
         for key, value in items.items():
             try:
-                x_str, y_str, collapsed_str = value.split(",")
+                x_str, y_str, w_str, h_str, collapsed_str = value.split(",")
                 x = int(x_str)
                 y = int(y_str)
+                w = int(w_str)
+                h = int(h_str)
                 collapsed = collapsed_str.lower() == "true"
-                self.HeroPanelPositions[key] = (x, y, collapsed)
+                self.HeroPanelPositions[key] = (x, y, w, h, collapsed)
                 
             except Exception as e:
                 ConsoleLog("HeroAI", f"Error loading HeroPanelPosition for {key}: {e}")

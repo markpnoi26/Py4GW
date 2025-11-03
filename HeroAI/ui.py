@@ -7,9 +7,11 @@ from Py4GW import Console
 import PyImGui
 from HeroAI import windows
 from HeroAI.cache_data import CacheData
+from HeroAI.constants import MAX_NUM_PLAYERS, NUMBER_OF_SKILLS
 from HeroAI.settings import Settings
-from HeroAI.utils import DrawHeroFlag, IsHeroFlagged
-from HeroAI.windows import DrawFlags, SubmitGameOptions
+from HeroAI.types import GameOptionStruct
+from HeroAI.utils import DrawFlagAll, DrawHeroFlag, IsHeroFlagged
+from HeroAI.windows import CompareAndSubmitGameOptions, SubmitGameOptions
 from Py4GWCoreLib import Agent, ImGui
 from Py4GWCoreLib.Effect import Effects
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
@@ -24,6 +26,7 @@ from Py4GWCoreLib.Routines import Routines
 from Py4GWCoreLib.Skill import Skill
 from Py4GWCoreLib.Skillbar import SkillBar
 from Py4GWCoreLib.enums_src.GameData_enums import Allegiance, Attribute, Profession, ProfessionShort
+from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.enums_src.Multiboxing_enums import SharedCommandType
 from Py4GWCoreLib.py4gwcorelib_src.Color import Color
 from Py4GWCoreLib.py4gwcorelib_src.Console import ConsoleLog
@@ -68,12 +71,12 @@ message_cache : dict[str, dict[SharedCommandType, dict[int, tuple]]] = {}
 template_popup_open: bool = False
 template_account: str = ""
 template_code = ""
+configure_consumables_window_open: bool = False
 
-flag_account = ""
 settings = Settings()
 casting_animation_timer = Timer()
 casting_animation_timer.Start()
-
+          
 def get_frame_texture_for_effect(skill_id: int) -> tuple[(SplitTexture | MapTexture), TextureState, int]:
     is_elite = GLOBAL_CACHE.Skill.Flags.IsElite(skill_id)
     texture_state = TextureState.Normal if not is_elite else TextureState.Active
@@ -474,7 +477,6 @@ def draw_casting_animation(
         PyImGui.draw_list_add_circle(cx, cy, radius, color.color_int, 36, 6.0)
         PyImGui.pop_clip_rect()
 
-
 def draw_skill_bar(height: float, account_data: AccountData, cached_data: CacheData, message_queue: list[tuple[int, SharedMessage]]):
     global skill_cache, messages
     style = ImGui.get_style()
@@ -848,24 +850,12 @@ def enter_skill_template_code(account_data : AccountData):
             
         PyImGui.end_popup()
         
-def flag_hero(account_data: AccountData, cached_data: CacheData):    
-    global flag_account
-    
-    windows.capture_flag_all = False
-    windows.capture_hero_flag = True
-    windows.capture_hero_index = account_data.PartyPosition
-    
-    DrawFlags(cached_data)
-    
-    if not windows.capture_hero_flag:
-        flag_account = ""
-    
 def draw_buttons(account_data: AccountData, cached_data: CacheData, message_queue: list[tuple[int, SharedMessage]], btn_size: float = 28):
     global message_cache
     style = ImGui.get_style()
     draw_textures = style.Theme in ImGui.Textured_Themes
     
-    global template_popup_open, template_account, flag_account
+    global template_popup_open, template_account
     is_explorable = GLOBAL_CACHE.Map.IsExplorable()
     if not ImGui.begin_child("##buttons" + account_data.AccountEmail, (84, 58), False,
                              PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
@@ -873,7 +863,7 @@ def draw_buttons(account_data: AccountData, cached_data: CacheData, message_queu
         return
 
     style = ImGui.get_style()
-    same_map = GLOBAL_CACHE.Map.GetMapID() == account_data.MapID
+    same_map = GLOBAL_CACHE.Map.GetMapID() == account_data.MapID and GLOBAL_CACHE.Map.GetRegion()[0] == account_data.MapRegion and GLOBAL_CACHE.Map.GetDistrict() == account_data.MapDistrict
     player_email = GLOBAL_CACHE.Player.GetAccountEmail()
     account_email = account_data.AccountEmail
 
@@ -943,9 +933,7 @@ def draw_buttons(account_data: AccountData, cached_data: CacheData, message_queu
         player_x, player_y = GLOBAL_CACHE.Player.GetXY()
         target_id = Player.GetTargetID() or Player.GetAgentID()
 
-        def invite_player():
-            same_map = GLOBAL_CACHE.Map.GetMapID() == account_data.MapID
-            
+        def invite_player():            
             if same_map:
                 GLOBAL_CACHE.Party.Players.InvitePlayer(account_data.CharacterName)
                 
@@ -957,7 +945,7 @@ def draw_buttons(account_data: AccountData, cached_data: CacheData, message_queu
                     GLOBAL_CACHE.Map.GetMapID(),
                     GLOBAL_CACHE.Map.GetRegion()[0],
                     GLOBAL_CACHE.Map.GetDistrict(),
-                    0,
+                    GLOBAL_CACHE.Map.GetLanguage()[0],
                 )
             )
         
@@ -1038,9 +1026,10 @@ def draw_buttons(account_data: AccountData, cached_data: CacheData, message_queu
         target_id = Player.GetTargetID() or Player.GetAgentID()
         
         def flag_hero_account():
-            global flag_account
-            flag_account = account_data.AccountEmail
-            ConsoleLog("HERO AI", "Flagging hero...")
+            ConsoleLog("HERO AI", "Flagging hero...")                  
+            windows.capture_flag_all = False
+            windows.capture_hero_flag = True
+            windows.capture_hero_index = account_data.PartyPosition  
             return -1
         
         def clear_hero_flag():
@@ -1181,7 +1170,7 @@ def draw_combined_hero_panel(account_data: AccountData, cached_data: CacheData, 
     draw_buffs_and_upkeeps(account_data, 28)    
 
 def draw_hero_panel(window: WindowModule, account_data: AccountData, cached_data: CacheData, messages: list[tuple[int, SharedMessage]], open: bool = True):
-    global flag_account, title_names
+    global title_names
     style = ImGui.get_style()
     style.WindowPadding.push_style_var(4, 1)
     
@@ -1266,12 +1255,303 @@ def draw_hero_panel(window: WindowModule, account_data: AccountData, cached_data
         window.collapse = collapsed if style.Theme != StyleTheme.Guild_Wars else window.collapse
             
         if Console.is_window_active():
-            settings.HeroPanelPositions[account_data.AccountEmail] = (int(pos[0]), int(pos[1]), window.collapse)
+            settings.HeroPanelPositions[account_data.AccountEmail] = (int(pos[0]), int(pos[1]), int(window.window_size[0]), int(window.window_size[1]), window.collapse)
             settings.save_settings()
         
     window.end()
-    
-    if flag_account == account_data.AccountEmail and flag_account:    
-        flag_hero(account_data, cached_data)      
+            
         
     pass  # Implementation of hero panel drawing logic goes here
+
+def draw_button(id_suffix: str, icon: str, w : float = 0, h : float = 0, active : bool = False):       
+    style = ImGui.get_style()
+    draw_textures = style.Theme in ImGui.Textured_Themes    
+    btn_id = f"##{id_suffix}"    
+    clicked = (draw_textures and PyImGui.invisible_button(btn_id, w, h)) or (not draw_textures and ImGui.button(btn_id, w, h))
+
+
+    hovered = PyImGui.is_item_hovered()
+    item_rect_min = PyImGui.get_item_rect_min()
+    if draw_textures:
+        ThemeTextures.HeroPanelButtonBase.value.get_texture().draw_in_drawlist(
+            item_rect_min[0], item_rect_min[1], (w, h),
+            state=TextureState.Active if active else TextureState.Normal,
+            tint=(255, 255, 255, 255) if hovered else (200, 200, 200, 255)
+        )
+
+    ImGui.push_font("Regular", 10)
+    text_size = PyImGui.calc_text_size(icon)
+    PyImGui.draw_list_add_text(
+        item_rect_min[0] + (w - text_size[0]) / 2,
+        item_rect_min[1] + (h - text_size[1]) / 2,
+        style.Text.color_int,
+        icon
+    )
+    ImGui.pop_font()   
+    return clicked     
+
+def draw_global_hero_options(source_game_option: GameOptionStruct) -> GameOptionStruct:
+    style = ImGui.get_style()
+    game_option = GameOptionStruct()
+    
+    avail = PyImGui.get_content_region_avail()
+    avail_x = avail[0]
+    btn_size = 32
+    table_width = btn_size * 5 + 30
+    if ImGui.begin_child("##GlobalHeroOptionsChild",( table_width + 10, (btn_size  * 2) - 6), False, PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
+        style.ItemSpacing.push_style_var(0, 0)
+        style.CellPadding.push_style_var(2, 2)
+        if PyImGui.begin_table("GameOptionTable", 5, 0, table_width, btn_size + 2):                 
+            PyImGui.table_next_row()
+            PyImGui.table_next_column()
+            
+            game_option.Following = ImGui.toggle_icon_button(IconsFontAwesome5.ICON_RUNNING + "##Following", source_game_option.Following, btn_size, btn_size)
+            ImGui.show_tooltip("Following")
+            PyImGui.table_next_column()
+            game_option.Avoidance = ImGui.toggle_icon_button(IconsFontAwesome5.ICON_PODCAST + "##Avoidance", source_game_option.Avoidance, btn_size, btn_size)
+            ImGui.show_tooltip("Avoidance")
+            PyImGui.table_next_column()
+            game_option.Looting = ImGui.toggle_icon_button(IconsFontAwesome5.ICON_COINS + "##Looting", source_game_option.Looting, btn_size, btn_size)
+            ImGui.show_tooltip("Looting")
+            PyImGui.table_next_column()
+            game_option.Targeting = ImGui.toggle_icon_button(IconsFontAwesome5.ICON_BULLSEYE + "##Targeting", source_game_option.Targeting, btn_size, btn_size)
+            ImGui.show_tooltip("Targeting")
+            PyImGui.table_next_column()
+            game_option.Combat = ImGui.toggle_icon_button(IconsFontAwesome5.ICON_SKULL_CROSSBONES + "##Combat", source_game_option.Combat, btn_size, btn_size)
+            ImGui.show_tooltip("Combat")        
+            
+            PyImGui.end_table()
+
+
+        style.ButtonPadding.push_style_var(5 if style.Theme not in ImGui.Textured_Themes else 0, 3 if style.Theme not in ImGui.Textured_Themes else 2)
+        if PyImGui.begin_table("SkillsTable", NUMBER_OF_SKILLS, 0, table_width, (btn_size / 3)):
+            PyImGui.table_next_row()
+            PyImGui.table_next_column()
+            skill_size = table_width / NUMBER_OF_SKILLS - 6
+            
+            for i in range(NUMBER_OF_SKILLS):
+                game_option.Skills[i].Active = ImGui.toggle_button(f"{i + 1}##Skill{i}", source_game_option.Skills[i].Active, skill_size, skill_size)
+                ImGui.show_tooltip(f"Skill {i + 1}")
+                PyImGui.table_next_column()
+                    
+            PyImGui.end_table()
+        style.ButtonPadding.pop_style_var()
+                
+        style.ButtonPadding.pop_style_var()
+        style.ItemSpacing.pop_style_var()
+        style.CellPadding.pop_style_var()
+
+    ImGui.end_child()
+        
+    return game_option
+
+def send_command_to_all_heroes(accounts: list[AccountData], command: SharedCommandType, param: tuple = (), extra_data: tuple = (), include_self: bool = False):
+    account_mail = GLOBAL_CACHE.Player.GetAccountEmail()
+    for account in accounts:
+        if not include_self and account.AccountEmail == account_mail:
+            continue
+        
+        GLOBAL_CACHE.ShMem.SendMessage(
+            account_mail,
+            account.AccountEmail,
+            command,
+            param,
+            ExtraData=extra_data
+        )
+
+def draw_command_panel_commands(accounts : list[AccountData], cached_data: CacheData):  
+    global configure_consumables_window_open      
+    style = ImGui.get_style()
+    btn_size = 32
+    spacing = 3
+    PyImGui.same_line(0, spacing)
+    #vertical separator
+    x,y = PyImGui.get_cursor_screen_pos()
+    
+    PyImGui.draw_list_add_line(
+        x - (spacing * 2.5),
+        y,
+        x - (spacing * 2.5),
+        y + PyImGui.get_content_region_avail()[1],
+        style.Border.color_int,
+        2)
+    
+    style.ItemSpacing.push_style_var(2, 2)
+    if ImGui.begin_child("##Commands", ((32 + 2) * 5,0), False):
+        if draw_button("stack", IconsFontAwesome5.ICON_COMPRESS_ARROWS_ALT, btn_size, btn_size, False):
+            player_x, player_y = GLOBAL_CACHE.Player.GetXY()
+            send_command_to_all_heroes(accounts, SharedCommandType.PixelStack, (player_x, player_y, 0, 0))
+            pass
+        ImGui.show_tooltip("Stack Team")
+        PyImGui.same_line(0, 2)
+        
+        if draw_button("interact", IconsFontAwesome5.ICON_HAND_POINT_RIGHT, btn_size, btn_size, False):
+            target_id = Player.GetTargetID()
+            if target_id:
+                send_command_to_all_heroes(accounts, SharedCommandType.InteractWithTarget, (target_id, 0, 0, 0))
+        ImGui.show_tooltip("Interact with Target")
+        PyImGui.same_line(0, 2)
+
+        if draw_button("dialog", IconsFontAwesome5.ICON_COMMENT_DOTS, btn_size, btn_size, False):
+            target_id = Player.GetTargetID()
+            if target_id:
+                send_command_to_all_heroes(accounts, SharedCommandType.TakeDialogWithTarget, (target_id, 1, 0, 0))
+        ImGui.show_tooltip("Talk with Target and choose dialog option 1")
+        
+        PyImGui.same_line(0, 2)                
+        PyImGui.dummy(btn_size, btn_size)
+        
+        PyImGui.same_line(0, 2)
+        if draw_button("pcons", IconsFontAwesome5.ICON_CANDY_CANE, btn_size, btn_size, configure_consumables_window_open):
+            configure_consumables_window_open = not configure_consumables_window_open
+        ImGui.show_tooltip("Configure Consumable Usage")
+        
+        if draw_button("resign", IconsFontAwesome5.ICON_SKULL, btn_size, btn_size, False):
+            send_command_to_all_heroes(accounts, SharedCommandType.Resign, include_self=True)
+        ImGui.show_tooltip("Resign Team")
+        
+        
+        PyImGui.same_line(0, 2)
+        PyImGui.dummy(btn_size, btn_size)
+        
+        
+        PyImGui.same_line(0, 2)
+        PyImGui.dummy(btn_size, btn_size)
+        
+        PyImGui.same_line(0, 2)
+        
+        if draw_button("flag", IconsFontAwesome5.ICON_FLAG, btn_size, btn_size, False):
+            windows.capture_flag_all = True
+            windows.capture_hero_flag = True
+            windows.capture_hero_index = 0
+            windows.one_time_set_flag = False         
+            pass
+
+        ImGui.show_tooltip("Flag Team")
+        
+        PyImGui.same_line(0, 2)
+        if draw_button("unflag", IconsFontAwesome5.ICON_CIRCLE_XMARK, btn_size, btn_size, False):
+            windows.clear_flags = True
+            pass
+
+        ImGui.show_tooltip("Delete Flags")
+
+        pass
+    
+    ImGui.end_child()
+    style.ItemSpacing.pop_style_var()
+
+consumables = [
+    (ModelID.Essence_Of_Celerity, ("Textures\\Consumables\\Trimmed\\Essence_of_Celerity.png", (ModelID.Essence_Of_Celerity.value, GLOBAL_CACHE.Skill.GetID("Essence_of_Celerity_item_effect"), 0, 0))),
+    (ModelID.Grail_Of_Might, ("Textures\\Consumables\\Trimmed\\Grail_of_Might.png", (ModelID.Grail_Of_Might.value, GLOBAL_CACHE.Skill.GetID("Grail_of_Might_item_effect"), 0, 0))),
+    (ModelID.Armor_Of_Salvation, ("Textures\\Consumables\\Trimmed\\Armor_of_Salvation.png", (ModelID.Armor_Of_Salvation.value, GLOBAL_CACHE.Skill.GetID("Armor_of_Salvation_item_effect"), 0, 0))),
+    
+    (0, ("", (0, 0, 0, 0))),  # Empty slot
+    (0, ("", (0, 0, 0, 0))),  # Empty slot
+    (ModelID.Rainbow_Candy_Cane, ("Textures\\Consumables\\Trimmed\\Rainbow_Candy_Cane.png", (ModelID.Rainbow_Candy_Cane.value, 0, ModelID.Honeycomb.value, 0))),
+    
+    (ModelID.Birthday_Cupcake, ("Textures\\Consumables\\Trimmed\\Birthday_Cupcake.png", (ModelID.Birthday_Cupcake.value, GLOBAL_CACHE.Skill.GetID("Birthday_Cupcake_skill"), 0, 0))),
+    (ModelID.Candy_Apple, ("Textures\\Consumables\\Trimmed\\Candy_Apple.png", (ModelID.Candy_Apple.value, GLOBAL_CACHE.Skill.GetID("Candy_Apple_skill"), 0, 0))),
+    (ModelID.Candy_Corn, ("Textures\\Consumables\\Trimmed\\Candy_Corn.png", (ModelID.Candy_Corn.value, GLOBAL_CACHE.Skill.GetID("Candy_Corn_skill"), 0, 0))),
+    (ModelID.Golden_Egg, ("Textures\\Consumables\\Trimmed\\Golden_Egg.png", (ModelID.Golden_Egg.value, GLOBAL_CACHE.Skill.GetID("Golden_Egg_skill"), 0, 0))),
+    (ModelID.Slice_Of_Pumpkin_Pie, ("Textures\\Consumables\\Trimmed\\Slice_of_Pumpkin_Pie.png", (ModelID.Slice_Of_Pumpkin_Pie.value, GLOBAL_CACHE.Skill.GetID("Pie_Induced_Ecstasy"), 0, 0))),
+    (ModelID.War_Supplies, ("Textures\\Consumables\\Trimmed\\War_Supplies.png", (ModelID.War_Supplies.value, GLOBAL_CACHE.Skill.GetID("Well_Supplied"), 0, 0))),
+    
+    (ModelID.Drake_Kabob, ("Textures\\Consumables\\Trimmed\\Drake_Kabob.png", (ModelID.Drake_Kabob.value, GLOBAL_CACHE.Skill.GetID("Drake_Skin"), 0, 0))),
+    (ModelID.Bowl_Of_Skalefin_Soup, ("Textures\\Consumables\\Trimmed\\Bowl_of_Skalefin_Soup.png", (ModelID.Bowl_Of_Skalefin_Soup.value, GLOBAL_CACHE.Skill.GetID("Skale_Vigor"), 0, 0))),
+    (ModelID.Pahnai_Salad, ("Textures\\Consumables\\Trimmed\\Pahnai_Salad.png", (ModelID.Pahnai_Salad.value, GLOBAL_CACHE.Skill.GetID("Pahnai_Salad_item_effect"), 0, 0))),
+    # (ModelID.Dwarven_Ale, ("Textures\\Consumables\\Trimmed\\Dwarven_Ale.png", (ModelID.Dwarven_Ale.value, GLOBAL_CACHE.Skill.GetID("Dwarven_Ale_item_effect"), 0, 0))),
+]
+
+def _post_pcon_message(params, cached_data: CacheData):
+    self_account = GLOBAL_CACHE.ShMem.GetAccountDataFromEmail(cached_data.account_email)
+    if not self_account:
+        return
+    
+    accounts = GLOBAL_CACHE.ShMem.GetAllAccountData()
+    sender_email = cached_data.account_email
+    for account in accounts:        
+        GLOBAL_CACHE.ShMem.SendMessage(sender_email, account.AccountEmail, SharedCommandType.PCon, params)
+
+#_post_pcon_message((ModelID.Essence_Of_Celerity.value, GLOBAL_CACHE.Skill.GetID("Essence_of_Celerity_item_effect"), 0, 0))
+def draw_consumables_window(cached_data: CacheData):
+    global configure_consumables_window_open
+    style = ImGui.get_style()
+    draw_textures = style.Theme in ImGui.Textured_Themes
+    
+    if not configure_consumables_window_open:
+        return
+    
+    
+    PyImGui.open_popup("Configure Consumables")
+    
+    if PyImGui.begin_popup("Configure Consumables"):        
+        if PyImGui.is_window_appearing():
+            io = PyImGui.get_io()
+            mouse_x, mouse_y = io.mouse_pos_x, io.mouse_pos_y
+            PyImGui.set_window_pos(mouse_x, mouse_y - 170, PyImGui.ImGuiCond.Always)
+            
+        ImGui.text("Consumable configuration window")
+        btn_size = 32
+        style.CellPadding.push_style_var(2, 2)
+        if ImGui.begin_table("##ConTable", 6, PyImGui.TableFlags.SizingStretchProp):
+            PyImGui.table_next_column()
+            
+            for model_id, (texture_path, params) in consumables:        
+                if model_id == 0:
+                    PyImGui.table_next_column()
+                    continue
+                
+                if ImGui.invisible_button(f"##ConConfig {model_id}", btn_size, btn_size):
+                    _post_pcon_message(params, cached_data) 
+                    
+                x,y = PyImGui.get_item_rect_min()
+                ThemeTextures.Inventory_Slots.value.get_texture().draw_in_drawlist(x, y, (btn_size, btn_size))
+                ImGui.DrawTextureInDrawList((x + 2, y + 2), (btn_size - 4, btn_size - 4), texture_path)
+                    
+                ImGui.show_tooltip(f"Use {model_id.name.replace('_', ' ')}")
+                PyImGui.table_next_column()
+                        
+            ImGui.end_table()
+            
+        style.CellPadding.pop_style_var()
+                
+        if PyImGui.is_mouse_clicked(0) and not PyImGui.is_any_item_hovered() and not PyImGui.is_window_hovered():
+            configure_consumables_window_open = False
+            PyImGui.close_current_popup()
+            
+        PyImGui.end_popup()
+        
+    
+    pass  # Implementation of consumables window drawing logic goes here
+
+
+def draw_command_panel(window: WindowModule, accounts : list[AccountData], cached_data: CacheData):
+    style = ImGui.get_style()
+
+    size = window.window_size
+    style.WindowPadding.push_style_var(5, 5)
+    if window.begin():
+        org_game_options = cached_data.HeroAI_vars.global_control_game_struct
+        game_options = draw_global_hero_options(org_game_options)
+        CompareAndSubmitGameOptions(cached_data, game_options)
+        
+        draw_command_panel_commands(accounts, cached_data)
+        
+        collapsed = PyImGui.is_window_collapsed()
+        pos = PyImGui.get_window_pos()
+        window.process_window()
+        
+        if window.window_pos != pos or size != window.window_size:
+            window.window_pos = pos
+                
+            if Console.is_window_active():
+                settings.HeroPanelPositions[window.window_name.replace(" ", "_")] = (int(pos[0]), int(pos[1]), int(window.window_size[0]), int(window.window_size[1]), False)
+                settings.save_settings()
+            
+    window.end()
+    style.WindowPadding.pop_style_var()
+    
+    draw_consumables_window(cached_data)
+    
+    pass  # Implementation of command panel drawing logic goes here

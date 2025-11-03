@@ -511,7 +511,6 @@ class Py4GWSharedMemoryManager:
             agent_id = self.player_instance.id
             login_number = self.GetLoginNumber()
             party_number = self.GetPartyNumber()
-            map_region = self.map_instance.server_region.ToInt()
             playerx, playery, playerz = self.player_instance.agent.x, self.player_instance.agent.y, self.player_instance.agent.z
 
             player.AccountName =self.player_instance.account_name
@@ -523,7 +522,7 @@ class Py4GWSharedMemoryManager:
             player.OwnerPlayerID = 0
             player.HeroID = 0
             player.MapID = self.map_instance.map_id.ToInt()
-            player.MapRegion = map_region
+            player.MapRegion = self.map_instance.server_region.ToInt()
             player.MapDistrict = self.map_instance.district
             player.PlayerID = agent_id
             player.PlayerLevel = self.player_instance.agent.living_agent.level

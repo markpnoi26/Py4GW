@@ -1339,3 +1339,50 @@ class ThemeTextures(Enum):
         size = (64, 64),
     )),
     )
+    
+    Inventory_Slots = ThemeTexture(
+    (StyleTheme.Minimalus,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER, "ui_iventory_slots.png"),
+        texture_size = (128, 128),
+        size = (52, 64),
+        normal= (0, 0),
+        active = (0, 64),      
+    )),
+    (StyleTheme.Guild_Wars,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER, "ui_iventory_slots.png"),
+        texture_size = (128, 128),
+        size = (52, 64),
+        normal= (0, 0),
+        active = (0, 64),      
+    )),
+    )
+    
+    Inventory_Slot_Blue = ThemeTexture(
+    (StyleTheme.Minimalus,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER, "ui_iventory_slots.png"),
+        texture_size = (128, 128),
+        size = (52, 64),  
+        normal= (52, 0),
+    )),
+    (StyleTheme.Guild_Wars,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER, "ui_iventory_slots.png"),
+        texture_size = (128, 128),
+        size = (52, 64),     
+        normal= (52, 0),
+    )),
+    )
+    
+    Inventory_Slot_Red = ThemeTexture(
+    (StyleTheme.Minimalus,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER, "ui_iventory_slots.png"),
+        texture_size = (128, 128),
+        size = (52, 64),
+        normal= (52, 64),
+    )),
+    (StyleTheme.Guild_Wars,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER, "ui_iventory_slots.png"),
+        texture_size = (128, 128),
+        size = (52, 64),        
+        normal= (52, 64),
+    )),
+    )
