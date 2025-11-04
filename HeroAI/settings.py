@@ -1,10 +1,14 @@
 import os
+
+from PyPlayer import PyPlayer
+from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
+from Py4GWCoreLib.Player import Player
 from Py4GWCoreLib.py4gwcorelib_src.Console import Console, ConsoleLog
 from Py4GWCoreLib.py4gwcorelib_src.IniHandler import IniHandler
 
 class Settings:
     _instance = None
-    _initialized = False
+    _instance_initialized = False
 
     def __new__(cls):
         if cls._instance is None:
@@ -12,10 +16,11 @@ class Settings:
         return cls._instance
 
     def __init__(self):
-        if self._initialized:
+        if self._instance_initialized:
             return
-        base_path = Console.get_projects_path()
-        self.ini_handler = IniHandler(os.path.join(base_path, "Widgets", "Config", "HeroAI.ini"))
+        
+        self._instance_initialized = True
+        
         self.save_requested = False
         
         self.ShowCommandPanel = True
@@ -37,11 +42,51 @@ class Settings:
         self.ShowPartyPanelUI = True
         self.HeroPanelPositions : dict[str, tuple[int, int, int, int, bool]] = {}
         
+        base_path = Console.get_projects_path()
+        self.ini_path = os.path.join(base_path, "Widgets", "Config", "HeroAI.ini")
+        self.ini_handler = IniHandler(self.ini_path)
         
+        self.account_email = ""        
+        self.account_ini_path = ""    
+        self._initialized = False    
+
+    def reset(self): 
+        self.account_email = ""
+        pass 
+    
+    def ensure_initialized(self) -> bool: 
+        account_email = PyPlayer().account_email
+        initialized = True if account_email and account_email == self.account_email else False
+        
+        if not initialized:
+            self.initialize_account_config()
+        
+        return self._initialized == initialized
+
+    def initialize_account_config(self):
+        base_path = Console.get_projects_path()        
+        account_email = PyPlayer().account_email
+        
+        if account_email:
+            config_dir = os.path.join(base_path, "Widgets", "Config", "Accounts", account_email)
+            os.makedirs(config_dir, exist_ok=True)
+            self.account_ini_path = os.path.join(config_dir, "HeroAI.ini")
+            self.account_ini_handler = IniHandler(self.account_ini_path)
+            self.account_email = account_email
+                    
+        self._initialized = True if account_email and account_email == self.account_email else False
+        
+        if self._initialized and account_email and self.account_email == account_email:
+            if not os.path.exists(self.account_ini_path):
+                self.save_requested = True
+                self.write_settings()
+            else:
+                self.load_settings()
+                
     def save_settings(self):
         self.save_requested = True
         
-    def write_settings(self):
+    def write_settings(self):               
         if not self.save_requested:
             return
         
@@ -67,9 +112,12 @@ class Settings:
         self.ini_handler.write_key("General", "ShowPartyPanelUI", str(self.ShowPartyPanelUI))
 
         for hero_email, (x, y, w, h, collapsed) in self.HeroPanelPositions.items():
-            self.ini_handler.write_key("HeroPanelPositions", hero_email, f"{x},{y},{w},{h},{collapsed}")
+            self.account_ini_handler.write_key("HeroPanelPositions", hero_email, f"{x},{y},{w},{h},{collapsed}")
         
-    def load_settings(self):
+        self.save_requested = False
+        
+    def load_settings(self):          
+        ConsoleLog("HeroAI", "Loading HeroAI settings...")      
         self.ShowCommandPanel = self.ini_handler.read_bool("General", "ShowCommandPanel", True)
         self.ShowCommandPanelOnlyOnLeaderAccount = self.ini_handler.read_bool("General", "ShowCommandPanelOnlyOnLeaderAccount", True)
         
@@ -91,8 +139,12 @@ class Settings:
         self.ShowPartyPanelUI = self.ini_handler.read_bool("General", "ShowPartyPanelUI", True)
 
         self.HeroPanelPositions.clear()        
-        items = self.ini_handler.list_keys("HeroPanelPositions")
-        
+        self.import_hero_panel_positions(self.account_ini_handler)        
+            
+    def import_hero_panel_positions(self, ini_handler: IniHandler):
+        items = ini_handler.list_keys("HeroPanelPositions")
+        request_save = False
+
         for key, value in items.items():
             try:
                 x_str, y_str, w_str, h_str, collapsed_str = value.split(",")
@@ -101,7 +153,11 @@ class Settings:
                 w = int(w_str)
                 h = int(h_str)
                 collapsed = collapsed_str.lower() == "true"
+                request_save = key not in self.HeroPanelPositions or self.HeroPanelPositions[key] != (x, y, w, h, collapsed) or request_save
                 self.HeroPanelPositions[key] = (x, y, w, h, collapsed)
                 
             except Exception as e:
                 ConsoleLog("HeroAI", f"Error loading HeroPanelPosition for {key}: {e}")
+        
+        if request_save:
+            self.save_requested = True

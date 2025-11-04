@@ -71,7 +71,7 @@ from Py4GWCoreLib import Utils
 FOLLOW_COMBAT_DISTANCE = 25.0  # if body blocked, we get close enough.
 LEADER_FLAG_TOUCH_RANGE_THRESHOLD_VALUE = Range.Touch.value * 1.1
 LOOT_THROTTLE_CHECK = ThrottledTimer(250)
-SETTINGS_THROTTLE = ThrottledTimer(1000)
+SETTINGS_THROTTLE = ThrottledTimer(50)
 ACCOUNT_THROTTLE = ThrottledTimer(500)
 
 cached_data = CacheData()
@@ -317,7 +317,7 @@ class TabType(Enum):
 
 
 selected_tab: TabType = TabType.party
-settings = Settings()
+settings : Settings = Settings()
 
 
 def DrawFramedContent(cached_data: CacheData, content_frame_id):
@@ -704,20 +704,36 @@ def configure():
 
 
 def main():
-    global cached_data
-    try:
+    global cached_data, settings
+    
+    try:        
         if not Routines.Checks.Map.MapValid():
             return
 
         cached_data.Update()
-        
-        if GLOBAL_CACHE.Map.IsMapReady() and GLOBAL_CACHE.Party.IsPartyLoaded():
-            UpdateStatus(cached_data)
-        
+                        
         if SETTINGS_THROTTLE.IsExpired():
             SETTINGS_THROTTLE.Reset()
+                            
+            if not settings.ensure_initialized(): 
+                SETTINGS_THROTTLE.throttle_time = 50                              
+                hero_windows.clear()
+                window_settings = settings.HeroPanelPositions.get(command_panel_window.window_name.lower().replace(" ", "_"), (200, 200, 400, 300, False))
+                
+                command_panel_window.window_pos = (window_settings[0], window_settings[1])
+                command_panel_window.window_size = (window_settings[2], window_settings[3])
+                command_panel_window.first_run = True             
+                return
+            elif SETTINGS_THROTTLE.throttle_time != 1000:
+                SETTINGS_THROTTLE.throttle_time = 1000
             
             settings.write_settings()
+        
+        if not settings._initialized:
+            return
+            
+        if GLOBAL_CACHE.Map.IsMapReady() and GLOBAL_CACHE.Party.IsPartyLoaded():
+            UpdateStatus(cached_data)
 
     except ImportError as e:
         Py4GW.Console.Log(MODULE_NAME, f"ImportError encountered: {str(e)}", Py4GW.Console.MessageType.Error)
@@ -782,10 +798,6 @@ def minimal():
             PyImGui.end()
 
 def on_enable():
-    settings.load_settings()
-    window_settings = settings.HeroPanelPositions.get(command_panel_window.window_name.lower().replace(" ", "_"), (200, 200, 400, 300, False))
-    
-    command_panel_window.window_pos = (window_settings[0], window_settings[1])
-    command_panel_window.window_size = (window_settings[2], window_settings[3])
+    settings.reset()
 
 __all__ = ['main', 'configure', 'on_enable']
