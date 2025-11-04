@@ -716,7 +716,7 @@ def main():
             SETTINGS_THROTTLE.Reset()
                             
             if not settings.ensure_initialized(): 
-                SETTINGS_THROTTLE.throttle_time = 50                              
+                SETTINGS_THROTTLE.SetThrottleTime(50)                              
                 hero_windows.clear()
                 window_settings = settings.HeroPanelPositions.get(command_panel_window.window_name.lower().replace(" ", "_"), (200, 200, 400, 300, False))
                 
@@ -725,7 +725,7 @@ def main():
                 command_panel_window.first_run = True             
                 return
             elif SETTINGS_THROTTLE.throttle_time != 1000:
-                SETTINGS_THROTTLE.throttle_time = 1000
+                SETTINGS_THROTTLE.SetThrottleTime(1000)
             
             settings.write_settings()
         
@@ -799,5 +799,6 @@ def minimal():
 
 def on_enable():
     settings.reset()
+    SETTINGS_THROTTLE.SetThrottleTime(50)
 
 __all__ = ['main', 'configure', 'on_enable']
