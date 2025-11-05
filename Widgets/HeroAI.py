@@ -50,7 +50,7 @@ from HeroAI.windows import DrawMultiboxTools
 from HeroAI.windows import DrawOptions
 from HeroAI.windows import DrawPanelButtons
 from HeroAI.windows import SubmitGameOptions
-from HeroAI.ui import draw_combined_hero_panel, draw_command_panel, draw_hero_panel
+from HeroAI.ui import draw_combined_hero_panel, draw_command_panel, draw_configure_window, draw_hero_panel
 from Py4GWCoreLib import GLOBAL_CACHE
 from Py4GWCoreLib import ActionQueueManager
 from Py4GWCoreLib import IconsFontAwesome5
@@ -593,114 +593,7 @@ def UpdateStatus(cached_data: CacheData):
 
 
 def configure():
-    global module_info
-    
-    if not module_info:
-        module_info = widget_handler.get_widget_info(MODULE_NAME)
-        
-    configure_window.open = module_info.configuring if module_info else False
-    
-    if configure_window.begin():
-        if ImGui.collapsing_header("General"):
-            show_party_panel_ui = ImGui.checkbox("Show Party Panel UI", settings.ShowPartyPanelUI)            
-            if show_party_panel_ui != settings.ShowPartyPanelUI:
-                settings.ShowPartyPanelUI = show_party_panel_ui
-                settings.save_settings()
-                    
-            show_floating_targets = ImGui.checkbox("Show Floating Target Buttons", settings.ShowFloatingTargets)
-            if show_floating_targets != settings.ShowFloatingTargets:
-                settings.ShowFloatingTargets = show_floating_targets
-                settings.save_settings()
-
-            disable_automation = ImGui.checkbox("Disable Leader Automation", settings.DisableAutomationOnLeaderAccount)
-            if disable_automation != settings.DisableAutomationOnLeaderAccount:
-                settings.DisableAutomationOnLeaderAccount = disable_automation
-                settings.save_settings()
-
-            show_command_panel = ImGui.checkbox("Show Command Panel", settings.ShowCommandPanel)
-            if show_command_panel != settings.ShowCommandPanel:
-                settings.ShowCommandPanel = show_command_panel
-                settings.save_settings()
-                
-                
-        if ImGui.collapsing_header("Hero Panels"):       
-            show_on_leader = ImGui.checkbox("Show only on Leader", settings.ShowPanelOnlyOnLeaderAccount)
-            if show_on_leader != settings.ShowPanelOnlyOnLeaderAccount:
-                settings.ShowPanelOnlyOnLeaderAccount = show_on_leader
-                settings.save_settings()
-            
-            combine_panels = ImGui.checkbox("Combine Hero Panels", settings.CombinePanels)
-            if combine_panels != settings.CombinePanels:
-                settings.CombinePanels = combine_panels
-                settings.save_settings()
-                
-            show_hero_panels = ImGui.checkbox("Show Hero Panels", settings.ShowHeroPanels)
-            if show_hero_panels != settings.ShowHeroPanels:
-                settings.ShowHeroPanels = show_hero_panels
-                settings.save_settings()
-                
-        if ImGui.collapsing_header("Health & Energy"):
-            show_hero_bars = ImGui.checkbox("Show Health and Energy", settings.ShowHeroBars)
-            if show_hero_bars != settings.ShowHeroBars:
-                settings.ShowHeroBars = show_hero_bars
-                settings.save_settings()
-                
-        if ImGui.collapsing_header("Hero Skills"):
-            show_hero_skills = ImGui.checkbox("Show Hero Skills", settings.ShowHeroSkills)
-            if show_hero_skills != settings.ShowHeroSkills:
-                settings.ShowHeroSkills = show_hero_skills
-                settings.save_settings()
-        
-        if ImGui.collapsing_header("Hero Effects & Upkeeps"):
-            show_hero_upkeeps = ImGui.checkbox("Show Hero Upkeeps", settings.ShowHeroUpkeeps)
-            if show_hero_upkeeps != settings.ShowHeroUpkeeps:
-                settings.ShowHeroUpkeeps = show_hero_upkeeps
-                settings.save_settings()
-                
-            show_hero_effects = ImGui.checkbox("Show Hero Effects", settings.ShowHeroEffects)
-            if show_hero_effects != settings.ShowHeroEffects:
-                settings.ShowHeroEffects = show_hero_effects
-                settings.save_settings()
-
-            
-            radio_value = 0 if not settings.ShowEffectDurations and not settings.ShowShortEffectDurations else (1 if settings.ShowShortEffectDurations else 2)
-
-            radio_value = ImGui.radio_button("Show no durations", radio_value, 0)
-            radio_value = ImGui.radio_button("Show short durations", radio_value, 1)
-            radio_value = ImGui.radio_button("Show all durations", radio_value, 2)
-
-            if radio_value == 0:
-                if settings.ShowEffectDurations or settings.ShowShortEffectDurations:
-                    settings.ShowEffectDurations = False
-                    settings.ShowShortEffectDurations = False
-                    settings.save_settings()
-
-            elif radio_value == 1:
-                if settings.ShowEffectDurations or not settings.ShowShortEffectDurations:
-                    settings.ShowEffectDurations = False
-                    settings.ShowShortEffectDurations = True
-                    settings.save_settings()
-
-            elif radio_value == 2:
-                if not settings.ShowEffectDurations or settings.ShowShortEffectDurations:
-                    settings.ShowEffectDurations = True
-                    settings.ShowShortEffectDurations = False
-                    settings.save_settings()
-                
-                
-        if ImGui.collapsing_header("Hero Buttons"):
-            show_hero_buttons = ImGui.checkbox("Show Hero Buttons", settings.ShowHeroButtons)
-            if show_hero_buttons != settings.ShowHeroButtons:
-                settings.ShowHeroButtons = show_hero_buttons
-                settings.save_settings()
-                            
-    
-    configure_window.end()  
-    
-    if not configure_window.open:
-        WidgetHandler().set_widget_configuring(MODULE_NAME, False)
-          
-    pass
+    draw_configure_window()
 
 
 def main():

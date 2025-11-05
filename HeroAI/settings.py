@@ -1,12 +1,47 @@
 import os
 
 from PyPlayer import PyPlayer
+from HeroAI.commands import Command, HeroAICommands
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.Player import Player
 from Py4GWCoreLib.py4gwcorelib_src.Console import Console, ConsoleLog
 from Py4GWCoreLib.py4gwcorelib_src.IniHandler import IniHandler
 
 class Settings:
+    class CommandHotBar:
+        def __init__(self):
+            self.identifier: str = ""
+            self.commands: list[list[Command]] = [[]]
+            self.position: tuple[int, int] = (0, 0)   
+            self.visible: bool = True
+        
+        def to_ini_string(self) -> str:
+            command_names = []
+            for row in self.commands:
+                row_names = [cmd.name for cmd in row]
+                command_names.append("|".join(row_names))
+            return ";".join(command_names)
+        
+        @staticmethod
+        def from_ini_string(identifier: str, ini_string: str) -> 'Settings.CommandHotBar':
+            hotbar = Settings.CommandHotBar()
+            hotbar.identifier = identifier
+            hotbar.commands = []
+            
+            all_commands = HeroAICommands().Commands
+            
+            rows = ini_string.split(";")
+            for row in rows:
+                command_names = row.split("|")
+                command_row = []
+                for name in command_names:
+                    cmd = next((c for c in all_commands if c.name == name), None)
+                    if cmd:
+                        command_row.append(cmd)
+                hotbar.commands.append(command_row)
+
+            return hotbar
+
     _instance = None
     _instance_initialized = False
 
@@ -41,6 +76,7 @@ class Settings:
         self.ShowFloatingTargets = True
         self.ShowPartyPanelUI = True
         self.HeroPanelPositions : dict[str, tuple[int, int, int, int, bool]] = {}
+        self.CommandHotBars : dict[str, Settings.CommandHotBar] = {}
         
         base_path = Console.get_projects_path()
         self.ini_path = os.path.join(base_path, "Widgets", "Config", "HeroAI.ini")
@@ -113,6 +149,9 @@ class Settings:
 
         for hero_email, (x, y, w, h, collapsed) in self.HeroPanelPositions.items():
             self.account_ini_handler.write_key("HeroPanelPositions", hero_email, f"{x},{y},{w},{h},{collapsed}")
+            
+        for hotbar_id, hotbar in self.CommandHotBars.items():
+            self.account_ini_handler.write_key("CommandHotBars", hotbar_id, hotbar.to_ini_string())
         
         self.save_requested = False
         
@@ -139,7 +178,10 @@ class Settings:
         self.ShowPartyPanelUI = self.ini_handler.read_bool("General", "ShowPartyPanelUI", True)
 
         self.HeroPanelPositions.clear()        
-        self.import_hero_panel_positions(self.account_ini_handler)        
+        self.import_hero_panel_positions(self.account_ini_handler)
+        
+        self.CommandHotBars.clear()
+        self.import_command_hotbars(self.account_ini_handler)
             
     def import_hero_panel_positions(self, ini_handler: IniHandler):
         items = ini_handler.list_keys("HeroPanelPositions")
@@ -158,6 +200,22 @@ class Settings:
                 
             except Exception as e:
                 ConsoleLog("HeroAI", f"Error loading HeroPanelPosition for {key}: {e}")
+        
+        if request_save:
+            self.save_requested = True
+    
+    def import_command_hotbars(self, ini_handler: IniHandler):
+        items = ini_handler.list_keys("CommandHotBars")
+        request_save = False
+
+        for key, value in items.items():
+            try:
+                hotbar = Settings.CommandHotBar.from_ini_string(key, value)
+                request_save = key not in self.CommandHotBars or self.CommandHotBars[key] != hotbar.to_ini_string() or request_save
+                self.CommandHotBars[key] = hotbar
+                
+            except Exception as e:
+                ConsoleLog("HeroAI", f"Error loading CommandHotBar for {key}: {e}")
         
         if request_save:
             self.save_requested = True

@@ -7,6 +7,7 @@ from Py4GW import Console
 import PyImGui
 from HeroAI import windows
 from HeroAI.cache_data import CacheData
+from HeroAI.commands import HeroAICommands
 from HeroAI.constants import MAX_NUM_PLAYERS, NUMBER_OF_SKILLS
 from HeroAI.settings import Settings
 from HeroAI.types import GameOptionStruct
@@ -32,6 +33,7 @@ from Py4GWCoreLib.py4gwcorelib_src.Color import Color
 from Py4GWCoreLib.py4gwcorelib_src.Console import ConsoleLog
 from Py4GWCoreLib.py4gwcorelib_src.Timer import ThrottledTimer, Timer
 from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
+from Py4GW_widget_manager import WidgetHandler
 
 
 class CachedSkillInfo:
@@ -73,9 +75,14 @@ template_account: str = ""
 template_code = ""
 configure_consumables_window_open: bool = False
 
+widget_handler = WidgetHandler()
+module_info = None
+
 settings = Settings()
 casting_animation_timer = Timer()
 casting_animation_timer.Start()
+
+commands = HeroAICommands()
           
 def get_frame_texture_for_effect(skill_id: int) -> tuple[(SplitTexture | MapTexture), TextureState, int]:
     is_elite = GLOBAL_CACHE.Skill.Flags.IsElite(skill_id)
@@ -990,8 +997,8 @@ def draw_buttons(account_data: AccountData, cached_data: CacheData, message_queu
         buttons = [
             (
                 "pixel_stack",
-                IconsFontAwesome5.ICON_COMPRESS_ARROWS_ALT,
-                "Pixel Stack",
+                commands.PixelStack.icon,
+                commands.PixelStack.name,
                 SharedCommandType.PixelStack,
                 lambda: GLOBAL_CACHE.ShMem.SendMessage(player_email, account_email, SharedCommandType.PixelStack, (player_x, player_y, 0, 0)),
                 lambda: is_queued(SharedCommandType.PixelStack),
@@ -1320,61 +1327,6 @@ def draw_button(id_suffix: str, icon: str, w : float = 0, h : float = 0, active 
     ImGui.pop_font()   
     return clicked     
 
-def draw_global_hero_options(source_game_option: GameOptionStruct) -> GameOptionStruct:
-    style = ImGui.get_style()
-    game_option = GameOptionStruct()
-    
-    avail = PyImGui.get_content_region_avail()
-    avail_x = avail[0]
-    btn_size = 32
-    table_width = btn_size * 5 + 30
-    if ImGui.begin_child("##GlobalHeroOptionsChild",( table_width + 10, (btn_size  * 2) - 6), False, PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
-        style.ItemSpacing.push_style_var(0, 0)
-        style.CellPadding.push_style_var(2, 2)
-        if PyImGui.begin_table("GameOptionTable", 5, 0, table_width, btn_size + 2):                 
-            PyImGui.table_next_row()
-            PyImGui.table_next_column()
-            
-            game_option.Following = ImGui.toggle_icon_button(IconsFontAwesome5.ICON_RUNNING + "##Following", source_game_option.Following, btn_size, btn_size)
-            ImGui.show_tooltip("Following")
-            PyImGui.table_next_column()
-            game_option.Avoidance = ImGui.toggle_icon_button(IconsFontAwesome5.ICON_PODCAST + "##Avoidance", source_game_option.Avoidance, btn_size, btn_size)
-            ImGui.show_tooltip("Avoidance")
-            PyImGui.table_next_column()
-            game_option.Looting = ImGui.toggle_icon_button(IconsFontAwesome5.ICON_COINS + "##Looting", source_game_option.Looting, btn_size, btn_size)
-            ImGui.show_tooltip("Looting")
-            PyImGui.table_next_column()
-            game_option.Targeting = ImGui.toggle_icon_button(IconsFontAwesome5.ICON_BULLSEYE + "##Targeting", source_game_option.Targeting, btn_size, btn_size)
-            ImGui.show_tooltip("Targeting")
-            PyImGui.table_next_column()
-            game_option.Combat = ImGui.toggle_icon_button(IconsFontAwesome5.ICON_SKULL_CROSSBONES + "##Combat", source_game_option.Combat, btn_size, btn_size)
-            ImGui.show_tooltip("Combat")        
-            
-            PyImGui.end_table()
-
-
-        style.ButtonPadding.push_style_var(5 if style.Theme not in ImGui.Textured_Themes else 0, 3 if style.Theme not in ImGui.Textured_Themes else 2)
-        if PyImGui.begin_table("SkillsTable", NUMBER_OF_SKILLS, 0, table_width, (btn_size / 3)):
-            PyImGui.table_next_row()
-            PyImGui.table_next_column()
-            skill_size = table_width / NUMBER_OF_SKILLS - 6
-            
-            for i in range(NUMBER_OF_SKILLS):
-                game_option.Skills[i].Active = ImGui.toggle_button(f"{i + 1}##Skill{i}", source_game_option.Skills[i].Active, skill_size, skill_size)
-                ImGui.show_tooltip(f"Skill {i + 1}")
-                PyImGui.table_next_column()
-                    
-            PyImGui.end_table()
-        style.ButtonPadding.pop_style_var()
-                
-        style.ButtonPadding.pop_style_var()
-        style.ItemSpacing.pop_style_var()
-        style.CellPadding.pop_style_var()
-
-    ImGui.end_child()
-        
-    return game_option
-
 def send_command_to_all_heroes(accounts: list[AccountData], command: SharedCommandType, param: tuple = (), extra_data: tuple = (), include_self: bool = False):
     account_mail = GLOBAL_CACHE.Player.GetAccountEmail()
     for account in accounts:
@@ -1408,63 +1360,12 @@ def draw_command_panel_commands(accounts : list[AccountData], cached_data: Cache
     
     style.ItemSpacing.push_style_var(2, 2)
     if ImGui.begin_child("##Commands", ((32 + 2) * 5,0), False):
-        if draw_button("stack", IconsFontAwesome5.ICON_COMPRESS_ARROWS_ALT, btn_size, btn_size, False):
-            player_x, player_y = GLOBAL_CACHE.Player.GetXY()
-            send_command_to_all_heroes(accounts, SharedCommandType.PixelStack, (player_x, player_y, 0, 0))
-            pass
-        ImGui.show_tooltip("Stack Team")
-        PyImGui.same_line(0, 2)
         
-        if draw_button("interact", IconsFontAwesome5.ICON_HAND_POINT_RIGHT, btn_size, btn_size, False):
-            target_id = Player.GetTargetID()
-            if target_id:
-                send_command_to_all_heroes(accounts, SharedCommandType.InteractWithTarget, (target_id, 0, 0, 0))
-        ImGui.show_tooltip("Interact with Target")
-        PyImGui.same_line(0, 2)
-
-        if draw_button("dialog", IconsFontAwesome5.ICON_COMMENT_DOTS, btn_size, btn_size, False):
-            target_id = Player.GetTargetID()
-            if target_id:
-                send_command_to_all_heroes(accounts, SharedCommandType.TakeDialogWithTarget, (target_id, 1, 0, 0))
-        ImGui.show_tooltip("Talk with Target and choose dialog option 1")
-        
-        PyImGui.same_line(0, 2)                
-        PyImGui.dummy(btn_size, btn_size)
-        
-        PyImGui.same_line(0, 2)
-        if draw_button("pcons", IconsFontAwesome5.ICON_CANDY_CANE, btn_size, btn_size, configure_consumables_window_open):
-            configure_consumables_window_open = not configure_consumables_window_open
-        ImGui.show_tooltip("Configure Consumable Usage")
-        
-        if draw_button("resign", IconsFontAwesome5.ICON_SKULL, btn_size, btn_size, False):
-            send_command_to_all_heroes(accounts, SharedCommandType.Resign, include_self=True)
-        ImGui.show_tooltip("Resign Team")
-        
-        
-        PyImGui.same_line(0, 2)
-        PyImGui.dummy(btn_size, btn_size)
-        
-        
-        PyImGui.same_line(0, 2)
-        PyImGui.dummy(btn_size, btn_size)
-        
-        PyImGui.same_line(0, 2)
-        
-        if draw_button("flag", IconsFontAwesome5.ICON_FLAG, btn_size, btn_size, False):
-            windows.capture_flag_all = True
-            windows.capture_hero_flag = True
-            windows.capture_hero_index = 0
-            windows.one_time_set_flag = False         
-            pass
-
-        ImGui.show_tooltip("Flag Team")
-        
-        PyImGui.same_line(0, 2)
-        if draw_button("unflag", IconsFontAwesome5.ICON_CIRCLE_XMARK, btn_size, btn_size, False):
-            windows.clear_flags = True
-            pass
-
-        ImGui.show_tooltip("Delete Flags")
+        for cmnd in commands.Commands:
+            if draw_button(cmnd.name, cmnd.icon, btn_size, btn_size, False):
+                cmnd(accounts)
+            
+            ImGui.show_tooltip(cmnd.tooltip)
 
         pass
     
@@ -1555,27 +1456,75 @@ def draw_consumables_window(cached_data: CacheData):
     
     pass  # Implementation of consumables window drawing logic goes here
 
-
 def draw_command_panel(window: WindowModule, accounts : list[AccountData], cached_data: CacheData):
     style = ImGui.get_style()
 
     size = window.window_size
     style.WindowPadding.push_style_var(5, 5)
     if window.begin():
-        org_game_options = cached_data.HeroAI_vars.global_control_game_struct
-        game_options = draw_global_hero_options(org_game_options)
-        CompareAndSubmitGameOptions(cached_data, game_options)
+        source_game_option = cached_data.HeroAI_vars.global_control_game_struct
+        game_options = GameOptionStruct()
         
-        draw_command_panel_commands(accounts, cached_data)
-        
-        collapsed = PyImGui.is_window_collapsed()
+        avail = PyImGui.get_content_region_avail()
+        avail_x = avail[0]
+        btn_size = 32
+        table_width = btn_size * 5 + 30
+        if ImGui.begin_child("##GlobalHeroOptionsChild",( table_width, (btn_size  * 2) - 6), False, PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
+            style.ItemSpacing.push_style_var(0, 0)
+            style.CellPadding.push_style_var(2, 2)
+            if PyImGui.begin_table("GameOptionTable", 5, 0, table_width, btn_size + 2):                 
+                PyImGui.table_next_row()
+                PyImGui.table_next_column()
+                
+                game_options.Following = ImGui.toggle_icon_button(IconsFontAwesome5.ICON_RUNNING + "##Following", source_game_option.Following, btn_size, btn_size)
+                ImGui.show_tooltip("Following")
+                PyImGui.table_next_column()
+                game_options.Avoidance = ImGui.toggle_icon_button(IconsFontAwesome5.ICON_PODCAST + "##Avoidance", source_game_option.Avoidance, btn_size, btn_size)
+                ImGui.show_tooltip("Avoidance")
+                PyImGui.table_next_column()
+                game_options.Looting = ImGui.toggle_icon_button(IconsFontAwesome5.ICON_COINS + "##Looting", source_game_option.Looting, btn_size, btn_size)
+                ImGui.show_tooltip("Looting")
+                PyImGui.table_next_column()
+                game_options.Targeting = ImGui.toggle_icon_button(IconsFontAwesome5.ICON_BULLSEYE + "##Targeting", source_game_option.Targeting, btn_size, btn_size)
+                ImGui.show_tooltip("Targeting")
+                PyImGui.table_next_column()
+                game_options.Combat = ImGui.toggle_icon_button(IconsFontAwesome5.ICON_SKULL_CROSSBONES + "##Combat", source_game_option.Combat, btn_size, btn_size)
+                ImGui.show_tooltip("Combat")        
+                
+                PyImGui.end_table()
+
+
+            style.ButtonPadding.push_style_var(5 if style.Theme not in ImGui.Textured_Themes else 0, 3 if style.Theme not in ImGui.Textured_Themes else 2)
+            if PyImGui.begin_table("SkillsTable", NUMBER_OF_SKILLS, 0, table_width, (btn_size / 3)):
+                PyImGui.table_next_row()
+                PyImGui.table_next_column()
+                skill_size = table_width / NUMBER_OF_SKILLS - 6
+                
+                for i in range(NUMBER_OF_SKILLS):
+                    game_options.Skills[i].Active = ImGui.toggle_button(f"{i + 1}##Skill{i}", source_game_option.Skills[i].Active, skill_size, skill_size)
+                    ImGui.show_tooltip(f"Skill {i + 1}")
+                    PyImGui.table_next_column()
+                        
+                PyImGui.end_table()
+            style.ButtonPadding.pop_style_var()
+                    
+            style.ButtonPadding.pop_style_var()
+            style.ItemSpacing.pop_style_var()
+            style.CellPadding.pop_style_var()
+
+        ImGui.end_child()
+                
+        is_window_active = Console.is_window_active()
+        if is_window_active:
+            CompareAndSubmitGameOptions(cached_data, game_options)
+
         pos = PyImGui.get_window_pos()
         window.process_window()
         
         if window.window_pos != pos or size != window.window_size:
             window.window_pos = pos
                 
-            if Console.is_window_active():
+            if is_window_active:
                 settings.HeroPanelPositions[window.window_name.replace(" ", "_")] = (int(pos[0]), int(pos[1]), int(window.window_size[0]), int(window.window_size[1]), False)
                 settings.save_settings()
             
@@ -1585,3 +1534,145 @@ def draw_command_panel(window: WindowModule, accounts : list[AccountData], cache
     draw_consumables_window(cached_data)
     
     pass  # Implementation of command panel drawing logic goes here
+
+def draw_configure_window():
+    from Widgets import HeroAI
+    
+    global module_info
+    
+    if not module_info:
+        module_info = widget_handler.get_widget_info(HeroAI.MODULE_NAME)
+        
+    HeroAI.configure_window.open = module_info.configuring if module_info else False
+    
+    if HeroAI.configure_window.begin():
+        if ImGui.begin_tab_bar("##HeroAIConfigTabs"):
+            if ImGui.begin_tab_item("General"):
+                show_party_panel_ui = ImGui.checkbox("Show Party Panel UI", settings.ShowPartyPanelUI)            
+                if show_party_panel_ui != settings.ShowPartyPanelUI:
+                    settings.ShowPartyPanelUI = show_party_panel_ui
+                    settings.save_settings()
+                        
+                show_floating_targets = ImGui.checkbox("Show Floating Target Buttons", settings.ShowFloatingTargets)
+                if show_floating_targets != settings.ShowFloatingTargets:
+                    settings.ShowFloatingTargets = show_floating_targets
+                    settings.save_settings()
+
+                disable_automation = ImGui.checkbox("Disable Leader Automation", settings.DisableAutomationOnLeaderAccount)
+                if disable_automation != settings.DisableAutomationOnLeaderAccount:
+                    settings.DisableAutomationOnLeaderAccount = disable_automation
+                    settings.save_settings()
+
+                show_command_panel = ImGui.checkbox("Show Command Panel", settings.ShowCommandPanel)
+                if show_command_panel != settings.ShowCommandPanel:
+                    settings.ShowCommandPanel = show_command_panel
+                    settings.save_settings()
+                ImGui.end_tab_item()
+                
+            if ImGui.begin_tab_item("Hero Panels"):                    
+                show_on_leader = ImGui.checkbox("Show only on Leader", settings.ShowPanelOnlyOnLeaderAccount)
+                if show_on_leader != settings.ShowPanelOnlyOnLeaderAccount:
+                    settings.ShowPanelOnlyOnLeaderAccount = show_on_leader
+                    settings.save_settings()
+                
+                combine_panels = ImGui.checkbox("Combine Hero Panels", settings.CombinePanels)
+                if combine_panels != settings.CombinePanels:
+                    settings.CombinePanels = combine_panels
+                    settings.save_settings()
+                    
+                show_hero_panels = ImGui.checkbox("Show Hero Panels", settings.ShowHeroPanels)
+                if show_hero_panels != settings.ShowHeroPanels:
+                    settings.ShowHeroPanels = show_hero_panels
+                    settings.save_settings()
+                        
+                show_hero_buttons = ImGui.checkbox("Show Hero Buttons", settings.ShowHeroButtons)
+                if show_hero_buttons != settings.ShowHeroButtons:
+                    settings.ShowHeroButtons = show_hero_buttons
+                    settings.save_settings()
+                    
+                show_hero_bars = ImGui.checkbox("Show Health and Energy", settings.ShowHeroBars)
+                if show_hero_bars != settings.ShowHeroBars:
+                    settings.ShowHeroBars = show_hero_bars
+                    settings.save_settings()
+                        
+                show_hero_skills = ImGui.checkbox("Show Hero Skills", settings.ShowHeroSkills)
+                if show_hero_skills != settings.ShowHeroSkills:
+                    settings.ShowHeroSkills = show_hero_skills
+                    settings.save_settings()
+                    
+                show_hero_upkeeps = ImGui.checkbox("Show Hero Upkeeps", settings.ShowHeroUpkeeps)
+                if show_hero_upkeeps != settings.ShowHeroUpkeeps:
+                    settings.ShowHeroUpkeeps = show_hero_upkeeps
+                    settings.save_settings()
+                    
+                show_hero_effects = ImGui.checkbox("Show Hero Effects", settings.ShowHeroEffects)
+                if show_hero_effects != settings.ShowHeroEffects:
+                    settings.ShowHeroEffects = show_hero_effects
+                    settings.save_settings()
+                    
+                if ImGui.collapsing_header("Hero Effects & Upkeeps"):
+                    radio_value = 0 if not settings.ShowEffectDurations and not settings.ShowShortEffectDurations else (1 if settings.ShowShortEffectDurations else 2)
+
+                    radio_value = ImGui.radio_button("Show no durations", radio_value, 0)
+                    radio_value = ImGui.radio_button("Show short durations", radio_value, 1)
+                    radio_value = ImGui.radio_button("Show all durations", radio_value, 2)
+
+                    if radio_value == 0:
+                        if settings.ShowEffectDurations or settings.ShowShortEffectDurations:
+                            settings.ShowEffectDurations = False
+                            settings.ShowShortEffectDurations = False
+                            settings.save_settings()
+
+                    elif radio_value == 1:
+                        if settings.ShowEffectDurations or not settings.ShowShortEffectDurations:
+                            settings.ShowEffectDurations = False
+                            settings.ShowShortEffectDurations = True
+                            settings.save_settings()
+
+                    elif radio_value == 2:
+                        if not settings.ShowEffectDurations or settings.ShowShortEffectDurations:
+                            settings.ShowEffectDurations = True
+                            settings.ShowShortEffectDurations = False
+                            settings.save_settings()
+                            
+                ImGui.end_tab_item()                
+                    
+            if ImGui.begin_tab_item("Hotbars"):
+                x_avail, y_avail = PyImGui.get_content_region_avail()
+                
+                if ImGui.button("Add Hotbar", x_avail - 4):
+                    settings.CommandHotBars[f"Hotbar {len(settings.CommandHotBars) + 1}".lower()] = Settings.CommandHotBar()
+                    settings.save_settings()
+                    
+                for key, hotbar in settings.CommandHotBars.items():
+                    ImGui.text(f"{key}")
+                    PyImGui.same_line(x_avail - 28 - 32 - 4, 0)
+
+                    visible = ImGui.toggle_icon_button(f"{(IconsFontAwesome5.ICON_EYE if hotbar.visible else IconsFontAwesome5.ICON_EYE_SLASH)}##{key}", hotbar.visible, 32, 20)
+                    if visible != hotbar.visible:
+                        hotbar.visible = visible
+                        settings.save_settings()                    
+                    
+                    PyImGui.same_line(x_avail - 28, 0)
+                    
+                    if ImGui.icon_button(f"{IconsFontAwesome5.ICON_TRASH}##{key}", 32, 20):
+                        del settings.CommandHotBars[key]
+                        settings.save_settings()
+                        break
+                    
+                    ImGui.show_tooltip(f"Delete Hotbar '{key}'")
+                    pass
+                    
+                ImGui.end_tab_item()
+                
+            ImGui.end_tab_bar()
+            
+                
+                            
+    
+    HeroAI.configure_window.end()  
+    
+    if not HeroAI.configure_window.open:
+        WidgetHandler().set_widget_configuring(HeroAI.MODULE_NAME, False)
+          
+    pass
