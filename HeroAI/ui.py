@@ -773,7 +773,34 @@ def draw_buffs_and_upkeeps(account_data: AccountData, skill_size: float = 28):
         PyImGui.show_tooltip(
             f"Effect ID: {effect.skill_id}\nName: {effect.name}")
         PyImGui.same_line(0, 0)
+    
+    def draw_morale(morale : int, skill_size: float = skill_size):
+        morale_display = f"{("+" if morale > 100 else "-")}{abs(100 - morale)}%"
+        texture = ThemeTextures.DeathPenalty.value.get_texture() if morale < 100 else ThemeTextures.MoraleBoost.value.get_texture()
+        ImGui.push_font("Regular", 11)            
+        ImGui.dummy(skill_size, skill_size)
+        item_rect_min = PyImGui.get_item_rect_min()
+        item_rect_max = PyImGui.get_item_rect_max()
+        
+        item_rect = (item_rect_min[0], item_rect_min[1], item_rect_max[0] - item_rect_min[0], item_rect_max[1] - item_rect_min[1])
+        texture.draw_in_drawlist(
+            item_rect[0],
+            item_rect[1],
+            (skill_size, skill_size),
+        )
+        text_size = PyImGui.calc_text_size(morale_display)
+        offset_x = (skill_size - text_size[0]) / 2
+        offset_y = (skill_size - text_size[1])
+        PyImGui.draw_list_add_text(
+            item_rect[0] + offset_x,
+            item_rect[1] + offset_y,
+            Color(201, 188, 145, 255).color_int,
+            morale_display
+        )
 
+        ImGui.pop_font()
+        PyImGui.same_line(0, 0)
+    
     if settings.ShowHeroUpkeeps:
         ImGui.dummy(0, 24)
         PyImGui.same_line(0, 0)
@@ -798,6 +825,9 @@ def draw_buffs_and_upkeeps(account_data: AccountData, skill_size: float = 28):
     if settings.ShowHeroEffects:                        
         ImGui.dummy(0, 28)
         PyImGui.same_line(0, 0)
+        
+        if account_data.PlayerMorale != 100 and account_data.PlayerMorale != 0:
+            draw_morale(account_data.PlayerMorale, skill_size)
         
         for index, effect_id in enumerate(account_data.PlayerEffects):
             if effect_id == 0:

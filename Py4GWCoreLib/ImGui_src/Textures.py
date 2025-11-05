@@ -1386,3 +1386,29 @@ class ThemeTextures(Enum):
         normal= (52, 64),
     )),
     )
+    
+    MoraleBoost = ThemeTexture(
+    (StyleTheme.Minimalus,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER, "morale_boost_effect.png"),
+        texture_size = (64, 64),
+        size = (64, 64),
+    )),
+    (StyleTheme.Guild_Wars,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER, "morale_boost_effect.png"),
+        texture_size = (64, 64),
+        size = (64, 64),
+    )),
+    )
+    
+    DeathPenalty = ThemeTexture(
+    (StyleTheme.Minimalus,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER, "death_penalty_effect.png"),
+        texture_size = (64, 64),
+        size = (64, 64),
+    )),
+    (StyleTheme.Guild_Wars,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER, "death_penalty_effect.png"),
+        texture_size = (64, 64),
+        size = (64, 64),
+    )),
+    )
