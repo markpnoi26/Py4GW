@@ -211,57 +211,32 @@ class WindowModule:
                         state = TextureState.Active
                     else:
                         state = TextureState.Hovered
-                                        
-                if self.can_resize:
-                    ThemeTextures.Window_Frame_Bottom.value.get_texture().draw_in_drawlist(
-                        x=self.__decorators_left + 5,
-                        y=self.__decorators_bottom - 57,
-                        size=(self.__decorators_width - 10, 60)
-                    )
-                else:
-                    ThemeTextures.Window_Frame_Bottom_No_Resize.value.get_texture().draw_in_drawlist(
-                        x=self.__decorators_left + 5,
-                        y=self.__decorators_bottom - 57,
-                        size=(self.__decorators_width - 10, 60)
-                    )
 
-                ThemeTextures.Window_Frame_Center.value.get_texture().draw_in_drawlist(
-                    x=self.__decorators_left + 5,
-                    y=self.__decorators_top + (26 if has_title_bar else 11) + 35,
-                    size=(self.__decorators_width - 10, self.__decorators_height - 35 - 60)
+                window_texture = ThemeTextures.Window
+                if not self.can_resize and not has_title_bar:
+                    window_texture = ThemeTextures.Window_NoResize_NoTitleBar  
+                elif not self.can_resize:
+                    window_texture = ThemeTextures.Window_NoResize
+                elif not has_title_bar:
+                    window_texture = ThemeTextures.Window_NoTitleBar
+                    
+                window_texture.value.get_texture().draw_in_drawlist(
+                    x=self.__decorators_left,                            
+                    y=self.__decorators_top,
+                    size=(self.__decorators_width, self.__decorators_height)
                 )
                 
-                
-                if has_title_bar:      
-                    ThemeTextures.Window_Frame_Top.value.get_texture().draw_in_drawlist(
-                        x=self.__decorators_left + 5,
-                        y=self.__decorators_top + 26,
-                        size=(self.__decorators_width - 10, 35)
+                if self.can_close:
+                    ThemeTextures.Close_Button.value.get_texture().draw_in_drawlist(
+                        x=self.__close_button_rect[0],
+                        y=self.__close_button_rect[1],
+                        size=self.__close_button_rect[2:],
+                        state=state
                     )
-
-                    ThemeTextures.Title_Bar.value.get_texture().draw_in_drawlist(
-                        x=self.__decorators_left + 5,
-                        y=self.__decorators_top,
-                        size=(self.__decorators_width - 10, 26)
-                    )
-                
-                    if self.can_close:
-                        ThemeTextures.Empty_Pixel.value.draw_in_drawlist(
-                            x=self.__close_button_rect[0] - 1,
-                            y=self.__close_button_rect[1] - 1,
-                            size=(self.__close_button_rect[2] + 2, self.__close_button_rect[3] + 2),
-                            tint=(0,0,0,255)
-                        )
-
-                        ThemeTextures.Close_Button.value.get_texture().draw_in_drawlist(
-                            x=self.__close_button_rect[0],
-                            y=self.__close_button_rect[1],
-                            size=self.__close_button_rect[2:],
-                            state=state
-                        )
-                        
+                    
+                if has_title_bar:
                     self.__title_bar_rect = (self.__decorators_left + 10, self.__decorators_top + 2, self.__decorators_width - 10, 26)
-                  
+                    
                     # Draw the title text
                     PyImGui.push_clip_rect(
                         self.__title_bar_rect[0] + 15,
@@ -274,12 +249,6 @@ class WindowModule:
                     PyImGui.pop_clip_rect()
                     
                     self.__draw_title_bar_fake(self.__title_bar_rect)
-                else:
-                    ThemeTextures.Window_Frame_Top_NoTitleBar.value.get_texture().draw_in_drawlist(
-                        x=self.__decorators_left + 5,
-                        y=self.__decorators_top,
-                        size=(self.__decorators_width - 10, 50)
-                    )
 
             else:
                 window_pos = PyImGui.get_window_pos()

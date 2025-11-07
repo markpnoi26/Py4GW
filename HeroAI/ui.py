@@ -19,7 +19,7 @@ from Py4GWCoreLib.Effect import Effects
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.GlobalCache.SharedMemory import AccountData, SharedMessage
 from Py4GWCoreLib.ImGui_src.IconsFontAwesome5 import IconsFontAwesome5
-from Py4GWCoreLib.ImGui_src.Textures import MapTexture, SplitTexture, TextureState, ThemeTexture, ThemeTextures
+from Py4GWCoreLib.ImGui_src.Textures import GameTexture, MapTexture, SplitTexture, TextureState, ThemeTexture, ThemeTextures
 from Py4GWCoreLib.ImGui_src.WindowModule import WindowModule
 from Py4GWCoreLib.ImGui_src.types import TEXTURE_FOLDER, Alignment, StyleTheme
 from Py4GWCoreLib.Overlay import Overlay
@@ -86,7 +86,7 @@ casting_animation_timer.Start()
 commands = HeroAICommands()
 gray_color = Color(150, 150, 150, 255)
           
-def get_frame_texture_for_effect(skill_id: int) -> tuple[(SplitTexture | MapTexture), TextureState, int]:
+def get_frame_texture_for_effect(skill_id: int) -> tuple[(GameTexture | MapTexture), TextureState, int]:
     is_elite = GLOBAL_CACHE.Skill.Flags.IsElite(skill_id)
     texture_state = TextureState.Normal if not is_elite else TextureState.Active
 
