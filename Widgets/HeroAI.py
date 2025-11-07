@@ -50,7 +50,7 @@ from HeroAI.windows import DrawMultiboxTools
 from HeroAI.windows import DrawOptions
 from HeroAI.windows import DrawPanelButtons
 from HeroAI.windows import SubmitGameOptions
-from HeroAI.ui import draw_combined_hero_panel, draw_command_panel, draw_configure_window, draw_hero_panel
+from HeroAI.ui import draw_combined_hero_panel, draw_command_panel, draw_configure_window, draw_hero_panel, draw_hotbars
 from Py4GWCoreLib import GLOBAL_CACHE
 from Py4GWCoreLib import ActionQueueManager
 from Py4GWCoreLib import IconsFontAwesome5
@@ -489,8 +489,8 @@ def UpdateStatus(cached_data: CacheData):
                 if not account.AccountEmail:
                     continue
             
-                if account.AccountEmail == GLOBAL_CACHE.Player.GetAccountEmail():
-                    continue
+                # if account.AccountEmail == GLOBAL_CACHE.Player.GetAccountEmail():
+                #     continue
                 
                 if not settings.CombinePanels:
                     if not account.AccountEmail in hero_windows:
@@ -513,6 +513,9 @@ def UpdateStatus(cached_data: CacheData):
 
     if settings.ShowCommandPanel and (own_data.PlayerIsPartyLeader or not settings.ShowCommandPanelOnlyOnLeaderAccount):
         draw_command_panel(command_panel_window, accounts, cached_data)
+    
+    if settings.CommandHotBars:
+        draw_hotbars(accounts, cached_data)
                 
     DrawEmbeddedWindow(cached_data)
     if cached_data.ui_state_data.show_classic_controls:

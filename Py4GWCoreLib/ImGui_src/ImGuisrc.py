@@ -3,7 +3,7 @@ from ..Overlay import Overlay
 from ..enums import get_texture_for_model, ImguiFonts
 from ..Py4GWcorelib import Color, ColorPalette, ConsoleLog, Utils
 from typing import Tuple, TypeAlias, Optional, overload
-from .types import ImGuiStyleVar, StyleTheme, ControlAppearance, TextDecorator
+from .types import Alignment, ImGuiStyleVar, StyleTheme, ControlAppearance, TextDecorator
 from .types import ImGuiStyleVar, StyleTheme, ControlAppearance, TextDecorator
 from .Style import Style
 from .Textures import ThemeTextures, TextureState
@@ -323,6 +323,43 @@ class ImGui:
     def text(text: str, font_size: int | None = None, font_style: str | None = None) -> None:
         ImGui._with_font(PyImGui.text, text, font_size, font_style)
 
+    @staticmethod        
+    def text_aligned(
+        text: str,
+        width: float = 0.0,
+        height: float = 0.0,
+        alignment: Alignment = Alignment.MidCenter,
+        font_size: int | None = None,
+        font_style: str | None = None
+    ):
+        """Draws text aligned inside a given width/height box."""
+        width = PyImGui.get_content_region_avail()[0] if width == 0 else width
+        x0, y0 = PyImGui.get_cursor_pos()
+
+        def _draw(text: str):
+            text_w, text_h = PyImGui.calc_text_size(text)
+            x, y = x0, y0
+
+            horiz = alignment % 3
+            vert = alignment // 3
+
+            if horiz == 1:  # center
+                x += (width - text_w) * 0.5
+                
+            elif horiz == 2:  # right
+                x += width - text_w
+
+            if vert == 1:  # middle
+                y += (height - text_h) * 0.5
+                
+            elif vert == 2:  # bottom
+                y += height - text_h
+
+            PyImGui.set_cursor_pos(x, y)
+            PyImGui.text(text)
+
+        ImGui._with_font(_draw, text, font_size, font_style)
+        
     @staticmethod
     def text_centered(text: str, width: float = 0, height: float = 0, font_size: int | None = None, font_style: str | None = None) -> None:
         width = PyImGui.get_content_region_avail()[0] if width == 0 else width

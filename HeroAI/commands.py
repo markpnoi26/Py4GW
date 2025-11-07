@@ -1,22 +1,27 @@
 from typing import Callable
-from HeroAI import ui, windows
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.GlobalCache.SharedMemory import AccountData
 from Py4GWCoreLib.ImGui_src.IconsFontAwesome5 import IconsFontAwesome5
 from Py4GWCoreLib.enums_src.Multiboxing_enums import SharedCommandType
 
 class Command:
-    def __init__(self, name: str, icon: str, command_function : Callable[[list[AccountData]], None], tooltip : str = "", description: str = "", map_types: list[str] = ["Explorable", "Outpost"]) -> None:
+    def __init__(self, name: str, icon: str, command_function : Callable[[list[AccountData]], None] | None, tooltip : str = "", description: str = "", map_types: list[str] = ["Explorable", "Outpost"]) -> None:
         self.name = name
         self.icon = icon
         self.command_function = command_function
         self.tooltip = tooltip if tooltip else name
         self.description = description if description else self.tooltip
         self.map_types = map_types
+        
+    
+    @property
+    def is_separator(self) -> bool:
+        return self.name == "Empty" and self.command_function is None
     
     ## make this class executable like a function
     def __call__(self, accounts: list[AccountData]):
-        self.command_function(accounts)
+        if self.command_function:
+            self.command_function(accounts)
 
 class HeroAICommands:
     __instance = None
@@ -32,24 +37,25 @@ class HeroAICommands:
             return
         
         self.__initialized = True
-        
+
+        self.Empty = Command("Empty", "", None)
         self.PixelStack = Command("Pixel Stack", IconsFontAwesome5.ICON_COMPRESS_ARROWS_ALT, self.pixel_stack_command, "Pixel Stack Team")
         self.InteractWithTarget = Command("Interact With Target", IconsFontAwesome5.ICON_HAND_POINT_RIGHT, self.interact_with_target_command, "Interact with current target")
         self.DialogWithTarget = Command("Dialog With Target", IconsFontAwesome5.ICON_COMMENT_DOTS, self.dialog_with_target_command, "Take dialog with current target")
         self.OpenConsumables = Command("Open Consumables", IconsFontAwesome5.ICON_CANDY_CANE, self.open_consumables_commands, "Open/Close Consumables Configuration Window")
-        self.FlagHeroes = Command("Flag Heroes", IconsFontAwesome5.ICON_FLAG, self.flag_heroes_command, "Flag all heroes")
-        self.UnflagHeroes = Command("Unflag Heroes", IconsFontAwesome5.ICON_CIRCLE_XMARK, self.unflag_heroes_command, "Unflag all heroes")
-        self.Resign = Command("Resign", IconsFontAwesome5.ICON_SKULL, self.resign_command, "Resign all accounts")
+        self.FlagHeroes = Command("Flag Heroes", IconsFontAwesome5.ICON_FLAG, self.flag_heroes_command, "Flag all heroes", map_types=["Explorable"])
+        self.UnflagHeroes = Command("Unflag Heroes", IconsFontAwesome5.ICON_CIRCLE_XMARK, self.unflag_heroes_command, "Unflag all heroes", map_types=["Explorable"])
+        self.Resign = Command("Resign", IconsFontAwesome5.ICON_SKULL, self.resign_command, "Resign all accounts", map_types=["Explorable"])
         self.DonateFaction = Command("Donate Faction", IconsFontAwesome5.ICON_DONATE, self.donate_faction_command, "Donate faction to guild")
         # self.GetBlessing = Command("Get Blessing", IconsFontAwesome5.ICON_PRAYING_HANDS, self.get_blessing_command, "Get Blessing from nearby shrine")
         self.PickUpLoot = Command("Pick up loot", IconsFontAwesome5.ICON_COINS, self.pick_up_loot_command, "Pick up loot from ground")
-        self.CombatPrep = Command("Prepare for Combat", IconsFontAwesome5.ICON_SHIELD_ALT, self.combat_prep_command, "Use Combat Preparations")
-        self.LeaveParty = Command("Disband Party", IconsFontAwesome5.ICON_SIGN_OUT_ALT, self.leave_party_command, "Make all heroes leave party")
-        self.FormParty = Command("Form Party", IconsFontAwesome5.ICON_USERS, self.invite_all_command, "Invite all heroes to party")
+        self.CombatPrep = Command("Prepare for Combat", IconsFontAwesome5.ICON_SHIELD_ALT, self.combat_prep_command, "Use Combat Preparations", map_types=["Explorable"])
+        self.LeaveParty = Command("Disband Party", IconsFontAwesome5.ICON_SIGN_OUT_ALT, self.leave_party_command, "Make all heroes leave party", map_types=["Outpost"])
+        self.FormParty = Command("Form Party", IconsFontAwesome5.ICON_USERS, self.invite_all_command, "Invite all heroes to party", map_types=["Outpost"])
         
         self.__commands = [
+            self.Empty,
             self.PixelStack,
-            Command("", "", lambda accounts: None),  # Separator
             self.InteractWithTarget,
             self.DialogWithTarget,
             self.OpenConsumables,
@@ -61,12 +67,13 @@ class HeroAICommands:
             self.PickUpLoot,
             self.CombatPrep,
             self.LeaveParty,
+            self.FormParty,
         ]
     
     @property
-    def Commands(self):        
-        return sorted(self.__commands, key=lambda cmd: cmd.name)
-    
+    def Commands(self) -> dict[str, Command]:      
+        return {cmd.name: cmd for cmd in self.__commands}
+
     def add_command(self, command: Command):
         if command not in self.__commands:
             self.__commands.append(command)
@@ -162,13 +169,16 @@ class HeroAICommands:
             GLOBAL_CACHE.ShMem.SendMessage(sender_email, account.AccountEmail, SharedCommandType.TakeDialogWithTarget, (target_id, 1, 0, 0))
 
     def open_consumables_commands(self, accounts: list[AccountData]):
+        from HeroAI import ui, windows
         ui.configure_consumables_window_open = not ui.configure_consumables_window_open
 
     def flag_heroes_command(self, accounts: list[AccountData]):
+        from HeroAI import ui, windows
         windows.capture_flag_all = True
         windows.capture_hero_flag = True
         windows.capture_hero_index = 0
         windows.one_time_set_flag = False      
     
     def unflag_heroes_command(self, accounts: list[AccountData]):
+        from HeroAI import ui, windows
         windows.clear_flags = True

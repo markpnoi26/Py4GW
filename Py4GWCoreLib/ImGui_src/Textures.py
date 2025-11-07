@@ -1297,16 +1297,16 @@ class ThemeTextures(Enum):
     (StyleTheme.Minimalus,  MapTexture(
         texture = os.path.join(TEXTURE_FOLDER, "ui_aggression.png"),
         texture_size = (128, 64),
-        size = (29, 29),
-        normal= (66, 34),
-        active= (98, 34),
+        size = (27, 29),
+        normal= (67, 34),
+        active= (99, 34),
     )),
     (StyleTheme.Guild_Wars,  MapTexture(
         texture = os.path.join(TEXTURE_FOLDER, "ui_aggression.png"),
         texture_size = (128, 64),
-        size = (29, 29),
-        normal= (66, 34),
-        active= (98, 34),
+        size = (27, 29),
+        normal= (67, 34),
+        active= (99, 34),
     )),
     )
 
