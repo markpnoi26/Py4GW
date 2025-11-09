@@ -840,7 +840,7 @@ class UI:
                 profile_index = profile_names.index(self.settings.profile.name) if self.settings.profile else 0
                 
                 width = PyImGui.get_content_region_avail()[0]
-                PyImGui.push_item_width(width - 100)
+                PyImGui.push_item_width(width - 90)
                 selected_index = ImGui.combo(
                     "", profile_index, profile_names)
                 PyImGui.pop_item_width()
@@ -854,9 +854,9 @@ class UI:
                     self.settings.SetProfile(profile_names[selected_index])                
                     self.settings.save()
 
-                PyImGui.same_line(0, 5)
+                PyImGui.same_line(0, 2)
                 
-                if ImGui.icon_button(IconsFontAwesome5.ICON_PLUS, 24, 20):
+                if ImGui.icon_button(IconsFontAwesome5.ICON_PLUS, 28, 24):
                     self.show_add_profile_popup = not self.show_add_profile_popup
                     if self.show_add_profile_popup:
                         PyImGui.open_popup("Add Profile")
@@ -864,9 +864,9 @@ class UI:
                         PyImGui.close_current_popup()
 
                 ImGui.show_tooltip("Add New Profile")
-                PyImGui.same_line(0, 5)
+                PyImGui.same_line(0, 2)
                 
-                if ImGui.icon_button(IconsFontAwesome5.ICON_TRASH, 24, 20) and len(self.settings.profiles) > 1:
+                if ImGui.icon_button(IconsFontAwesome5.ICON_TRASH, 28, 24) and len(self.settings.profiles) > 1:
                 # if GUI.image_button(texture_map.CoreTextures.UI_Destroy.value, (20, 20)) and len(self.settings.profiles) > 1:
                     self.show_delete_profile_popup = not self.show_delete_profile_popup
                     if self.show_delete_profile_popup:
@@ -876,7 +876,7 @@ class UI:
 
                 ImGui.show_tooltip("Delete Profile '" +
                                 self.settings.profile.name + "'")
-                PyImGui.same_line(0, 5)
+                PyImGui.same_line(0, 2)
 
 
                 active = self.settings.automatic_inventory_handling
@@ -884,7 +884,7 @@ class UI:
                 if active:
                     style.Text.push_color((0, 255, 0, 255))
                 
-                if ImGui.icon_button(IconsFontAwesome5.ICON_CHECK, 24, 20):
+                if ImGui.icon_button(IconsFontAwesome5.ICON_CHECK, 28, 24):
                     
                     if active:
                         inventory_handling.InventoryHandler().Stop()
@@ -1448,7 +1448,9 @@ class UI:
                 
                 PyImGui.same_line(0, 5)
                 if ImGui.begin_child("DataCollectorButtonsChild", (0, child_size[1] - 5), False, PyImGui.WindowFlags.NoFlag):
-                    if ImGui.button("Merge Diffs into Data", 160, 50):
+                    PyImGui.indent(3)
+                    
+                    if ImGui.button("Merge Diffs into Data", 160, 30):
                         ConsoleLog(
                             "LootEx",
                             "Merging diffs into data...",
@@ -1459,7 +1461,7 @@ class UI:
 
                     ImGui.show_tooltip("Merge all diff files into the data files.")
 
-                    if ImGui.button("Scrape Wiki", 160, 50):
+                    if ImGui.button("Scrape Wiki", 160, 30):
                         wiki_scraper.WikiScraper.scrape_missing_entries()
                         pass
 
@@ -1619,7 +1621,7 @@ class UI:
                                 
                         pass
 
-                    if self.settings.development_mode and ImGui.button("Test 123", 160, 50):
+                    if self.settings.development_mode and ImGui.button("Test 123", 160, 30):
                         on_test_button_clicked()
                                                  
                 ImGui.end_child()

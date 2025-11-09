@@ -423,7 +423,7 @@ class ImGui:
     @staticmethod
     def text_unformatted(text : str, font_size : int | None = None, font_style: str | None = None):
         ImGui._with_font(PyImGui.text_unformatted, text, font_size, font_style)
-                
+               
     @staticmethod
     def button(label: str, width=0.0, height=0.0, disabled: bool=False, appearance: ControlAppearance=ControlAppearance.Default) -> bool:
         #MATCHING IMGUI SIGNATURES AND USAGE
@@ -487,7 +487,7 @@ class ImGui:
         item_rect_min, item_rect_max, item_rect_size = ImGui.get_item_rect()
         display_label = label.split("##")[0]
 
-        button_texture_rect = (item_rect_min[0] - 6, item_rect_min[1] - 4, item_rect_size[0] + 12, item_rect_size[1] + 11)
+        button_texture_rect = (item_rect_min[0] - 3, item_rect_min[1] - 4, item_rect_size[0] + 9, item_rect_size[1] + 11) if style.Theme is StyleTheme.Guild_Wars else (item_rect_min[0] - 6, item_rect_min[1] - 4, item_rect_size[0] + 12, item_rect_size[1] + 11)
         item_rect = (*item_rect_min, *item_rect_size)
         
         def get_button_color() -> Style.StyleColor:
@@ -515,7 +515,7 @@ class ImGui:
         )
         
         text_size = PyImGui.calc_text_size(display_label)
-        text_x = item_rect[0] + ((item_rect[2] - text_size[0]) / 2)
+        text_x = button_texture_rect[0] + ((button_texture_rect[2] - text_size[0]) / 2)
         text_y = item_rect[1] + ((item_rect[3] - text_size[1]) / 2) + 2
     
         PyImGui.push_clip_rect(
@@ -587,7 +587,7 @@ class ImGui:
         ImGui.pop_style_color(5)
 
         item_rect_min, item_rect_max, item_rect_size = ImGui.get_item_rect()
-        button_texture_rect = (item_rect_min[0] - 6, item_rect_min[1] - 4, item_rect_size[0] + 12, item_rect_size[1] + 11)
+        button_texture_rect = (item_rect_min[0] - 3, item_rect_min[1] - 4, item_rect_size[0] + 9, item_rect_size[1] + 11) if style.Theme is StyleTheme.Guild_Wars else (item_rect_min[0] - 6, item_rect_min[1] - 4, item_rect_size[0] + 12, item_rect_size[1] + 11)
         item_rect = (*item_rect_min, *item_rect_size)  
               
         display_label = label.split("##")[0]
@@ -620,7 +620,7 @@ class ImGui:
         
         ImGui.push_font("Regular", font_size)
         text_size = PyImGui.calc_text_size(display_label)
-        text_x = item_rect[0] + ((item_rect[2] - text_size[0]) / 2)
+        text_x = button_texture_rect[0] + ((button_texture_rect[2] - text_size[0]) / 2)
         text_y = item_rect[1] + ((item_rect[3] - text_size[1]) / 2) + 1
     
         PyImGui.push_clip_rect(
@@ -781,7 +781,7 @@ class ImGui:
         ImGui.pop_style_color(5)
 
         item_rect_min, item_rect_max, item_rect_size = ImGui.get_item_rect()
-        button_texture_rect = (item_rect_min[0] - 6, item_rect_min[1] - 4, item_rect_size[0] + 12, item_rect_size[1] + 11)
+        button_texture_rect = (item_rect_min[0] - 3, item_rect_min[1] - 4, item_rect_size[0] + 9, item_rect_size[1] + 11) if style.Theme is StyleTheme.Guild_Wars else (item_rect_min[0] - 6, item_rect_min[1] - 4, item_rect_size[0] + 12, item_rect_size[1] + 11)
         item_rect = (*item_rect_min, *item_rect_size)  
               
         display_label = label.split("##")[0]
@@ -797,7 +797,7 @@ class ImGui:
         
         total_text_size = (text_size[0] + font_awesome_text_size[0], max(text_size[1], font_awesome_text_size[1]))
 
-        text_x = item_rect[0] + ((item_rect[2] - total_text_size[0]) / 2)
+        text_x = item_rect[0] + 2 + ((item_rect[2] - total_text_size[0]) / 2)
         text_y = item_rect[1] + ((item_rect[3] - total_text_size[1]) / 2)
         
         def get_button_color() -> Style.StyleColor:
@@ -921,7 +921,7 @@ class ImGui:
         ImGui.pop_style_color(5)
 
         item_rect_min, item_rect_max, item_rect_size = ImGui.get_item_rect()
-        button_texture_rect = (item_rect_min[0] - 6, item_rect_min[1] - 4, item_rect_size[0] + 12, item_rect_size[1] + 11)
+        button_texture_rect = (item_rect_min[0] - 3, item_rect_min[1] - 4, item_rect_size[0] + 9, item_rect_size[1] + 11) if style.Theme is StyleTheme.Guild_Wars else (item_rect_min[0] - 6, item_rect_min[1] - 4, item_rect_size[0] + 12, item_rect_size[1] + 11)
         item_rect = (*item_rect_min, *item_rect_size)  
               
         display_label = label.split("##")[0]
@@ -953,7 +953,7 @@ class ImGui:
         )
         
         text_size = PyImGui.calc_text_size(display_label)
-        text_x = item_rect[0] + ((item_rect[2] - text_size[0]) / 2)
+        text_x = button_texture_rect[0] + ((button_texture_rect[2] - text_size[0]) / 2)
         text_y = item_rect[1] + ((item_rect[3] - text_size[1]) / 2) + 2
     
         PyImGui.push_clip_rect(
@@ -1075,7 +1075,7 @@ class ImGui:
             
             total_text_size = (text_size[0] + font_awesome_text_size[0], max(text_size[1], font_awesome_text_size[1]))
 
-            text_x = button_texture_rect[0] + (button_texture_rect[2] - total_text_size[0]) / 2
+            text_x = button_texture_rect[0] + ((button_texture_rect[2] - total_text_size[0]) / 2)
             text_y = button_texture_rect[1] + (button_texture_rect[3] - total_text_size[1]) / 2
                 
             offset = (0, 0)
@@ -1117,7 +1117,7 @@ class ImGui:
 
         
         item_rect_min, item_rect_max, item_rect_size = ImGui.get_item_rect()
-        button_texture_rect = (item_rect_min[0] - 6, item_rect_min[1] - 4, item_rect_size[0] + 12, item_rect_size[1] + 11)
+        button_texture_rect = (item_rect_min[0] - 3, item_rect_min[1] - 4, item_rect_size[0] + 9, item_rect_size[1] + 11) if style.Theme is StyleTheme.Guild_Wars else (item_rect_min[0] - 6, item_rect_min[1] - 4, item_rect_size[0] + 12, item_rect_size[1] + 11)
         item_rect = (*item_rect_min, *item_rect_size)  
               
         display_label = label.split("##")[0]
@@ -1133,7 +1133,7 @@ class ImGui:
         
         total_text_size = (text_size[0] + font_awesome_text_size[0], max(text_size[1], font_awesome_text_size[1]))
 
-        text_x = item_rect[0] + ((item_rect[2] - total_text_size[0]) / 2)
+        text_x = item_rect[0] + 2 + ((item_rect[2] - total_text_size[0]) / 2)
         text_y = item_rect[1] + ((item_rect[3] - total_text_size[1]) / 2)
        
         def get_button_color() -> Style.StyleColor:
@@ -1287,7 +1287,7 @@ class ImGui:
         ImGui.pop_style_color(5)
 
         item_rect_min, item_rect_max, item_rect_size = ImGui.get_item_rect()
-        button_texture_rect = (item_rect_min[0] - 6, item_rect_min[1] - 4, item_rect_size[0] + 12, item_rect_size[1] + 11)
+        button_texture_rect = (item_rect_min[0] - 3, item_rect_min[1] - 4, item_rect_size[0] + 9, item_rect_size[1] + 11) if style.Theme is StyleTheme.Guild_Wars else (item_rect_min[0] - 6, item_rect_min[1] - 4, item_rect_size[0] + 12, item_rect_size[1] + 11)
         item_rect = (*item_rect_min, *item_rect_size)
         
         def get_button_color() -> Style.StyleColor:
@@ -1307,7 +1307,7 @@ class ImGui:
             tint=tint,
         )
         
-        texture_pos = (item_rect[0] + btn_padding[0] + 1, item_rect[1] + (btn_padding[1] or 0))
+        texture_pos = (item_rect[0] + 2 + btn_padding[0] + 1, item_rect[1] + (btn_padding[1] or 0))
         texture_size = (item_rect_size[0] - (btn_padding[0] * 2), item_rect_size[1] - ((btn_padding[1] or 0) * 2))
         texture_tint = (255, 255, 255, 255) if enabled else (255, 255, 255, 155)
         ImGui.DrawTextureInDrawList(
@@ -1386,7 +1386,7 @@ class ImGui:
             x,y = item_rect_min
             button_texture_rect = (x, y, width, height)
 
-            texture_pos = (button_texture_rect[0] + btn_padding[0], button_texture_rect[1] + (btn_padding[1] or 0))
+            texture_pos = (item_rect_min[0] + btn_padding[0], button_texture_rect[1] + (btn_padding[1] or 0))
             texture_size = (width - (btn_padding[0] * 2), height - ((btn_padding[1] or 0) * 2))
             texture_tint = (255, 255, 255, (255 if enabled else 155)) if v else (128, 128, 128, (255 if enabled else 155))
             ImGui.DrawTextureInDrawList(
@@ -1420,7 +1420,7 @@ class ImGui:
         ImGui.pop_style_color(5)
 
         item_rect_min, item_rect_max, item_rect_size = ImGui.get_item_rect()
-        button_texture_rect = (item_rect_min[0] - 6, item_rect_min[1] - 4, item_rect_size[0] + 12, item_rect_size[1] + 11)
+        button_texture_rect = (item_rect_min[0] - 3, item_rect_min[1] - 4, item_rect_size[0] + 9, item_rect_size[1] + 11) if style.Theme is StyleTheme.Guild_Wars else (item_rect_min[0] - 6, item_rect_min[1] - 4, item_rect_size[0] + 12, item_rect_size[1] + 11)
         item_rect = (*item_rect_min, *item_rect_size)
         
         def get_button_color() -> Style.StyleColor:
@@ -1439,7 +1439,7 @@ class ImGui:
         )
         
 
-        texture_pos = (item_rect[0] + btn_padding[0] + 1, item_rect[1] + (btn_padding[1] or 0))
+        texture_pos = (item_rect[0] + 2 + btn_padding[0] + 1, item_rect[1] + (btn_padding[1] or 0))
         texture_size = (item_rect_size[0] - (btn_padding[0] * 2), item_rect_size[1] - ((btn_padding[1] or 0) * 2))
         texture_tint = (255, 255, 255, 255) if enabled else (255, 255, 255, 155)
         
@@ -1477,7 +1477,7 @@ class ImGui:
             v = not v
         
         return v
-            
+       
     @staticmethod
     def combo(label: str, current_item: int, items: list[str]) -> int:
         #NON THEMED 

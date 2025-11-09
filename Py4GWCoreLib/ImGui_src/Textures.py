@@ -394,14 +394,14 @@ class ThemeTextures(Enum):
         (StyleTheme.Minimalus, GameTexture(
             texture=os.path.join(MINIMALUS_FOLDER, "ui_combo_background.png"),
             texture_size=(128, 32),
-            margin=(29, 8),
+            margin=(36, 8),
         )),
 
         (StyleTheme.Guild_Wars, GameTexture(
             texture=os.path.join(
                 TEXTURE_FOLDER, "ui_combo_background.png"),
             texture_size=(128, 32),
-            margin=(29, 8),
+            margin=(36, 8),
         ))
     )
 
@@ -409,13 +409,13 @@ class ThemeTextures(Enum):
         (StyleTheme.Minimalus, GameTexture(
             texture=os.path.join(MINIMALUS_FOLDER, "ui_combo_frame.png"),
             texture_size=(128, 32),
-            margin=(29, 8),
+            margin=(36, 8),
         )),
 
         (StyleTheme.Guild_Wars, GameTexture(
             texture=os.path.join(TEXTURE_FOLDER, "ui_combo_frame.png"),
             texture_size=(128, 32),
-            margin=(29, 8),
+            margin=(36, 8),
         ))
     )
     ArrowCollapsed = ThemeTexture(

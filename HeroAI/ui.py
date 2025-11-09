@@ -90,7 +90,8 @@ def get_frame_texture_for_effect(skill_id: int) -> tuple[(GameTexture | MapTextu
     is_elite = GLOBAL_CACHE.Skill.Flags.IsElite(skill_id)
     texture_state = TextureState.Normal if not is_elite else TextureState.Active
 
-    theme = ImGui.get_style().Theme
+    theme = ImGui.get_style().Theme if ImGui.get_style().Theme in ImGui.Textured_Themes else StyleTheme.Guild_Wars
+    
     if not theme in ImGui.Textured_Themes:
         theme = StyleTheme.Guild_Wars
 
@@ -478,6 +479,7 @@ def draw_skill_bar(height: float, account_data: AccountData, cached_data: CacheD
     global skill_cache, messages
     style = ImGui.get_style()
     draw_textures = style.Theme in ImGui.Textured_Themes
+    texture_theme = style.Theme if draw_textures else StyleTheme.Guild_Wars
 
     for slot, skill_id in enumerate(account_data.PlayerSkillIDs):
         
@@ -603,7 +605,7 @@ def draw_skill_bar(height: float, account_data: AccountData, cached_data: CacheD
         hero_options = cached_data.HeroAI_vars.all_game_option_struct[account_data.PartyPosition]
         if not hero_options.Skills[slot].Active:
             hovered = PyImGui.is_item_hovered()
-            ThemeTextures.Cancel.value.get_texture().draw_in_drawlist(
+            ThemeTextures.Cancel.value.get_texture(texture_theme).draw_in_drawlist(
                 PyImGui.get_item_rect_min(),
                 (height, height),
                 state=TextureState.Hovered if hovered else TextureState.Normal
@@ -616,7 +618,7 @@ def draw_skill_bar(height: float, account_data: AccountData, cached_data: CacheD
                     
             if queued_skill_usage:
                 hovered = PyImGui.is_item_hovered()
-                ThemeTextures.Check.value.get_texture().draw_in_drawlist(
+                ThemeTextures.Check.value.get_texture(texture_theme).draw_in_drawlist(
                     PyImGui.get_item_rect_min(),
                     (height, height),
                     state=TextureState.Hovered if hovered else TextureState.Normal
@@ -653,7 +655,7 @@ def draw_skill_bar(height: float, account_data: AccountData, cached_data: CacheD
         if draw_textures:
             texture_state = TextureState.Normal if not skill.is_elite else TextureState.Active
 
-            ThemeTextures.Skill_Frame.value.get_texture().draw_in_drawlist(
+            ThemeTextures.Skill_Frame.value.get_texture(texture_theme).draw_in_drawlist(
                 item_rect_min[:2],
                 (height, height),
                 state=texture_state
