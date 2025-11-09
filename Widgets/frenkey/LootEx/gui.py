@@ -1990,9 +1990,10 @@ class UI:
                         for i, nick_item in enumerate(data.Nick_Cycle):
                              
                             if nick_item.weeks_until_next_nick is None:
+                                # ConsoleLog("LootEx", f"Nick item '{nick_item.name}' has no 'weeks_until_next_nick' value set! But next week is {nick_item.next_nick_week}", Console.MessageType.Warning)
                                 continue
-                            
-                            if nick_item.weeks_until_next_nick > self.settings.profile.nick_weeks_to_keep:
+
+                            if nick_item.weeks_until_next_nick > 0 and nick_item.weeks_until_next_nick > self.settings.profile.nick_weeks_to_keep:
                                 continue
                             
                             # PyImGui.table_next_row()
