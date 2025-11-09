@@ -1269,16 +1269,14 @@ def draw_hero_panel(window: WindowModule, account_data: AccountData, cached_data
         window.process_window()
     
     collapsed = PyImGui.is_window_collapsed()
-    pos = PyImGui.get_window_pos()
     
     window.process_window()
     
-    if window.collapse != collapsed or window.window_pos != pos:
-        window.window_pos = pos
+    if window.collapse != collapsed or window.changed:
         window.collapse = collapsed if style.Theme != StyleTheme.Guild_Wars else window.collapse
             
         if Console.is_window_active():
-            settings.HeroPanelPositions[account_data.AccountEmail] = (int(pos[0]), int(pos[1]), int(window.window_size[0]), int(window.window_size[1]), window.collapse)
+            settings.HeroPanelPositions[account_data.AccountEmail] = (int(window.window_pos[0]), int(window.window_pos[1]), int(window.window_size[0]), int(window.window_size[1]), window.collapse)
             settings.save_settings()
         
     window.end()
@@ -1474,14 +1472,11 @@ def draw_command_panel(window: WindowModule, accounts : list[AccountData], cache
         if is_window_active:
             CompareAndSubmitGameOptions(cached_data, game_options)
 
-        pos = PyImGui.get_window_pos()
         window.process_window()
         
-        if window.window_pos != pos or size != window.window_size:
-            window.window_pos = pos
-                
+        if window.changed:                
             if is_window_active:
-                settings.HeroPanelPositions[window.window_name.replace(" ", "_")] = (int(pos[0]), int(pos[1]), int(window.window_size[0]), int(window.window_size[1]), False)
+                settings.HeroPanelPositions[window.window_name.replace(" ", "_")] = (int(window.window_pos[0]), int(window.window_pos[1]), int(window.window_size[0]), int(window.window_size[1]), False)
                 settings.save_settings()
             
     window.end()
@@ -1645,11 +1640,8 @@ def draw_hotbar(hotbar: Settings.CommandHotBar, accounts: list[AccountData]):
 
 
         pos = PyImGui.get_window_pos()
-        window.process_window()
         
-        if window.window_pos != pos or size != window.window_size:
-            window.window_pos = pos
-                
+        if window.changed:
             if is_window_active and hotbar.identifier in settings.CommandHotBars:
                 settings.CommandHotBars[hotbar.identifier].position = (int(pos[0]), int(pos[1]))
                 settings.save_settings()

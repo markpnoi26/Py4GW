@@ -30,6 +30,8 @@ class WindowModule:
         self.end_pos = window_pos  # Initialize end_pos to window_pos
         self.first_run = True
         
+        self.changed = False
+        
         #internal variables
         self.window_display_name = self.window_name.split("##")[0]
         self.window_name_size : tuple[float, float] = PyImGui.calc_text_size(self.window_display_name)
@@ -162,18 +164,36 @@ class WindowModule:
                     self.open = True                   
                     
         if is_expanded and not self.collapse and self.open and not self.__dragging:
-            self.window_size = PyImGui.get_window_size()
+            window_size = PyImGui.get_window_size()
+            if window_size != self.window_size:
+                self.window_size = window_size
+                self.changed = True
                         
 
-        self.window_pos = PyImGui.get_window_pos()
+        window_pos = PyImGui.get_window_pos()
+        if window_pos != self.window_pos:
+            self.window_pos = window_pos
+            self.changed = True
+            
         self.__get_geometry()
 
         return self.open and not self.collapse
     
 
     def process_window(self):
+    
+        window_size = PyImGui.get_window_size()
+        if window_size != self.window_size:
+            self.window_size = window_size
+            self.changed = True
+            
+        window_pos = PyImGui.get_window_pos()
+        if window_pos != self.window_pos:
+            self.window_pos = window_pos
+            self.changed = True
+            
         self.collapsed_status = PyImGui.is_window_collapsed()
-        self.end_pos = PyImGui.get_window_pos()
+        self.end_pos = window_pos
 
     def end(self):
         # PyImGui.pop_clip_rect()
