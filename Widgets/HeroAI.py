@@ -489,8 +489,8 @@ def UpdateStatus(cached_data: CacheData):
                 if not account.AccountEmail:
                     continue
             
-                # if account.AccountEmail == GLOBAL_CACHE.Player.GetAccountEmail():
-                #     continue
+                if account.AccountEmail == GLOBAL_CACHE.Player.GetAccountEmail():
+                    continue
                 
                 if not settings.CombinePanels:
                     if not account.AccountEmail in hero_windows:
