@@ -89,6 +89,7 @@ class WindowModule:
 
     def begin(self, p_open: Optional[bool] = None, flags: PyImGui.WindowFlags = PyImGui.WindowFlags.NoFlag) -> bool:   
         self.__current_theme = self.get_theme()
+        self.changed = False
                                 
         if p_open is not None:
             self.open = p_open
