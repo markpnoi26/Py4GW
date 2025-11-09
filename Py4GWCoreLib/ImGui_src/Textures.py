@@ -1,122 +1,195 @@
 from dataclasses import dataclass
-from enum import IntEnum, Enum
+from enum import IntEnum, Enum, IntFlag, auto
+from typing import Optional
 from .types import TEXTURE_FOLDER, MINIMALUS_FOLDER, StyleTheme
 from ..Overlay import Overlay
 import os
-
 
 class TextureState(IntEnum):
     Normal = 0
     Hovered = 1
     Active = 2
     Disabled = 3
+    
+class TextureSliceMode(IntEnum):
+    FULL = 1
+    THREE_HORIZONTAL = 3
+    THREE_VERTICAL = 4
+    NINE = 9
 
-@dataclass(slots=True)
+class RegionFlags(IntFlag):
+    NONE   = 0
+    LEFT   = auto()
+    CENTER = auto()
+    RIGHT  = auto()
+    TOP    = auto()
+    MIDDLE = auto()
+    BOTTOM = auto()
+    FULL   = auto()
+
 class UVRegion:
-    """Simple UV coordinate pair (u0, v0, u1, v1)."""
-    u0: float
-    v0: float
-    u1: float
-    v1: float
+    __slots__ = ("x0", "y0", "x1", "y1")
 
-@dataclass(slots=True)
-class SplitUVMap:
-    """Holds 9-slice UV regions for one texture."""
-    top_left: UVRegion
-    top: UVRegion
-    top_right: UVRegion
-    left: UVRegion
-    center: UVRegion
-    right: UVRegion
-    bottom_left: UVRegion
-    bottom: UVRegion
-    bottom_right: UVRegion
+    def __init__(self, x0: float, y0: float, x1: float, y1: float):
+        self.x0, self.y0, self.x1, self.y1 = x0, y0, x1, y1
 
+    def uv0(self) -> tuple[float, float]:
+        return (self.x0, self.y0)
+
+    def uv1(self) -> tuple[float, float]:
+        return (self.x1, self.y1)
+
+    def as_tuple(self) -> tuple[float, float, float, float]:
+        return (self.x0, self.y0, self.x1, self.y1)
 
 class GameTexture:
-    """Optimized 9-slice texture renderer with struct-based UV access."""
+    """
+    Unified class supporting:
+    - Atlas state maps (Normal, Hovered, Active, Disabled)
+    - 1/3/9-slice scalable rendering
+    - Precomputed UVs for all states
+    """
 
-    def __init__(self, texture: str, texture_size: tuple[float, float], margin: int | None = None):
+    def __init__(
+        self,
+        texture: str,
+        texture_size: tuple[float, float],
+        mode: TextureSliceMode = TextureSliceMode.NINE,
+        element_size: Optional[tuple[float, float]] = None,
+        margin: Optional[tuple[float, float]] = None,
+        state_map: Optional[dict[TextureState, tuple[float, float]]] = None,
+    ):
         self.texture = texture
-        self.width, self.height = texture_size
+        self.tex_width, self.tex_height = texture_size
+        self.mode = mode
+        self.element_width, self.element_height = element_size if element_size else (texture_size[0], texture_size[1])
 
-        if self.height <= 32:
-            self.margin = 10 if not margin else margin
-            
-        elif self.height >= 64:
-            self.margin = 40 if not margin else margin
-            
+        self.margin_x = margin[0] if margin else self._compute_margin(self.element_height)
+        self.margin_y = margin[1] if margin else self._compute_margin(self.element_height)
+
+        # atlas state → pixel offset
+        self.state_map = state_map or {
+            TextureState.Normal: (0, 0),
+        }
+
+        # per-state, precomputed uv maps for all regions
+        self.state_uvs: dict[TextureState, dict[RegionFlags, Optional[UVRegion]]] = {}
+
+        # build all precomputed UVs once
+        self._build_all_state_uvs()
+
+    # --- helpers ---------------------------------------------------------------
+
+    def _compute_margin(self, size: float) -> float:
+        if size <= 32:
+            return 10.0
+        elif size >= 64:
+            return 40.0
         else:
-            self.margin = int(10 + (self.height - 32) * (30 / (64 - 32))) if not margin else margin
+            return 10.0 + (size - 32.0) * (30.0 / 32.0)
 
-        self.uvs = self._generate_uvs()
+    def _uv(self, x0: float, y0: float, x1: float, y1: float) -> UVRegion:
+        """Convert absolute pixel coordinates to normalized UVs."""
+        return UVRegion(x0 / self.tex_width, y0 / self.tex_height, x1 / self.tex_width, y1 / self.tex_height)
 
-    def _calc_uv(self, region: tuple[float, float, float, float]) -> UVRegion:
-        x0, y0, x1, y1 = region
-        return UVRegion(x0 / self.width, y0 / self.height, x1 / self.width, y1 / self.height)
+    def _build_state_uv(self, offset_x: float, offset_y: float) -> dict[RegionFlags, Optional[UVRegion]]:
+        """Build UV regions for one atlas state."""
+        sx, sy, w, h = self.margin_x, self.margin_y, self.element_width, self.element_height
+        ox, oy = offset_x, offset_y
+        uvs: dict[RegionFlags, Optional[UVRegion]] = {}
+        
+        if self.mode == TextureSliceMode.FULL:
+            uvs[RegionFlags.FULL] = self._uv(ox, oy, ox + w, oy + h)
 
-    def _generate_uvs(self) -> SplitUVMap:
-        m = self.margin
-        w, h = self.width, self.height
+        elif self.mode == TextureSliceMode.THREE_HORIZONTAL:
+            uvs[RegionFlags.LEFT] = self._uv(ox, oy, ox + sx, oy + h)
+            uvs[RegionFlags.CENTER] = self._uv(ox + sx, oy, ox + w - sx, oy + h)
+            uvs[RegionFlags.RIGHT] = self._uv(ox + w - sx, oy, ox + w, oy + h)
 
-        return SplitUVMap(
-            top_left=self._calc_uv((0, 0, m, m)),
-            top=self._calc_uv((m, 0, w - m, m)),
-            top_right=self._calc_uv((w - m, 0, w, m)),
+        elif self.mode == TextureSliceMode.THREE_VERTICAL:
+            uvs[RegionFlags.TOP] = self._uv(ox, oy, ox + w, oy + sy)
+            uvs[RegionFlags.MIDDLE] = self._uv(ox, oy + sy, ox + w, oy + h - sy)
+            uvs[RegionFlags.BOTTOM] = self._uv(ox, oy + h - sy, ox + w, oy + h)
 
-            left=self._calc_uv((0, m, m, h - m)),
-            center=self._calc_uv((m, m, w - m, h - m)),
-            right=self._calc_uv((w - m, m, w, h - m)),
+        elif self.mode == TextureSliceMode.NINE:
+            uvs[RegionFlags.TOP | RegionFlags.LEFT] = self._uv(ox, oy, ox + sx, oy + sy)
+            uvs[RegionFlags.TOP | RegionFlags.CENTER] = self._uv(ox + sx, oy, ox + w - sx, oy + sy)
+            uvs[RegionFlags.TOP | RegionFlags.RIGHT] = self._uv(ox + w - sx, oy, ox + w, oy + sy)
+            uvs[RegionFlags.MIDDLE | RegionFlags.LEFT] = self._uv(ox, oy + sy, ox + sx, oy + h - sy)
+            uvs[RegionFlags.MIDDLE | RegionFlags.CENTER] = self._uv(ox + sx, oy + sy, ox + w - sx, oy + h - sy)
+            uvs[RegionFlags.MIDDLE | RegionFlags.RIGHT] = self._uv(ox + w - sx, oy + sy, ox + w, oy + h - sy)
+            uvs[RegionFlags.BOTTOM | RegionFlags.LEFT] = self._uv(ox, oy + h - sy, ox + sx, oy + h)
+            uvs[RegionFlags.BOTTOM | RegionFlags.CENTER] = self._uv(ox + sx, oy + h - sy, ox + w - sx, oy + h)
+            uvs[RegionFlags.BOTTOM | RegionFlags.RIGHT] = self._uv(ox + w - sx, oy + h - sy, ox + w, oy + h)
+        return uvs
 
-            bottom_left=self._calc_uv((0, h - m, m, h)),
-            bottom=self._calc_uv((m, h - m, w - m, h)),
-            bottom_right=self._calc_uv((w - m, h - m, w, h))
-        )
+    def _build_all_state_uvs(self):
+        """Precompute all per-state UV sets."""
+        for state, (ox, oy) in self.state_map.items():
+            self.state_uvs[state] = self._build_state_uv(ox, oy)
+
+    # --- drawing ---------------------------------------------------------------
 
     def draw_in_drawlist(
         self,
-        x: float,
-        y: float,
+        pos: tuple[float, float],
         size: tuple[float, float],
-        tint=(255, 255, 255, 255),
-        state: TextureState = TextureState.Normal
+        state: TextureState = TextureState.Normal,
+        tint: tuple[int, int, int, int] = (255, 255, 255, 255),
     ):
+        """Draw the precomputed state UVs with slicing."""
         from .ImGuisrc import ImGui
 
-        total_w, total_h = size
-        m = self.margin
+        x, y = pos
+        w, h = size
+        sx, sy = self.margin_x, self.margin_y
+        uvs = self.state_uvs.get(state) or self.state_uvs[TextureState.Normal]
+        
+        if not uvs:
+            return  # no UVs to draw
+        
+        def draw(region: RegionFlags, dx: float, dy: float, dw: float, dh: float):
+            uv_region = uvs.get(region, None)
+            if uv_region:
+                ImGui.DrawTextureInDrawList(
+                    pos=(x + dx, y + dy),
+                    size=(dw, dh),
+                    texture_path=self.texture,
+                    uv0=uv_region.uv0(),
+                    uv1=uv_region.uv1(),
+                    tint=tint
+                )
 
-        left = x
-        top = y
-        right = x + total_w
-        bottom = y + total_h
+        if self.mode == TextureSliceMode.FULL:
+            draw(RegionFlags.FULL, 0, 0, w, h)
 
-        left_w = m
-        right_w = m
-        top_h = m
-        bottom_h = m
-        mid_w = max(total_w - left_w - right_w, 0)
-        mid_h = max(total_h - top_h - bottom_h, 0)
+        elif self.mode == TextureSliceMode.THREE_HORIZONTAL:
+            lw, rw = sx, sx
+            mw = max(0, w - lw - rw)
+            draw(RegionFlags.LEFT, 0, 0, lw, h)
+            draw(RegionFlags.CENTER, lw, 0, mw, h)
+            draw(RegionFlags.RIGHT, lw + mw, 0, rw, h)
 
-        uv = self.uvs  # local ref → faster
+        elif self.mode == TextureSliceMode.THREE_VERTICAL:
+            th, bh = sy, sy
+            mh = max(0, h - th - bh)
+            draw(RegionFlags.TOP, 0, 0, w, th)
+            draw(RegionFlags.MIDDLE, 0, th, w, mh)
+            draw(RegionFlags.BOTTOM, 0, th + mh, w, bh)
 
-        # --- Row 1 (top) ---
-        ImGui.DrawTextureInDrawList((left, top), (left_w, top_h), self.texture, uv0=(uv.top_left.u0, uv.top_left.v0), uv1=(uv.top_left.u1, uv.top_left.v1), tint=tint)
-        ImGui.DrawTextureInDrawList((left + left_w, top), (mid_w, top_h), self.texture, uv0=(uv.top.u0, uv.top.v0), uv1=(uv.top.u1, uv.top.v1), tint=tint)
-        ImGui.DrawTextureInDrawList((right - right_w, top), (right_w, top_h), self.texture, uv0=(uv.top_right.u0, uv.top_right.v0), uv1=(uv.top_right.u1, uv.top_right.v1), tint=tint)
+        elif self.mode == TextureSliceMode.NINE:
+            cw, ch = sx, sy
+            mw, mh = max(0, w - 2 * cw), max(0, h - 2 * ch)
 
-        # --- Row 2 (middle) ---
-        ImGui.DrawTextureInDrawList((left, top + top_h), (left_w, mid_h), self.texture, uv0=(uv.left.u0, uv.left.v0), uv1=(uv.left.u1, uv.left.v1), tint=tint)
-        ImGui.DrawTextureInDrawList((left + left_w, top + top_h), (mid_w, mid_h), self.texture, uv0=(uv.center.u0, uv.center.v0), uv1=(uv.center.u1, uv.center.v1), tint=tint)
-        ImGui.DrawTextureInDrawList((right - right_w, top + top_h), (right_w, mid_h), self.texture, uv0=(uv.right.u0, uv.right.v0), uv1=(uv.right.u1, uv.right.v1), tint=tint)
-
-        # --- Row 3 (bottom) ---
-        ImGui.DrawTextureInDrawList((left, bottom - bottom_h), (left_w, bottom_h), self.texture, uv0=(uv.bottom_left.u0, uv.bottom_left.v0), uv1=(uv.bottom_left.u1, uv.bottom_left.v1), tint=tint)
-        ImGui.DrawTextureInDrawList((left + left_w, bottom - bottom_h), (mid_w, bottom_h), self.texture, uv0=(uv.bottom.u0, uv.bottom.v0), uv1=(uv.bottom.u1, uv.bottom.v1), tint=tint)
-        ImGui.DrawTextureInDrawList((right - right_w, bottom - bottom_h), (right_w, bottom_h), self.texture, uv0=(uv.bottom_right.u0, uv.bottom_right.v0), uv1=(uv.bottom_right.u1, uv.bottom_right.v1), tint=tint)
-
-    def __repr__(self):
-        return f"<GameTexture9 '{self.texture}' size=({self.width}x{self.height}) margin={self.margin}>"
+            draw(RegionFlags.TOP | RegionFlags.LEFT, 0, 0, cw, ch)
+            draw(RegionFlags.TOP | RegionFlags.CENTER, cw, 0, mw, ch)
+            draw(RegionFlags.TOP | RegionFlags.RIGHT, cw + mw, 0, cw, ch)
+            draw(RegionFlags.MIDDLE | RegionFlags.LEFT, 0, ch, cw, mh)
+            draw(RegionFlags.MIDDLE | RegionFlags.CENTER, cw, ch, mw, mh)
+            draw(RegionFlags.MIDDLE | RegionFlags.RIGHT, cw + mw, ch, cw, mh)
+            draw(RegionFlags.BOTTOM | RegionFlags.LEFT, 0, ch + mh, cw, ch)
+            draw(RegionFlags.BOTTOM | RegionFlags.CENTER, cw, ch + mh, mw, ch)
+            draw(RegionFlags.BOTTOM | RegionFlags.RIGHT, cw + mw, ch + mh, cw, ch)
 
 class MapTexture:
     """
@@ -160,8 +233,7 @@ class MapTexture:
 
     def draw_in_drawlist(
         self,
-        x: float,
-        y: float,
+        pos: tuple[float, float],
         size: tuple[float, float],
         state: TextureState = TextureState.Normal,
         tint=(255, 255, 255, 255)
@@ -169,31 +241,13 @@ class MapTexture:
         from .ImGuisrc import ImGui
         uv = self.get_uv(state)
         ImGui.DrawTextureInDrawList(
-            pos=(x, y),
+            pos=pos,
             size=size,
             texture_path=self.texture,
             uv0=uv[:2],
             uv1=uv[2:],
             tint=tint,
         )
-
-    def draw_in_background_drawlist(
-        self,
-        x: float,
-        y: float,
-        size: tuple[float, float],
-        state: TextureState = TextureState.Normal,
-        tint=(255, 255, 255, 255),
-        overlay_name: str = ""
-    ):
-        from .ImGuisrc import ImGui
-        
-        uv = self.get_uv(state)
-        ImGui.overlay_instance.BeginDraw(overlay_name)
-
-        ImGui.overlay_instance.DrawTexturedRectExtended((x, y), size, self.texture, uv[:2], uv[2:], tint)
-
-        ImGui.overlay_instance.EndDraw()
 
 class ThemeTexture:
     PlaceHolderTexture = MapTexture(
@@ -326,11 +380,13 @@ class ThemeTextures(Enum):
         (StyleTheme.Minimalus, GameTexture(
             texture=os.path.join(MINIMALUS_FOLDER, "ui_combo_arrow.png"),
             texture_size=(128, 32),
+            mode=TextureSliceMode.FULL,
         )),
 
         (StyleTheme.Guild_Wars, GameTexture(
             texture=os.path.join(TEXTURE_FOLDER, "ui_combo_arrow.png"),
             texture_size=(128, 32),
+            mode=TextureSliceMode.FULL,
         ))
     )
 
@@ -338,12 +394,14 @@ class ThemeTextures(Enum):
         (StyleTheme.Minimalus, GameTexture(
             texture=os.path.join(MINIMALUS_FOLDER, "ui_combo_background.png"),
             texture_size=(128, 32),
+            margin=(29, 8),
         )),
 
         (StyleTheme.Guild_Wars, GameTexture(
             texture=os.path.join(
                 TEXTURE_FOLDER, "ui_combo_background.png"),
             texture_size=(128, 32),
+            margin=(29, 8),
         ))
     )
 
@@ -351,11 +409,13 @@ class ThemeTextures(Enum):
         (StyleTheme.Minimalus, GameTexture(
             texture=os.path.join(MINIMALUS_FOLDER, "ui_combo_frame.png"),
             texture_size=(128, 32),
+            margin=(29, 8),
         )),
 
         (StyleTheme.Guild_Wars, GameTexture(
             texture=os.path.join(TEXTURE_FOLDER, "ui_combo_frame.png"),
             texture_size=(128, 32),
+            margin=(29, 8),
         ))
     )
     ArrowCollapsed = ThemeTexture(
@@ -557,7 +617,7 @@ class ThemeTextures(Enum):
     )),
     )        
 
-    Tab_Frame_Top = ThemeTexture(
+    Tab_Frame = ThemeTexture(
     (StyleTheme.Minimalus,  GameTexture(
         texture = os.path.join(MINIMALUS_FOLDER, "ui_tab_bar_frame.png"),
         texture_size=(32, 32),
@@ -567,26 +627,17 @@ class ThemeTextures(Enum):
         texture_size=(32, 32),
     )),
     )
-
-    Tab_Frame_Body = ThemeTexture(
-    (StyleTheme.Minimalus,  GameTexture(
-        texture = os.path.join(MINIMALUS_FOLDER, "ui_tab_bar_frame.png"),
-        texture_size=(32, 32),
-    )),
-    (StyleTheme.Guild_Wars,  GameTexture(
-        texture = os.path.join(TEXTURE_FOLDER, "ui_tab_bar_frame.png"),
-        texture_size=(32, 32),
-    )),
-    )
-
+    
     Tab_Active = ThemeTexture(
     (StyleTheme.Minimalus,  GameTexture(
         texture = os.path.join(MINIMALUS_FOLDER, "ui_tab_active.png"),
         texture_size=(32, 32),
+        margin=(8, 0),
     )),
     (StyleTheme.Guild_Wars,  GameTexture(
         texture = os.path.join(TEXTURE_FOLDER, "ui_tab_active.png"),
         texture_size=(32, 32),
+        margin=(8, 0),
     )),
     )
 
@@ -594,10 +645,12 @@ class ThemeTextures(Enum):
     (StyleTheme.Minimalus,  GameTexture(
         texture = os.path.join(MINIMALUS_FOLDER, "ui_tab_inactive.png"),
         texture_size=(32, 32),
+        margin=(8, 0),
     )),
     (StyleTheme.Guild_Wars,  GameTexture(
         texture = os.path.join(TEXTURE_FOLDER, "ui_tab_inactive.png"),
         texture_size=(32, 32),
+        margin=(8, 0),
     )),
     )
 
@@ -671,12 +724,12 @@ class ThemeTextures(Enum):
     (StyleTheme.Minimalus,  GameTexture(
         texture = os.path.join(MINIMALUS_FOLDER, "ui_titlebar.png"),
         texture_size=(128, 32),
-        margin=18,
+        margin=(18, 0),
     )),
     (StyleTheme.Guild_Wars,  GameTexture(
         texture = os.path.join(TEXTURE_FOLDER, "ui_titlebar.png"),
         texture_size=(128, 32),
-        margin=18,
+        margin=(18, 0),
     )),
     )
     
@@ -684,12 +737,12 @@ class ThemeTextures(Enum):
     (StyleTheme.Minimalus,  GameTexture(
         texture = os.path.join(MINIMALUS_FOLDER, "ui_titlebar_collapsed.png"),
         texture_size=(128, 32),
-        margin=18,
+        margin=(18, 0),
     )),
     (StyleTheme.Guild_Wars,  GameTexture(
         texture = os.path.join(TEXTURE_FOLDER, "ui_titlebar_collapsed.png"),
         texture_size=(128, 32),
-        margin=18,
+        margin=(18, 0),
     )),
     )
 

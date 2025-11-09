@@ -19,7 +19,7 @@ from Py4GWCoreLib.Effect import Effects
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.GlobalCache.SharedMemory import AccountData, SharedMessage
 from Py4GWCoreLib.ImGui_src.IconsFontAwesome5 import IconsFontAwesome5
-from Py4GWCoreLib.ImGui_src.Textures import GameTexture, MapTexture, SplitTexture, TextureState, ThemeTexture, ThemeTextures
+from Py4GWCoreLib.ImGui_src.Textures import GameTexture, MapTexture, GameTexture, TextureState, ThemeTexture, ThemeTextures
 from Py4GWCoreLib.ImGui_src.WindowModule import WindowModule
 from Py4GWCoreLib.ImGui_src.types import TEXTURE_FOLDER, Alignment, StyleTheme
 from Py4GWCoreLib.Overlay import Overlay
@@ -153,22 +153,19 @@ def draw_health_bar(width: float, height: float, max_health: float, current_heal
 
     if draw_textures:
         ThemeTextures.HealthBarEmpty.value.get_texture().draw_in_drawlist(
-            background_rect[0],
-            background_rect[1],
-            (background_rect[2], background_rect[3]),
+            background_rect[:2],
+            background_rect[2:],
         )
 
         ThemeTextures.HealthBarFill.value.get_texture().draw_in_drawlist(
-            progress_rect[0],
-            progress_rect[1],
-            (progress_rect[2], progress_rect[3]),
+            progress_rect[:2],
+            progress_rect[2:],
         )
 
         if current_health * max_health != max_health:
             ThemeTextures.HealthBarCursor.value.get_texture().draw_in_drawlist(
-                cursor_rect[0],
-                cursor_rect[1],
-                (cursor_rect[2], cursor_rect[3]),
+                cursor_rect[:2],
+                cursor_rect[2:],
             )
 
     display_label = str(int(current_health * max_health))
@@ -193,8 +190,7 @@ def draw_health_bar(width: float, height: float, max_health: float, current_heal
 
             for i in range(int(pips)):
                 pip_texture.value.get_texture().draw_in_drawlist(
-                    pip_pos + (i * 8),
-                    item_rect[1],
+                    (pip_pos + (i * 8), item_rect[1]),
                     (10 * (height / 16), height),
                 )
 
@@ -203,14 +199,12 @@ def draw_health_bar(width: float, height: float, max_health: float, current_heal
 
             for i in range(abs(int(pips))):
                 pip_texture.value.get_texture().draw_in_drawlist(
-                    pip_pos - (i * 8),
-                    item_rect[1],
+                    (pip_pos - (i * 8), item_rect[1]),
                     (10 * (height / 16), height),
                 )
 
         ThemeTextures.ProgressBarFrame.value.get_texture().draw_in_drawlist(
-            item_rect[0],
-            item_rect[1],
+            (item_rect[0], item_rect[1]),
             (item_rect[2], item_rect[3]),
         )
     else:
@@ -270,22 +264,19 @@ def draw_energy_bar(width: float, height: float, max_energy: float, current_ener
 
     if draw_textures:
         ThemeTextures.EnergyBarEmpty.value.get_texture().draw_in_drawlist(
-            background_rect[0],
-            background_rect[1],
-            (background_rect[2], background_rect[3]),
+            background_rect[:2],
+            background_rect[2:],
         )
 
         ThemeTextures.EnergyBarFill.value.get_texture().draw_in_drawlist(
-            progress_rect[0],
-            progress_rect[1],
-            (progress_rect[2], progress_rect[3]),
+            progress_rect[:2],
+            progress_rect[2:],
         )
 
         if current_energy * max_energy != max_energy:
             ThemeTextures.EnergyBarCursor.value.get_texture().draw_in_drawlist(
-                cursor_rect[0],
-                cursor_rect[1],
-                (cursor_rect[2], cursor_rect[3]),
+                cursor_rect[:2],
+                cursor_rect[2:],
             )
 
     display_label = str(int(current_energy * max_energy))
@@ -310,8 +301,7 @@ def draw_energy_bar(width: float, height: float, max_energy: float, current_ener
 
             for i in range(int(pips)):
                 pip_texture.value.get_texture().draw_in_drawlist(
-                    pip_pos + (i * 8),
-                    item_rect[1],
+                    (pip_pos + (i * 8), item_rect[1]),
                     (10 * (height / 16), height),
                 )
 
@@ -320,15 +310,13 @@ def draw_energy_bar(width: float, height: float, max_energy: float, current_ener
 
             for i in range(abs(int(pips))):
                 pip_texture.value.get_texture().draw_in_drawlist(
-                    pip_pos - (i * 8),
-                    item_rect[1],
+                    (pip_pos - (i * 8), item_rect[1]),
                     (10 * (height / 16), height),
                 )
 
         ThemeTextures.ProgressBarFrame.value.get_texture().draw_in_drawlist(
-            item_rect[0],
-            item_rect[1],
-            (item_rect[2], item_rect[3]),
+            item_rect[:2],
+            item_rect[2:]
         )
     else:
         pip_char = IconsFontAwesome5.ICON_ANGLE_RIGHT if pips > 0 else IconsFontAwesome5.ICON_ANGLE_LEFT
@@ -616,8 +604,7 @@ def draw_skill_bar(height: float, account_data: AccountData, cached_data: CacheD
         if not hero_options.Skills[slot].Active:
             hovered = PyImGui.is_item_hovered()
             ThemeTextures.Cancel.value.get_texture().draw_in_drawlist(
-                PyImGui.get_item_rect_min()[0],
-                PyImGui.get_item_rect_min()[1],
+                PyImGui.get_item_rect_min(),
                 (height, height),
                 state=TextureState.Hovered if hovered else TextureState.Normal
             )
@@ -630,8 +617,7 @@ def draw_skill_bar(height: float, account_data: AccountData, cached_data: CacheD
             if queued_skill_usage:
                 hovered = PyImGui.is_item_hovered()
                 ThemeTextures.Check.value.get_texture().draw_in_drawlist(
-                    PyImGui.get_item_rect_min()[0],
-                    PyImGui.get_item_rect_min()[1],
+                    PyImGui.get_item_rect_min(),
                     (height, height),
                     state=TextureState.Hovered if hovered else TextureState.Normal
                 )
@@ -668,8 +654,7 @@ def draw_skill_bar(height: float, account_data: AccountData, cached_data: CacheD
             texture_state = TextureState.Normal if not skill.is_elite else TextureState.Active
 
             ThemeTextures.Skill_Frame.value.get_texture().draw_in_drawlist(
-                item_rect_min[0],
-                item_rect_min[1],
+                item_rect_min[:2],
                 (height, height),
                 state=texture_state
             )
@@ -713,8 +698,7 @@ def draw_buffs_and_upkeeps(account_data: AccountData, skill_size: float = 28):
         if draw_effect_frame:
             frame_texture, texture_state = effect.frame_texture, effect.texture_state
             frame_texture.draw_in_drawlist(
-                item_rect_min[0],
-                item_rect_min[1],
+                item_rect_min[:2],
                 (skill_size, skill_size),
                 state=texture_state
             )
@@ -793,8 +777,7 @@ def draw_buffs_and_upkeeps(account_data: AccountData, skill_size: float = 28):
         
         item_rect = (item_rect_min[0], item_rect_min[1], item_rect_max[0] - item_rect_min[0], item_rect_max[1] - item_rect_min[1])
         texture.draw_in_drawlist(
-            item_rect[0],
-            item_rect[1],
+            item_rect[:2],
             (skill_size, skill_size),
         )
         text_size = PyImGui.calc_text_size(morale_display)
@@ -947,7 +930,7 @@ def draw_buttons(account_data: AccountData, cached_data: CacheData, message_queu
         item_rect_min = PyImGui.get_item_rect_min()
         if draw_textures:
             ThemeTextures.HeroPanelButtonBase.value.get_texture().draw_in_drawlist(
-                item_rect_min[0], item_rect_min[1], (btn_size, btn_size),
+                item_rect_min, (btn_size, btn_size),
                 state=TextureState.Active if status else TextureState.Normal,
                 tint=(255, 255, 255, 255) if hovered else (200, 200, 200, 255)
             )
@@ -1155,9 +1138,8 @@ def draw_combined_hero_panel(account_data: AccountData, cached_data: CacheData, 
     item_rect = (item_rect_min[0], item_rect_min[1] + 5, item_rect_max[0] - item_rect_min[0], item_rect_max[1] - item_rect_min[1])
     
     ThemeTextures.HeaderLabelBackground.value.get_texture().draw_in_drawlist(
-        item_rect[0],
-        item_rect[1] - 0,
-        (item_rect[2], item_rect[3]),
+        item_rect[:2],
+        item_rect[2:],
         tint=(225, 225, 225, 200) if style.Theme is StyleTheme.Guild_Wars else (255, 255, 255, 255)
     )
     
@@ -1314,7 +1296,7 @@ def draw_button(id_suffix: str, icon: str, w : float = 0, h : float = 0, active 
     item_rect_min = PyImGui.get_item_rect_min()
     if draw_textures:
         ThemeTextures.HeroPanelButtonBase.value.get_texture().draw_in_drawlist(
-            item_rect_min[0], item_rect_min[1], (w, h),
+            item_rect_min, (w, h),
             state=TextureState.Active if active else TextureState.Normal,
             tint=(255, 255, 255, 85) if not enabled else (255, 255, 255, 255) if hovered and mouse_down else (200, 200, 200, 255) if hovered else (175, 175, 175, 255)
         )
@@ -1409,7 +1391,7 @@ def draw_consumables_window(cached_data: CacheData):
                     _post_pcon_message(params, cached_data) 
                     
                 x,y = PyImGui.get_item_rect_min()
-                ThemeTextures.Inventory_Slots.value.get_texture().draw_in_drawlist(x, y, (btn_size, btn_size))
+                ThemeTextures.Inventory_Slots.value.get_texture().draw_in_drawlist((x, y), (btn_size, btn_size))
                 ImGui.DrawTextureInDrawList((x + 2, y + 2), (btn_size - 4, btn_size - 4), texture_path)
                     
                 ImGui.show_tooltip(f"Use {model_id.name.replace('_', ' ')}")
@@ -1578,8 +1560,7 @@ def draw_hotbar(hotbar: Settings.CommandHotBar, accounts: list[AccountData]):
                                 ImGui.pop_font()
                                 if draw_textures:
                                     ThemeTextures.Skill_Slot_Empty.value.get_texture().draw_in_drawlist(
-                                        item_rect_min[0] + 1,
-                                        item_rect_min[1] + 1,
+                                        (item_rect_min[0] + 1, item_rect_min[1] + 1),
                                         (btn_size - 2, btn_size - 2),
                                         tint=(255, 255, 255, 255) if PyImGui.is_item_hovered() else (200, 200, 200, 255)
                                     )
@@ -1609,8 +1590,7 @@ def draw_hotbar(hotbar: Settings.CommandHotBar, accounts: list[AccountData]):
                                 item_rect_min = PyImGui.get_item_rect_min()
                                 if draw_textures:
                                     ThemeTextures.Skill_Slot_Empty.value.get_texture().draw_in_drawlist(
-                                        item_rect_min[0] + 1,
-                                        item_rect_min[1] + 1,
+                                        (item_rect_min[0] + 1, item_rect_min[1] + 1),
                                         (btn_size - 2, btn_size - 2),
                                         tint=(255, 255, 255, 255) if PyImGui.is_item_hovered() else (200, 200, 200, 255)
                                     )
