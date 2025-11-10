@@ -95,10 +95,10 @@ class ImGui:
     def pop_style_color(count: int = 1): PyImGui.pop_style_color(count)
 
     @staticmethod
-    def is_mouse_in_rect(rect: tuple[float, float, float, float]) -> bool:
+    def is_mouse_in_rect(rect: tuple[float, float, float, float], mouse_pos: Optional[tuple[float, float]] = None) -> bool:
         '''Check if mouse is within given rectangle (x, y, width, height).'''
         pyimgui_io = PyImGui.get_io()
-        mouse_pos = (pyimgui_io.mouse_pos_x, pyimgui_io.mouse_pos_y)
+        mouse_pos = (pyimgui_io.mouse_pos_x, pyimgui_io.mouse_pos_y) if mouse_pos is None else mouse_pos
         
         return (rect[0] <= mouse_pos[0] <= rect[0] + rect[2] and
                 rect[1] <= mouse_pos[1] <= rect[1] + rect[3])

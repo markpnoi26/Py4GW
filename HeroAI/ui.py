@@ -1,11 +1,13 @@
 
 from collections.abc import Callable
+import ctypes
 from enum import IntEnum
 import math
 import os
 import random
 from Py4GW import Console
 import PyImGui
+import PyUIManager
 from HeroAI import windows
 from HeroAI.cache_data import CacheData
 from HeroAI.commands import HeroAICommands
@@ -27,6 +29,7 @@ from Py4GWCoreLib.Player import Player
 from Py4GWCoreLib.Routines import Routines
 from Py4GWCoreLib.Skill import Skill
 from Py4GWCoreLib.Skillbar import SkillBar
+from Py4GWCoreLib.UIManager import DIALOG_CHILD_OFFSET, NPC_DIALOG_HASH, UIManager
 from Py4GWCoreLib.enums_src.GameData_enums import Allegiance, Attribute, Profession, ProfessionShort
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.enums_src.Multiboxing_enums import SharedCommandType
@@ -82,6 +85,8 @@ module_info = None
 settings = Settings()
 casting_animation_timer = Timer()
 casting_animation_timer.Start()
+
+dialog_throttle = ThrottledTimer(125)
 
 commands = HeroAICommands()
 gray_color = Color(150, 150, 150, 255)
@@ -641,8 +646,9 @@ def draw_skill_bar(height: float, account_data: AccountData, cached_data: CacheD
                 target_id = get_skill_target(account_data, skill)
                 
                 if target_id is not None:
+                    ConsoleLog("HeroAI", f"Using skill {skill.name} (ID: {skill.skill_id}) on target ID {target_id}")
                     message_index = GLOBAL_CACHE.ShMem.SendMessage(GLOBAL_CACHE.Player.GetAccountEmail(
-                    ), account_data.AccountEmail, SharedCommandType.UseSkill, (target_id, float(skill.skill_id)))
+                    ), account_data.AccountEmail, SharedCommandType.UseSkill, (target_id, int(skill.skill_id)))
 
                     if account_data.AccountEmail not in message_cache:
                         message_cache[account_data.AccountEmail] = {}
@@ -686,6 +692,7 @@ def draw_buffs_bar(account_data: AccountData, win_pos: tuple, win_size: tuple, m
 
 def draw_buffs_and_upkeeps(account_data: AccountData, skill_size: float = 28):
     style = ImGui.get_style()
+    HARD_MODE_EFFECT_ID = 1912 
     
     def draw_buff(effect: CachedSkillInfo, duration: float, remaining: float, draw_effect_frame: bool = True, skill_size: float = skill_size):
         if not effect.texture_path:
@@ -795,6 +802,26 @@ def draw_buffs_and_upkeeps(account_data: AccountData, skill_size: float = 28):
         ImGui.pop_font()
         PyImGui.same_line(0, 0)
     
+    def draw_hardmode():
+        # hardmode completed 1912
+        if HARD_MODE_EFFECT_ID in account_data.PlayerEffects:
+            if not HARD_MODE_EFFECT_ID in skill_cache:
+                skill_cache[HARD_MODE_EFFECT_ID] = CachedSkillInfo(HARD_MODE_EFFECT_ID)
+
+            killed = GLOBAL_CACHE.Map.GetFoesKilled()
+            total = GLOBAL_CACHE.Map.GetFoesToKill()
+                        
+            if killed < total and total > 0:
+                texture = ThemeTextures.HardMode.value.get_texture(StyleTheme.Guild_Wars)
+                pass
+            else:
+                texture = ThemeTextures.HardModeCompleted.value.get_texture(StyleTheme.Guild_Wars)
+            
+            if isinstance(texture, MapTexture):                
+                ImGui.image(texture.texture, (skill_size + 1, skill_size + 1), uv0=texture.normal_offset[:2], uv1=texture.normal_offset[2:])
+                PyImGui.same_line(0, 0)
+        pass
+    
     if settings.ShowHeroUpkeeps:
         ImGui.dummy(0, 24)
         PyImGui.same_line(0, 0)
@@ -822,17 +849,29 @@ def draw_buffs_and_upkeeps(account_data: AccountData, skill_size: float = 28):
         
         if account_data.PlayerMorale != 100 and account_data.PlayerMorale != 0:
             draw_morale(account_data.PlayerMorale, skill_size)
+                        
+        draw_hardmode()
+        
+        #get each effect with unique id and take the longest duration for that id
+        player_effects = {}
         
         for index, effect_id in enumerate(account_data.PlayerEffects):
-            if effect_id == 0:
+            remaining = account_data.PlayerEffectsRemaining[index]
+            duration = account_data.PlayerEffectsDuration[index]
+
+            if effect_id not in player_effects:
+                player_effects[effect_id] = (remaining, duration)
+            else:
+                player_effects[effect_id] = max(player_effects[effect_id], (remaining, duration))
+
+        for effect_id, (remaining, duration) in player_effects.items():
+            if effect_id == 0 or effect_id == HARD_MODE_EFFECT_ID:
                 continue
             
             if not effect_id in skill_cache:
                 skill_cache[effect_id] = CachedSkillInfo(effect_id)
 
             effect = skill_cache[effect_id]
-            duration = account_data.PlayerEffectsDuration[index]
-            remaining = account_data.PlayerEffectsRemaining[index]
 
             draw_buff(effect, duration, remaining, True, 28)
         
@@ -1468,14 +1507,14 @@ def draw_command_panel(window: WindowModule, accounts : list[AccountData], cache
 
         ImGui.end_child()
                 
-        is_window_active = Console.is_window_active()
-        if is_window_active:
-            CompareAndSubmitGameOptions(cached_data, game_options)
+        # is_window_active = Console.is_window_active()
+        # if is_window_active:
+        CompareAndSubmitGameOptions(cached_data, game_options)
 
         window.process_window()
         
         if window.changed:                
-            if is_window_active:
+            if Console.is_window_active():
                 settings.HeroPanelPositions[window.window_name.replace(" ", "_")] = (int(window.window_pos[0]), int(window.window_pos[1]), int(window.window_size[0]), int(window.window_size[1]), False)
                 settings.save_settings()
             
@@ -1760,6 +1799,77 @@ def draw_hotbars(accounts: list[AccountData], cached_data: CacheData):
     draw_command_select_popup()
     draw_consumables_window(cached_data)
 
+dialog_open : bool = False
+frame_coords : list[tuple[int, int, int, int, int]] = []
+dialog_coords : tuple[int, int, int, int] = (0, 0, 0, 0)
+overlay = Overlay()
+
+# Load user32.dll
+user32 = ctypes.windll.user32
+
+# Virtual-key code for left mouse button
+VK_LBUTTON = 0x01
+
+def is_left_pressed() -> bool:    
+    return bool(user32.GetAsyncKeyState(VK_LBUTTON) & 0x8000)
+
+_left_was_pressed = False
+
+def is_left_mouse_clicked() -> bool:
+    """
+    Returns True exactly once per full click (press → release).
+    False at all other times.
+    """
+    global _left_was_pressed
+    
+    # Is button physically down now?
+    pressed = bool(user32.GetAsyncKeyState(VK_LBUTTON) & 0x8000)
+    
+    # Detect release event (was pressed, now not pressed)
+    clicked = _left_was_pressed and not pressed
+
+    # Update state for next call
+    _left_was_pressed = pressed
+
+    return clicked
+        
+            
+def draw_dialog_overlay(accounts: list[AccountData], cached_data: CacheData, messages: list[tuple[int, SharedMessage]]):
+    global frame_coords, dialog_open, dialog_coords
+    
+    if dialog_throttle.IsExpired():
+        dialog_throttle.Reset()
+        dialog_open = UIManager.IsNPCDialogVisible()
+        
+        button_ids = UIManager.GetDialogButtonIDs()
+        frame_coords = [(id, *UIManager.GetFrameCoords(id)) for id in button_ids]
+            
+        fid = UIManager.GetFrameIDByHash(NPC_DIALOG_HASH)
+        dialog_coords = UIManager.GetFrameCoords(fid)
+    
+    if not frame_coords or not dialog_open or not dialog_coords:
+        return
+    
+    pyimgui_io = PyImGui.get_io()
+    mouse_pos = (pyimgui_io.mouse_pos_x, pyimgui_io.mouse_pos_y)
+    
+    if Console.is_window_active():
+        for i, frame in enumerate(frame_coords):                        
+            if ImGui.is_mouse_in_rect((frame[1], frame[2], frame[3] - frame[1], frame[4] - frame[2]), mouse_pos):
+                if is_left_mouse_clicked() and pyimgui_io.key_ctrl:
+                    accounts = [acc for acc in accounts if acc.AccountEmail != cached_data.account_email]
+                    commands.send_dialog(accounts, i + 1)
+                    return
+                else:
+                    style = ImGui.get_style()
+                    style.WindowBg.push_color((0, 0, 0, 0))
+                    ImGui.begin_tooltip()
+                    ImGui.text_colored(f"Ctrl + Click to select on all accounts.", gray_color.color_tuple, 12)
+                    ImGui.end_tooltip()
+                    style.WindowBg.pop_color()
+
+    pass
+
 def draw_configure_window():
     from Widgets import HeroAI
     
@@ -1797,7 +1907,12 @@ def draw_configure_window():
                 ImGui.end_tab_item()
                 
             if ImGui.begin_tab_item("Hero Panels"):      
-                if ImGui.begin_child("##HeroPanelSettingsChild", (0, 0)):              
+                if ImGui.begin_child("##HeroPanelSettingsChild", (0, 0)):   
+                    show_hero_panels = ImGui.checkbox("Show Hero Panels", settings.ShowHeroPanels)
+                    if show_hero_panels != settings.ShowHeroPanels:
+                        settings.ShowHeroPanels = show_hero_panels
+                        settings.save_settings()
+                                       
                     show_on_leader = ImGui.checkbox("Show only on Leader", settings.ShowPanelOnlyOnLeaderAccount)
                     if show_on_leader != settings.ShowPanelOnlyOnLeaderAccount:
                         settings.ShowPanelOnlyOnLeaderAccount = show_on_leader
@@ -1808,11 +1923,6 @@ def draw_configure_window():
                         settings.CombinePanels = combine_panels
                         settings.save_settings()
                         
-                    show_hero_panels = ImGui.checkbox("Show Hero Panels", settings.ShowHeroPanels)
-                    if show_hero_panels != settings.ShowHeroPanels:
-                        settings.ShowHeroPanels = show_hero_panels
-                        settings.save_settings()
-                            
                     show_hero_buttons = ImGui.checkbox("Show Hero Buttons", settings.ShowHeroButtons)
                     if show_hero_buttons != settings.ShowHeroButtons:
                         settings.ShowHeroButtons = show_hero_buttons

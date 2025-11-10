@@ -1421,3 +1421,33 @@ class ThemeTextures(Enum):
         size = (64, 64),
     )),
     )
+
+    HardMode = ThemeTexture(
+    (StyleTheme.Minimalus,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER, "ui_hardmode_atlas.png"),
+        texture_size = (128, 64),
+        size = (56, 56),
+        normal=(0, 0)
+    )),
+    (StyleTheme.Guild_Wars,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER, "ui_hardmode_atlas.png"),
+        texture_size = (128, 64),
+        size = (56, 56),
+        normal=(0, 0)
+    )),
+    )
+    
+    HardModeCompleted = ThemeTexture(
+    (StyleTheme.Minimalus,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER, "ui_hardmode_atlas.png"),
+        texture_size = (128, 64),
+        size = (56, 56),
+        normal=(56, 0)
+    )),
+    (StyleTheme.Guild_Wars,  MapTexture(
+        texture = os.path.join(TEXTURE_FOLDER, "ui_hardmode_atlas.png"),
+        texture_size = (128, 64),
+        size = (56, 56),
+        normal=(56, 0)
+    )),
+    )

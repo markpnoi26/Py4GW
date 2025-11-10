@@ -50,7 +50,7 @@ from HeroAI.windows import DrawMultiboxTools
 from HeroAI.windows import DrawOptions
 from HeroAI.windows import DrawPanelButtons
 from HeroAI.windows import SubmitGameOptions
-from HeroAI.ui import draw_combined_hero_panel, draw_command_panel, draw_configure_window, draw_hero_panel, draw_hotbars
+from HeroAI.ui import draw_combined_hero_panel, draw_command_panel, draw_configure_window, draw_dialog_overlay, draw_hero_panel, draw_hotbars
 from Py4GWCoreLib import GLOBAL_CACHE
 from Py4GWCoreLib import ActionQueueManager
 from Py4GWCoreLib import IconsFontAwesome5
@@ -516,6 +516,8 @@ def UpdateStatus(cached_data: CacheData):
     
     if settings.CommandHotBars:
         draw_hotbars(accounts, cached_data)
+        
+    draw_dialog_overlay(accounts, cached_data, messages)
                 
     DrawEmbeddedWindow(cached_data)
     if cached_data.ui_state_data.show_classic_controls:

@@ -202,7 +202,6 @@ class ActionQueueManager:
             "IDENTIFY": ActionQueueNode(150),
             "FAST": ActionQueueNode(20),
             "TRANSITION": ActionQueueNode(50),
-            "SLOW": ActionQueueNode(1000),
             # Add more queues here if needed
         }
         
