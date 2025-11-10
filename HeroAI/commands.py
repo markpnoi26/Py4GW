@@ -121,12 +121,22 @@ class HeroAICommands:
     def invite_all_command(self, accounts: list[AccountData]):
         sender_email = GLOBAL_CACHE.Player.GetAccountEmail()
         sender_id = GLOBAL_CACHE.Player.GetAgentID()
+        first_account = True
         
         for account in accounts:
+            if account.AccountEmail == sender_email:
+                continue
+            
             same_map = GLOBAL_CACHE.Map.GetMapID() == account.MapID and GLOBAL_CACHE.Map.GetRegion()[0] == account.MapRegion and GLOBAL_CACHE.Map.GetDistrict() == account.MapDistrict
             
             if same_map:
-                GLOBAL_CACHE.Party.Players.InvitePlayer(account.CharacterName)
+                if first_account:
+                    first_account = False
+                    GLOBAL_CACHE.Party.Players.InvitePlayer(account.CharacterName)                
+                else:
+                    GLOBAL_CACHE._ActionQueueManager.AddAction("SLOW", GLOBAL_CACHE.Party.Players.InvitePlayer, account.CharacterName)
+                    GLOBAL_CACHE._ActionQueueManager.AddAction("SLOW", lambda: None)
+                    GLOBAL_CACHE._ActionQueueManager.AddAction("SLOW", lambda: None)
                 
             GLOBAL_CACHE.ShMem.SendMessage(
                 sender_email,
