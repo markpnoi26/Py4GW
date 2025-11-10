@@ -776,6 +776,7 @@ class LootConfig:
             lambda item_id: IsValidItem(item_id)
         )
         
+        pick_up_array = []
 
         for agent_id in loot_array[:]:  # Iterate over a copy to avoid modifying while iterating
             item_data = Agent.GetItemAgent(agent_id)
