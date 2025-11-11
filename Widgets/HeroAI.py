@@ -1,15 +1,7 @@
 import math
 import sys
 import traceback
-from enum import Enum
 import Py4GW
-from PyMap import PyMap
-from Py4GWCoreLib.GlobalCache.SharedMemory import AccountData, SharedMessage
-from Py4GWCoreLib.ImGui_src.WindowModule import WindowModule
-from Py4GWCoreLib.Skillbar import SkillBar
-from Py4GWCoreLib.py4gwcorelib_src.Console import ConsoleLog
-from Py4GW_widget_manager import WidgetHandler
-
 
 MODULE_NAME = "HeroAI"
 for module_name in list(sys.modules.keys()):
@@ -22,6 +14,15 @@ for module_name in list(sys.modules.keys()):
                 pass
         except Exception as e:
             Py4GW.Console.Log(MODULE_NAME, f"Error reloading module {module_name}: {e}", Py4GW.Console.MessageType.Error)
+
+
+from enum import Enum
+from PyMap import PyMap
+from Py4GWCoreLib.GlobalCache.SharedMemory import AccountData, SharedMessage
+from Py4GWCoreLib.ImGui_src.WindowModule import WindowModule
+from Py4GWCoreLib.Skillbar import SkillBar
+from Py4GWCoreLib.py4gwcorelib_src.Console import ConsoleLog
+from Py4GW_widget_manager import WidgetHandler
 
 from HeroAI.settings import Settings
 from HeroAI.cache_data import CacheData

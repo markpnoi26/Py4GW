@@ -6,7 +6,7 @@ from typing import Tuple, TypeAlias, Optional, overload
 from .types import Alignment, ImGuiStyleVar, StyleTheme, ControlAppearance, TextDecorator
 from .types import ImGuiStyleVar, StyleTheme, ControlAppearance, TextDecorator
 from .Style import Style
-from .Textures import ThemeTextures, TextureState
+from .Textures import TextureSliceMode, ThemeTextures, TextureState
 from .WindowModule import WindowModule
 from .IconsFontAwesome5 import IconsFontAwesome5
 import PyImGui
@@ -607,6 +607,7 @@ class ImGui:
             button_texture_rect[:2], 
             button_texture_rect[2:],
             tint=tint,
+            mode=TextureSliceMode.THREE_HORIZONTAL
         )
         
         frame_tint = (255, 255, 255, 255) if ImGui.is_mouse_in_rect(button_texture_rect) and enabled else (200, 200, 200, 255)
@@ -614,6 +615,7 @@ class ImGui:
             button_texture_rect[:2],
             button_texture_rect[2:],
             tint=frame_tint,
+            mode=TextureSliceMode.THREE_HORIZONTAL
         )
         
         font_size = int(PyImGui.get_text_line_height()) - 1
@@ -1615,7 +1617,7 @@ class ImGui:
         
         item_rect = (item_rect_min[0], item_rect_min[1], width, height)
         active = PyImGui.is_item_active()
-        ThemeTextures.CircleButtons.value.draw_in_drawlist(
+        ThemeTextures.CircleButtons.value.get_texture().draw_in_drawlist(
             item_rect[:2],
             item_rect[2:],
             state=TextureState.Active if v == button_index else TextureState.Normal,
@@ -1698,7 +1700,7 @@ class ImGui:
 
             inputfield_size = ((decrease_rect[0] - current_inner_spacing.value1) - item_rect_min[0] , item_rect[3])
 
-            # (ThemeTextures.Input_Active if PyImGui.is_item_focused() else ThemeTextures.Input_Inactive).value.draw_in_drawlist(
+            # (ThemeTextures.Input_Active if PyImGui.is_item_focused() else ThemeTextures.Input_Inactive).value.get_texture().draw_in_drawlist(
             (ThemeTextures.Input_Inactive).value.get_texture().draw_in_drawlist(
                 item_rect[:2],
                 inputfield_size,
@@ -1767,7 +1769,7 @@ class ImGui:
             
             inputfield_size = ((label_rect[0] - current_inner_spacing.value1) - item_rect_min[0] , item_rect[3])
             
-            # (ThemeTextures.Input_Active if PyImGui.is_item_focused() else ThemeTextures.Input_Inactive).value.draw_in_drawlist(
+            # (ThemeTextures.Input_Active if PyImGui.is_item_focused() else ThemeTextures.Input_Inactive).value.get_texture().draw_in_drawlist(
             (ThemeTextures.Input_Inactive).value.get_texture().draw_in_drawlist(
                 item_rect[:2],
                 (inputfield_size[0] + 1, inputfield_size[1]),
@@ -1822,7 +1824,7 @@ class ImGui:
         
         inputfield_size = ((label_rect[0] - current_inner_spacing.value1) - item_rect_min[0] , item_rect[3])
         
-        # (ThemeTextures.Input_Active if PyImGui.is_item_focused() else ThemeTextures.Input_Inactive).value.draw_in_drawlist(
+        # (ThemeTextures.Input_Active if PyImGui.is_item_focused() else ThemeTextures.Input_Inactive).value.get_texture().draw_in_drawlist(
         (ThemeTextures.Input_Inactive).value.get_texture().draw_in_drawlist(
             item_rect[:2],
             (inputfield_size[0] + 1, inputfield_size[1]),
@@ -1876,7 +1878,7 @@ class ImGui:
         
         inputfield_size = ((label_rect[0] - current_inner_spacing.value1) - item_rect_min[0] , item_rect[3])
         
-        # (ThemeTextures.Input_Active if PyImGui.is_item_focused() else ThemeTextures.Input_Inactive).value.draw_in_drawlist(
+        # (ThemeTextures.Input_Active if PyImGui.is_item_focused() else ThemeTextures.Input_Inactive).value.get_texture().draw_in_drawlist(
         (ThemeTextures.Input_Inactive).value.get_texture().draw_in_drawlist(
             item_rect[:2],
             (inputfield_size[0] + 1, inputfield_size[1]),
@@ -1988,7 +1990,7 @@ class ImGui:
         
         inputfield_size = ((label_rect[0] - current_inner_spacing.value1) - item_rect_min[0] , item_rect[3])
 
-        # (ThemeTextures.Input_Active if PyImGui.is_item_focused() else ThemeTextures.Input_Inactive).value.draw_in_drawlist(
+        # (ThemeTextures.Input_Active if PyImGui.is_item_focused() else ThemeTextures.Input_Inactive).value.get_texture().draw_in_drawlist(
         (ThemeTextures.Input_Inactive).value.get_texture().draw_in_drawlist(
             item_rect[:2],
             (inputfield_size[0] + 1, inputfield_size[1]),
@@ -2049,26 +2051,6 @@ class ImGui:
         track_width = item_rect[2] - 12 - grab_width
         grab_size = (grab_width, grab_width)
         grab_rect = ((item_rect[0] + 6) + track_width * percent, item_rect[1] + (height - grab_size[1]) / 2, *grab_size)
-        PyImGui.draw_list_add_rect(
-            grab_rect[0] - 1,
-            grab_rect[1] - 1,
-            grab_rect[0] + grab_rect[2] + 1,
-            grab_rect[1] + grab_rect[3] + 1,
-            Utils.RGBToColor(0, 0, 0, 170),
-            0,
-            0,
-            1,
-        )
-        PyImGui.draw_list_add_rect(
-            grab_rect[0] - 2,
-            grab_rect[1] - 2,
-            grab_rect[0] + grab_rect[2] + 2,
-            grab_rect[1] + grab_rect[3] + 2,
-            Utils.RGBToColor(0, 0, 0, 100),
-            0,
-            0,
-            1,
-        )
 
         ThemeTextures.SliderGrab.value.get_texture().draw_in_drawlist(
             grab_rect[:2],
@@ -2131,26 +2113,6 @@ class ImGui:
         track_width = item_rect[2] - 12 - grab_width
         grab_size = (grab_width, grab_width)
         grab_rect = ((item_rect[0] + 6) + track_width * percent, item_rect[1] + (height - grab_size[1]) / 2, *grab_size)
-        PyImGui.draw_list_add_rect(
-            grab_rect[0] - 1,
-            grab_rect[1] - 1,
-            grab_rect[0] + grab_rect[2] + 1,
-            grab_rect[1] + grab_rect[3] + 1,
-            Utils.RGBToColor(0, 0, 0, 170),
-            0,
-            0,
-            1,
-        )
-        PyImGui.draw_list_add_rect(
-            grab_rect[0] - 2,
-            grab_rect[1] - 2,
-            grab_rect[0] + grab_rect[2] + 2,
-            grab_rect[1] + grab_rect[3] + 2,
-            Utils.RGBToColor(0, 0, 0, 100),
-            0,
-            0,
-            1,
-        )
 
         ThemeTextures.SliderGrab.value.get_texture().draw_in_drawlist(
             grab_rect[:2],
@@ -2618,17 +2580,17 @@ class ImGui:
                 False  # intersect with current clip rect (safe, window always bigger than content)
             )
                 
-            ThemeTextures.Scroll_Bg.value.draw_in_drawlist(
+            ThemeTextures.Scroll_Bg.value.get_texture().draw_in_drawlist(
                 (scroll_bar_rect[0], scroll_bar_rect[1] + 5),
                 (scroll_bar_rect[2] - scroll_bar_rect[0], scroll_bar_rect[3] - scroll_bar_rect[1] - 10),
             )
 
-            ThemeTextures.ScrollGrab_Top.value.draw_in_drawlist(
+            ThemeTextures.ScrollGrab_Top.value.get_texture().draw_in_drawlist(
                 (scroll_grab_rect[0], scroll_grab_rect[1]), 
                 (scroll_bar_size, 7),
             )
             
-            ThemeTextures.ScrollGrab_Bottom.value.draw_in_drawlist(
+            ThemeTextures.ScrollGrab_Bottom.value.get_texture().draw_in_drawlist(
                 (scroll_grab_rect[0], scroll_grab_rect[3] - 7), 
                 (scroll_bar_size, 7),
             )
@@ -2636,18 +2598,18 @@ class ImGui:
             px_height = 2
             mid_height = scroll_grab_rect[3] - scroll_grab_rect[1] - 10
             for i in range(math.ceil(mid_height / px_height)):
-                ThemeTextures.ScrollGrab_Middle.value.draw_in_drawlist(
+                ThemeTextures.ScrollGrab_Middle.value.get_texture().draw_in_drawlist(
                     (scroll_grab_rect[0], scroll_grab_rect[1] + 5 + (px_height * i)), 
                     (scroll_bar_size, px_height),
                 tint=(195, 195, 195, 255)
                 )
             
-            ThemeTextures.UpButton.value.draw_in_drawlist(
+            ThemeTextures.UpButton.value.get_texture().draw_in_drawlist(
                 (scroll_bar_rect[0] - 1, scroll_bar_rect[1] - 5),
                 (scroll_bar_size, scroll_bar_size),
             )
 
-            ThemeTextures.DownButton.value.draw_in_drawlist(
+            ThemeTextures.DownButton.value.get_texture().draw_in_drawlist(
                 (scroll_bar_rect[0] - 1, scroll_bar_rect[3] - (scroll_bar_size - 5)),
                 (scroll_bar_size, scroll_bar_size),
             )
@@ -2725,34 +2687,34 @@ class ImGui:
             )
             
                 
-            ThemeTextures.Horizontal_Scroll_Bg.value.draw_in_drawlist(
+            ThemeTextures.Horizontal_Scroll_Bg.value.get_texture().draw_in_drawlist(
                 (scroll_bar_rect[0] + 3, scroll_bar_rect[1]),
                 (scroll_bar_rect[2] - scroll_bar_rect[0] - 5, scroll_bar_rect[3] - scroll_bar_rect[1]),
             )
                     
-            ThemeTextures.Horizontal_ScrollGrab_Middle.value.draw_in_drawlist(
+            ThemeTextures.Horizontal_ScrollGrab_Middle.value.get_texture().draw_in_drawlist(
                 (scroll_grab_rect[0] + 5, scroll_grab_rect[1]),
                 (scroll_grab_rect[2] - 10, scroll_grab_rect[3]),
                 tint=(195, 195, 195, 255)
             )
             
-            ThemeTextures.Horizontal_ScrollGrab_Top.value.draw_in_drawlist(
+            ThemeTextures.Horizontal_ScrollGrab_Top.value.get_texture().draw_in_drawlist(
                 (scroll_grab_rect[0], scroll_grab_rect[1]),
                 (7, scroll_grab_rect[3]),
             )
             
-            ThemeTextures.Horizontal_ScrollGrab_Bottom.value.draw_in_drawlist(
+            ThemeTextures.Horizontal_ScrollGrab_Bottom.value.get_texture().draw_in_drawlist(
                 (scroll_grab_rect[0] + scroll_grab_rect[2] - 7, scroll_grab_rect[1]),
                 (7, scroll_grab_rect[3]),
             )
 
             
-            ThemeTextures.LeftButton.value.draw_in_drawlist(
+            ThemeTextures.LeftButton.value.get_texture().draw_in_drawlist(
                 (scroll_bar_rect[0] - 5, scroll_bar_rect[1] - 1),
                 (scroll_bar_size, scroll_bar_size + 1),
             )
             
-            ThemeTextures.RightButton.value.draw_in_drawlist(
+            ThemeTextures.RightButton.value.get_texture().draw_in_drawlist(
                 (scroll_bar_rect[2] - 5 + (0 if scroll_max_y > 0 else 1), scroll_bar_rect[1] - 1),
                 (scroll_bar_size, scroll_bar_size + 1),
             )
@@ -2791,16 +2753,20 @@ class ImGui:
         PyImGui.progress_bar(fraction, size_arg_x, size_arg_y, overlay)
         PyImGui.pop_clip_rect()
         
-        item_rect_min = PyImGui.get_item_rect_min()
-        item_rect_max = PyImGui.get_item_rect_max()
+        item_rect_min, item_rect_max, item_rect_size = ImGui.get_item_rect()
+        
         
         width = item_rect_max[0] - item_rect_min[0]
         height = item_rect_max[1] - item_rect_min[1]
-        item_rect = (item_rect_min[0], item_rect_min[1], width, height)
+        item_rect = (*item_rect_min, *item_rect_size)
 
         progress_rect = (item_rect[0] + 1, item_rect[1] + 1, (width -2) * fraction, height - 2)
-        background_rect = (item_rect[0] + 1, item_rect[1] + 1, width - 2, height - 2)
-        cursor_rect = (item_rect[0] - 2 + (width - 2) * fraction, item_rect[1] + 1, 4, height - 2) if fraction > 0 else (item_rect[0] + (width - 2) * fraction, item_rect[1] + 1, 4, height - 2)
+        background_rect = (item_rect[0] + (width -2) * fraction - 3, item_rect[1] + 1, width - ((width -2) * fraction + 7) + 6, height - 2)
+        cursor_rect = (
+            item_rect[0] - 1 + (width - 2) * fraction,
+            item_rect[1] + 1,  
+            1, 
+            height - 2)
 
         tint = style.PlotHistogram.get_current().rgb_tuple
         
@@ -2810,7 +2776,7 @@ class ImGui:
             tint=tint
         )
         
-        ThemeTextures.ProgressBarProgress.value.get_texture().draw_in_drawlist(
+        ThemeTextures.ProgressBarProgressFill.value.get_texture().draw_in_drawlist(
             progress_rect[:2],
             progress_rect[2:],
             tint=tint
@@ -2823,16 +2789,11 @@ class ImGui:
                 tint=(200, 200, 200, 255)
             )
         
-        PyImGui.draw_list_add_rect(
-            item_rect[0],
-            item_rect[1],
-            item_rect[0] + item_rect[2],
-            item_rect[1] + item_rect[3],
-            Utils.RGBToColor(96, 92, 87, 255),
-            0,
-            0,
-            2
+        ThemeTextures.ProgressBarFrame.value.get_texture().draw_in_drawlist(
+            item_rect[:2],
+            item_rect[2:], 
         )
+        
         
         if overlay:
             display_label = overlay.split("##")[0]
@@ -3189,6 +3150,7 @@ class ImGui:
         return result
             
     _last_font_scaled = False  # Module-level tracking flag
+    
     @staticmethod
     def push_font(font_family: str, pixel_size: int):
         _available_sizes = [14, 22, 30, 46, 62, 124]

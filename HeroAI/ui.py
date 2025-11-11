@@ -21,7 +21,7 @@ from Py4GWCoreLib.Effect import Effects
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.GlobalCache.SharedMemory import AccountData, SharedMessage
 from Py4GWCoreLib.ImGui_src.IconsFontAwesome5 import IconsFontAwesome5
-from Py4GWCoreLib.ImGui_src.Textures import GameTexture, MapTexture, GameTexture, TextureState, ThemeTexture, ThemeTextures
+from Py4GWCoreLib.ImGui_src.Textures import GameTexture, GameTexture, TextureSliceMode, TextureState, ThemeTexture, ThemeTextures
 from Py4GWCoreLib.ImGui_src.WindowModule import WindowModule
 from Py4GWCoreLib.ImGui_src.types import TEXTURE_FOLDER, Alignment, StyleTheme
 from Py4GWCoreLib.Overlay import Overlay
@@ -91,7 +91,7 @@ dialog_throttle = ThrottledTimer(125)
 commands = HeroAICommands()
 gray_color = Color(150, 150, 150, 255)
           
-def get_frame_texture_for_effect(skill_id: int) -> tuple[(GameTexture | MapTexture), TextureState, int]:
+def get_frame_texture_for_effect(skill_id: int) -> tuple[(GameTexture), TextureState, int]:
     is_elite = GLOBAL_CACHE.Skill.Flags.IsElite(skill_id)
     texture_state = TextureState.Normal if not is_elite else TextureState.Active
 
@@ -817,9 +817,9 @@ def draw_buffs_and_upkeeps(account_data: AccountData, skill_size: float = 28):
             else:
                 texture = ThemeTextures.HardModeCompleted.value.get_texture(StyleTheme.Guild_Wars)
             
-            if isinstance(texture, MapTexture):                
-                ImGui.image(texture.texture, (skill_size + 1, skill_size + 1), uv0=texture.normal_offset[:2], uv1=texture.normal_offset[2:])
-                PyImGui.same_line(0, 0)
+            # if isinstance(texture, MapTexture):                
+            #     ImGui.image(texture.texture, (skill_size + 1, skill_size + 1), uv0=texture.normal_offset[:2], uv1=texture.normal_offset[2:])
+            #     PyImGui.same_line(0, 0)
         pass
     
     if settings.ShowHeroUpkeeps:
@@ -1204,8 +1204,10 @@ def draw_combined_hero_panel(account_data: AccountData, cached_data: CacheData, 
             curr_avail = PyImGui.get_content_region_avail()
             if settings.ShowHeroBars:
                 health_clicked = draw_health_bar(curr_avail[0], 13, account_data.PlayerMaxHP,
-                                account_data.PlayerHP, account_data.PlayerHealthRegen)                        
+                                account_data.PlayerHP, account_data.PlayerHealthRegen)   
+                                     
                 PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() - 4)
+                
                 energy_clicked = draw_energy_bar(curr_avail[0], 13, account_data.PlayerMaxEnergy,
                                 account_data.PlayerEnergy, account_data.PlayerEnergyRegen)
                 
