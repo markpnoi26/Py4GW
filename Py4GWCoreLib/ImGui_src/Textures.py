@@ -1376,15 +1376,15 @@ class ThemeTextures(Enum):
     )
     
     HeroPanelButtonBase = ThemeTexture(
-    # (StyleTheme.Minimalus,  GameTexture(
-    #     texture=os.path.join(MINIMALUS_FOLDER, "ui_aggression.png"),
-    #     texture_size = (128, 64),
-    #     element_size= (27, 29),
-    #     state_map = {
-    #         TextureState.Normal: (67, 34),
-    #         TextureState.Active: (99, 34),
-    #     }
-    # )),
+    (StyleTheme.Minimalus,  GameTexture(
+        texture=os.path.join(MINIMALUS_FOLDER, "ui_aggression.png"),
+        texture_size = (128, 64),
+        element_size= (27, 29),
+        state_map = {
+            TextureState.Normal: (67, 34),
+            TextureState.Active: (99, 34),
+        }
+    )),
     (StyleTheme.Guild_Wars,  GameTexture(
         texture=os.path.join(TEXTURE_FOLDER, "ui_aggression.png"),
         texture_size = (128, 64),

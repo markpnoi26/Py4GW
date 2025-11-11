@@ -174,6 +174,9 @@ class HeroAICommands:
         sender_email = GLOBAL_CACHE.Player.GetAccountEmail()
         
         for account in accounts:
+            if account.AccountEmail == sender_email:
+                continue
+            
             GLOBAL_CACHE.ShMem.SendMessage(sender_email, account.AccountEmail, SharedCommandType.PixelStack, (player_x, player_y, 0, 0))
             
     def interact_with_target_command(self, accounts: list[AccountData]):

@@ -23,7 +23,7 @@ from Py4GWCoreLib.GlobalCache.SharedMemory import AccountData, SharedMessage
 from Py4GWCoreLib.ImGui_src.IconsFontAwesome5 import IconsFontAwesome5
 from Py4GWCoreLib.ImGui_src.Textures import GameTexture, GameTexture, TextureSliceMode, TextureState, ThemeTexture, ThemeTextures
 from Py4GWCoreLib.ImGui_src.WindowModule import WindowModule
-from Py4GWCoreLib.ImGui_src.types import TEXTURE_FOLDER, Alignment, StyleTheme
+from Py4GWCoreLib.ImGui_src.types import TEXTURE_FOLDER, Alignment, ImGuiStyleVar, StyleTheme
 from Py4GWCoreLib.Overlay import Overlay
 from Py4GWCoreLib.Player import Player
 from Py4GWCoreLib.Routines import Routines
@@ -143,8 +143,8 @@ def draw_health_bar(width: float, height: float, max_health: float, current_heal
 
     fraction = (max(0.0, min(1.0, current_health))
                 if max_health > 0 else 0.0)
-    item_rect_min = PyImGui.get_item_rect_min()
-    item_rect_max = PyImGui.get_item_rect_max()
+    
+    item_rect_min, item_rect_max, item_rect_size = ImGui.get_item_rect()
 
     width = item_rect_max[0] - item_rect_min[0]
     height = item_rect_max[1] - item_rect_min[1]
@@ -209,10 +209,10 @@ def draw_health_bar(width: float, height: float, max_health: float, current_heal
                     (10 * (height / 16), height),
                 )
 
-        ThemeTextures.ProgressBarFrame.value.get_texture().draw_in_drawlist(
-            (item_rect[0], item_rect[1]),
-            (item_rect[2], item_rect[3]),
+        PyImGui.draw_list_add_rect(
+            item_rect_min[0], item_rect_min[1], item_rect_min[0] + item_rect_size[0], item_rect_min[1] + item_rect_size[1], style.Border.color_int, 0, 0, 1
         )
+        
     else:
         pip_char = IconsFontAwesome5.ICON_ANGLE_RIGHT if pips > 0 else IconsFontAwesome5.ICON_ANGLE_LEFT
         pip_string = "".join([pip_char for _ in range(abs(int(pips)))])
@@ -254,8 +254,8 @@ def draw_energy_bar(width: float, height: float, max_energy: float, current_ener
 
     fraction = (max(0.0, min(1.0, current_energy))
                 if max_energy > 0 else 0.0)
-    item_rect_min = PyImGui.get_item_rect_min()
-    item_rect_max = PyImGui.get_item_rect_max()
+    
+    item_rect_min, item_rect_max, item_rect_size = ImGui.get_item_rect()
 
     width = item_rect_max[0] - item_rect_min[0]
     height = item_rect_max[1] - item_rect_min[1]
@@ -320,9 +320,8 @@ def draw_energy_bar(width: float, height: float, max_energy: float, current_ener
                     (10 * (height / 16), height),
                 )
 
-        ThemeTextures.ProgressBarFrame.value.get_texture().draw_in_drawlist(
-            item_rect[:2],
-            item_rect[2:]
+        PyImGui.draw_list_add_rect(
+            item_rect_min[0], item_rect_min[1], item_rect_min[0] + item_rect_size[0], item_rect_min[1] + item_rect_size[1], style.Border.color_int, 0, 0, 1
         )
     else:
         pip_char = IconsFontAwesome5.ICON_ANGLE_RIGHT if pips > 0 else IconsFontAwesome5.ICON_ANGLE_LEFT
@@ -677,12 +676,26 @@ def draw_buffs_bar(account_data: AccountData, win_pos: tuple, win_size: tuple, m
 
     style = ImGui.get_style()
 
-    invis_flags = ImGui.PushTransparentWindow()
+    PyImGui.push_style_var(ImGuiStyleVar.WindowRounding,0.0)
+    PyImGui.push_style_var(ImGuiStyleVar.WindowPadding,0.0)
+    PyImGui.push_style_var(ImGuiStyleVar.WindowBorderSize,0.0)
+    PyImGui.push_style_var2(ImGuiStyleVar.WindowPadding,0.0,0.0)
+    
+    flags=( PyImGui.WindowFlags.NoCollapse | 
+                PyImGui.WindowFlags.NoTitleBar |
+                PyImGui.WindowFlags.NoScrollbar |
+                PyImGui.WindowFlags.AlwaysAutoResize |
+                PyImGui.WindowFlags.NoScrollWithMouse |
+                PyImGui.WindowFlags.NoBringToFrontOnFocus |
+                PyImGui.WindowFlags.NoResize |
+                PyImGui.WindowFlags.NoBackground 
+            ) 
+    
     PyImGui.set_next_window_pos(
         (win_pos[0], win_pos[1] + win_size[1] + (13 if style.Theme == StyleTheme.Guild_Wars else 4)), PyImGui.ImGuiCond.Always)
-
-    open = PyImGui.begin("##Buffs Bar" + account_data.AccountEmail, True, invis_flags)
-    ImGui.PopTransparentWindow()
+    PyImGui.set_next_window_size((win_size[0], 0), PyImGui.ImGuiCond.Always)
+    open = PyImGui.begin("##Buffs Bar" + account_data.AccountEmail, True, flags)
+    PyImGui.pop_style_var(4)
 
     if open:
         draw_buffs_and_upkeeps(account_data, skill_size)
@@ -713,9 +726,6 @@ def draw_buffs_and_upkeeps(account_data: AccountData, skill_size: float = 28):
             )
 
         if settings.ShowEffectDurations or settings.ShowShortEffectDurations:
-            duration = account_data.PlayerEffectsDuration[index]
-            remaining = account_data.PlayerEffectsRemaining[index]
-
             if duration > 0 and remaining and (not settings.ShowShortEffectDurations or remaining < 60000):
                 progress_background_rect = (
                     item_rect_min[0] + 2, item_rect_max[1] - 4, item_rect_max[0] - 2, item_rect_max[1] - 1)
@@ -774,7 +784,6 @@ def draw_buffs_and_upkeeps(account_data: AccountData, skill_size: float = 28):
 
         PyImGui.show_tooltip(
             f"Effect ID: {effect.skill_id}\nName: {effect.name}")
-        PyImGui.same_line(0, 0)
     
     def draw_morale(morale : int, skill_size: float = skill_size):
         morale_display = f"{("+" if morale > 100 else "-")}{abs(100 - morale)}%"
@@ -800,7 +809,7 @@ def draw_buffs_and_upkeeps(account_data: AccountData, skill_size: float = 28):
         )
 
         ImGui.pop_font()
-        PyImGui.same_line(0, 0)
+        PyImGui.table_next_column()
     
     def draw_hardmode():
         # hardmode completed 1912
@@ -808,18 +817,22 @@ def draw_buffs_and_upkeeps(account_data: AccountData, skill_size: float = 28):
             if not HARD_MODE_EFFECT_ID in skill_cache:
                 skill_cache[HARD_MODE_EFFECT_ID] = CachedSkillInfo(HARD_MODE_EFFECT_ID)
 
-            killed = GLOBAL_CACHE.Map.GetFoesKilled()
-            total = GLOBAL_CACHE.Map.GetFoesToKill()
-                        
-            if killed < total and total > 0:
+            to_kill = GLOBAL_CACHE.Map.GetFoesToKill()
+            
+            if to_kill > 0:
                 texture = ThemeTextures.HardMode.value.get_texture(StyleTheme.Guild_Wars)
                 pass
             else:
                 texture = ThemeTextures.HardModeCompleted.value.get_texture(StyleTheme.Guild_Wars)
-            
-            # if isinstance(texture, MapTexture):                
-            #     ImGui.image(texture.texture, (skill_size + 1, skill_size + 1), uv0=texture.normal_offset[:2], uv1=texture.normal_offset[2:])
-            #     PyImGui.same_line(0, 0)
+        
+            ImGui.dummy(skill_size + 1, skill_size + 1)
+            item_rect_min, item_rect_max, item_rect_size = ImGui.get_item_rect()
+            texture.draw_in_drawlist(
+                item_rect_min[:2],
+                (skill_size + 1, skill_size + 1),
+            )
+                
+            PyImGui.table_next_column()
         pass
     
     if settings.ShowHeroUpkeeps:
@@ -843,38 +856,51 @@ def draw_buffs_and_upkeeps(account_data: AccountData, skill_size: float = 28):
             PyImGui.new_line()
             PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() - 4)
 
-    if settings.ShowHeroEffects:                        
-        ImGui.dummy(0, 28)
-        PyImGui.same_line(0, 0)
-        
-        if account_data.PlayerMorale != 100 and account_data.PlayerMorale != 0:
-            draw_morale(account_data.PlayerMorale, skill_size)
-                        
-        draw_hardmode()
-        
-        #get each effect with unique id and take the longest duration for that id
-        player_effects = {}
-        
-        for index, effect_id in enumerate(account_data.PlayerEffects):
-            remaining = account_data.PlayerEffectsRemaining[index]
-            duration = account_data.PlayerEffectsDuration[index]
-
-            if effect_id not in player_effects:
-                player_effects[effect_id] = (remaining, duration)
-            else:
-                player_effects[effect_id] = max(player_effects[effect_id], (remaining, duration))
-
-        for effect_id, (remaining, duration) in player_effects.items():
-            if effect_id == 0 or effect_id == HARD_MODE_EFFECT_ID:
-                continue
+    if settings.ShowHeroEffects:     
+        avail = PyImGui.get_content_region_avail()[0]
+        style.CellPadding.push_style_var(0, 0)
+        if ImGui.begin_table("##effects_table" + account_data.AccountEmail, max(1, round(avail / skill_size)), PyImGui.TableFlags.SizingFixedFit):
+            PyImGui.table_next_row()
+            PyImGui.table_next_column()
             
-            if not effect_id in skill_cache:
-                skill_cache[effect_id] = CachedSkillInfo(effect_id)
-
-            effect = skill_cache[effect_id]
-
-            draw_buff(effect, duration, remaining, True, 28)
-        
+            if account_data.PlayerMorale != 100 and account_data.PlayerMorale != 0:
+                draw_morale(account_data.PlayerMorale, skill_size)
+                            
+            draw_hardmode()
+            
+            #get each effect with unique id and take the longest duration for that id
+            player_effects = {}
+            
+            for index, effect_id in enumerate(account_data.PlayerEffects):
+                remaining = account_data.PlayerEffectsRemaining[index]
+                duration = account_data.PlayerEffectsDuration[index]
+                
+                if not effect_id or effect_id == HARD_MODE_EFFECT_ID:
+                    continue
+                
+                if not effect_id in skill_cache:
+                    skill_cache[effect_id] = CachedSkillInfo(effect_id)
+                    
+                if not effect_id in player_effects:
+                    player_effects[effect_id] = (skill_cache[effect_id], remaining, duration)
+                
+                else:
+                    cached_effect, existing_remaining, existing_duration = player_effects[effect_id]
+                    
+                    if remaining > existing_remaining:
+                        player_effects[effect_id] = (cached_effect, remaining, duration)
+                        
+            for effect_id, (effect, remaining, duration) in player_effects.items():
+                row = PyImGui.table_get_row_index()
+                if row > settings.MaxEffectRows - 1:
+                    break
+                
+                draw_buff(effect, duration, remaining, True, 28)
+                PyImGui.table_next_column()
+            
+            ImGui.end_table() 
+        style.CellPadding.pop_style_var()
+            
         PyImGui.new_line()
 
 def enter_skill_template_code(account_data : AccountData):
@@ -1948,6 +1974,11 @@ def draw_configure_window():
                     show_hero_effects = ImGui.checkbox("Show Hero Effects", settings.ShowHeroEffects)
                     if show_hero_effects != settings.ShowHeroEffects:
                         settings.ShowHeroEffects = show_hero_effects
+                        settings.save_settings()
+                        
+                    max_effect_rows = ImGui.slider_int("Max Effect Rows", settings.MaxEffectRows, 1, 10)
+                    if max_effect_rows != settings.MaxEffectRows and max_effect_rows >= 1 and max_effect_rows <= 10:
+                        settings.MaxEffectRows = max_effect_rows
                         settings.save_settings()
                         
                     radio_value = 0 if not settings.ShowEffectDurations and not settings.ShowShortEffectDurations else (1 if settings.ShowShortEffectDurations else 2)
