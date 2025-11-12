@@ -542,9 +542,7 @@ LootGroups: Dict[str, Dict[str, List[ModelID]]] = {
 class LootConfig:
     _instance = None
     _initialized = False
-    _initialized = False
 
-    def __new__(cls):        
     def __new__(cls):        
         if cls._instance is None:
             cls._instance = super().__new__(cls)
@@ -577,7 +575,6 @@ class LootConfig:
         self.item_id_whitelist = set()  # For items that are whitelisted by ID
         self.dye_whitelist = set()
         self.dye_blacklist = set()
-        self.custom_item_checks : list[Callable[[int], bool | None]] = []
         self.custom_item_checks : list[Callable[[int], bool | None]] = []
 
     def SetProperties(self, loot_whites=False, loot_blues=False, loot_purples=False, loot_golds=False, loot_greens=False, loot_gold_coins=False):
@@ -803,8 +800,6 @@ class LootConfig:
             item_agent_id = agent.item_agent.item_id
             item_type, _ = Item.GetItemType(item_agent_id)
             if item_type == ItemType.Gold_Coin and owner_id == 0:
-            item_type, _ = Item.GetItemType(item_agent_id)
-            if item_type == ItemType.Gold_Coin and owner_id == 0:
                 return True
 
             # If allowed, pick up other unassigned items
@@ -848,8 +843,7 @@ class LootConfig:
         )
         
         pick_up_array = []
-        pick_up_array = []
-
+        
         for agent_id in loot_array[:]:  # Iterate over a copy to avoid modifying while iterating
             item_data = Agent.GetItemAgent(agent_id)
             item_id = item_data.item_id
@@ -865,7 +859,6 @@ class LootConfig:
             # --- Whitelists ---
             if self.IsItemIDWhitelisted(item_id):
                 pick_up_array.append(agent_id)
-                pick_up_array.append(agent_id)
                 continue
 
             if self.IsWhitelisted(model_id):
@@ -880,13 +873,9 @@ class LootConfig:
             if Item.Rarity.IsWhite(item_id):
                 if self.loot_whites:
                     pick_up_array.append(agent_id)
-                if self.loot_whites:
-                    pick_up_array.append(agent_id)
                     continue
 
             if Item.Rarity.IsBlue(item_id):
-                if self.loot_blues:
-                    pick_up_array.append(agent_id)
                 if self.loot_blues:
                     pick_up_array.append(agent_id)
                     continue
@@ -894,13 +883,9 @@ class LootConfig:
             if Item.Rarity.IsPurple(item_id):
                 if self.loot_purples:
                     pick_up_array.append(agent_id)
-                if self.loot_purples:
-                    pick_up_array.append(agent_id)
                     continue
 
             if Item.Rarity.IsGold(item_id):
-                if self.loot_golds:
-                    pick_up_array.append(agent_id)
                 if self.loot_golds:
                     pick_up_array.append(agent_id)
                     continue
@@ -908,18 +893,7 @@ class LootConfig:
             if Item.Rarity.IsGreen(item_id):
                 if self.loot_greens:
                     pick_up_array.append(agent_id)
-                if self.loot_greens:
-                    pick_up_array.append(agent_id)
                     continue
-                
-            # --- Custom filtering ---
-            if self.CustomItemChecks(item_id):
-                pick_up_array.append(agent_id)
-                continue
-            
-        pick_up_array = AgentArray.Sort.ByDistance(pick_up_array, Player.GetXY())
-
-        return pick_up_array
                 
             # --- Custom filtering ---
             if self.CustomItemChecks(item_id):
