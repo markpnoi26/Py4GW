@@ -1182,8 +1182,6 @@ class InventoryHandler:
 
             missing_language = item.data.has_missing_names()
             if missing_language:
-                # ConsoleLog("LootEx", f"Item '{item.name}' ({item.id}) has missing data for {missing_language}, collecting self.data.",
-                #            Console.MessageType.Warning)
                 return True
 
             if (item.is_armor or item.is_weapon or item.is_upgrade) and data_collector.instance.has_uncollected_mods(item_id)[0]:

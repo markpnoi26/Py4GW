@@ -379,6 +379,7 @@ class ItemsByType(dict[ItemType, dict[int, 'Item']]):
 class Item():
     model_id: int
     item_type: ItemType = ItemType.Unknown
+    model_file_id: int = -1
     name : str = ""
     names: dict[ServerLanguage, str] = field(default_factory=dict)
     drop_info: str = ""
@@ -492,6 +493,7 @@ class Item():
         
         self.item_type = item.item_type
         self.name = item.name
+        self.model_file_id = item.model_file_id
         
         for lang, name in item.names.items():
             if lang not in self.names or not self.names[lang]:
@@ -500,21 +502,15 @@ class Item():
         if item.drop_info:            
             self.drop_info = item.drop_info
         
-        if item.attributes:
-            for attribute in item.attributes:
-                if attribute not in self.attributes:
-                    self.attributes.append(attribute)
+        self.attributes = item.attributes
+        self.profession = item.profession
                     
         if item.wiki_url and not self.wiki_url:
             self.wiki_url = item.wiki_url
                 
         if item.nick_index is not None:
             self.nick_index = item.nick_index
-        
-        if item.profession is not None:
-            if self.profession is None or self.profession == Profession._None:
-                self.profession = item.profession
-                
+                        
         self.update_language(get_server_language())
                 
     def to_json(self) -> dict:
@@ -533,6 +529,7 @@ class Item():
         
         return {
             "ModelID": self.model_id,
+            "ModelFileID": self.model_file_id,
             #Names sorted by language_order
             "Names": {lang.name: name for lang, name in sorted(self.names.items(), key=lambda item: language_order.index(item[0]))},
             "ItemType": self.item_type.name,
@@ -554,6 +551,7 @@ class Item():
     def from_json(json: dict) -> 'Item':
         return Item(
             model_id=json["ModelID"],
+            model_file_id=json.get("ModelFileID", -1),
             names={ServerLanguage[lang]: name for lang,
                    name in json["Names"].items()},
             item_type=ItemType[json["ItemType"]],
@@ -596,6 +594,7 @@ class Material(Item):
         
         return Material(
             model_id=item.model_id,
+            model_file_id=item.model_file_id,
             names=item.names,
             item_type=item.item_type,
             drop_info=item.drop_info,
@@ -1455,3 +1454,111 @@ class WeaponModInfo(BaseModInfo):
                 mod_infos.append(weapon_mod_info)
             
         return mod_infos
+
+class ItemModifiersInformation:
+    def __init__(self):
+        from Widgets.frenkey.LootEx.models import WeaponModInfo, RuneModInfo        
+                                
+        self.target_item_type: ItemType = ItemType.Unknown
+        self.damage: tuple[int, int] = (0, 0)
+        self.shield_armor: tuple[int, int] = (0, 0)
+        self.requirements: int = 0
+        self.attribute: Attribute = Attribute.None_
+        self.is_highly_salvageable: bool = False
+        self.has_increased_value: bool = False
+        
+        self.runes: list[RuneModInfo] = []
+        self.max_runes: list[RuneModInfo] = []
+        self.runes_to_keep: list[RuneModInfo] = []
+        self.runes_to_sell: list[RuneModInfo] = []
+        
+        self.weapon_mods: list[WeaponModInfo] = []
+        self.max_weapon_mods: list[WeaponModInfo] = []
+        self.weapon_mods_to_keep: list[WeaponModInfo] = []
+        
+        self.mods: list[RuneModInfo | WeaponModInfo] = []
+        self.has_mods: bool = False
+
+    def populate_from_modifiers(self, modifiers: list[ItemModifier], item_type: ItemType, model_id: int, is_inscribable: bool) -> "ItemModifiersInformation":
+        from Widgets.frenkey.LootEx.models import WeaponModInfo
+        from Widgets.frenkey.LootEx.settings import Settings
+        settings = Settings()
+        
+        from Widgets.frenkey.LootEx import utility
+        
+        modifier_values: list[tuple[int, int, int]] = [
+            (modifier.GetIdentifier(), modifier.GetArg1(), modifier.GetArg2())
+            for modifier in modifiers if modifier is not None
+        ]
+
+        if not modifier_values:
+            return self
+        
+        is_weapon: bool = utility.Util.IsWeaponType(item_type)
+        is_armor: bool = utility.Util.IsArmorType(item_type)
+        is_upgrade: bool = item_type == ItemType.Rune_Mod
+        is_rune: bool = False
+                    
+        for identifier, arg1, arg2 in modifier_values:
+            if identifier is None or arg1 is None or arg2 is None:
+                continue
+
+            if identifier == ModifierIdentifier.TargetItemType.value:
+                self.target_item_type = ItemType(
+                    arg1) if arg1 is not None else ItemType.Unknown
+                is_rune = arg1 == 0 and arg2 == 0 and is_upgrade
+
+            if identifier == ModifierIdentifier.Damage.value:
+                self.damage = (
+                    arg2, arg1) if arg1 is not None and arg2 is not None else (0, 0)
+
+            if identifier == ModifierIdentifier.Damage_NoReq.value:
+                self.damage = (
+                    arg2, arg1) if arg1 is not None and arg2 is not None else (0, 0)
+
+            if identifier == ModifierIdentifier.ShieldArmor.value:
+                self.shield_armor = (
+                    arg1, arg2) if arg1 is not None and arg2 is not None else (0, 0)
+
+            if identifier == ModifierIdentifier.Requirement.value:
+                self.requirements = arg2 if arg2 is not None else 0
+                self.attribute = Attribute(
+                    arg1) if arg1 is not None else Attribute.None_
+            
+            if identifier == ModifierIdentifier.ImprovedVendorValue.value:
+                self.has_increased_value = True
+                
+            if identifier == ModifierIdentifier.HighlySalvageable.value:
+                self.is_highly_salvageable = True
+                
+        if is_armor or is_rune:
+            runes = RuneModInfo.get_from_modifiers(modifier_values, item_type)
+            self.runes = runes if runes else []
+            self.max_runes = [rune for rune in self.runes if rune.IsMaxed]
+            self.runes_to_keep = []
+            self.runes_to_sell = []
+            
+            for rune in self.runes:
+                setting = settings.profile.runes.get(rune.Rune.identifier, None) if settings.profile else None   
+                if setting and setting.valuable:
+                    self.runes_to_keep.append(rune)
+
+                if setting and setting.should_sell:
+                    self.runes_to_sell.append(rune)
+
+        if is_weapon or (is_upgrade and not is_rune):            
+            self.weapon_mods = WeaponModInfo.get_from_modifiers(modifier_values, item_type, model_id) or []
+            self.max_weapon_mods = [mod for mod in self.weapon_mods if mod.IsMaxed and (mod.WeaponMod.mod_type != ModType.Inherent or (is_inscribable or is_upgrade))]
+            self.weapon_mods_to_keep = [mod for mod in self.max_weapon_mods if settings.profile and settings.profile.weapon_mods.get(mod.WeaponMod.identifier, {}).get(item_type.name, False)]
+                            
+        
+        self.mods = self.runes + self.weapon_mods
+        self.has_mods = bool(self.runes or self.weapon_mods)
+        
+        return self
+
+    @staticmethod
+    def GetModsFromModifiers(modifiers: list[ItemModifier], item_type: ItemType, model_id: int, is_inscribable: bool) -> "ItemModifiersInformation":
+        info = ItemModifiersInformation()
+        info.populate_from_modifiers(modifiers, item_type, model_id, is_inscribable)
+        return info

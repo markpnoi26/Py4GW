@@ -850,7 +850,7 @@ class Data():
         self.Items.sort_items()
         nick_items : dict[int, models.Item] = {}
         for item_type, items in self.Items.items():
-            for model_id, item in items.items():
+            for model_id, item in items.items():        
                 if item.inventory_icon:
                     if item.inventory_icon not in self.ItemsBySkins:
                         self.ItemsBySkins[item.inventory_icon] = []
@@ -863,6 +863,7 @@ class Data():
         
         self.Nick_Cycle = [nick_items[index] for index in range(1, self.Nick_Cycle_Count + 1) if index in nick_items]
         self.Nick_Items = {item.model_id: item for item in self.Nick_Cycle if item.model_id is not None}
+        
         
         ConsoleLog(
             "LootEx", f"Loaded {len(self.Items.All)} items ({len(self.Nick_Items)} Nick items).", Console.MessageType.Debug)

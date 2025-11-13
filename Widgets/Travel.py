@@ -566,7 +566,7 @@ def TravelToOutpost(outpost_id):
         if outpost_id != GLOBAL_CACHE.Map.GetMapID():
             ConsoleLog(MODULE_NAME, f"Traveling to outpost: {outposts[outpost_id]} ({outpost_id})", Py4GW.Console.MessageType.Debug)
             is_traveling = True
-            GLOBAL_CACHE.Map.Travel(outpost_id)
+            GLOBAL_CACHE.Map.TravelToRegion(outpost_id, GLOBAL_CACHE.Map.GetRegion(), GLOBAL_CACHE.Map.GetDistrict(), GLOBAL_CACHE.Map.GetLanguage()[0])
             
             if outpost_id in [id for id, _ in travel_history]:
                 travel_history = [(id, outpost) for id, outpost in travel_history if id != outpost_id]

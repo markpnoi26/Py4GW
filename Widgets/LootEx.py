@@ -23,11 +23,9 @@ from Widgets.frenkey.LootEx.gui import UI
 from Widgets.frenkey.LootEx.settings import Settings
 from Widgets.frenkey.LootEx.loot_handling import LootHandler
 from Widgets.frenkey.LootEx.inventory_handling import InventoryHandler
-from Widgets.frenkey.LootEx.data_collector import DataCollector
+from Widgets.frenkey.LootEx.data_collection import DataCollector
 
-map_timer = Timer()
 throttle_timer = ThrottledTimer(250)
-loot_timer = ThrottledTimer(1000)
 hotkey_timer = ThrottledTimer(200)
 script_directory = os.path.dirname(os.path.abspath(__file__))
 
@@ -91,6 +89,19 @@ def is_left_mouse_down():
 def main():
     global inventory_frame_hash, current_account, current_character, current_character_requested, map_changed_reported
     
+    if not Routines.Checks.Map.IsMapReady():
+        data_collector.reset()
+        ui.action_summary = None
+        
+        inventory_handler.reset()
+        current_character = ""
+        current_character_requested = False
+        return
+    
+    
+    if messaging.HandleMessages():
+        return
+    
     show_ui = not UIManager.IsWorldMapShowing() and not GLOBAL_CACHE.Map.IsMapLoading() and not GLOBAL_CACHE.Map.IsInCinematic() and not Player.InCharacterSelectScreen()
     
     conflicting_widgets = ["InventoryPlus"]
@@ -106,26 +117,6 @@ def main():
         ui.draw_vault_controls()      
         ui.draw_window()
     
-    if not Routines.Checks.Map.MapValid():
-        map_timer.Reset()
-        map_timer.Start()
-        ui.action_summary = None
-        
-        inventory_handler.reset()
-        current_character = ""
-        current_character_requested = False
-        return
-
-    if not map_timer.IsStopped():
-        if map_timer.GetElapsedTime() < 500:
-            if not map_changed_reported:
-                # ConsoleLog(MODULE_NAME, "Map changed. Waiting a bit ...", Console.MessageType.Warning)
-                map_changed_reported = True
-            return
-
-        # ConsoleLog(MODULE_NAME, "Waited for 5 seconds. Lets continue...", Console.MessageType.Warning)
-        map_timer.Stop()
-
     if not current_account:
         current_account = GLOBAL_CACHE.Player.GetAccountEmail()
         
@@ -180,9 +171,6 @@ def main():
     if not settings.profile:
         settings.SetProfile(settings.character_profiles[current_character])
         return    
-    
-    if messaging.HandleMessages():
-        return
         
     if settings.parent_frame_id is None or settings.parent_frame_id == 0:
         settings.parent_frame_id = UIManager.GetFrameIDByHash(inventory_frame_hash)
@@ -213,7 +201,8 @@ def main():
         price_check.PriceCheck.process_trader_queue()
         return
 
-    data_collector.run_v2()  
+    
     inventory_handler.Run()       
+    data_collector.run()
 
 __all__ = ['main', 'configure']

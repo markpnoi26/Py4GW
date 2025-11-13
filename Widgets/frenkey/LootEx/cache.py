@@ -1,16 +1,10 @@
 from datetime import datetime
-from enum import IntEnum
-from PyItem import DyeInfo, ItemModifier, PyItem
-from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
-from Py4GWCoreLib import ItemArray
+from PyItem import DyeInfo, ItemModifier
 from Py4GWCoreLib import Item
-from Py4GWCoreLib.Item import Bag
-from Py4GWCoreLib.Py4GWcorelib import ConsoleLog
-from Py4GWCoreLib.enums import Attribute, Console, DyeColor, ItemType, ModelID, Rarity
+from Py4GWCoreLib.enums import Attribute, DyeColor, ItemType, ModelID, Rarity
 from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
-from Widgets.frenkey.LootEx.data import Data
 from Widgets.frenkey.LootEx.enum import ModType, ModifierIdentifier
-from Widgets.frenkey.LootEx.models import ModifierInfo, RuneModInfo
+from Widgets.frenkey.LootEx.models import ItemModifiersInformation, RuneModInfo, WeaponModInfo
 
 class Cached_Item:
     def __init__(self, item_id: int, slot: int = -1):
@@ -89,17 +83,6 @@ class Cached_Item:
 
         self.has_mods: bool = False
         self.modifiers: list[ItemModifier] = item.modifiers if item else []
-
-        self.mods: list[models.RuneModInfo | models.WeaponModInfo] = []
-        self.runes: list[models.RuneModInfo] = []
-        self.weapon_mods: list[models.WeaponModInfo] = []
-
-        self.max_runes: list[models.RuneModInfo] = []
-        self.max_weapon_mods: list[models.WeaponModInfo] = []
-
-        self.runes_to_keep: list[models.RuneModInfo] = []
-        self.runes_to_sell: list[models.RuneModInfo] = []
-        self.weapon_mods_to_keep: list[models.WeaponModInfo] = []
         
         self.is_highly_salvageable: bool = False
         self.has_increased_value: bool = False
@@ -107,7 +90,28 @@ class Cached_Item:
         self.is_rare_weapon : bool = utility.Util.IsRareWeapon(self.model_id) and self.rarity == Rarity.Gold
         self.is_rare_weapon_to_keep : bool = self.is_rare_weapon and settings.profile.rare_weapons.get(self.data.name, False) if self.data and settings.profile else False
         
-        self.GetModsFromModifiers()
+        mods_info = ItemModifiersInformation.GetModsFromModifiers(self.modifiers, self.item_type, self.model_id, self.is_inscribable)
+        
+        self.target_item_type: ItemType = mods_info.target_item_type
+        self.damage: tuple[int, int] = mods_info.damage
+        self.shield_armor: tuple[int, int] = mods_info.shield_armor
+        self.requirements: int = mods_info.requirements
+        self.attribute: Attribute = mods_info.attribute
+        self.is_highly_salvageable: bool = mods_info.is_highly_salvageable
+        self.has_increased_value: bool = mods_info.has_increased_value
+        
+        self.runes: list[RuneModInfo] = mods_info.runes
+        self.max_runes: list[RuneModInfo] = mods_info.max_runes
+        self.runes_to_keep: list[RuneModInfo] = mods_info.runes_to_keep
+        self.runes_to_sell: list[RuneModInfo] = mods_info.runes_to_sell
+        
+        self.weapon_mods: list[WeaponModInfo] = mods_info.weapon_mods
+        self.max_weapon_mods: list[WeaponModInfo] = mods_info.max_weapon_mods
+        self.weapon_mods_to_keep: list[WeaponModInfo] = mods_info.weapon_mods_to_keep
+        self.mods: list[RuneModInfo | WeaponModInfo] = mods_info.mods
+        
+        self.has_mods: bool = False
+        
         self.name : str = self.get_name()
                 
         self.skin_rule: skin_rule.SkinRule | None = None
