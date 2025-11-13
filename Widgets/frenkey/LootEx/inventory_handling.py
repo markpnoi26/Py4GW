@@ -1634,7 +1634,7 @@ class InventoryHandler:
                         self.salvage_queue[item.id] = item
                 
                 if item.action == ItemAction.Sell_To_Trader:
-                    if item.id not in self.trader_queue:
+                    if item.id not in self.trader_queue and (not item.material or item.model_id not in self.data.Common_Materials or item.quantity >= 10):
                         self.trader_queue[item.id] = InventoryHandler.TraderAction(item, self.GetTraderType(item), InventoryHandler.TraderAction.ActionType.Sell) 
 
             if self.merchant_timer.IsExpired():
