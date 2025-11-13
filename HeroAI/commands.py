@@ -139,7 +139,7 @@ class HeroAICommands:
             if account.AccountEmail == sender_email:
                 continue
             
-            same_map = GLOBAL_CACHE.Map.GetMapID() == account.MapID and GLOBAL_CACHE.Map.GetRegion()[0] == account.MapRegion and GLOBAL_CACHE.Map.GetDistrict() == account.MapDistrict
+            same_map = GLOBAL_CACHE.Map.GetMapID() == account.MapID and GLOBAL_CACHE.Map.GetRegion()[0] == account.MapRegion and GLOBAL_CACHE.Map.GetDistrict() == account.MapDistrict and GLOBAL_CACHE.Map.GetLanguage()[0] == account.MapLanguage
             
             if same_map and not GLOBAL_CACHE.Party.IsPartyMember(account.PlayerID):        
                 char_name = account.CharacterName

@@ -204,15 +204,12 @@ def HandleReceivedMessages():
                             
                             GLOBAL_CACHE.ShMem.MarkMessageAsRunning(GLOBAL_CACHE.Player.GetAccountEmail(), index)     
                             is_collecting = settings.collect_items
-                                                   
-                            data_collector.instance.stop_collection()                            
                             GLOBAL_CACHE.ShMem.MarkMessageAsFinished(GLOBAL_CACHE.Player.GetAccountEmail(), index)
                             
                         case enum.MessageActions.ResumeDataCollection:
                             GLOBAL_CACHE.ShMem.MarkMessageAsRunning(GLOBAL_CACHE.Player.GetAccountEmail(), index)
                             
-                            if is_collecting:
-                                data_collector.instance.start_collection()
+                            settings.collect_items = is_collecting
                             
                             GLOBAL_CACHE.ShMem.MarkMessageAsFinished(GLOBAL_CACHE.Player.GetAccountEmail(), index)
                             
