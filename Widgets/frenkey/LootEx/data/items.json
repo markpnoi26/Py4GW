@@ -771,7 +771,7 @@
         },
         "624": {
             "ModelID": 624,
-            "ModelFileID": -1,
+            "ModelFileID": 116991,
             "Names": {
                 "German": "Am Fah-Umhang",
                 "English": "Am Fah Cape",
@@ -877,7 +877,7 @@
         },
         "626": {
             "ModelID": 626,
-            "ModelFileID": -1,
+            "ModelFileID": 116991,
             "Names": {
                 "German": "Am Fah-Umhang",
                 "English": "Am Fah Cape",
@@ -1026,7 +1026,7 @@
         },
         "631": {
             "ModelID": 631,
-            "ModelFileID": -1,
+            "ModelFileID": 116991,
             "Names": {
                 "German": "Am Fah-Umhang",
                 "English": "Am Fah Cape",
@@ -1125,7 +1125,7 @@
         },
         "630": {
             "ModelID": 630,
-            "ModelFileID": -1,
+            "ModelFileID": 108205,
             "Names": {
                 "German": "Am Fah-Armschiene",
                 "English": "Am Fah Vambrace",
@@ -3463,7 +3463,7 @@
         },
         "676": {
             "ModelID": 676,
-            "ModelFileID": -1,
+            "ModelFileID": 24886,
             "Names": {
                 "German": "Jadebruderschafts-Tracht",
                 "English": "Jade Brotherhood Garb",
@@ -3514,9 +3514,29 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "677": {
+            "ModelID": 677,
+            "ModelFileID": 24886,
+            "Names": {
+                "English": "Jade Brotherhood Garb"
+            },
+            "ItemType": "Salvage",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Jade_Brotherhood_Garb",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Necromancer",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
         "678": {
             "ModelID": 678,
-            "ModelFileID": -1,
+            "ModelFileID": 24886,
             "Names": {
                 "German": "Jadebruderschafts-Tracht",
                 "English": "Jade Brotherhood Garb",
@@ -11411,7 +11431,7 @@
         },
         "809": {
             "ModelID": 809,
-            "ModelFileID": -1,
+            "ModelFileID": 175637,
             "Names": {
                 "German": "Jade-Armreif",
                 "English": "Jade Bracelet",
@@ -13315,7 +13335,7 @@
         },
         "805": {
             "ModelID": 805,
-            "ModelFileID": -1,
+            "ModelFileID": 176138,
             "Names": {
                 "German": "Pestgötzenbild",
                 "English": "Plague Idol",
@@ -21555,7 +21575,7 @@
         },
         "558": {
             "ModelID": 558,
-            "ModelFileID": -1,
+            "ModelFileID": 9380,
             "Names": {
                 "German": "Langbogen",
                 "English": "Longbow",
@@ -31408,6 +31428,28 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "8784": {
+            "ModelID": 8784,
+            "ModelFileID": 176444,
+            "Names": {
+                "English": "Lian's Lantern"
+            },
+            "ItemType": "Offhand",
+            "DropInfo": "",
+            "Attributes": [
+                "FireMagic"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Lian's_Lantern",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
         "2030": {
             "ModelID": 2030,
             "ModelFileID": 158021,
@@ -36384,7 +36426,7 @@
         },
         "206": {
             "ModelID": 206,
-            "ModelFileID": -1,
+            "ModelFileID": 39773,
             "Names": {
                 "German": "Runenhammer",
                 "English": "Runic Hammer",
@@ -47358,7 +47400,7 @@
         },
         "1017": {
             "ModelID": 1017,
-            "ModelFileID": -1,
+            "ModelFileID": 176608,
             "Names": {
                 "German": "Klagender Zauberstab",
                 "English": "Wailing Wand",
@@ -48883,7 +48925,7 @@
         },
         "777": {
             "ModelID": 777,
-            "ModelFileID": -1,
+            "ModelFileID": 175913,
             "Names": {
                 "English": "Bladed Shield"
             },
@@ -53348,7 +53390,7 @@
         },
         "356": {
             "ModelID": 356,
-            "ModelFileID": -1,
+            "ModelFileID": 112078,
             "Names": {
                 "German": "Verfluchter Stab",
                 "English": "Accursed Staff",
@@ -55680,7 +55722,8 @@
                 "AirMagic",
                 "SmitingPrayers",
                 "BloodMagic",
-                "SpawningPower"
+                "SpawningPower",
+                "EarthMagic"
             ],
             "CommonSalvage": {
                 "Wood Plank": {
@@ -56583,7 +56626,7 @@
         },
         "360": {
             "ModelID": 360,
-            "ModelFileID": -1,
+            "ModelFileID": 96597,
             "Names": {
                 "German": "Knochen-Stab",
                 "English": "Bone Staff",
@@ -56623,7 +56666,7 @@
         },
         "361": {
             "ModelID": 361,
-            "ModelFileID": -1,
+            "ModelFileID": 96597,
             "Names": {
                 "German": "Knochen-Stab",
                 "English": "Bone Staff",
@@ -66114,7 +66157,7 @@
         },
         "615": {
             "ModelID": 615,
-            "ModelFileID": -1,
+            "ModelFileID": 175827,
             "Names": {
                 "German": "Wasserstab",
                 "English": "Water Staff",
@@ -73151,7 +73194,7 @@
         },
         "715": {
             "ModelID": 715,
-            "ModelFileID": -1,
+            "ModelFileID": 175552,
             "Names": {
                 "German": "Langdolche",
                 "English": "Dirks",
@@ -73898,7 +73941,7 @@
         },
         "765": {
             "ModelID": 765,
-            "ModelFileID": -1,
+            "ModelFileID": 164905,
             "Names": {
                 "German": "Kukris",
                 "English": "Kukris",

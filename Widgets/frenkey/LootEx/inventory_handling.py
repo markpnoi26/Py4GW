@@ -1,4 +1,5 @@
 from datetime import date, datetime, timedelta
+from Widgets.frenkey.LootEx.data_collection import DataCollector
 from Widgets.frenkey.LootEx.enum import MaterialType, MerchantType, ModType, SalvageKitOption, SalvageOption, ItemAction
 from Py4GWCoreLib import *
 from Widgets.frenkey.LootEx import data_collector, filter, loot_handling, models, settings, utility, ui_manager_extensions, item_configuration, cache
@@ -1176,19 +1177,6 @@ class InventoryHandler:
             
             return False
 
-        def ShouldCollectData(item: cache.Cached_Item) -> bool:
-            if not item.data:
-                return True
-
-            missing_language = item.data.has_missing_names()
-            if missing_language:
-                return True
-
-            if (item.is_armor or item.is_weapon or item.is_upgrade) and data_collector.instance.has_uncollected_mods(item_id)[0]:
-                return True
-
-            return False
-
         def ShouldIdentifyItem(item: cache.Cached_Item) -> bool:
             if not item.is_identified:
 
@@ -1279,11 +1267,16 @@ class InventoryHandler:
         
         result.inventory_array = inventory_array
         result.inventory_sizes = inventory_sizes
+        data_collector = DataCollector()
         
         has_empty_slot = False
         for slot, item_id in enumerate(inventory_array):
             item = cache.Cached_Item(item_id, slot)
             result.cached_inventory.append(item)
+            
+            if not data_collector.hasItem(item_id):
+                item.action = ItemAction.Collect_Data
+                continue
             
             has_empty_slot = item.id == 0 or has_empty_slot
             if item.id == 0:
@@ -1332,10 +1325,6 @@ class InventoryHandler:
                 
                 if item.mods != existing_item.mods:
                     return False
-
-                if item.action == ItemAction.Collect_Data:
-                    if not ShouldCollectData(item):
-                        return False
                                                          
                 item.action = existing_item.action
                 item.salvage_option = existing_item.salvage_option
@@ -1376,10 +1365,6 @@ class InventoryHandler:
                 result.inventory_changed = True
 
             result.actions[item_id] = item
-
-            if ShouldCollectData(item):
-                item.action = ItemAction.Collect_Data
-                continue
 
             if ShouldIdentifyItem(item) or (self.IsSalvageAction(item.action) and not item.is_identified):
                 item.action = ItemAction.Identify
@@ -1577,10 +1562,7 @@ class InventoryHandler:
         self.soft_reset()
 
         self.is_outpost = GLOBAL_CACHE.Map.IsOutpost() or utility.Util.IsGuildHall(GLOBAL_CACHE.Map.GetMapID())
-
-        if data_collector.instance.is_running():
-            return
-
+        
         if not settings.profile or not settings.automatic_inventory_handling:
             return
 

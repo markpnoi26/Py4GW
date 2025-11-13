@@ -53,52 +53,32 @@ class CollectionEntry(Item):
         self.unformatted_name = ""    
         self.mods_info = ItemModifiersInformation.GetModsFromModifiers(GLOBAL_CACHE.Item.Customization.Modifiers.GetModifiers(self.item_id), self.item_type, self.model_id, GLOBAL_CACHE.Item.Customization.IsInscribable(self.item_id))
 
-        self.set_property("profession", self.get_profession())
-        self.set_property("attributes", self.get_attributes())
-        self.set_property("model_file_id", GLOBAL_CACHE.Item.GetModelFileID(self.item_id))
+        self.get_profession()
+        self.get_attributes()
+        self.get_model_file_id()
     
-    def get_attributes(self) -> list[Attribute]:    
+    def get_model_file_id(self):
+        model_file_id = GLOBAL_CACHE.Item.GetModelFileID(self.item_id)
+        if model_file_id != self.model_file_id:
+            self.model_file_id = model_file_id
+            self.changed = True
+    
+    def get_attributes(self):    
         if not utility.Util.IsWeaponType(self.item_type):
-            return self.attributes
+            return
         
         if self.mods_info.attribute != Attribute.None_ and self.mods_info.attribute not in self.attributes:
-            return self.attributes + [self.mods_info.attribute]
+            self.attributes = self.attributes + [self.mods_info.attribute]
+            self.changed = True
     
-        return self.attributes
-    
-    def get_profession(self) -> Profession | None:  
+    def get_profession(self):  
         pv = GLOBAL_CACHE.Item.Properties.GetProfession(self.item_id)
         profession = Profession(pv) if pv in Profession._value2member_map_ else None
-        return profession if profession != Profession._None else None
-        
-    def set_property(self, property_name: str, value):
-        current_value = getattr(self, property_name)
-
-        def are_equal(a, b):
-            # identical object
-            if a is b:
-                return True
-            # handle None and empty sequences
-            if a is None or b is None:
-                return a == b
-            # handle lists/tuples elementwise
-            if isinstance(a, Sequence) and isinstance(b, Sequence):
-                return len(a) == len(b) and all(are_equal(x, y) for x, y in zip(a, b))
-            # fallback to default equality
-            return a == b
-
-        if are_equal(current_value, value):
-            return
-
-        ConsoleLog(
-            "LootEx DataCollector",
-            f"Updated property '{property_name}' from '{current_value}' to '{value}' for item ID {self.item_id}.",
-            Console.MessageType.Debug,
-        )
-
-        setattr(self, property_name, value)
-        self.changed = True  
-            
+        if profession and profession != Profession._None:
+            if profession != self.profession:
+                self.profession = profession
+                self.changed = True
+                    
     def has_name(self, language : ServerLanguage) -> bool:
         return self.names.get(language, "") != ""
 
@@ -388,6 +368,9 @@ class DataCollector:
         self.throttle.Start()
         
         self.fetched_cycles = 0
+    
+    def hasItem(self, item_id: int) -> bool:
+        return item_id in self.collected_items and self.collected_items[item_id].status not in [CollectionStatus.NameRequested, CollectionStatus.NameCollected]
     
     def reset(self):
         if self.collected_items:

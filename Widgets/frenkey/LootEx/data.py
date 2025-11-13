@@ -907,8 +907,8 @@ class Data():
             
             if os.path.exists(file_path):            
                 with open(file_path, 'r', encoding='utf-8') as file:
-                    ConsoleLog(
-                        "LootEx", f"Merging diff items from {file_path}...", Console.MessageType.Debug)
+                    # ConsoleLog(
+                    #     "LootEx", f"Merging diff items from {file_path}...", Console.MessageType.Debug)
                     
                     file_data = json.load(file)
                     file_items = models.ItemsByType.from_dict(file_data)
