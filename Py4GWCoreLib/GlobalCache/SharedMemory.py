@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 import time
 
 SHMEM_MAX_EMAIL_LEN = 64
-SHMEM_MAX_CHAR_LEN = 20
+SHMEM_MAX_CHAR_LEN = 30
 SHMEM_MAX_NUMBER_OF_BUFFS = 240
 SHMEM_MAX_NUM_PLAYERS = 64
 SMM_MODULE_NAME = "Py4GW - Shared Memory"
@@ -127,6 +127,8 @@ class Py4GWSharedMemoryManager:
         self._initialized = True
     
     def GetStruct(self) -> AllAccounts:
+        if self.shm.buf is None:
+            raise RuntimeError("Shared memory is not initialized.")
         return AllAccounts.from_buffer(self.shm.buf)
         
     def GetBaseTimestamp(self):
@@ -451,6 +453,8 @@ class Py4GWSharedMemoryManager:
             agent_id = hero_data.agent_id
             map_region = self.map_instance.region_type.ToInt()
             
+            if not Agent.IsValid(agent_id):
+                return
             hero_agent_instance = Agent.agent_instance(agent_id)
             
             playerx, playery, playerz = hero_agent_instance.x, hero_agent_instance.y, hero_agent_instance.z
@@ -539,6 +543,8 @@ class Py4GWSharedMemoryManager:
                 return
             
             agent_id = pet_info.agent_id
+            if not Agent.IsValid(agent_id):
+                return
             agent_instance = Agent.agent_instance(agent_id)
             map_region = self.map_instance.region_type.ToInt()
             playerx, playery, playerz = agent_instance.x, agent_instance.y, agent_instance.z

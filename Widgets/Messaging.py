@@ -19,6 +19,7 @@ from Py4GWCoreLib import SharedCommandType
 from Py4GWCoreLib import UIManager
 from Py4GWCoreLib import AutoPathing
 from Py4GWCoreLib.Py4GWcorelib import Keystroke
+from Py4GW_widget_manager import WidgetHandler
 
 cached_data = CacheData()
 
@@ -241,9 +242,8 @@ def TravelToMap(index, message):
 
 
 # endregion
+
 # region Resign
-
-
 def Resign(index, message):
     if not Routines.Checks.Map.MapValid():
         ConsoleLog(MODULE_NAME, "Map is not valid, cannot process resign message.", Console.MessageType.Warning)
@@ -252,11 +252,12 @@ def Resign(index, message):
 
     # ConsoleLog(MODULE_NAME, f"Processing Resign message: {message}", Console.MessageType.Info)
     GLOBAL_CACHE.ShMem.MarkMessageAsRunning(message.ReceiverEmail, index)
-    GLOBAL_CACHE.Player.SendChatCommand("resign")
-    yield from Routines.Yield.wait(100)
+    for i in range(2):
+        GLOBAL_CACHE.Player.SendChatCommand("resign")
+        yield from Routines.Yield.wait(100)
     GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
     ConsoleLog(MODULE_NAME, "Resign message processed and finished.", Console.MessageType.Info, False)
-
+# endregion
 
 # region PixelStack
 def PixelStack(index, message):
@@ -364,7 +365,7 @@ def BruteForceUnstuck(index, message):
     finally:
         yield from EnableHeroAIOptions(message.ReceiverEmail)
         GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
-
+# endregion
 
 # region InteractWithTarget
 
@@ -431,8 +432,9 @@ def TakeDialogWithTarget(index, message):
     finally:
         yield from RestoreHeroAISnapshot(message.ReceiverEmail)
         GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
+# endregion
 
-
+# region SendDialogToTarget
 def SendDialogToTarget(index, message):
     ConsoleLog(MODULE_NAME, f"Processing SendDialogToTarget message: {message}", Console.MessageType.Info, False)
     GLOBAL_CACHE.ShMem.MarkMessageAsRunning(message.ReceiverEmail, index)
@@ -465,7 +467,7 @@ def SendDialogToTarget(index, message):
     finally:
         yield from RestoreHeroAISnapshot(message.ReceiverEmail)
         GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
-
+# endregion
 
 # region GetBlessing
 def GetBlessing(index, message):
@@ -645,7 +647,7 @@ def DonateToGuild(index, message):
             swapped += 1
 
     GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
-
+# endregion
 
 # region PickUpLoot
 def PickUpLoot(index, message):
@@ -759,8 +761,9 @@ def PickUpLoot(index, message):
     finally:
         yield from RestoreHeroAISnapshot(message.ReceiverEmail)
         GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
+#endregion
 
-
+# region DisableHeroAI / EnableHeroAI
 def MessageDisableHeroAI(index, message):
     ConsoleLog(MODULE_NAME, f"Processing DisableHeroAI message: {message}", Console.MessageType.Info, False)
     GLOBAL_CACHE.ShMem.MarkMessageAsRunning(message.ReceiverEmail, index)
@@ -781,6 +784,7 @@ def MessageEnableHeroAI(index, message):
         yield from RestoreHeroAISnapshot(account_email)
     GLOBAL_CACHE.ShMem.MarkMessageAsFinished(account_email, index)
     ConsoleLog(MODULE_NAME, "EnableHeroAI message processed and finished.", Console.MessageType.Info, False)
+# endregion
 
 # region SetWindowGeometry
 def SetWindowGeometry(index, message):
@@ -801,7 +805,9 @@ def SetWindowActive(index, message):
     if sender_data is None:
         GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
         return
+    
     Py4GW.Console.set_window_active()
+    
     yield from Routines.Yield.wait(100)
     GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
     ConsoleLog(MODULE_NAME, "SetWindowActive message processed and finished.", Console.MessageType.Info, False)
@@ -897,9 +903,95 @@ def SetOpacity(index, message):
     yield from Routines.Yield.wait(100)
     GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
     ConsoleLog(MODULE_NAME, "SetOpacity message processed and finished.", Console.MessageType.Info, False)
+#endregion
+
+#region UseSkill
+def UseSkill(index, message):
+    ConsoleLog(MODULE_NAME, f"Processing UseSkill message: {message}", Console.MessageType.Info, False)
+    GLOBAL_CACHE.ShMem.MarkMessageAsRunning(message.ReceiverEmail, index)
+    sender_data = GLOBAL_CACHE.ShMem.GetAccountDataFromEmail(message.SenderEmail)
+    if sender_data is None:
+        GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
+        return
+
+    target = int(message.Params[0])
+    if target == 0:
+        ConsoleLog(MODULE_NAME, "Invalid target ID.", Console.MessageType.Warning)
+        GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
+        return
+    yield from Routines.Yield.Agents.ChangeTarget(target)
+    skill_id = int(message.Params[1])
+    skill_slot = GLOBAL_CACHE.SkillBar.GetSlotBySkillID(skill_id)
+
+    if skill_slot < 1 or skill_slot > 8:
+        ConsoleLog(MODULE_NAME, "Invalid skill slot.", Console.MessageType.Warning)
+        GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
+        return
+
+    yield from SnapshotHeroAIOptions(message.ReceiverEmail)
+    try:
+        yield from DisableHeroAIOptions(message.ReceiverEmail)
+        yield from Routines.Yield.Agents.ChangeTarget(target)
+        yield from Routines.Yield.Skills.CastSkillSlot(slot=skill_slot, aftercast_delay=0)
+
+        ConsoleLog(MODULE_NAME, "UseSkill message processed and finished.", Console.MessageType.Info, False)
+    finally:
+        yield from RestoreHeroAISnapshot(message.ReceiverEmail)
+        GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
+
+# region UseItem (generic)
+def UseItem(index, message):
+    ConsoleLog(MODULE_NAME, f"Processing UseItem message: {message}", Console.MessageType.Info, False)
+    GLOBAL_CACHE.ShMem.MarkMessageAsRunning(message.ReceiverEmail, index)
+
+    if len(message.Params) < 1:
+        ConsoleLog(MODULE_NAME, "UseItem: missing model_id param.", Console.MessageType.Warning)
+        GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
+        return
+
+    try:
+        model_id = int(message.Params[0])
+    except Exception:
+        ConsoleLog(MODULE_NAME, "UseItem: invalid model_id.", Console.MessageType.Warning)
+        GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
+        return
+
+    repeat = 1
+    if len(message.Params) > 1:
+        try:
+            repeat = max(1, int(message.Params[1]))
+        except Exception:
+            repeat = 1
+
+    count = GLOBAL_CACHE.Inventory.GetModelCount(model_id)
+    if count < 1:
+        ConsoleLog(MODULE_NAME, f"UseItem: no items with model_id {model_id} in inventory.", Console.MessageType.Warning)
+        GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
+        return
+
+    used = 0
+    for _ in range(repeat):
+        if GLOBAL_CACHE.Inventory.GetModelCount(model_id) < 1:
+            ConsoleLog(MODULE_NAME, "UseItem: out of items mid-loop, stopping.", Console.MessageType.Info)
+            break
+
+        item_id = GLOBAL_CACHE.Item.GetItemIdFromModelID(model_id)
+        if not item_id:
+            ConsoleLog(MODULE_NAME, f"UseItem: could not resolve item_id for model_id {model_id}.", Console.MessageType.Warning)
+            break
+
+        GLOBAL_CACHE.Inventory.UseItem(item_id)
+        used += 1
+        ConsoleLog(MODULE_NAME, f"UseItem: used item_id {item_id} (model {model_id}).", Console.MessageType.Info, False)
+
+        yield from Routines.Yield.wait(150)
+
+    ConsoleLog(MODULE_NAME, f"UseItem: finished. Requested {repeat}, actually used {used}.", Console.MessageType.Info)
+    GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
+# endregion
 
 # region UseSkillFromMessage
-def UseSkillFromMessage(index, message):
+def UseSkillCombatPrep(index, message):
     global combat_prep_first_skills_check
     global hero_ai_has_paragon_skills
     global hero_ai_has_ritualist_skills
@@ -1039,7 +1131,90 @@ def UseSkillFromMessage(index, message):
 
     yield from Routines.Yield.wait(100)
     GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
+#endregion
 
+# region Widget handling
+def PauseWidgets(index, message):
+    GLOBAL_CACHE.ShMem.MarkMessageAsRunning(message.ReceiverEmail, index)
+    sender_data = GLOBAL_CACHE.ShMem.GetAccountDataFromEmail(message.SenderEmail)
+    if sender_data is None:
+        GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
+        return
+    
+    WidgetHandler().pause_widgets()
+    yield from Routines.Yield.wait(100)
+    GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
+    ConsoleLog(MODULE_NAME, "PauseWidgets message processed and finished.", Console.MessageType.Info, False)
+
+def ResumeWidgets(index, message):
+    GLOBAL_CACHE.ShMem.MarkMessageAsRunning(message.ReceiverEmail, index)
+    sender_data = GLOBAL_CACHE.ShMem.GetAccountDataFromEmail(message.SenderEmail)
+    if sender_data is None:
+        GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
+        return
+    
+    WidgetHandler().resume_widgets()
+    yield from Routines.Yield.wait(100)
+    GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
+    ConsoleLog(MODULE_NAME, "ResumeWidgets message processed and finished.", Console.MessageType.Info, False)
+# endregion
+
+#region SwitchCharacter
+def SwitchCharacter(index, message):
+    GLOBAL_CACHE.ShMem.MarkMessageAsRunning(message.ReceiverEmail, index)
+    sender_data = GLOBAL_CACHE.ShMem.GetAccountDataFromEmail(message.SenderEmail)
+    if sender_data is None:
+        GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
+        return
+    
+
+    extra = tuple(GLOBAL_CACHE.ShMem._c_wchar_array_to_str(arr) for arr in message.ExtraData)
+    character_name = extra[0] if extra else ""
+    
+    if character_name and character_name != GLOBAL_CACHE.Player.GetName():
+        yield from Routines.Yield.RerollCharacter.Reroll(character_name)  
+    
+    GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
+    ConsoleLog(MODULE_NAME, "SwitchCharacter message processed and finished.", Console.MessageType.Info, False)    
+# endregion
+
+#region LoadSkillTemplate
+def LoadSkillTemplate(index, message):
+    GLOBAL_CACHE.ShMem.MarkMessageAsRunning(message.ReceiverEmail, index)
+    sender_data = GLOBAL_CACHE.ShMem.GetAccountDataFromEmail(message.SenderEmail)
+    
+    if sender_data is None:
+        GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
+        return
+    
+    if GLOBAL_CACHE.Map.IsOutpost():
+        extra = tuple(GLOBAL_CACHE.ShMem._c_wchar_array_to_str(arr) for arr in message.ExtraData)
+        template = extra[0] if extra else ""
+            
+        if template:
+            GLOBAL_CACHE.SkillBar.LoadSkillTemplate(template)
+            yield from Routines.Yield.wait(100)
+    
+    GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
+    ConsoleLog(MODULE_NAME, "LoadSkillTemplate message processed and finished.", Console.MessageType.Info, False)
+# endregion
+
+#region SkipCutscene
+def SkipCutscene(index, message):
+    GLOBAL_CACHE.ShMem.MarkMessageAsRunning(message.ReceiverEmail, index)
+    sender_data = GLOBAL_CACHE.ShMem.GetAccountDataFromEmail(message.SenderEmail)
+    
+    if sender_data is None:
+        GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
+        return
+    
+    if GLOBAL_CACHE.Map.IsInCinematic():
+        GLOBAL_CACHE.Map.SkipCinematic()
+        yield from Routines.Yield.wait(100)
+    
+    GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
+    ConsoleLog(MODULE_NAME, "SkipCutscene message processed and finished.", Console.MessageType.Info, False)
+# endregion
 
 # region ProcessMessages
 def ProcessMessages():
@@ -1069,7 +1244,7 @@ def ProcessMessages():
         case SharedCommandType.PickUpLoot:
             GLOBAL_CACHE.Coroutines.append(PickUpLoot(index, message))
         case SharedCommandType.UseSkill:
-            GLOBAL_CACHE.Coroutines.append(UseSkillFromMessage(index, message))
+            GLOBAL_CACHE.Coroutines.append(UseSkill(index, message))
         case SharedCommandType.Resign:
             GLOBAL_CACHE.Coroutines.append(Resign(index, message))
         case SharedCommandType.PixelStack:
@@ -1104,6 +1279,8 @@ def ProcessMessages():
             GLOBAL_CACHE.Coroutines.append(SetBorderless(index, message))
         case SharedCommandType.SetAlwaysOnTop:
             GLOBAL_CACHE.Coroutines.append(SetAlwaysOnTop(index, message))
+        case SharedCommandType.UseItem:
+            GLOBAL_CACHE.Coroutines.append(UseItem(index, message))
         case SharedCommandType.FlashWindow:
             GLOBAL_CACHE.Coroutines.append(FlashWindow(index, message))
         case SharedCommandType.RequestAttention:
@@ -1112,8 +1289,25 @@ def ProcessMessages():
             GLOBAL_CACHE.Coroutines.append(SetTransparentClickThrough(index, message))
         case SharedCommandType.SetOpacity:
             GLOBAL_CACHE.Coroutines.append(SetOpacity(index, message))
+        case SharedCommandType.PauseWidgets:
+            GLOBAL_CACHE.Coroutines.append(PauseWidgets(index, message))
+        case SharedCommandType.ResumeWidgets:
+            GLOBAL_CACHE.Coroutines.append(ResumeWidgets(index, message))
+        case SharedCommandType.SwitchCharacter:
+            GLOBAL_CACHE.Coroutines.append(SwitchCharacter(index, message))
+        case SharedCommandType.LoadSkillTemplate:
+            GLOBAL_CACHE.Coroutines.append(LoadSkillTemplate(index, message))
+        case SharedCommandType.SkipCutscene:
+            GLOBAL_CACHE.Coroutines.append(SkipCutscene(index, message))
+        case SharedCommandType.UseSkillCombatPrep:
+            GLOBAL_CACHE.Coroutines.append(UseSkillCombatPrep(index, message))
+        case SharedCommandType.ApplySkillbarTemplate:
+            GLOBAL_CACHE.Coroutines.append(ApplySkillbarTemplate(index, message))
         case SharedCommandType.LootEx:
             # privately Handled Command, by Frenkey
+            pass
+        case SharedCommandType.CustomBehaviors:
+            # privately Handled Command, used in CustomBehaviors widget
             pass
         case _:
             GLOBAL_CACHE.ShMem.MarkMessageAsFinished(account_email, index)

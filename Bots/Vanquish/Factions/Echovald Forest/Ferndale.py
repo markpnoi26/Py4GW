@@ -1,8 +1,8 @@
 from Py4GWCoreLib import Botting, Routines, GLOBAL_CACHE, ModelID, Range, Utils, ConsoleLog
 import Py4GW
-
+import os
 BOT_NAME = "VQ Ferndale"
-TEXTURE = Py4GW.Console.get_projects_path() + "//Vanquished_Helmet.png"
+TEXTURE = os.path.join(Py4GW.Console.get_projects_path(), "Bots", "Vanquish", "VQ_Helmet.png")
 HZH= 77
 
 Vanquish_Path:list[tuple[float, float]] = [
@@ -109,7 +109,7 @@ def bot_routine(bot: Botting) -> None:
     
 def _upkeep_multibox_consumables(bot :"Botting"):
     while True:
-        yield from bot.helpers.Wait._for_time(15000)
+        yield from bot.Wait._coro_for_time(15000)
         if not Routines.Checks.Map.MapValid():
             continue
         
@@ -142,11 +142,11 @@ def _upkeep_multibox_consumables(bot :"Botting"):
                                                                 GLOBAL_CACHE.Skill.GetID("Well_Supplied"), 0, 0))
         for i in range(1, 5): 
             GLOBAL_CACHE.Inventory.UseItem(ModelID.Honeycomb.value)
-            yield from bot.helpers.Wait._for_time(250)
+            yield from bot.Wait._coro_for_time(250)
             
 def _on_party_wipe(bot: "Botting"):
     while GLOBAL_CACHE.Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
-        yield from bot.helpers.Wait._for_time(1000)
+        yield from bot.Wait._coro_for_time(1000)
         if not Routines.Checks.Map.MapValid():
             # Map invalid → release FSM and exit
             bot.config.FSM.resume()

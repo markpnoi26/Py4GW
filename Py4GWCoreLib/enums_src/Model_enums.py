@@ -19,6 +19,9 @@ class GadgetModelID(IntEnum):
     
     CHEST_DUNGEON_SECRET_LAIR_OF_THE_SNOWMAN = 9274 #ID for Secret Lair of the Snowman
     CHEST_DUNGEON_BOGROOT_GROWTHS = 8932 #ID for Bogroot Growths
+    CHEST_DUNGEON_SLAVERS_EXILE_JUSTICIAR_THOMMIS_ROOM = 9284 #ID for Slavers Exile (Justiciar Thommis room)
+
+    BURIED_TREASURE_THE_MIRROR_OF_LYSS = 7465
     
     
 class SpiritModelID(IntEnum):
@@ -684,9 +687,6 @@ class ModelID(IntEnum):
     Animal_Hide = 1236547896911  # Dummy modelid's to insure no LootManager Crash - will be changed to correct value
     Ashen_Wurm_Husk = 123654789692  # Dummy modelid's to insure no LootManager Crash - will be changed to correct value
     Bleached_Shell = 123654789693  # Dummy modelid's to insure no LootManager Crash - will be changed to correct value
-    Blood_Drinker_Pelt = (
-        123654789694  # Dummy modelid's to insure no LootManager Crash - will be changed to correct value
-    )
     Bonesnap_Shell = 123654789696  # Dummy modelid's to insure no LootManager Crash - will be changed to correct value
     Branch_Of_Juni_Berries = (
         123654789695  # Dummy modelid's to insure no LootManager Crash - will be changed to correct value
@@ -801,6 +801,7 @@ class ModelID(IntEnum):
     Bleached_Carapace = 449
     Blessing_Of_War = 37843
     Blob_Of_Ooze = 27067
+    Blood_Drinker_Pelt = 812
     Blue_Rock_Candy = 31151
     Bog_Skale_Fin = 443
     Bogroots_Boss_Key = 2593
@@ -820,6 +821,7 @@ class ModelID(IntEnum):
     Bonus_Wolfs_Favor = 6058
     Book_Of_Secrets = 19197
     Boreal_Tonic = 30638
+    Boss_Key = 25416
     Bottle_Of_Grog = 30855
     Bottle_Of_Juniberry_Gin = 19172
     Bottle_Of_Rice_Wine = 15477
@@ -876,6 +878,7 @@ class ModelID(IntEnum):
     Celestial_Snake_Mini = 29418
     Celestial_Summon = 34176
     Celestial_Tiger_Mini = 29415
+    Cell_Key = 15565
     Ceratadon_Mini = 28416
     Cerebral_Tonic = 30626
     Ceremonial_Daggers = 15166
@@ -931,6 +934,7 @@ class ModelID(IntEnum):
     Dhuum_Mini = 32822
     Diamond = 935
     Diamond_Djinn_Essence = 19186
+    Diamond_Key = 19175
     Diessa_Chalice = 24353
     Disco_Ball = 29543
     Dragon_Mask = 15481
@@ -943,6 +947,7 @@ class ModelID(IntEnum):
     Dryder_Web = 27070
     Dull_Carapace = 425
     Dune_Burrower_Jaw = 447
+    Dungeon_Key = 25410
     Dusty_Insect_Carapace = 1588
     Dwarven_Ale = 5585
     Ebon_Spider_Leg = 463
@@ -1038,6 +1043,7 @@ class ModelID(IntEnum):
     Feathered_Scalp = 836
     Festival_Prize = 15478
     Fetid_Carapace = 479
+    Fetid_Mass = 1665
     Fiery_Crest = 508
     Fire_Drake_Mini = 34390
     Fire_Imp_Mini = 22764
@@ -1240,6 +1246,7 @@ class ModelID(IntEnum):
     Lunar_Fortune_2017_Rooster = 29434
     Lunar_Fortune_2018_Dog = 29435
     Lunar_Token = 21833
+    Lustrous_Stone = 1661
     Luxon_Key = 6538
     Luxon_Pendant = 810
     Luxon_Totem = 6048
@@ -1349,6 +1356,7 @@ class ModelID(IntEnum):
     Pile_Of_Elemental_Dust = 27050
     Pile_Of_Glittering_Dust = 929
     Plant_Fiber = 934
+    Prison_Key = 25413
     Polar_Bear_Mini = 21439
     Aloe_Seed_Polymock_Piece = 24355
     Earth_Elemental_Polymock_Piece = 24357
@@ -1400,6 +1408,7 @@ class ModelID(IntEnum):
     Royal_Gift = 35120
     Ruby = 937
     Ruby_Djinn_Essence = 19187
+    Ruby_Key = 19177
     Rune_Of_Holding = 2988
     Rune_Of_Superior_Vigor = 5551
     Sack_Of_Random_Junk = 34213
@@ -1407,6 +1416,7 @@ class ModelID(IntEnum):
     Sandblasted_Lodestone = 1584
     Sapphire = 938
     Sapphire_Djinn_Essence = 19188
+    Sapphire_Key = 19176
     Saurian_Bone = 27035
     Scale = 953
     Scar_Behemoth_Jaw = 478
@@ -1487,6 +1497,7 @@ class ModelID(IntEnum):
     Steel_Ingot = 949
     Steel_Key = 5967
     Stolen_Provisions = 851
+    Stolen_Shipment = 1424
     Stolen_Sunspear_Armor = 19191
     Stone_Carving = 820
     Stone_Claw = 27057

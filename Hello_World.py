@@ -1,51 +1,64 @@
-from Py4GWCoreLib import ImGui, GLOBAL_CACHE, TitleID
-import PyImGui, Py4GW
-import os
+from Py4GWCoreLib import GLOBAL_CACHE
 
-MODULE_NAME = "Window Manipulator"
-
-title = "Hello World"
-def Draw_Window():  
-    global title
-    if PyImGui.begin(MODULE_NAME, PyImGui.WindowFlags.AlwaysAutoResize):
-        # Free input field
-        title = PyImGui.input_text("Window Title", title, 0)
-        if PyImGui.button(f"set title to {title}"):
-            Py4GW.Console.set_window_title(title)
-
-        PyImGui.separator()
-        PyImGui.text("Quick test buttons:")
-
-        if PyImGui.button("Spanish José"):
-            Py4GW.Console.set_window_title("José")
-
-        if PyImGui.button("French élève"):
-            Py4GW.Console.set_window_title("Français – élève")
-
-        if PyImGui.button("German München"):
-            Py4GW.Console.set_window_title("München")
-
-        if PyImGui.button("Russian Москва"):
-            Py4GW.Console.set_window_title("Москва")
-
-        if PyImGui.button("Chinese 标题测试"):
-            Py4GW.Console.set_window_title("标题测试")
-
-        if PyImGui.button("Japanese 日本語テスト"):
-            Py4GW.Console.set_window_title("日本語テスト")
-
-        if PyImGui.button("Korean 한글 테스트"):
-            Py4GW.Console.set_window_title("한글 테스트")
-
-        if PyImGui.button("Emoji 🌍🚀🔥"):
-            Py4GW.Console.set_window_title("Hello 🌍🚀🔥")
-
-    PyImGui.end()
+import PyImGui
 
 
+
+def draw_window():
+    MIN_WIDTH = 400
+    MIN_HEIGHT = 600
+
+    if PyImGui.begin("quest data"):
+        window_size = PyImGui.get_window_size()
+        new_width = max(window_size[0], MIN_WIDTH)
+        new_height = max(window_size[1], MIN_HEIGHT)
+
+        # only update size if it changed
+        if new_width != window_size[0] or new_height != window_size[1]:
+            PyImGui.set_window_size(new_width, new_height, PyImGui.ImGuiCond.Always)
+
+        # child region adjusts automatically
+        if PyImGui.begin_child("AccountInfoChild", (new_width - 20, 0), True, PyImGui.WindowFlags.NoFlag):
+            active_quest = GLOBAL_CACHE.Quest.GetActiveQuest()
+            active_quest = -1
+            PyImGui.text(f"Active Quest ID: {active_quest}")
+            if PyImGui.button("request  quest name"):
+                GLOBAL_CACHE.Quest.RequestQuestName(active_quest)
+                GLOBAL_CACHE.Quest.RequestQuestDescription(active_quest)
+                GLOBAL_CACHE.Quest.RequestQuestObjectives(active_quest)
+                GLOBAL_CACHE.Quest.RequestQuestLocation(active_quest)
+                GLOBAL_CACHE.Quest.RequestQuestNPC(active_quest)
+                
+            if GLOBAL_CACHE.Quest.IsQuestNameReady(active_quest):
+                quest_name = GLOBAL_CACHE.Quest.GetQuestName(active_quest)
+                PyImGui.text(f"Quest Name: {quest_name}")
+
+            if GLOBAL_CACHE.Quest.IsQuestDescriptionReady(active_quest):
+                quest_info = GLOBAL_CACHE.Quest.GetQuestDescription(active_quest)
+                PyImGui.text(f"Quest Info: {quest_info}")
+                
+            if GLOBAL_CACHE.Quest.IsQuestObjectivesReady(active_quest):
+                objectives = GLOBAL_CACHE.Quest.GetQuestObjectives(active_quest)
+                PyImGui.text(f"Objectives: {objectives}")
+                if  PyImGui.button("print objectives"):
+                    print(f"{objectives}")
+
+            if GLOBAL_CACHE.Quest.IsQuestLocationReady(active_quest):
+                location = GLOBAL_CACHE.Quest.GetQuestLocation(active_quest)
+                PyImGui.text(f"Location: {location}")
+
+            if GLOBAL_CACHE.Quest.IsQuestNPCReady(active_quest):
+                npc = GLOBAL_CACHE.Quest.GetQuestNPC(active_quest)
+                PyImGui.text(f"NPC: {npc}")
+
+            
+                
+                
+            PyImGui.end_child()
+        PyImGui.end()
 
 def main():
-    Draw_Window()
+    draw_window()
 
 
 if __name__ == "__main__":

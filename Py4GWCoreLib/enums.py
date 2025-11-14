@@ -4,6 +4,7 @@ from .enums_src.GameData_enums import (
     Attribute,
     DamageType,
     DyeColor,
+    FactionAllegiance,
     Inscription,
     Profession,
     ProfessionShort,
@@ -12,6 +13,9 @@ from .enums_src.GameData_enums import (
     SkillType,
     Weapon,
     WeaporReq,
+    CAP_EXPERIENCE,
+    CAP_STEP,
+    EXPERIENCE_PROGRESSION,
 )
 from .enums_src.Hero_enums import HeroType, PetBehavior
 from .enums_src.IO_enums import Key, MouseButton
@@ -41,7 +45,7 @@ from .enums_src.Texture_enums import (
     SkillTextureMap,
     get_texture_for_model,
 )
-from .enums_src.Title_enums import TITLE_NAME, TitleID
+from .enums_src.Title_enums import TITLE_NAME, TitleID, TITLE_TIERS, TITLE_CATEGORIES
 from .enums_src.UI_enums import (
     ChatChannel,
     ControlAction,
@@ -52,11 +56,23 @@ from .enums_src.UI_enums import (
     StringPreference,
     UIMessage,
     WindowID,
+    InGameClockMode,
+    InterfaceSize,
+    AntiAliasing,
+    TerrainQuality,
+    Reflections,
+    TextureQuality,
+    ShadowQuality,
+    ShaderQuality,
+    FrameLimiter,
+    BoolPreference,
+    
 )
 __all__ = [
     # GameData_enums
     "Ailment",
     "Allegiance",
+    "FactionAllegiance",
     "Attribute",
     "DamageType",
     "DyeColor",
@@ -68,6 +84,9 @@ __all__ = [
     "SkillType",
     "Weapon",
     "WeaporReq",
+    "CAP_EXPERIENCE",
+    "CAP_STEP",
+    "EXPERIENCE_PROGRESSION",
 
     # Hero_enums
     "HeroType",
@@ -123,6 +142,8 @@ __all__ = [
     # Title_enums
     "TITLE_NAME",
     "TitleID",
+    "TITLE_TIERS",
+    "TITLE_CATEGORIES",
 
     # UI_enums
     "ChatChannel",
@@ -134,6 +155,16 @@ __all__ = [
     "StringPreference",
     "UIMessage",
     "WindowID",
+    "InGameClockMode",
+    "InterfaceSize",
+    "AntiAliasing",
+    "TerrainQuality",
+    "Reflections",
+    "TextureQuality",
+    "ShadowQuality",
+    "ShaderQuality",
+    "FrameLimiter",
+    "BoolPreference",
 ]
 
 

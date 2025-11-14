@@ -62,14 +62,12 @@ def ExitToHOM(bot: Botting) -> None:
 def AcquireKieransBow(bot: Botting) -> None:
     KIERANS_BOW = 35829
     bot.States.AddHeader("Acquire Kieran's Bow")
+    bot.Wait.ForMapLoad(target_map_id=646)
 
     def _acquire_keirans_bow(bot: Botting):
         if not Routines.Checks.Inventory.IsModelInInventoryOrEquipped(KIERANS_BOW):
             # Direct coroutine: interact with Gwen to take the bow
-            yield from bot.helpers.Move._get_path_to(-6583.00, 6672.00)
-            yield from bot.helpers.Move._follow_path()
-            yield from bot.helpers.Interact._with_agent((-6583.00, 6672.00), dialog_id=0x0000008A)
-
+            yield from bot.Move._coro_xy_and_dialog(-6583.00, 6672.00, dialog_id=0x0000008A)
         if not Routines.Checks.Inventory.IsModelEquipped(KIERANS_BOW):
             yield from bot.helpers.Items._equip(KIERANS_BOW)
 
@@ -79,7 +77,7 @@ def AcquireKieransBow(bot: Botting) -> None:
 def EnterQuest(bot: Botting) -> None:
     bot.States.AddHeader("Enter Quest")
     bot.Move.XYAndDialog(-6662.00, 6584.00, 0x63E) #enter quest with pool
-    bot.Wait.ForMapLoad(849)
+    bot.Wait.ForMapLoad(target_map_id=849)
     
 def AuspiciousBeginnings(bot: Botting) -> None:
     def _EnableCombat(bot: Botting) -> None:

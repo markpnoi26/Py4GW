@@ -23,7 +23,6 @@ from .botting_src.subclases_src.MERCHANT_src import _MERCHANTS
 from .botting_src.subclases_src.PLAYER_src import _PLAYER
 from .botting_src.subclases_src.TEMPLATES_src import _TEMPLATES
 
-
 class BottingClass:
     def __init__(self, bot_name="DefaultBot",
                  #CONFIG
@@ -32,7 +31,7 @@ class BottingClass:
                  config_pause_on_danger: bool = False,
                  config_movement_timeout: int = 15000,
                  config_movement_tolerance: int = 150,
-                 config_draw_path: bool = True,
+                 config_draw_path: bool = False,
                  config_use_occlusion: bool = True,
                  config_snap_to_ground: bool = True,
                  config_snap_to_ground_segments: int = 8,

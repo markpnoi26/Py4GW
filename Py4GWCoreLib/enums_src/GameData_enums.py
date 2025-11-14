@@ -105,7 +105,7 @@ class Reduced_Ailment(IntEnum):
     Weakness = 8
 
 
-# DamageType
+#region DamageType
 class DamageType(IntEnum):
     Blunt = 0
     Piercing = 1
@@ -125,7 +125,7 @@ class DamageType(IntEnum):
     unknown_15 = 15
 
 
-# WeaponType
+#region WeaponType
 class Weapon(IntEnum):
     Unknown = 0
     Bow = 1
@@ -152,7 +152,8 @@ class Weapon(IntEnum):
     Unknown8 = 22
     Unknown9 = 23
     Unknown10 = 24
-    
+   
+#region WeaporReq 
 class WeaporReq(IntEnum):
     None_ = 0
     Axe = 1
@@ -165,7 +166,7 @@ class WeaporReq(IntEnum):
     Melee = 185
     
 
-    
+#region SkillType  
 class SkillType ( IntEnum):
     None_ = 0
     Bounty = 1
@@ -199,7 +200,7 @@ class SkillType ( IntEnum):
     Disguise = 29
 
 
-# Attribute
+#region Attribute
 class Attribute(IntEnum):
     FastCasting = 0
     IllusionMagic = 1
@@ -249,7 +250,7 @@ class Attribute(IntEnum):
     None_ = 45  # Avoiding reserved keyword "None"
 
 
-# Inscription
+#region Inscription
 class Inscription(IntEnum):
     Fear_Cuts_Deeper = 0
     I_Can_See_Clearly_Now = 1
@@ -270,3 +271,31 @@ class Inscription(IntEnum):
 
 
 # endregion
+
+#region Experience
+CAP_EXPERIENCE = 182600
+CAP_STEP = 15000
+EXPERIENCE_PROGRESSION = [
+    (1, 0, 2000),
+    (2, 2000, 2600),
+    (3, 4600, 3200),
+    (4, 7800, 3800),
+    (5, 11600, 4400),
+    (6, 16000, 5000),
+    (7, 21000, 5600),
+    (8, 26600, 6200),
+    (9, 32800, 6800),
+    (10, 39600, 7400),
+    (11, 47000, 8000),
+    (12, 55000, 8600),
+    (13, 63600, 9200),
+    (14, 72800, 9800),
+    (15, 82600, 10400),
+    (16, 93000, 11000),
+    (17, 104000, 11600),
+    (18, 115600, 12200),
+    (19, 127800, 12800),
+    (20, 140600, 13400),
+    (21, 154000, 14000),
+    (22, 168000, 14600),
+]

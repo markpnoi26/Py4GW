@@ -4,6 +4,7 @@ from .Console import ConsoleLog, Console
 from .IniHandler import IniHandler
 from .Timer import ThrottledTimer
 from .ActionQueue import ActionQueueManager
+from .Lootconfig_src import LootConfig
 
 class AutoInventoryHandler():
     _instance = None
@@ -37,11 +38,15 @@ class AutoInventoryHandler():
         self.salvage_blues = True
         self.salvage_purples = True
         self.salvage_golds = False
+        self.item_type_blacklist = [] # Item types that should not be salvaged, even if they match the salvage criteria
         self.salvage_blacklist = []  # Items that should not be salvaged, even if they match the salvage criteria
         self.blacklisted_model_id = 0
         self.model_id_search = ""
+        self.item_type_search = ""
         self.model_id_search_mode = 0  # 0 = Contains, 1 = Starts With
+        self.item_type_search_mode = 0  # 0 = Contains, 1 = Starts With
         self.show_dialog_popup = False 
+        self.show_item_type_dialog = False
         
         self.deposit_trophies = True
         self.deposit_materials = True
@@ -71,6 +76,7 @@ class AutoInventoryHandler():
         self.ini.write_key(section, "salvage_purples", str(self.salvage_purples))
         self.ini.write_key(section, "salvage_golds", str(self.salvage_golds))
 
+        self.ini.write_key(section, "item_type_blacklist", ",".join(str(i) for i in sorted(set(self.item_type_blacklist))))
         self.ini.write_key(section, "salvage_blacklist", ",".join(str(i) for i in sorted(set(self.salvage_blacklist))))
 
         self.ini.write_key(section, "deposit_trophies", str(self.deposit_trophies))
@@ -101,6 +107,9 @@ class AutoInventoryHandler():
         self.salvage_blues = ini.read_bool(section, "salvage_blues", self.salvage_blues)
         self.salvage_purples = ini.read_bool(section, "salvage_purples", self.salvage_purples)
         self.salvage_golds = ini.read_bool(section, "salvage_golds", self.salvage_golds)
+
+        item_type_blacklist_str = ini.read_key(section, "item_type_blacklist", "")
+        self.item_type_blacklist = [int(x) for x in item_type_blacklist_str.split(",") if x.strip().isdigit()]
 
         blacklist_str = ini.read_key(section, "salvage_blacklist", "")
         self.salvage_blacklist = [int(x) for x in blacklist_str.split(",") if x.strip().isdigit()]
@@ -212,9 +221,12 @@ class AutoInventoryHandler():
             is_identified = GLOBAL_CACHE.Item.Usage.IsIdentified(item_id)
             is_salvageable = GLOBAL_CACHE.Item.Usage.IsSalvageable(item_id)
             model_id = GLOBAL_CACHE.Item.GetModelID(item_id)
+            item_type,_ = GLOBAL_CACHE.Item.GetItemType(item_id)
 
             # Filtering logic
             if not ((is_white and is_salvageable) or (is_identified and is_salvageable)):
+                continue
+            if item_type in self.item_type_blacklist:
                 continue
             if model_id in self.salvage_blacklist:
                 continue
@@ -250,12 +262,12 @@ class AutoInventoryHandler():
                     return
 
                 ActionQueueManager().AddAction("ACTION", Inventory.SalvageItem, item_id, salvage_kit)
-
                 if require_materials_confirmation:
-                    yield from Routines.Yield.wait(100)
+                    yield from Routines.Yield.wait(150)
                     yield from Routines.Yield.Items._wait_for_salvage_materials_window()
-                    ActionQueueManager().AddAction("ACTION", Inventory.AcceptSalvageMaterialsWindow)
-                    yield from Routines.Yield.wait(50)
+                    for i in range(3):
+                        ActionQueueManager().AddAction("ACTION", Inventory.AcceptSalvageMaterialsWindow)
+                        yield from Routines.Yield.wait(50)
 
                 while True:
                     yield from Routines.Yield.wait(50)
@@ -336,10 +348,27 @@ class AutoInventoryHandler():
                     yield from Routines.Yield.wait(350)
                     
                 event_items = set()
-                
-                event_items.add(ModelID.Birthday_Cupcake.value)
-                event_items.add(ModelID.Victory_Token.value)
-                
+    
+                selected_filters = {
+                    "Alcohol": None,          # include ALL subcategories
+                    "Sweets": None,           # include ALL subcategories
+                    "Party": None,             # include ALL subcategories
+                    "Death Penalty Removal": None,  # include ALL subcategories
+                    "Reward Trophies" : {"Special Events"},
+                }
+
+                # apply filters flexibly
+                for category, subcats in LootConfig().LootGroups.items():
+                    if category not in selected_filters:
+                        continue  # skip whole category
+
+                    allowed_subcats = selected_filters[category]
+                    for subcat, items in subcats.items():
+                        if allowed_subcats is not None and subcat not in allowed_subcats:
+                            continue  # skip this subcategory
+
+                        event_items.update(m.value for m in items)
+                        
                 if model_id in event_items and self.deposit_event_items:
                     GLOBAL_CACHE.Inventory.DepositItemToStorage(item_id)
                     yield from Routines.Yield.wait(350)
