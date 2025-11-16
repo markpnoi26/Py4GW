@@ -1,5 +1,6 @@
 from argparse import Action
 import re
+import shutil
 from typing import Callable
 import webbrowser
 from datetime import datetime
@@ -11,6 +12,7 @@ from Widgets.frenkey.Core.gui import GUI
 from Widgets.frenkey.Core import ex_style, texture_map
 from Widgets.frenkey.LootEx import skin_rule, loot_handling, profile, settings, price_check, item_configuration, utility, enum, cache, ui_manager_extensions, inventory_handling, wiki_scraper, filter, models, messaging, data_collector,wiki_scraper
 from Widgets.frenkey.LootEx.data import Data
+from Widgets.frenkey.LootEx.data_collection import DataCollector
 from Widgets.frenkey.LootEx.item_configuration import ItemConfiguration, ConfigurationCondition
 from Widgets.frenkey.LootEx.filter import Filter
 from Widgets.frenkey.LootEx.profile import Profile
@@ -180,6 +182,9 @@ class UI:
         from Widgets.frenkey.LootEx.settings import Settings
         self.settings = Settings()
         
+        from Widgets.frenkey.LootEx.data import Data
+        self.data = Data()
+        
         self.imgui_ini_reader = ImGuiIniReader()
         window_pos, window_size, collapse = self.get_window_info()
         
@@ -196,23 +201,24 @@ class UI:
         )
         self.style = ex_style.ExStyle()
         file_directory = os.path.dirname(os.path.abspath(__file__))
+        self.textures_folder = os.path.join(Console.get_projects_path(), "Textures")
         self.icon_textures_path = os.path.join(file_directory, "textures")
-        self.item_textures_path = os.path.join(Console.get_projects_path(), "Textures", "Items")
+        self.item_textures_path = os.path.join(self.textures_folder, "Items")
         self.actions_timer = ThrottledTimer()
         self.action_summary: inventory_handling.InventoryHandler.ActionsSummary | None = None
         
         self.action_infos : UI.ActionInfos = UI.ActionInfos({
             enum.ItemAction.Loot: UI.ActionInfo("Loot (Pick Up)", "If the item is dropped, pick it up.", texture_map.CoreTextures.UI_Reward_Bag_Hovered.value),
             enum.ItemAction.Collect_Data: UI.ActionInfo("Collect Data", "Collect data about the item.", os.path.join(self.icon_textures_path, "wiki_logo.png")),
-            enum.ItemAction.Identify: UI.ActionInfo("Identify", "Use an Identification Kit to identify the item.", os.path.join(self.item_textures_path, "Identification Kit.png")),
+            enum.ItemAction.Identify: UI.ActionInfo("Identify", "Use an Identification Kit to identify the item.", data.Items.get_texture_by_name("Identification Kit.png")),
             enum.ItemAction.Hold: UI.ActionInfo("Hold", "Hold on to the item without stashing.", texture_map.CoreTextures.UI_Backpack.value),
             enum.ItemAction.Stash: UI.ActionInfo("Stash", "Stash the item in your Xunlai Chest.", os.path.join(self.icon_textures_path, "xunlai_chest.png")),
-            enum.ItemAction.Salvage_Mods: UI.ActionInfo("Salvage Mods", "Salvage the mods from the item.", os.path.join(self.item_textures_path, "Inscription_equippable_items.png")),
+            enum.ItemAction.Salvage_Mods: UI.ActionInfo("Salvage Mods", "Salvage the mods from the item.", data.Items[ItemType.Rune_Mod][17059].texture_file),
             enum.ItemAction.Salvage: UI.ActionInfo("Salvage for Common or Rare Materials", "Use a Salvage Kit to salvage the item.", os.path.join(self.icon_textures_path, "expert_or_common_salvage_kit.png")),
-            enum.ItemAction.Salvage_Common_Materials: UI.ActionInfo("Salvage Common Materials", "Use a Salvage Kit to salvage common materials from the item.", os.path.join(self.item_textures_path, "Salvage Kit.png")),
-            enum.ItemAction.Salvage_Rare_Materials: UI.ActionInfo("Salvage Rare Materials", "Use an Expert Salvage Kit to salvage rare materials from the item.", os.path.join(self.item_textures_path, "Expert Salvage Kit.png")),
+            enum.ItemAction.Salvage_Common_Materials: UI.ActionInfo("Salvage Common Materials", "Use a Salvage Kit to salvage common materials from the item.", data.Items.get_texture_by_name("Salvage Kit.png")),
+            enum.ItemAction.Salvage_Rare_Materials: UI.ActionInfo("Salvage Rare Materials", "Use an Expert Salvage Kit to salvage rare materials from the item.", data.Items.get_texture_by_name("Expert Salvage Kit.png")),
             enum.ItemAction.Sell_To_Merchant: UI.ActionInfo("Sell to Merchant", "Sell the item to a merchant for gold.", texture_map.CoreTextures.UI_Gold.value),
-            enum.ItemAction.Sell_To_Trader: UI.ActionInfo("Sell to Trader (Runes, Scrolls, Dyes...)", "Sell the item to a trader for gold.", os.path.join(self.item_textures_path, "Gold.png")),
+            enum.ItemAction.Sell_To_Trader: UI.ActionInfo("Sell to Trader (Runes, Scrolls, Dyes...)", "Sell the item to a trader for gold.", texture_map.CoreTextures.UI_Gold.value),
             enum.ItemAction.Destroy: UI.ActionInfo("Destroy", "Destroy the item permanently.", texture_map.CoreTextures.UI_Destroy.value),
             enum.ItemAction.Deposit_Material: UI.ActionInfo("Deposit Material", "Deposit the item as a material in your Xunlai Chest.", os.path.join(self.icon_textures_path, "xunlai_chest.png")),
             enum.ItemAction.NONE: UI.ActionInfo("No Action", "No action will be performed on the item.", ""),
@@ -289,47 +295,48 @@ class UI:
         
         self.mod_textures : dict[ItemType, dict[enum.ModType, str]] = {
             ItemType.Axe: {
-                enum.ModType.Prefix: os.path.join(self.item_textures_path, "Axe_Haft.png"),
-                enum.ModType.Suffix: os.path.join(self.item_textures_path, "Axe_Grip.png"),
+                enum.ModType.Prefix: data.Items.get_texture_by_name("Axe Haft"),
+                enum.ModType.Suffix: data.Items.get_texture_by_name("Axe Grip"),
             },
             ItemType.Bow: {
-                enum.ModType.Prefix: os.path.join(self.item_textures_path, "Bow_String.png"),
-                enum.ModType.Suffix: os.path.join(self.item_textures_path, "Bow_Grip.png"),
+                enum.ModType.Prefix: data.Items.get_texture_by_name("Bow String"),
+                enum.ModType.Suffix: data.Items.get_texture_by_name("Bow Grip"),
             },
             ItemType.Offhand: {
-                enum.ModType.Suffix: os.path.join(self.item_textures_path, "Focus_Core.png"),
+                enum.ModType.Suffix: data.Items.get_texture_by_name("Focus Core"),
             },
             ItemType.Hammer: {
-                enum.ModType.Prefix: os.path.join(self.item_textures_path, "Hammer_Haft.png"),
-                enum.ModType.Suffix: os.path.join(self.item_textures_path, "Hammer_Grip.png"),
+                enum.ModType.Prefix: data.Items.get_texture_by_name("Hammer Haft"),
+                enum.ModType.Suffix: data.Items.get_texture_by_name("Hammer Grip"),
             },
             ItemType.Wand: {
-                enum.ModType.Suffix: os.path.join(self.item_textures_path, "Wand_Wrapping.png"),
+                enum.ModType.Suffix: data.Items.get_texture_by_name("Wand Wrapping"),
             },
             ItemType.Shield: {
-                enum.ModType.Suffix: os.path.join(self.item_textures_path, "Shield_Handle.png"),                        
+                enum.ModType.Suffix: data.Items.get_texture_by_name("Shield Handle"),                        
             },
             ItemType.Staff: {
-                enum.ModType.Prefix: os.path.join(self.item_textures_path, "Staff_Head.png"),
-                enum.ModType.Suffix: os.path.join(self.item_textures_path, "Staff_Wrapping.png"),
+                enum.ModType.Prefix: data.Items.get_texture_by_name("Staff Head"),
+                enum.ModType.Suffix: data.Items.get_texture_by_name("Staff Wrapping"),
             },
             ItemType.Sword: {
-                enum.ModType.Prefix: os.path.join(self.item_textures_path, "Sword_Hilt.png"),
-                enum.ModType.Suffix: os.path.join(self.item_textures_path, "Sword_Pommel.png"),
+                enum.ModType.Prefix: data.Items.get_texture_by_name("Sword Hilt"),
+                enum.ModType.Suffix: data.Items.get_texture_by_name("Sword Pommel"),
             },
             ItemType.Daggers: {
-                enum.ModType.Prefix: os.path.join(self.item_textures_path, "Dagger_Tang.png"),
-                enum.ModType.Suffix: os.path.join(self.item_textures_path, "Dagger_Handle.png"),
+                enum.ModType.Prefix: data.Items.get_texture_by_name("Dagger Tang"),
+                enum.ModType.Suffix: data.Items.get_texture_by_name("Dagger Handle"),
             },
             ItemType.Spear: {
-                enum.ModType.Prefix: os.path.join(self.item_textures_path, "Spearhead.png"),
-                enum.ModType.Suffix: os.path.join(self.item_textures_path, "Spear_Grip.png"),
+                enum.ModType.Prefix: data.Items.get_texture_by_name("Spearhead"),
+                enum.ModType.Suffix: data.Items.get_texture_by_name("Spear Grip"),
             },
             ItemType.Scythe: {
-                enum.ModType.Prefix: os.path.join(self.item_textures_path, "Scythe_Snathe.png"),
-                enum.ModType.Suffix: os.path.join(self.item_textures_path, "Scythe_Grip.png"),
+                enum.ModType.Prefix: data.Items.get_texture_by_name("Scythe Snathe"),
+                enum.ModType.Suffix: data.Items.get_texture_by_name("Scythe Grip"),
             },                            
         }
+        
         self.rarity_item_types : list[ItemType] = [
             ItemType.Axe,
             ItemType.Bow,
@@ -346,52 +353,81 @@ class UI:
         ]
         
         self.item_type_textures: dict[ItemType, str] = {
-            ItemType.Salvage: os.path.join(self.item_textures_path, "Salvage Heavy Armor.png"),
-            ItemType.Axe: os.path.join(self.item_textures_path, "Great Axe.png"),
-            ItemType.Bag: os.path.join(self.item_textures_path, "Bag.png"),
+            ItemType.Salvage: data.Items.get_texture_by_name("Axe Fiend Armor"),
+            ItemType.Axe: data.Items.get_texture_by_name("Spiked Axe"),
+            ItemType.Bag: data.Items.get_texture_by_name("Bag"),
             ItemType.Boots: os.path.join(self.icon_textures_path, "templar_armor_feet.png"),
-            ItemType.Bow: os.path.join(self.item_textures_path, "Ivory Bow.png"),
-            ItemType.Bundle: os.path.join(self.item_textures_path, "War Supplies.png"),
+            ItemType.Bow: data.Items.get_texture_by_name("Ivory Bow"),
+            ItemType.Bundle: data.Items.get_texture_by_name("War Supplies"),
             ItemType.Chestpiece: os.path.join(self.icon_textures_path, "templar_armor_chestpiece.png"),
-            ItemType.Rune_Mod: os.path.join(self.item_textures_path, "Rune All Sup.png"),
-            ItemType.Usable: os.path.join(self.item_textures_path, "Birthday Cupcake.png"),
-            ItemType.Dye: os.path.join(self.item_textures_path, "White Dye.png"),
-            ItemType.Materials_Zcoins: os.path.join(self.item_textures_path, "Wood Plank.png"),
-            ItemType.Offhand: os.path.join(self.item_textures_path, "Channeling Focus.png"),
+            ItemType.Rune_Mod: data.Items.get_texture_by_name("Rune (Superior)"),
+            ItemType.Usable: data.Items.get_texture_by_name("Birthday Cupcake"),
+            ItemType.Dye: os.path.join(self.textures_folder, "Dyes", "White.png"),
+            ItemType.Materials_Zcoins: data.Items.get_texture_by_name("Wood Plank"),
+            ItemType.Offhand: data.Items.get_texture_by_name("Channeling Focus"),
             ItemType.Gloves: os.path.join(self.icon_textures_path, "templar_armor_gloves.png"),
-            ItemType.Hammer: os.path.join(self.item_textures_path, "PvP Hammer.png"),
+            ItemType.Hammer: data.Items.get_texture_by_name("Foehammer"),
             ItemType.Headpiece: os.path.join(self.icon_textures_path, "templar_armor_helmet.png"),
-            ItemType.CC_Shards: os.path.join(self.item_textures_path, "Candy Cane Shard.png"),
-            ItemType.Key: os.path.join(self.item_textures_path, "Zaishen Key.png"),
+            ItemType.CC_Shards: data.Items.get_texture_by_name("Candy Cane Shard"),
+            ItemType.Key: data.Items.get_texture_by_name("Zaishen Key"),
             ItemType.Leggings: os.path.join(self.icon_textures_path, "templar_armor_leggins.png"),
-            ItemType.Gold_Coin: os.path.join(self.item_textures_path, "Gold.png"),
-            ItemType.Quest_Item: os.path.join(self.item_textures_path, "Top Right Map Piece.png"),
-            ItemType.Wand: os.path.join(self.item_textures_path, "Shaunur's Scepter.png"),
-            ItemType.Shield: os.path.join(self.item_textures_path, "Crude Shield.png"),
-            ItemType.Staff : os.path.join(self.item_textures_path, "Holy Staff.png"),
-            ItemType.Sword: os.path.join(self.item_textures_path, "Short Sword.png"),
-            ItemType.Kit: os.path.join(self.item_textures_path, "Superior Salvage Kit.png"),
-            ItemType.Trophy: os.path.join(self.item_textures_path, "Destroyer Core.png"),
-            ItemType.Scroll: os.path.join(self.item_textures_path, "Scroll of the Lightbringer.png"),
-            ItemType.Daggers: os.path.join(self.item_textures_path, "Balthazar's Daggers.png"),
-            ItemType.Present: os.path.join(self.item_textures_path, "Birthday Present.png"),
-            ItemType.Minipet: os.path.join(self.item_textures_path, "Miniature Celestial Tiger.png"),
-            ItemType.Scythe: os.path.join(self.item_textures_path, "Suntouched Scythe.png"),
-            ItemType.Spear: os.path.join(self.item_textures_path, "Suntouched Spear.png"),
-            ItemType.Storybook: os.path.join(self.item_textures_path, "Young Heroes of Tyria.png"),
-            ItemType.Costume: os.path.join(self.item_textures_path, "Shining Blade costume.png"),
-            ItemType.Costume_Headpiece: os.path.join(self.item_textures_path, "Divine Halo.png"),
+            ItemType.Gold_Coin: texture_map.CoreTextures.UI_Gold.value,
+            ItemType.Quest_Item: data.Items.get_texture_by_name("Top Right Map Piece"),
+            ItemType.Wand: data.Items.get_texture_by_name("Shaunur's Scepter"),
+            ItemType.Shield: data.Items.get_texture_by_name("Round Shield"),
+            ItemType.Staff : data.Items.get_texture_by_name("Bone Staff"),
+            ItemType.Sword: data.Items.get_texture_by_name("Long Sword"),
+            ItemType.Kit: data.Items.get_texture_by_name("Superior Salvage Kit"),
+            ItemType.Trophy: data.Items.get_texture_by_name("Destroyer Core"),
+            ItemType.Scroll: data.Items.get_texture_by_name("Scroll of the Lightbringer"),
+            ItemType.Daggers: data.Items.get_texture_by_name("Kukris"),
+            ItemType.Present: data.Items.get_texture_by_name("Birthday Present"),
+            ItemType.Minipet: data.Items.get_texture_by_name("Miniature Mox"),
+            ItemType.Scythe: data.Items.get_texture_by_name("Suntouched Scythe")  ,
+            ItemType.Spear: data.Items.get_texture_by_name("Serrated Spear"),
+            ItemType.Storybook: data.Items.get_texture_by_name("Young Heroes of Tyria [Hard Mode]"),
+            ItemType.Costume: data.Items.get_texture_by_name("Shining Blade Uniform"),
+            ItemType.Costume_Headpiece: data.Items.get_texture_by_name("Divine Halo"),
             ItemType.Unknown: "",
+        }
+                    
+        self.dye_textures: dict[int, str] = {
+            DyeColor.NoColor: os.path.join(self.textures_folder, "Dyes", "Gray.png"),
+            DyeColor.Blue: os.path.join(self.textures_folder, "Dyes", "Blue.png"),
+            DyeColor.Green: os.path.join(self.textures_folder, "Dyes", "Green.png"),
+            DyeColor.Purple: os.path.join(self.textures_folder, "Dyes", "Purple.png"),
+            DyeColor.Red: os.path.join(self.textures_folder, "Dyes", "Red.png"),
+            DyeColor.Yellow: os.path.join(self.textures_folder, "Dyes", "Yellow.png"),
+            DyeColor.Brown: os.path.join(self.textures_folder, "Dyes", "Brown.png"),
+            DyeColor.Orange: os.path.join(self.textures_folder, "Dyes", "Orange.png"),
+            DyeColor.Silver: os.path.join(self.textures_folder, "Dyes", "Silver.png"),
+            DyeColor.Black: os.path.join(self.textures_folder, "Dyes", "Black.png"),
+            DyeColor.Gray: os.path.join(self.textures_folder, "Dyes", "Gray.png"),
+            DyeColor.White: os.path.join(self.textures_folder, "Dyes", "White.png"),
+            DyeColor.Pink: os.path.join(self.textures_folder, "Dyes", "Pink.png"),
         }
         
         self.inscription_type_textures: dict[ItemType, str] = {
-            ItemType.Weapon: os.path.join(self.item_textures_path, "Inscription weapons.png"),
-            ItemType.MartialWeapon: os.path.join(self.item_textures_path, "Inscription martial weapons.png"),
-            ItemType.Offhand: os.path.join(self.item_textures_path, "Inscription focus items.png"),
-            ItemType.OffhandOrShield: os.path.join(self.item_textures_path, "Inscription focus items or shields.png"),
-            ItemType.EquippableItem: os.path.join(self.item_textures_path, "Inscription equippable items.png"),
-            ItemType.SpellcastingWeapon: os.path.join(self.item_textures_path, "Inscription spellcasting weapons.png"),
+            ItemType.Weapon: data.Items[ItemType.Rune_Mod][15542].texture_file,
+            ItemType.MartialWeapon: data.Items[ItemType.Rune_Mod][15540].texture_file,
+            ItemType.Offhand: data.Items[ItemType.Rune_Mod][19123].texture_file,
+            ItemType.OffhandOrShield: data.Items[ItemType.Rune_Mod][15541].texture_file,
+            ItemType.EquippableItem: data.Items[ItemType.Rune_Mod][17059].texture_file,
+            ItemType.SpellcastingWeapon: data.Items[ItemType.Rune_Mod][19122].texture_file,
         }
+                
+        self.merchant_item_textures: dict[str, str] = {
+            "Superior Identification Kit": data.Items.get_texture_by_name("Superior Identification Kit"),
+            "Salvage Kit": data.Items.get_texture_by_name("Salvage Kit"),
+            "Expert Salvage Kit": data.Items.get_texture_by_name("Expert Salvage Kit"),
+            "Lockpick": data.Items.get_texture_by_name("Lockpick"),
+        }
+        
+        self.nick_textures: dict[str, str] = {
+            "Gift of the Traveler": data.Items.get_texture_by_name("Gift of the Traveler"),
+            "Red Iris Flower": data.Items.get_texture_by_name("Red Iris Flower"),
+        }
+            
         
         self.bag_ranges : dict[str, tuple[Bag, Bag]] = {
             "Inventory": (Bag.Backpack, Bag.Bag_2),   
@@ -667,7 +703,8 @@ class UI:
             ItemFilter("Materials", lambda item: item.category == enum.ItemCategory.Material),
             ItemFilter("Trophies", lambda item: item.category == enum.ItemCategory.Trophy),
             ItemFilter("Reward Trophies", lambda item: item.category == enum.ItemCategory.RewardTrophy),
-            ItemFilter("Quest Items", lambda item: item.category == enum.ItemCategory.QuestItem),    
+            ItemFilter("Quest Items", lambda item: item.category == enum.ItemCategory.QuestItem), 
+            ItemFilter("Miniatures", lambda item: item.item_type == ItemType.Minipet),   
         ]
         self.selected_skin_filter: Optional[ItemFilter] = None
         self.skin_search = ""
@@ -719,7 +756,7 @@ class UI:
         ]
         self.ensure_window_on_screen = True
         
-        self.data_collector = data_collector.DataCollector()
+        self.data_collector = DataCollector()
         self.filter_weapon_mods()        
         self.filter_items()    
         self.filter_rules()
@@ -1150,9 +1187,10 @@ class UI:
                 style.ChildBg.push_color((255, 0, 0, 125))
                 colored_item += 1
             
-            localization_missing, language = self.data_collector.is_missing_localization(cached_item.id)
-            collected, missing = self.data_collector.is_item_collected(cached_item.id) if cached_item.id != 0 else (True, "")
-            mods_missing, mod_missing = self.data_collector.has_uncollected_mods(cached_item.id) if cached_item.id != 0 else (False, "")
+            localization_missing, missing_languages = self.data_collector.is_missing_localization(cached_item)
+            collected, missing = self.data_collector.is_item_collected(cached_item) if cached_item.id != 0 else (True, "")
+            mods_missing, mod_missing = self.data_collector.has_uncollected_mods(cached_item) if cached_item.id != 0 else (False, "")
+            
             complete = True
             
             if not localization_missing:
@@ -1181,19 +1219,19 @@ class UI:
                     PyImGui.table_next_row()
                     PyImGui.table_next_column()
                     
-                    if cached_item.data and cached_item.data.inventory_icon:
+                    if cached_item.data and cached_item.data.texture_file:
                         if cached_item.item_type == ItemType.Dye:
-                            dye = cached_item.dye_info.dye1.ToString()
-                            texture = os.path.join(self.item_textures_path, f"{dye} Dye.png")
+                            dye = cached_item.dye_info.dye1
+                            texture = self.dye_textures.get(dye.ToInt(), "")
                         else:
-                            texture = os.path.join(self.item_textures_path, cached_item.data.inventory_icon)
+                            texture = cached_item.data.texture_file
                             
                         ImGui.DrawTexture(
                             texture,
                             image_size[0], image_size[1]
                         )
                     elif cached_item.id > 0:
-                        texture = os.path.join(self.item_textures_path,"wiki_logo.png")
+                        texture = os.path.join(Py4GW.Console.get_projects_path(), "Textures", "missing_texture.png") ##TODO: Replace with wiki texture
                         ImGui.DrawTexture(
                             texture,
                             image_size[0], image_size[1]
@@ -1373,10 +1411,10 @@ class UI:
                         ImGui.end_table()
                     
                     if not collected:
-                        ImGui.text_colored(language or missing, (255, 0, 0, 255))
+                        ImGui.text_colored(missing, (255, 0, 0, 255))
                         
                     if localization_missing:
-                        ImGui.text_colored(language, (255, 0, 0, 255))
+                        ImGui.text_colored(missing_languages, (255, 0, 0, 255))
                         
                     if mods_missing:
                         ImGui.text_colored(mod_missing, (255, 0, 0, 255))
@@ -1400,10 +1438,6 @@ class UI:
             
             if ImGui.begin_child("DataCollectorChild", tab1_size, True, PyImGui.WindowFlags.NoFlag):
                 ImGui.text("Data Collector")
-                ImGui.separator()
-                
-                ImGui.input_text("Textures Path", self.item_textures_path,
-                                 PyImGui.InputTextFlags.ReadOnly)
                 ImGui.separator()
 
                 child_size = PyImGui.get_content_region_avail()
@@ -1464,49 +1498,33 @@ class UI:
                     if ImGui.button("Scrape Wiki", 160, 30):
                         wiki_scraper.WikiScraper.scrape_missing_entries()
                         pass
+                    
+                    if False and ImGui.button("Move Textures", 160, 30):
+                        items_folder = os.path.join(Py4GW.Console.get_projects_path(), "Textures", "Items")
+                        item_model_files_folder = os.path.join(Py4GW.Console.get_projects_path(), "Textures", "ItemModelFiles")
+                        
+                        for item in data.Items.All:
+                            if item.inventory_icon and item.model_file_id:
+                                source_path = os.path.join(items_folder, f"{item.inventory_icon}")
+                                dest_path = os.path.join(item_model_files_folder, f"{item.model_file_id}.png")
+                                
+                                if os.path.exists(source_path):
+                                    if not os.path.exists(dest_path):
+                                        shutil.copy2(source_path, dest_path)
+                                        ConsoleLog("LootEx", f"Moved texture for Item {item.name}", Console.MessageType.Info)
+                        pass
 
                     def on_test_button_clicked(): 
-                        ids = range(3600, 3650)
-                        invalid_ids = [
-                            3400,
-                            3432,
-                            3531,
-                            3532,
-                        ]
-
-                        chunk_size = 100
-                        for i in range(0, len(ids), chunk_size):
-                            chunk = ids[i:i + chunk_size]
-                            ConsoleLog("LootEx Test", f"Getting skill names for IDs {chunk[0]} to {chunk[-1]}", Console.MessageType.Info)
-
-                            # define a closure to capture 'chunk' properly
-                            def make_action(chunk_ids):
-                                def action():
-                                    names = []
-                                    for id in chunk_ids:
-                                        ConsoleLog("LootEx Test", f"Processing Skill ID {id}", Console.MessageType.Info)
-                                        path = SkillTextureMap.get(id, None) 
-                                        name = GLOBAL_CACHE.Skill.GetName(id) if not id in invalid_ids and not path else ""
-                                        new_path = path if path else f"[{id}] - {name.replace('_', ' ')}.jpg" if name else None   
-                                        
-                                        if new_path:
-                                            ConsoleLog("LootEx Test", f"ID {id} - Name: '{name}' - Path: '{new_path}'", Console.MessageType.Info)
-                                            names.append(f"\t{id}: \"{new_path}\",")
-                                    
-                                    #write to file
-                                    path = "C:\\Users\\lasse\\OneDrive\\Programmieren\\Frenkey\\Guild Wars\\Py4GW\\Widgets\\frenkey\\Core\\data\\skill_textures.txt"
-                                    with open(path, "a", encoding="utf-8") as f:
-                                        for line in names:
-                                            f.write(line + "\n")
-                                            f.flush()
-                                            
-                                            
-                                return action
-
-                            # queue the action
-                            GLOBAL_CACHE._ActionQueueManager.AddAction("ACTION", make_action(chunk))
-                            GLOBAL_CACHE._ActionQueueManager.AddAction("ACTION", lambda: False)
-
+                        from Widgets.frenkey.LootEx.data import Data
+                        cdata = Data()
+                        
+                        for item in cdata.Items.All:
+                           if utility.Util.IsWeaponType(item.item_type):
+                               continue
+                           
+                           item.attributes = []
+                        
+                        cdata.SaveItems(True)                        
                         return
                         
                         cdata = Data()
@@ -1944,10 +1962,10 @@ class UI:
                                         
                 ImGui.separator()
                 if ImGui.begin_child("GeneralSettings_Merchant", (subtab_size[0], 150), True, PyImGui.WindowFlags.NoBackground) and self.settings.profile:
-                    self._input_int_setting("Identification Kits", self.settings.profile.identification_kits, os.path.join(self.item_textures_path, "Superior Identification Kit.png"))
-                    self._input_int_setting("Salvage Kits", self.settings.profile.salvage_kits, os.path.join(self.item_textures_path, "Salvage Kit.png"))
-                    self._input_int_setting("Expert Salvage Kits", self.settings.profile.expert_salvage_kits, os.path.join(self.item_textures_path, "Expert Salvage Kit.png"))
-                    self._input_int_setting("Lockpicks", self.settings.profile.lockpicks, os.path.join(self.item_textures_path, "Lockpick.png"))
+                    self._input_int_setting("Identification Kits", self.settings.profile.identification_kits, self.merchant_item_textures["Superior Identification Kit"])
+                    self._input_int_setting("Salvage Kits", self.settings.profile.salvage_kits, self.merchant_item_textures["Salvage Kit"])
+                    self._input_int_setting("Expert Salvage Kits", self.settings.profile.expert_salvage_kits, self.merchant_item_textures["Expert Salvage Kit"])
+                    self._input_int_setting("Lockpicks", self.settings.profile.lockpicks, self.merchant_item_textures["Lockpick"])
 
                 ImGui.end_child()
                 
@@ -1971,8 +1989,8 @@ class UI:
                         self.settings.profile.nick_action = self.keep_actions[action_index]
                         self.settings.profile.save()
                         
-                    self._slider_int_setting("Nick Weeks to Keep", self.settings.profile.nick_weeks_to_keep, os.path.join(self.item_textures_path, "Gift_of_the_Traveler.png"), -1, 137)                    
-                    self._slider_int_setting("Nick Items to Keep", self.settings.profile.nick_items_to_keep, os.path.join(self.item_textures_path, "Red_Iris_Flower.png"), 0, 500)    
+                    self._slider_int_setting("Nick Weeks to Keep", self.settings.profile.nick_weeks_to_keep, self.nick_textures["Gift of the Traveler"], -1, 137)                    
+                    self._slider_int_setting("Nick Items to Keep", self.settings.profile.nick_items_to_keep, self.nick_textures["Red Iris Flower"], 0, 500)    
                     
                     PyImGui.spacing()
                      
@@ -2011,7 +2029,7 @@ class UI:
                             PyImGui.table_next_column()
                             if nick_item.inventory_icon:
                                 ImGui.DrawTexture(
-                                    os.path.join(self.item_textures_path, nick_item.inventory_icon), height, height)
+                                    nick_item.texture_file, height, height)
                             else:
                                 PyImGui.dummy(height, height)    
                                                         
@@ -2066,7 +2084,7 @@ class UI:
                     
                     for dye in DyeColor:
                         if dye != DyeColor.NoColor:
-                            file_path = os.path.join(self.item_textures_path, f"{dye.name} Dye.png")
+                            file_path = self.dye_textures[dye]
                             if dye not in self.settings.profile.dyes:
                                 self.settings.profile.dyes[dye] = False
 
@@ -2475,8 +2493,7 @@ class UI:
                         PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() - 5)
                         ImGui.text("Rarities")
                         
-                        texture = os.path.join(self.item_textures_path, "Platinum Sickles.png")
-                        texture_exists = os.path.exists(texture) and os.path.isfile(texture) and texture.endswith((".png", ".jpg", ".jpeg", ".webp"))
+                        texture = self.item_type_textures[ItemType.Sword]
                         
                         # ImGui.separator()   
                         for rarity, selected in filter.rarities.items():  
@@ -2501,14 +2518,8 @@ class UI:
                             # PyImGui.set_cursor_pos(cursor[0] + (frame_size * count), cursor[1])
                             ImGui.DrawTextureExtended(texture_path=texture_map.CoreTextures.UI_Inventory_Slot.value, size=(frame_size[0], frame_size[1]), tint=frame_color)
                             PyImGui.set_cursor_pos(cursor[0], cursor[1] + ((frame_size[1] - skin_size) / 2))
-                            
-                            if texture_exists:                                        
-                                ImGui.DrawTextureExtended(texture_path=texture, size=(skin_size, skin_size), tint=texture_color)
-                            else:
-                                style.Text.push_color(frame_color)
-                                ImGui.text(IconsFontAwesome5.ICON_SHIELD_ALT)
-                                style.Text.pop_color()
-                            # ImGui.end_child()
+                                                                  
+                            ImGui.DrawTextureExtended(texture_path=texture, size=(skin_size, skin_size), tint=texture_color)
                             
                             if PyImGui.is_item_clicked(0) and is_hovered:                                
                                 if self.py_io.key_ctrl:
@@ -2897,7 +2908,7 @@ class UI:
         
         if PyImGui.is_rect_visible(size, size):            
             if ImGui.begin_child(f"item_{item.model_id}_{item.inventory_icon or ""}", (0, size), False, PyImGui.WindowFlags.NoFlag | PyImGui.WindowFlags.NoScrollWithMouse | PyImGui.WindowFlags.AlwaysAutoResize):
-                texture = os.path.join(self.item_textures_path, f"{item.inventory_icon}")   
+                texture = item.texture_file
                 remaining_size = PyImGui.get_content_region_avail()
                 
                 cursor = PyImGui.get_cursor_screen_pos()   
@@ -3959,7 +3970,7 @@ class UI:
                         PyImGui.push_style_color(
                                             PyImGui.ImGuiCol.ButtonActive, Utils.ColorToTuple(color))
                         if item_info.inventory_icon:
-                            ImGui.DrawTexture(os.path.join(self.item_textures_path, item_info.inventory_icon), image_size, image_size)
+                            ImGui.DrawTexture(item_info.texture_file, image_size, image_size)
                         else:
                             ImGui.button(IconsFontAwesome5.ICON_SHIELD_ALT + "##" + str(
                                                 item_info.model_id), image_size, image_size)
@@ -4031,11 +4042,11 @@ class UI:
                                             PyImGui.ImGuiCol.ButtonActive, Utils.ColorToTuple(color))
                         if item_info.inventory_icon:
                             if item.item_type == ItemType.Dye:
-                                dye = item.dye_info.dye1.ToString()
-                                texture = os.path.join(self.item_textures_path, f"{dye} Dye.png")
+                                dye = item.dye_info.dye1.ToInt()
+                                texture = self.dye_textures[dye]
                                 ImGui.DrawTexture(texture, image_size, image_size)
                             else:
-                                ImGui.DrawTexture(os.path.join(self.item_textures_path, item_info.inventory_icon), image_size, image_size)
+                                ImGui.DrawTexture(item_info.texture_file, image_size, image_size)
                         else:
                             ImGui.button(IconsFontAwesome5.ICON_SHIELD_ALT + "##" + str(
                                                 item_info.model_id), image_size, image_size)
@@ -4735,8 +4746,7 @@ class UI:
                                 style.FrameBg.push_color(color["content"])
                                 style.FrameBgHovered.push_color(color["frame"])
 
-                                texture = os.path.join(
-                                    self.item_textures_path, rune.inventory_icon) if rune.inventory_icon else None
+                                texture = rune.texture_file if rune.texture_file else None
                                 if texture:
                                     ImGui.DrawTexture(texture, 24, 24)
                                 else:
@@ -4886,7 +4896,7 @@ class UI:
         if self.settings.profile is None:
             return False, False
 
-        texture = os.path.join(self.item_textures_path, material.inventory_icon) if material.inventory_icon else None
+        texture = material.texture_file if material.texture_file else None
        
         texture_size = 32
         cursor = PyImGui.get_cursor_screen_pos()
@@ -4968,8 +4978,8 @@ class UI:
             PyImGui.WindowFlags.NoScrollbar,
         )
 
-        if item.item_info.inventory_icon:
-            ImGui.DrawTexture(os.path.join(self.item_textures_path, item.item_info.inventory_icon), 20, 20)
+        if item.item_info.texture_file:
+            ImGui.DrawTexture(item.item_info.texture_file, 20, 20)
         else:
             PyImGui.dummy(20, 20)
         
@@ -5069,8 +5079,8 @@ class UI:
                 for weapon_name in data.Rare_Weapon_Names:
                     if ImGui.begin_child(f"RareWeaponSelectable{weapon_name}", (0, 34), True, PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
                         # find the weapon info in data.Items.All
-                        weapon_info = next((weapon for weapon in data.Items.All if weapon.name == weapon_name), None)
-                        weapon_texture = os.path.join(self.item_textures_path, weapon_info.inventory_icon) if weapon_info and weapon_info.inventory_icon else None
+                        weapon_info = next((weapon for weapon in data.Items.All if weapon.name == weapon_name and weapon.model_file_id > 0), None)
+                        weapon_texture = weapon_info.texture_file if weapon_info and weapon_info.texture_file else None
                         if weapon_texture:
                             ImGui.image(weapon_texture, (24, 24))
                         else:

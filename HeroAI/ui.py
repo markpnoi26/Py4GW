@@ -485,12 +485,12 @@ def draw_skill_bar(height: float, account_data: AccountData, cached_data: CacheD
     draw_textures = style.Theme in ImGui.Textured_Themes
     texture_theme = style.Theme if draw_textures else StyleTheme.Guild_Wars
 
-    for slot, skill_id in enumerate(account_data.PlayerSkillIDs):
+    for slot, skill_info in enumerate(account_data.PlayerSkills):
         
-        if skill_id not in skill_cache:
-            skill_cache[skill_id] = CachedSkillInfo(skill_id)
+        if skill_info.Id not in skill_cache:
+            skill_cache[skill_info.Id] = CachedSkillInfo(skill_info.Id)
 
-        skill = skill_cache[skill_id]
+        skill = skill_cache[skill_info.Id]
         skill_texture = skill.texture_path
 
         if not skill_texture:
@@ -510,8 +510,8 @@ def draw_skill_bar(height: float, account_data: AccountData, cached_data: CacheD
             PyImGui.same_line(0, 0)
             continue
 
-        skill_recharge = account_data.PlayerSkillRecharge[slot]
-        adrenaline = account_data.PlayerSkillAdrenaline[slot]
+        skill_recharge = skill_info.Recharge
+        adrenaline = skill_info.Adrenaline
         enough_adrenaline = adrenaline >= skill.adrenaline_cost
         
         ImGui.image(skill_texture, (height, height), uv0=(
@@ -707,6 +707,9 @@ def draw_buffs_and_upkeeps(account_data: AccountData, skill_size: float = 28):
     style = ImGui.get_style()
     HARD_MODE_EFFECT_ID = 1912 
     
+    effects = [effect for effect in account_data.PlayerBuffs if effect.Type == 2]
+    upkeeps = [effect for effect in account_data.PlayerBuffs if effect.Type == 1]
+    
     def draw_buff(effect: CachedSkillInfo, duration: float, remaining: float, draw_effect_frame: bool = True, skill_size: float = skill_size):
         if not effect.texture_path:
             ImGui.dummy(skill_size, skill_size)
@@ -813,7 +816,7 @@ def draw_buffs_and_upkeeps(account_data: AccountData, skill_size: float = 28):
     
     def draw_hardmode():
         # hardmode completed 1912
-        if HARD_MODE_EFFECT_ID in account_data.PlayerEffects:
+        if any(effect.SkillId == HARD_MODE_EFFECT_ID for effect in effects):
             if not HARD_MODE_EFFECT_ID in skill_cache:
                 skill_cache[HARD_MODE_EFFECT_ID] = CachedSkillInfo(HARD_MODE_EFFECT_ID)
 
@@ -839,20 +842,20 @@ def draw_buffs_and_upkeeps(account_data: AccountData, skill_size: float = 28):
         ImGui.dummy(0, 24)
         PyImGui.same_line(0, 0)
         
-        for index, upkeep_id in enumerate(account_data.PlayerUpkeeps):
-            if upkeep_id == 0:
+        for index, upkeep in enumerate(upkeeps):
+            if upkeep.SkillId == 0:
                 continue
 
-            if not upkeep_id in skill_cache:
-                skill_cache[upkeep_id] = CachedSkillInfo(upkeep_id)
+            if not upkeep.SkillId in skill_cache:
+                skill_cache[upkeep.SkillId] = CachedSkillInfo(upkeep.SkillId)
 
-            effect = skill_cache[upkeep_id]
-            duration = account_data.PlayerEffectsDuration[index]
-            remaining = account_data.PlayerEffectsRemaining[index]
+            effect = skill_cache[upkeep.SkillId]
+            duration = upkeep.Duration
+            remaining = upkeep.Remaining
 
             draw_buff(effect, duration, remaining, False, 24)
 
-        if any(account_data.PlayerUpkeeps) and any(account_data.PlayerEffects) and settings.ShowHeroEffects:
+        if any(upkeeps) and any(effects) and settings.ShowHeroEffects:
             PyImGui.new_line()
             PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() - 4)
 
@@ -871,9 +874,10 @@ def draw_buffs_and_upkeeps(account_data: AccountData, skill_size: float = 28):
             #get each effect with unique id and take the longest duration for that id
             player_effects = {}
             
-            for index, effect_id in enumerate(account_data.PlayerEffects):
-                remaining = account_data.PlayerEffectsRemaining[index]
-                duration = account_data.PlayerEffectsDuration[index]
+            for index, effect in enumerate(effects):
+                remaining = effect.Remaining
+                duration = effect.Duration
+                effect_id = effect.SkillId
                 
                 if not effect_id or effect_id == HARD_MODE_EFFECT_ID:
                     continue
@@ -1270,9 +1274,9 @@ def draw_hero_panel(window: WindowModule, account_data: AccountData, cached_data
 
     prof_primary, prof_secondary = "", ""
     prof_primary = ProfessionShort(
-        account_data.PlayerProfession).name if account_data.PlayerProfession != 0 else ""
+        account_data.PlayerProfession[0]).name if account_data.PlayerProfession[0] != 0 else ""
     prof_secondary = ProfessionShort(
-        account_data.PlayerSecondaryProfession).name if account_data.PlayerSecondaryProfession != 0 else ""
+        account_data.PlayerProfession[1]).name if account_data.PlayerProfession[1] != 0 else ""
     win_size = PyImGui.get_window_size()
     win_pos = PyImGui.get_window_pos()
 

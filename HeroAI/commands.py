@@ -53,6 +53,8 @@ class HeroAICommands:
         self.UnflagHeroes = Command("Unflag Heroes", IconsFontAwesome5.ICON_CIRCLE_XMARK, self.unflag_heroes_command, "Unflag all heroes", map_types=["Explorable"])
         self.Resign = Command("Resign", IconsFontAwesome5.ICON_SKULL, self.resign_command, "Resign all accounts", map_types=["Explorable"])
         self.DonateFaction = Command("Donate Faction", IconsFontAwesome5.ICON_DONATE, self.donate_faction_command, "Donate faction to guild")
+        self.ResetCoroutines = Command("Reset Coroutines", IconsFontAwesome5.ICON_RUG, self.reset_coroutines_command, "Reset all active coroutines on all accounts")
+        self.GetStuck = Command("Get Stuck", IconsFontAwesome5.ICON_BUG, self.get_stuck_command, "Get stuck at a specific location")
         # self.GetBlessing = Command("Get Blessing", IconsFontAwesome5.ICON_PRAYING_HANDS, self.get_blessing_command, "Get Blessing from nearby shrine")
         self.PickUpLoot = Command("Pick up loot", IconsFontAwesome5.ICON_COINS, self.pick_up_loot_command, "Pick up loot from ground")
         self.CombatPrep = Command("Prepare for Combat", IconsFontAwesome5.ICON_SHIELD_ALT, self.combat_prep_command, "Use Combat Preparations", map_types=["Explorable"])
@@ -69,6 +71,9 @@ class HeroAICommands:
             self.UnflagHeroes,
             self.Resign,
             self.DonateFaction,
+            self.ResetCoroutines,
+            self.GetStuck,
+            
             # self.GetBlessing,
             self.PickUpLoot,
             self.CombatPrep,
@@ -93,6 +98,29 @@ class HeroAICommands:
             return True
         
         return False
+    
+    def get_stuck_command(self, accounts: list[AccountData]):
+        x,y = 8730, 7402
+        GLOBAL_CACHE.ShMem.SendMessage(
+            GLOBAL_CACHE.Player.GetAccountEmail(),
+            GLOBAL_CACHE.Player.GetAccountEmail(),
+            SharedCommandType.PixelStack,
+            (x, y, 0, 0)
+        )
+        
+        x,y = -1062, 1021
+        GLOBAL_CACHE.ShMem.SendMessage(
+            GLOBAL_CACHE.Player.GetAccountEmail(),
+            GLOBAL_CACHE.Player.GetAccountEmail(),
+            SharedCommandType.PixelStack,
+            (x, y, 0, 0)
+        )
+    
+    def reset_coroutines_command(self, accounts: list[AccountData]):
+        sender_email = GLOBAL_CACHE.Player.GetAccountEmail()        
+        
+        for account in accounts:
+            GLOBAL_CACHE.ShMem.SendMessage(sender_email, account.AccountEmail, SharedCommandType.ResetCoroutines, (0, 0, 0, 0))
     
     def leave_party_command(self, accounts: list[AccountData]):
         sender_email = GLOBAL_CACHE.Player.GetAccountEmail()        

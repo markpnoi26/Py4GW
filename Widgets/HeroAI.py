@@ -97,6 +97,8 @@ command_panel_window : WindowModule = WindowModule(
 widget_handler = WidgetHandler()
 module_info = None
 
+GLOBAL_CACHE.Coroutines.clear()
+
 def HandleOutOfCombat(cached_data: CacheData):
     if not cached_data.data.is_combat_enabled:  # halt operation if combat is disabled
         return False
@@ -490,8 +492,8 @@ def UpdateStatus(cached_data: CacheData):
                 if not account.AccountEmail:
                     continue
             
-                if account.AccountEmail == GLOBAL_CACHE.Player.GetAccountEmail():
-                    continue
+                # if account.AccountEmail == GLOBAL_CACHE.Player.GetAccountEmail():
+                #     continue
                 
                 if not settings.CombinePanels:
                     if not account.AccountEmail in hero_windows:

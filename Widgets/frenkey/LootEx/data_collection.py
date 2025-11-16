@@ -1,5 +1,7 @@
 
 from enum import IntEnum
+import json
+import os
 import re
 from typing import Optional, Sequence
 
@@ -15,12 +17,14 @@ from Py4GWCoreLib.enums_src.UI_enums import NumberPreference
 from Py4GWCoreLib.py4gwcorelib_src.Console import ConsoleLog
 from Py4GWCoreLib.py4gwcorelib_src.Timer import ThrottledTimer
 from Widgets.frenkey.LootEx import enum, messaging, ui_manager_extensions, utility
+from Widgets.frenkey.LootEx.cache import Cached_Item
 from Widgets.frenkey.LootEx.models import Item, ItemModifiersInformation, ItemsByType, WeaponMod
 
 
 ALL_BAGS = GLOBAL_CACHE.ItemArray.CreateBagList(*range(Bag_enum.Backpack.value, Bag_enum.Max.value))
 XUNLAI_STORAGE = GLOBAL_CACHE.ItemArray.CreateBagList(*range(Bag_enum.Storage_1.value, Bag_enum.Storage_14.value))
 CHARACTER_INVENTORY = GLOBAL_CACHE.ItemArray.CreateBagList(*range(Bag_enum.Backpack.value, Bag_enum.Equipment_Pack.value), Bag_enum.Equipped_Items.value)
+ITEM_TEXTURE_FOLDER = os.path.join(Console.get_projects_path(), "Textures", "Items")
 
 class CollectionStatus(IntEnum):
     Unknown = 0
@@ -32,14 +36,14 @@ class CollectionStatus(IntEnum):
     DataCollected = 10
 
 class CollectionEntry(Item):
-    def __init__(self, item_id: int):                                       
+    def __init__(self, item_id: int, modified_items: ItemsByType):                                       
         item_type_value, _ = GLOBAL_CACHE.Item.GetItemType(item_id)
         item_type : ItemType = ItemType(item_type_value) if item_type_value in ItemType._value2member_map_ else ItemType.Unknown        
         
         model_id = GLOBAL_CACHE.Item.GetModelID(item_id)
         
         super().__init__(model_id, item_type)        
-        self.from_data(model_id, item_type)
+        self.from_data(model_id, item_type, modified_items)
         
         self.item_id = item_id
         self.status = CollectionStatus.Unknown
@@ -48,15 +52,17 @@ class CollectionEntry(Item):
         rarity, _ = GLOBAL_CACHE.Item.Rarity.GetRarity(item_id)
         self.rarity = Rarity(rarity) if rarity in Rarity._value2member_map_ else Rarity.White
         self.quantity = GLOBAL_CACHE.Item.Properties.GetQuantity(item_id)
+        self.salvageable = GLOBAL_CACHE.Item.Usage.IsSalvageable(item_id)
         
         self.raw_name = ""
         self.unformatted_name = ""    
         self.mods_info = ItemModifiersInformation.GetModsFromModifiers(GLOBAL_CACHE.Item.Customization.Modifiers.GetModifiers(self.item_id), self.item_type, self.model_id, GLOBAL_CACHE.Item.Customization.IsInscribable(self.item_id))
 
+        
         self.get_profession()
         self.get_attributes()
         self.get_model_file_id()
-    
+            
     def get_model_file_id(self):
         model_file_id = GLOBAL_CACHE.Item.GetModelFileID(self.item_id)
         if model_file_id != self.model_file_id:
@@ -64,12 +70,16 @@ class CollectionEntry(Item):
             self.changed = True
     
     def get_attributes(self):    
-        if not utility.Util.IsWeaponType(self.item_type):
+        if utility.Util.IsWeaponType(self.item_type):
+            if self.mods_info.attribute != Attribute.None_ and self.mods_info.attribute not in self.attributes:
+                self.attributes = self.attributes + [self.mods_info.attribute]
+                self.changed = True
+        else:
+            if len(self.attributes) > 0:
+                self.changed = True
+                
+            self.attributes = []
             return
-        
-        if self.mods_info.attribute != Attribute.None_ and self.mods_info.attribute not in self.attributes:
-            self.attributes = self.attributes + [self.mods_info.attribute]
-            self.changed = True
     
     def get_profession(self):  
         pv = GLOBAL_CACHE.Item.Properties.GetProfession(self.item_id)
@@ -79,14 +89,13 @@ class CollectionEntry(Item):
                 self.profession = profession
                 self.changed = True
                     
-    def has_name(self, language : ServerLanguage) -> bool:
-        return self.names.get(language, "") != ""
-
-    def from_data(self, model_id: int, item_type: ItemType):
+    def from_data(self, model_id: int, item_type: ItemType, modified_items: ItemsByType):
         from Widgets.frenkey.LootEx.data import Data
         data = Data()
         
-        item_data = data.Items.get_item(item_type, model_id)
+        item_data = modified_items.get_item(item_type, model_id) or data.Items.get_item(item_type, model_id)
+        self.model_id = model_id
+        self.item_type = item_type
         
         if item_data is not None:                    
             self.model_id = item_data.model_id
@@ -110,7 +119,7 @@ class CollectionEntry(Item):
             self.is_account_data = item_data.is_account_data            
             
     def request_name(self):
-        GLOBAL_CACHE.Item.GetName(self.item_id)
+        GLOBAL_CACHE._ActionQueueManager.AddAction("ACTION", lambda: GLOBAL_CACHE.Item.GetName(self.item_id))
         self.status = CollectionStatus.NameRequested
         
     def set_name(self, name: str, language: ServerLanguage = ServerLanguage.English):
@@ -118,9 +127,14 @@ class CollectionEntry(Item):
         self.unformatted_name = self.get_name_unformatted(name)
         self.get_mods_names(self.unformatted_name, language)
         
-        self.names[language] = self.get_cleaned_item_name(self.unformatted_name, language)
-        self.status = CollectionStatus.NameCollected
-        self.changed = True
+        final_name = self.get_cleaned_item_name(self.unformatted_name, language)
+        
+        if final_name:
+            self.names[language] = final_name
+            self.status = CollectionStatus.NameCollected
+                        
+            self.changed = True
+            self.update_language(language)
             
     def reformat_string(self, item_name: str) -> str:
         # split on uppercase letters
@@ -357,10 +371,13 @@ class DataCollector:
         from Widgets.frenkey.LootEx.settings import Settings
         
         self.settings = Settings()
-        self.modified_items: ItemsByType = ItemsByType()
         self.modified_weapon_mods: dict[str, WeaponMod] = {}
         
+        self.ready = False
+        self.initialize()        
         self._initialized = True
+        
+        self.modified_items: ItemsByType
         self.server_language = ServerLanguage.Unknown
         self.collected_items : dict[int, CollectionEntry] = {}
                 
@@ -368,9 +385,119 @@ class DataCollector:
         self.throttle.Start()
         
         self.fetched_cycles = 0
+        self.existing_files : dict[str, bool] = {}
+
+    def initialize(self):
+        if self.ready:
+            return
+        
+        account_mail = GLOBAL_CACHE.Player.GetAccountEmail()
+        ready = self.settings.data_collection_path != "" and account_mail != ""
+        
+        if not ready:
+            return
+        
+        account_file = os.path.join(self.settings.data_collection_path, account_mail, "items.json")
+        account_items = {}
+        
+        ConsoleLog("LootEx DataCollector", f"Loading existing collected items from {account_file}...", Console.MessageType.Info)
+        if os.path.exists(account_file):
+            with open(account_file, 'r', encoding='utf-8') as file:
+                account_items = json.load(file)
+                
+        self.modified_items = ItemsByType.from_dict(account_items)
+        self.ready = True
+    
+    def file_exists(self, inventory_icon: str) -> bool:
+        if not inventory_icon or inventory_icon == "":
+            return False
+        
+        if inventory_icon not in self.existing_files:
+            self.existing_files[inventory_icon] = os.path.exists(os.path.join(ITEM_TEXTURE_FOLDER, f"{inventory_icon}"))
+        
+        return self.existing_files[inventory_icon]
+    
+    def is_missing_localization(self, item: Cached_Item) -> tuple[bool, str]:
+        if item.id is None or item.id <= 0:
+            return False, "Invalid item ID"
+        
+        if item.data is None:
+            return True, "No item data available"
+        
+        missing_languages = "Missing languages: \n"
+        missing = False
+        for language in ServerLanguage:
+            if language == ServerLanguage.Unknown:
+                continue
+            
+            if language not in item.data.names or item.data.names[language] is None or item.data.names[language] == "":
+                missing_languages += f"- {language.name}\n"
+                missing = True
+    
+
+        return missing, missing_languages
+    
+    def has_uncollected_mods(self, item : Cached_Item) -> tuple[bool, str]:
+        if not item.id or item.id <= 0:
+            return False, "Invalid item ID"
+        
+        collected_item = self.collected_items.get(item.id, None)
+        if collected_item is None:
+            return True, "Item not collected yet"
+        
+        if len(collected_item.mods_info.mods) == 0:
+            return False, "No mods found for item"
+        
+        inherent = GLOBAL_CACHE.Item.Customization.IsInscribable(item.id) and not utility.Util.is_inscription_model_item(item.model_id)
+        prefixes = GLOBAL_CACHE.Item.Customization.IsPrefixUpgradable(item.id)
+        suffixes = GLOBAL_CACHE.Item.Customization.IsSuffixUpgradable(item.id)
+        
+        for mod in collected_item.mods_info.mods:
+            if not mod.Mod.upgrade_exists:
+                continue
+            
+            if mod.Mod.mod_type == enum.ModType.Inherent:
+                if not inherent:
+                    continue
+                
+            if mod.Mod.mod_type == enum.ModType.Prefix:
+                if not prefixes:
+                    continue
+                
+            if mod.Mod.mod_type == enum.ModType.Suffix:
+                if not suffixes:
+                    continue
+
+            missing_language = mod.Mod.has_missing_names()
+            if missing_language:
+                return True, f"Missing {missing_language.name} mod name for {mod.Mod.names.get(ServerLanguage.English, mod.Mod.name)}"
+            
+        return False, "All mods are collected or unnecessary to collect"
+        
+    def is_item_collected(self, item: Cached_Item) -> tuple[bool, str]:        
+        has_item = self.hasItem(item.id)
+        return has_item, "Item data is complete" if has_item else "Item data is incomplete"
+        
     
     def hasItem(self, item_id: int) -> bool:
-        return item_id in self.collected_items and self.collected_items[item_id].status not in [CollectionStatus.NameRequested, CollectionStatus.NameCollected]
+        if item_id <= 0:
+            return True
+        
+        item = self.collected_items.get(item_id, None)
+        
+        if item is None:        
+            return False
+        
+        if item.status not in [CollectionStatus.DataCollected, CollectionStatus.BetterDataFound]:
+            return False
+    
+        if not utility.Util.IsArmorType(item.item_type) and not self.file_exists(item.inventory_icon or ""):
+            return False
+    
+        if item.salvageable and (not item.common_salvage or len(item.common_salvage) == 0) and (not item.rare_salvage or len(item.rare_salvage) == 0):
+            return False
+    
+        return True
     
     def reset(self):
         if self.collected_items:
@@ -382,35 +509,46 @@ class DataCollector:
         GLOBAL_CACHE._reset()
     
     def reset_cache(self):
-        GLOBAL_CACHE._reset()
+        GLOBAL_CACHE.Item.name_cache.clear()
+        GLOBAL_CACHE.Item.name_requested.clear()
         
+        preference = UIManager.GetIntPreference(NumberPreference.TextLanguage)
+        server_language = ServerLanguage(preference)
+        
+        items_to_remove = []
         for _, entry in self.collected_items.items():
             if entry.status is not CollectionStatus.BetterDataFound:
-                entry.request_name()
-                
-    def save_items(self, items: list[CollectionEntry]):
+                if not entry.has_name(server_language):
+                    items_to_remove.append(entry.item_id)
+                    
+        for item_id in items_to_remove:
+            del self.collected_items[item_id]
+            
+    def save_items(self):
         from Widgets.frenkey.LootEx.data import Data
         data = Data()
         
+        for _, entry in self.collected_items.items():
+            if entry.status == CollectionStatus.RequiresSave:
+                if entry.names:
+                    self.modified_items.add_item(entry)
+                            
         if self.modified_weapon_mods:
             data.SaveWeaponMods(shared_file=False, mods=self.modified_weapon_mods)
             self.modified_weapon_mods.clear()
         
-        if not items or len(items) == 0:
-            return
-        
-        for item in items:
-            self.modified_items.add_item(item)
-        
-        ConsoleLog("LootEx DataCollector", f"Data collection run complete. Collected new data for {len(items)} items.", Console.MessageType.Info)    
-        data.SaveItems(shared_file=False, items=self.modified_items)
-        
-        for item in items:
-            item.status = CollectionStatus.DataCollected
-            item.changed = False
+        if self.modified_items:
+            data.SaveItems(shared_file=False, items=self.modified_items)
+            self.modified_items.clear()
             
-        if Console.is_window_active():
-            messaging.SendMergingMessage()
+            for _, entry in self.collected_items.items():
+                if entry.status == CollectionStatus.RequiresSave:
+                    entry.status = CollectionStatus.DataCollected
+                
+            if Console.is_window_active():
+                # ConsoleLog("LootEx DataCollector", f"Notifying other accounts about updated data...", Console.MessageType.Info)
+                messaging.SendMergingMessage()
+                pass
             
         pass
     
@@ -418,6 +556,10 @@ class DataCollector:
         if self.throttle.IsExpired():
             self.throttle.Reset()
             
+            if not self.ready:
+                self.initialize()
+                return
+                        
             if self.settings.collect_items:
                 preference = UIManager.GetIntPreference(NumberPreference.TextLanguage)
                 server_language = ServerLanguage(preference)
@@ -425,8 +567,9 @@ class DataCollector:
                     return
                 
                 if self.server_language != server_language:
-                    self.reset_cache()
                     self.server_language = server_language
+                    self.reset_cache()
+                    return
                 
                 available_items = self.get_available_items()
                 
@@ -435,11 +578,11 @@ class DataCollector:
                         continue
                     
                     if item_id not in self.collected_items:
-                        entry = CollectionEntry(item_id)
+                        entry = CollectionEntry(item_id, self.modified_items)
                         self.collected_items[item_id] = entry
-                        
+                                                
                         # Get the existing entries with the same model id and item type
-                        existing_entries = [entry for entry in self.collected_items.values() if entry.model_id == entry.model_id and entry.item_type.value == entry.item_type]
+                        existing_entries = [existing for existing in self.collected_items.values() if existing.model_id > 0 and entry.model_id == existing.model_id and entry.item_type.value == existing.item_type.value]
                         
                         # We still contain an amount in the name we need to find a single item
                         if entry.contains_amount:
@@ -455,6 +598,8 @@ class DataCollector:
                         if not entry.has_name(server_language):
                             entry.request_name()
                             continue
+                        else:
+                            entry.status = CollectionStatus.RequiresSave if entry.changed else CollectionStatus.DataCollected
                         
                     entry = self.collected_items.get(item_id)
                     
@@ -470,16 +615,15 @@ class DataCollector:
                                     entry.request_name()
                                     continue
                                 
-                                entry.set_name(GLOBAL_CACHE.Item.GetName(item_id), server_language)
-                                continue
+                                entry.set_name(name, server_language)                           
+                            continue
                                                                                     
-                        if entry.status == CollectionStatus.NameCollected or (entry.changed and entry.status != CollectionStatus.RequiresSave):
-                            ConsoleLog("LootEx DataCollector", f"Collected new data for '{entry.names.get(server_language, '')}'.", Console.MessageType.Info) 
+                        if entry.status == CollectionStatus.NameCollected or entry.changed or entry.status == CollectionStatus.RequiresSave:
                             entry.status = CollectionStatus.RequiresSave
                             continue
                         
-                if self.fetched_cycles >= 3:                                                                 
-                    self.save_items([item for item in self.collected_items.values() if item.status == CollectionStatus.RequiresSave])
+                if self.fetched_cycles >= 3:             
+                    self.save_items()
                     self.fetched_cycles = 0
                     GLOBAL_CACHE.Item.name_cache.clear()
                     GLOBAL_CACHE.Item.name_requested.clear()

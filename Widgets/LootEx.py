@@ -14,16 +14,16 @@ for module_name in list(sys.modules.keys()):
         except Exception as e:
             Py4GW.Console.Log(MODULE_NAME, f"Error reloading module {module_name}: {e}")
 
-from Widgets.frenkey.LootEx import messaging, price_check
-from Widgets.frenkey.LootEx.cache import Cached_Item
-from Widgets.frenkey.LootEx.utility import Util
 
 from Widgets.frenkey.LootEx.data import Data
-from Widgets.frenkey.LootEx.gui import UI
 from Widgets.frenkey.LootEx.settings import Settings
 from Widgets.frenkey.LootEx.loot_handling import LootHandler
 from Widgets.frenkey.LootEx.inventory_handling import InventoryHandler
 from Widgets.frenkey.LootEx.data_collection import DataCollector
+from Widgets.frenkey.LootEx import messaging, price_check
+from Widgets.frenkey.LootEx.cache import Cached_Item
+from Widgets.frenkey.LootEx.utility import Util
+from Widgets.frenkey.LootEx.gui import UI
 
 throttle_timer = ThrottledTimer(250)
 hotkey_timer = ThrottledTimer(200)
@@ -32,11 +32,11 @@ script_directory = os.path.dirname(os.path.abspath(__file__))
 data = Data()
 data.Reload()
 
-ui = UI()
-
 data_collector = DataCollector()
 inventory_handler = InventoryHandler()
 loot_handler = LootHandler()
+
+ui = UI()
 
 # Load settings
     

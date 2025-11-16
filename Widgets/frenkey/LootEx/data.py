@@ -1,9 +1,11 @@
 import datetime
 import json
 import os
+import shutil
 from typing import Optional
 
 from Py4GW import Console
+import Py4GW
 from Py4GWCoreLib.enums_src.GameData_enums import DyeColor
 from Widgets.frenkey.LootEx import models
 from Widgets.frenkey.LootEx.enum import ItemCategory, ModType, ModsModels
@@ -868,12 +870,12 @@ class Data():
         ConsoleLog(
             "LootEx", f"Loaded {len(self.Items.All)} items ({len(self.Nick_Items)} Nick items).", Console.MessageType.Debug)
 
-
     def SaveItems(self, shared_file: bool = False, items: Optional[models.ItemsByType] = None):
         # Save items to data/items.json
         file_directory = os.path.dirname(os.path.abspath(__file__))
         data_directory = os.path.join(file_directory, "data")
-
+        account_name = ""
+        
         if not shared_file:
             account_name = GLOBAL_CACHE.Player.GetAccountEmail()
             data_directory = os.path.join(self.get_data_collection_directory(), account_name)
@@ -894,37 +896,41 @@ class Data():
         if items is None:
             return
 
+        for item in items.All:
+            items_of_type = self.Items.get(item.item_type, {}) 
+            existing_item = items_of_type.get(item.model_id, None)
+            
+            if existing_item:
+                existing_item.update(item)
 
         with open(path, 'w', encoding='utf-8') as file:
-            ConsoleLog(
-                "LootEx", f"Saving items ...", Console.MessageType.Debug)
             json.dump(items.to_json(), file, indent=4, ensure_ascii=False)
 
     def MergeDiffItems(self):
-        dirs = os.listdir(self.get_data_collection_directory())
+        path = self.get_data_collection_directory()
+        
+        if path == "":
+            return
+        
+        dirs = os.listdir(path)
+        
+        items_found = False
         for dir_name in dirs:
-            file_path = os.path.join(self.get_data_collection_directory(), dir_name, "items.json")
+            file_path = os.path.join(path, dir_name, "items.json")
             
-            if os.path.exists(file_path):            
-                with open(file_path, 'r', encoding='utf-8') as file:
-                    # ConsoleLog(
-                    #     "LootEx", f"Merging diff items from {file_path}...", Console.MessageType.Debug)
-                    
+            if os.path.exists(file_path):                            
+                with open(file_path, 'r', encoding='utf-8') as file:                    
                     file_data = json.load(file)
                     file_items = models.ItemsByType.from_dict(file_data)
-
+                    items_found = len(file_items.items()) > 0 or items_found
+                    
                     for item_type, items in file_items.items():
                         if item_type not in self.Items:
                             self.Items[item_type] = {}
                             
                         # Iterate through the items in the diff file
                         for model_id, item in items.items():
-                            
-                            if model_id not in self.Items[item_type]:
-                                self.Items.add_item(item)
-                            else:
-                                # If the item already exists, we can update it
-                                self.Items[item_type][model_id].update(item)
+                            self.Items.add_item(item)
                             
                             name = item.names.get(ServerLanguage.English, None)
                             if name is not None and name != "":
@@ -934,19 +940,24 @@ class Data():
                 # Delete the diff file after merging
                 os.remove(file_path)
         
-        self.SaveItems(shared_file=True, items=self.Items)
+        if items_found:
+            ConsoleLog(
+                "LootEx", f"Saving merged items...", Console.MessageType.Debug)
+            self.SaveItems(shared_file=True, items=self.Items)
         
         
+        mods_found = False
         for dir_name in dirs:
             file_path = os.path.join(self.get_data_collection_directory(), dir_name, "weapon_mods.json")
             
             if os.path.exists(file_path):            
                 with open(file_path, 'r', encoding='utf-8') as file:
-                    ConsoleLog(
-                        "LootEx", f"Merging diff items from {file_path}...", Console.MessageType.Debug)
+                    # ConsoleLog(
+                    #     "LootEx", f"Merging diff items from {file_path}...", Console.MessageType.Debug)
                     
                     mods = json.load(file)
-
+                    mods_found = len(mods.values()) > 0 or mods_found
+                    
                     for value in mods.values():
                         mod = models.WeaponMod.from_json(value)
                         
@@ -958,5 +969,5 @@ class Data():
             
                 # Delete the diff file after merging
                 os.remove(file_path)
-        
-        self.SaveWeaponMods(shared_file=True, mods=self.Weapon_Mods)
+        if mods_found:
+            self.SaveWeaponMods(shared_file=True, mods=self.Weapon_Mods)

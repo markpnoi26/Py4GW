@@ -2,7 +2,7 @@
     "Gold_Coin": {
         "2511": {
             "ModelID": 2511,
-            "ModelFileID": -1,
+            "ModelFileID": 97551,
             "Names": {
                 "English": "Gold Coins"
             },
@@ -40,9 +40,7 @@
             },
             "ItemType": "Present",
             "DropInfo": "",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Birthday_Present",
@@ -516,206 +514,6 @@
         }
     },
     "Salvage": {
-        "16297": {
-            "ModelID": 16297,
-            "ModelFileID": 2849005264,
-            "Names": {},
-            "ItemType": "Salvage",
-            "DropInfo": "",
-            "Attributes": [],
-            "CommonSalvage": {},
-            "RareSalvage": {},
-            "WikiURL": "https://wiki.guildwars.com/wiki/No_Item",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
-            "NickIndex": null,
-            "Profession": null,
-            "Category": null,
-            "SubCategory": null,
-            "WikiScraped": false
-        },
-        "18065": {
-            "ModelID": 18065,
-            "ModelFileID": 123307,
-            "Names": {},
-            "ItemType": "Salvage",
-            "DropInfo": "",
-            "Attributes": [],
-            "CommonSalvage": {},
-            "RareSalvage": {},
-            "WikiURL": "https://wiki.guildwars.com/wiki/No_Item",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
-            "NickIndex": null,
-            "Profession": null,
-            "Category": null,
-            "SubCategory": null,
-            "WikiScraped": false
-        },
-        "19043": {
-            "ModelID": 19043,
-            "ModelFileID": 5046367,
-            "Names": {},
-            "ItemType": "Salvage",
-            "DropInfo": "",
-            "Attributes": [],
-            "CommonSalvage": {},
-            "RareSalvage": {},
-            "WikiURL": "https://wiki.guildwars.com/wiki/No_Item",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
-            "NickIndex": null,
-            "Profession": null,
-            "Category": null,
-            "SubCategory": null,
-            "WikiScraped": false
-        },
-        "19044": {
-            "ModelID": 19044,
-            "ModelFileID": 2849005552,
-            "Names": {},
-            "ItemType": "Salvage",
-            "DropInfo": "",
-            "Attributes": [],
-            "CommonSalvage": {},
-            "RareSalvage": {},
-            "WikiURL": "https://wiki.guildwars.com/wiki/No_Item",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
-            "NickIndex": null,
-            "Profession": null,
-            "Category": null,
-            "SubCategory": null,
-            "WikiScraped": false
-        },
-        "19045": {
-            "ModelID": 19045,
-            "ModelFileID": 2849005152,
-            "Names": {},
-            "ItemType": "Salvage",
-            "DropInfo": "",
-            "Attributes": [],
-            "CommonSalvage": {},
-            "RareSalvage": {},
-            "WikiURL": "https://wiki.guildwars.com/wiki/No_Item",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
-            "NickIndex": null,
-            "Profession": null,
-            "Category": null,
-            "SubCategory": null,
-            "WikiScraped": false
-        },
-        "19046": {
-            "ModelID": 19046,
-            "ModelFileID": 112081,
-            "Names": {},
-            "ItemType": "Salvage",
-            "DropInfo": "",
-            "Attributes": [],
-            "CommonSalvage": {},
-            "RareSalvage": {},
-            "WikiURL": "https://wiki.guildwars.com/wiki/No_Item",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
-            "NickIndex": null,
-            "Profession": null,
-            "Category": null,
-            "SubCategory": null,
-            "WikiScraped": false
-        },
-        "26897": {
-            "ModelID": 26897,
-            "ModelFileID": 657,
-            "Names": {},
-            "ItemType": "Salvage",
-            "DropInfo": "",
-            "Attributes": [],
-            "CommonSalvage": {},
-            "RareSalvage": {},
-            "WikiURL": "https://wiki.guildwars.com/wiki/No_Item",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
-            "NickIndex": null,
-            "Profession": null,
-            "Category": null,
-            "SubCategory": null,
-            "WikiScraped": false
-        },
-        "28477": {
-            "ModelID": 28477,
-            "ModelFileID": 5046367,
-            "Names": {},
-            "ItemType": "Salvage",
-            "DropInfo": "",
-            "Attributes": [],
-            "CommonSalvage": {},
-            "RareSalvage": {},
-            "WikiURL": "https://wiki.guildwars.com/wiki/No_Item",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
-            "NickIndex": null,
-            "Profession": null,
-            "Category": null,
-            "SubCategory": null,
-            "WikiScraped": false
-        },
-        "28478": {
-            "ModelID": 28478,
-            "ModelFileID": 5046367,
-            "Names": {},
-            "ItemType": "Salvage",
-            "DropInfo": "",
-            "Attributes": [],
-            "CommonSalvage": {},
-            "RareSalvage": {},
-            "WikiURL": "https://wiki.guildwars.com/wiki/No_Item",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
-            "NickIndex": null,
-            "Profession": null,
-            "Category": null,
-            "SubCategory": null,
-            "WikiScraped": false
-        },
-        "28481": {
-            "ModelID": 28481,
-            "ModelFileID": 7209061,
-            "Names": {},
-            "ItemType": "Salvage",
-            "DropInfo": "",
-            "Attributes": [],
-            "CommonSalvage": {},
-            "RareSalvage": {},
-            "WikiURL": "https://wiki.guildwars.com/wiki/No_Item",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
-            "NickIndex": null,
-            "Profession": null,
-            "Category": null,
-            "SubCategory": null,
-            "WikiScraped": false
-        },
-        "661": {
-            "ModelID": 661,
-            "ModelFileID": -1,
-            "Names": {
-                "English": "<c=@ItemEnhance>Luxon Garb</c>"
-            },
-            "ItemType": "Salvage",
-            "DropInfo": "",
-            "Attributes": [],
-            "CommonSalvage": {},
-            "RareSalvage": {},
-            "WikiURL": "https://wiki.guildwars.com/wiki/<c=@ItemEnhance>Luxon_Garb</c>",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
-            "NickIndex": null,
-            "Profession": "Necromancer",
-            "Category": null,
-            "SubCategory": null,
-            "WikiScraped": false
-        },
         "35": {
             "ModelID": 35,
             "ModelFileID": -1,
@@ -1518,7 +1316,7 @@
         },
         "2190": {
             "ModelID": 2190,
-            "ModelFileID": -1,
+            "ModelFileID": 24892,
             "Names": {
                 "English": "Charr Bracers"
             },
@@ -3139,7 +2937,7 @@
         },
         "1694": {
             "ModelID": 1694,
-            "ModelFileID": -1,
+            "ModelFileID": 176825,
             "Names": {
                 "German": "Halbgegessene Rüstung",
                 "English": "Half-Digested Armor",
@@ -3880,7 +3678,7 @@
         },
         "1341": {
             "ModelID": 1341,
-            "ModelFileID": -1,
+            "ModelFileID": 175634,
             "Names": {
                 "German": "Kourna-Armschutz",
                 "English": "Kournan Bracer",
@@ -3933,7 +3731,7 @@
         },
         "1338": {
             "ModelID": 1338,
-            "ModelFileID": -1,
+            "ModelFileID": 24892,
             "Names": {
                 "German": "Kourna-Gelenkpanzer",
                 "English": "Kournan Spaulder",
@@ -4235,6 +4033,26 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "661": {
+            "ModelID": 661,
+            "ModelFileID": -1,
+            "Names": {
+                "English": "Luxon Garb"
+            },
+            "ItemType": "Salvage",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Luxon_Garb",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Necromancer",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
         "662": {
             "ModelID": 662,
             "ModelFileID": -1,
@@ -4323,7 +4141,7 @@
         },
         "1698": {
             "ModelID": 1698,
-            "ModelFileID": -1,
+            "ModelFileID": 108204,
             "Names": {
                 "German": "Margoniter-Rüstung",
                 "English": "Margonite Armor",
@@ -4376,7 +4194,7 @@
         },
         "1696": {
             "ModelID": 1696,
-            "ModelFileID": -1,
+            "ModelFileID": 230431,
             "Names": {
                 "German": "Margoniter-Robe",
                 "English": "Margonite Robes",
@@ -4429,7 +4247,7 @@
         },
         "1697": {
             "ModelID": 1697,
-            "ModelFileID": -1,
+            "ModelFileID": 24892,
             "Names": {
                 "German": "Margoniter-Tunika",
                 "English": "Margonite Tunic",
@@ -5426,7 +5244,7 @@
         },
         "1706": {
             "ModelID": 1706,
-            "ModelFileID": -1,
+            "ModelFileID": 152728,
             "Names": {
                 "German": "Pestrüstung",
                 "English": "Plagueborn Armor",
@@ -6027,7 +5845,7 @@
         },
         "1326": {
             "ModelID": 1326,
-            "ModelFileID": -1,
+            "ModelFileID": 108206,
             "Names": {
                 "German": "Skree-Helm",
                 "English": "Skree Helmet",
@@ -6130,7 +5948,7 @@
         },
         "1323": {
             "ModelID": 1323,
-            "ModelFileID": -1,
+            "ModelFileID": 24886,
             "Names": {
                 "German": "Skree-Maske",
                 "English": "Skree Mask",
@@ -6183,7 +6001,7 @@
         },
         "1274": {
             "ModelID": 1274,
-            "ModelFileID": -1,
+            "ModelFileID": 24886,
             "Names": {
                 "German": "Skree-Lumpen",
                 "English": "Skree Rags",
@@ -6218,9 +6036,9 @@
                     "MaterialName": "Steel Ingot"
                 }
             },
-            "WikiURL": "https://wiki.guildwars.com/wiki/Short_Sword",
-            "InventoryIcon": "Short Sword.png",
-            "InventoryIconURL": "https://wiki.guildwars.com/images/c/ca/Short_Sword.png",
+            "WikiURL": "https://wiki.guildwars.com/wiki/Skree_Rags",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
             "NickIndex": null,
             "Profession": null,
             "Category": null,
@@ -6229,7 +6047,7 @@
         },
         "1305": {
             "ModelID": 1305,
-            "ModelFileID": -1,
+            "ModelFileID": 136305,
             "Names": {
                 "German": "Skree-Armschiene",
                 "English": "Skree Vambrace",
@@ -7620,9 +7438,7 @@
             },
             "ItemType": "Trophy",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Amulet_of_the_Mists",
@@ -7770,9 +7586,7 @@
             },
             "ItemType": "Trophy",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Armbrace_of_Truth",
@@ -7963,7 +7777,7 @@
         },
         "1675": {
             "ModelID": 1675,
-            "ModelFileID": -1,
+            "ModelFileID": 123504,
             "Names": {
                 "German": "Behemoth-Haut",
                 "English": "Behemoth Hide",
@@ -8060,9 +7874,7 @@
             },
             "ItemType": "Trophy",
             "DropInfo": "Dropped by Berserking Creatures in Far Shiverpeaks - EOTN",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {
                 "Bone": {
                     "Amount": -1,
@@ -8100,9 +7912,7 @@
             },
             "ItemType": "Trophy",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Birthday_Present",
@@ -8198,9 +8008,7 @@
             },
             "ItemType": "Trophy",
             "DropInfo": "Dropped after every 25 Zaishen Keys are used to open the Zaishen Chest",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Blessing_of_War",
@@ -8314,9 +8122,7 @@
             },
             "ItemType": "Trophy",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Book_of_Secrets",
@@ -8564,9 +8370,7 @@
             },
             "ItemType": "Trophy",
             "DropInfo": "Dropped by data to be added",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {
                 "Scale": {
                     "Amount": 2,
@@ -8837,9 +8641,7 @@
             },
             "ItemType": "Trophy",
             "DropInfo": "Dropped by data to be added",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {
                 "Pile of Glittering Dust": {
                     "Amount": -1,
@@ -8905,9 +8707,7 @@
             },
             "ItemType": "Trophy",
             "DropInfo": "",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Deldrimor_Armor_Remnant",
@@ -8937,9 +8737,7 @@
             },
             "ItemType": "Trophy",
             "DropInfo": "",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Deldrimor_Talisman",
@@ -9106,9 +8904,7 @@
             },
             "ItemType": "Trophy",
             "DropInfo": "Dropped by data to be added",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {
                 "Granite Slab": {
                     "Amount": -1,
@@ -9182,9 +8978,7 @@
             },
             "ItemType": "Trophy",
             "DropInfo": "Foes in the Cathedral of Flames during the Temple of the Damned quest",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Diessa_Chalice",
@@ -9326,9 +9120,7 @@
             },
             "ItemType": "Trophy",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Droknar%27s_Key",
@@ -9716,9 +9508,7 @@
             },
             "ItemType": "Trophy",
             "DropInfo": "Dropped by data to be added",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {
                 "Feather": {
                     "Amount": -1,
@@ -10283,7 +10073,7 @@
         },
         "1681": {
             "ModelID": 1681,
-            "ModelFileID": -1,
+            "ModelFileID": 231551,
             "Names": {
                 "German": "Geode",
                 "English": "Geode",
@@ -10588,9 +10378,7 @@
             },
             "ItemType": "Trophy",
             "DropInfo": "Dropped by data to be added",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Golden_Rin_Relic",
@@ -10929,9 +10717,7 @@
             },
             "ItemType": "Trophy",
             "DropInfo": "Dropped by data to be added",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {
                 "Pile of Glittering Dust": {
                     "Amount": 1,
@@ -11190,9 +10976,7 @@
             },
             "ItemType": "Trophy",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Imperial_Guard_Requisition_Order",
@@ -11787,9 +11571,7 @@
             },
             "ItemType": "Trophy",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Kournan_Coin",
@@ -12371,9 +12153,7 @@
             },
             "ItemType": "Trophy",
             "DropInfo": "Dropped in Domain of Anguish (DOA)",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Margonite_Gemstone",
@@ -12387,7 +12167,7 @@
         },
         "1581": {
             "ModelID": 1581,
-            "ModelFileID": -1,
+            "ModelFileID": 231513,
             "Names": {
                 "German": "Margoniter-Maske",
                 "English": "Margonite Mask",
@@ -12527,9 +12307,7 @@
             },
             "ItemType": "Trophy",
             "DropInfo": "Random drop from members of the Ministry of Purity",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Ministerial_Commendation",
@@ -12575,13 +12353,19 @@
             "Names": {
                 "German": "Trugbild-Iboga-Polymockfigur",
                 "English": "Mirage Iboga Polymock Piece",
-                "Italian": "Iboga Miraggio per il Polymock"
+                "Korean": "신기루 이보가 폴리모크 말",
+                "French": "Pièce de Polymock \"Iboga mirage\"",
+                "Italian": "Iboga Miraggio per il Polymock",
+                "Spanish": "Figura de iboga milagrosa de polymock",
+                "TraditionalChinese": "幻象伊波枷戰鬥仿棋",
+                "Japanese": "ミラージュ イボガ",
+                "Polish": "Iboga Mirażowa - Pionek Polymock",
+                "Russian": "Mirage Iboga Polymock Piece",
+                "BorkBorkBork": "Muraege-a Ibuga Pulymuck Peeece-a"
             },
             "ItemType": "Trophy",
             "DropInfo": "",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Mirage_Iboga_Polymock_Piece",
@@ -12787,9 +12571,7 @@
             },
             "ItemType": "Trophy",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Monumental_Tapestry",
@@ -13389,9 +13171,7 @@
             },
             "ItemType": "Trophy",
             "DropInfo": "",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Primeval_Armor_Remnants",
@@ -13441,9 +13221,7 @@
             },
             "ItemType": "Trophy",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Proof_of_Legend",
@@ -13493,9 +13271,7 @@
             },
             "ItemType": "Trophy",
             "DropInfo": "",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Proof_of_Steel",
@@ -13525,9 +13301,7 @@
             },
             "ItemType": "Trophy",
             "DropInfo": "",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Proof_of_Triumph",
@@ -14649,9 +14423,7 @@
             },
             "ItemType": "Trophy",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {
                 "Scale": {
                     "Amount": 1,
@@ -14850,7 +14622,7 @@
         },
         "1610": {
             "ModelID": 1610,
-            "ModelFileID": -1,
+            "ModelFileID": 231536,
             "Names": {
                 "German": "Skree-Flügel",
                 "English": "Skree Wing",
@@ -15357,9 +15129,7 @@
             },
             "ItemType": "Trophy",
             "DropInfo": "Dropped in Domain of Anguish (DOA)",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Stygian_Gemstone",
@@ -15389,9 +15159,7 @@
             },
             "ItemType": "Trophy",
             "DropInfo": "Dropped by data to be added",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {
                 "Wood Plank": {
                     "Amount": -1,
@@ -15485,9 +15253,7 @@
             },
             "ItemType": "Trophy",
             "DropInfo": "Dropped in Domain of Anguish (DOA)",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Titan_Gemstone",
@@ -15545,9 +15311,7 @@
             },
             "ItemType": "Trophy",
             "DropInfo": "Dropped in Domain of Anguish (DOA)",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Torment_Gemstone",
@@ -15577,9 +15341,7 @@
             },
             "ItemType": "Trophy",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Trade_Contract",
@@ -15929,9 +15691,7 @@
             },
             "ItemType": "Trophy",
             "DropInfo": "Dropped during Anniversary & Dragon Festival - Randomly dropped by PvE foes",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Victory_Token",
@@ -16032,13 +15792,20 @@
             "ModelFileID": 123307,
             "Names": {
                 "German": "250 Zeichen des Reisenden",
-                "English": "Wayfarer's Mark"
+                "English": "Wayfarer's Mark",
+                "Korean": "250 여행자의 증표",
+                "French": "250 Marque du voyageur",
+                "Italian": "250 Marchio del Viandante",
+                "Spanish": "250 Marca del caminante",
+                "TraditionalChinese": "250 TEMP",
+                "Japanese": "旅人の印 250個",
+                "Polish": "250 Piętno Wędrowca",
+                "Russian": "250 Метка Паломника",
+                "BorkBorkBork": "250 Vaeyffaerer's Maerk"
             },
             "ItemType": "Trophy",
             "DropInfo": "Dropped during Wayfarer's Reverie, randomly dropped by PvE foes",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Wayfarer%27s_Mark",
@@ -16221,7 +15988,7 @@
         },
         "24569": {
             "ModelID": 24569,
-            "ModelFileID": -1,
+            "ModelFileID": 302149,
             "Names": {
                 "German": "Asura-Axt",
                 "English": "Asuran Axe",
@@ -16268,7 +16035,7 @@
         },
         "1343": {
             "ModelID": 1343,
-            "ModelFileID": -1,
+            "ModelFileID": 230646,
             "Names": {
                 "German": "Vogelaxt",
                 "English": "Avian Axe",
@@ -16723,7 +16490,7 @@
         },
         "122": {
             "ModelID": 122,
-            "ModelFileID": -1,
+            "ModelFileID": 63421,
             "Names": {
                 "German": "Henkersbeil",
                 "English": "Cleaver",
@@ -17128,7 +16895,7 @@
         },
         "1346": {
             "ModelID": 1346,
-            "ModelFileID": -1,
+            "ModelFileID": 230661,
             "Names": {
                 "German": "Doppelschwingenaxt",
                 "English": "Dual Winged Axe",
@@ -17878,7 +17645,7 @@
         },
         "1349": {
             "ModelID": 1349,
-            "ModelFileID": -1,
+            "ModelFileID": 230676,
             "Names": {
                 "German": "Hakenaxt",
                 "English": "Hooked Axe",
@@ -19435,7 +19202,7 @@
         },
         "24570": {
             "ModelID": 24570,
-            "ModelFileID": -1,
+            "ModelFileID": 302154,
             "Names": {
                 "German": "Asura-Flachbogen",
                 "English": "Asuran Flatbow",
@@ -19482,7 +19249,7 @@
         },
         "24571": {
             "ModelID": 24571,
-            "ModelFileID": -1,
+            "ModelFileID": 302154,
             "Names": {
                 "German": "Asura-Hornbogen",
                 "English": "Asuran Hornbow",
@@ -19576,7 +19343,7 @@
         },
         "24922": {
             "ModelID": 24922,
-            "ModelFileID": -1,
+            "ModelFileID": 302154,
             "Names": {
                 "German": "Asura-Recurvebogen",
                 "English": "Asuran Recurve Bow",
@@ -19670,7 +19437,7 @@
         },
         "1369": {
             "ModelID": 1369,
-            "ModelFileID": -1,
+            "ModelFileID": 230735,
             "Names": {
                 "German": "Prächtiger Langbogen",
                 "English": "Aureate Longbow",
@@ -20949,7 +20716,7 @@
         },
         "138": {
             "ModelID": 138,
-            "ModelFileID": -1,
+            "ModelFileID": 97352,
             "Names": {
                 "German": "Feder-Langbogen",
                 "English": "Feathered Longbow",
@@ -22217,7 +21984,7 @@
         },
         "15088": {
             "ModelID": 15088,
-            "ModelFileID": -1,
+            "ModelFileID": 176354,
             "Names": {
                 "English": "Rotwing Recurve Bow"
             },
@@ -22279,7 +22046,7 @@
         },
         "144": {
             "ModelID": 144,
-            "ModelFileID": -1,
+            "ModelFileID": 98840,
             "Names": {
                 "German": "Kurzbogen",
                 "English": "Shortbow",
@@ -23086,7 +22853,7 @@
         },
         "1625": {
             "ModelID": 1625,
-            "ModelFileID": -1,
+            "ModelFileID": 230729,
             "Names": {
                 "German": "Vaabi-Recurvebogen",
                 "English": "Vabbian Recurve Bow",
@@ -23126,7 +22893,7 @@
         },
         "1626": {
             "ModelID": 1626,
-            "ModelFileID": -1,
+            "ModelFileID": 230729,
             "Names": {
                 "German": "Vaabi-Kurzbogen",
                 "English": "Vabbian Shortbow",
@@ -23375,9 +23142,7 @@
             },
             "ItemType": "Dye",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Vial_of_Dye",
@@ -23391,28 +23156,6 @@
         }
     },
     "Offhand": {
-        "2069": {
-            "ModelID": 2069,
-            "ModelFileID": 158027,
-            "Names": {
-                "English": "<c=@ItemRare>Fox's Greed </c>"
-            },
-            "ItemType": "Offhand",
-            "DropInfo": "",
-            "Attributes": [
-                "HealingPrayers"
-            ],
-            "CommonSalvage": {},
-            "RareSalvage": {},
-            "WikiURL": "https://wiki.guildwars.com/wiki/<c=@ItemRare>Fox's_Greed_</c>",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
-            "NickIndex": null,
-            "Profession": null,
-            "Category": null,
-            "SubCategory": null,
-            "WikiScraped": false
-        },
         "163": {
             "ModelID": 163,
             "ModelFileID": -1,
@@ -23739,7 +23482,7 @@
         },
         "1182": {
             "ModelID": 1182,
-            "ModelFileID": -1,
+            "ModelFileID": 230820,
             "Names": {
                 "German": "Luftprisma",
                 "English": "Air Prism",
@@ -23823,7 +23566,7 @@
         },
         "25056": {
             "ModelID": 25056,
-            "ModelFileID": -1,
+            "ModelFileID": 302165,
             "Names": {
                 "English": "Asuran Air Focus"
             },
@@ -23907,7 +23650,7 @@
         },
         "25068": {
             "ModelID": 25068,
-            "ModelFileID": -1,
+            "ModelFileID": 302165,
             "Names": {
                 "German": "Asura-Kanalisierungsfokus",
                 "English": "Asuran Channeling Focus",
@@ -23954,7 +23697,7 @@
         },
         "25065": {
             "ModelID": 25065,
-            "ModelFileID": -1,
+            "ModelFileID": 302165,
             "Names": {
                 "German": "Asura-Zwiesprachefokus",
                 "English": "Asuran Communing Focus",
@@ -24001,7 +23744,7 @@
         },
         "25053": {
             "ModelID": 25053,
-            "ModelFileID": -1,
+            "ModelFileID": 302165,
             "Names": {
                 "German": "Asura-Fluchfokus",
                 "English": "Asuran Curses Focus",
@@ -24048,7 +23791,7 @@
         },
         "25054": {
             "ModelID": 25054,
-            "ModelFileID": -1,
+            "ModelFileID": 302165,
             "Names": {
                 "German": "Asura-Todesfokus",
                 "English": "Asuran Death Focus",
@@ -24095,7 +23838,7 @@
         },
         "25061": {
             "ModelID": 25061,
-            "ModelFileID": -1,
+            "ModelFileID": 302165,
             "Names": {
                 "German": "Asura-Göttlichkeitsfokus",
                 "English": "Asuran Divine Focus",
@@ -24142,7 +23885,7 @@
         },
         "25048": {
             "ModelID": 25048,
-            "ModelFileID": -1,
+            "ModelFileID": 302165,
             "Names": {
                 "English": "Asuran Domination Focus"
             },
@@ -24179,7 +23922,7 @@
         },
         "25057": {
             "ModelID": 25057,
-            "ModelFileID": -1,
+            "ModelFileID": 302165,
             "Names": {
                 "German": "Asura-Erdfokus",
                 "English": "Asuran Earth Focus",
@@ -24226,7 +23969,7 @@
         },
         "25058": {
             "ModelID": 25058,
-            "ModelFileID": -1,
+            "ModelFileID": 302165,
             "Names": {
                 "English": "Asuran Energy Storage Focus"
             },
@@ -24263,7 +24006,7 @@
         },
         "25049": {
             "ModelID": 25049,
-            "ModelFileID": -1,
+            "ModelFileID": 302165,
             "Names": {
                 "English": "Asuran Fast Casting Focus"
             },
@@ -24300,7 +24043,7 @@
         },
         "25059": {
             "ModelID": 25059,
-            "ModelFileID": -1,
+            "ModelFileID": 302165,
             "Names": {
                 "German": "Asura-Feuerfokus",
                 "English": "Asuran Fire Focus",
@@ -24347,7 +24090,7 @@
         },
         "25062": {
             "ModelID": 25062,
-            "ModelFileID": -1,
+            "ModelFileID": 302165,
             "Names": {
                 "German": "Asura-Heilfokus",
                 "English": "Asuran Healing Focus",
@@ -24394,7 +24137,7 @@
         },
         "25050": {
             "ModelID": 25050,
-            "ModelFileID": -1,
+            "ModelFileID": 302165,
             "Names": {
                 "English": "Asuran Illusion Focus"
             },
@@ -24478,7 +24221,7 @@
         },
         "25051": {
             "ModelID": 25051,
-            "ModelFileID": -1,
+            "ModelFileID": 302165,
             "Names": {
                 "English": "Asuran Inspiration Focus"
             },
@@ -24515,7 +24258,7 @@
         },
         "25063": {
             "ModelID": 25063,
-            "ModelFileID": -1,
+            "ModelFileID": 302165,
             "Names": {
                 "German": "Asura-Schutzfokus",
                 "English": "Asuran Protection Focus",
@@ -24562,7 +24305,7 @@
         },
         "25067": {
             "ModelID": 25067,
-            "ModelFileID": -1,
+            "ModelFileID": 302165,
             "Names": {
                 "German": "Asura-Wiederherstellungsfokus",
                 "English": "Asuran Restoration Focus",
@@ -24609,7 +24352,7 @@
         },
         "25064": {
             "ModelID": 25064,
-            "ModelFileID": -1,
+            "ModelFileID": 302165,
             "Names": {
                 "German": "Asura-Peinigungsfokus",
                 "English": "Asuran Smiting Focus",
@@ -24656,7 +24399,7 @@
         },
         "25055": {
             "ModelID": 25055,
-            "ModelFileID": -1,
+            "ModelFileID": 302165,
             "Names": {
                 "English": "Asuran Soul Reaping Focus"
             },
@@ -24693,7 +24436,7 @@
         },
         "25066": {
             "ModelID": 25066,
-            "ModelFileID": -1,
+            "ModelFileID": 302165,
             "Names": {
                 "German": "Asura-Herbeiruffokus",
                 "English": "Asuran Spawning Focus",
@@ -24740,7 +24483,7 @@
         },
         "25060": {
             "ModelID": 25060,
-            "ModelFileID": -1,
+            "ModelFileID": 302165,
             "Names": {
                 "German": "Asura-Wasserfokus",
                 "English": "Asuran Water Focus",
@@ -25592,7 +25335,7 @@
         },
         "1213": {
             "ModelID": 1213,
-            "ModelFileID": -1,
+            "ModelFileID": 176438,
             "Names": {
                 "German": "Knochengötzenbild",
                 "English": "Bone Idol",
@@ -28210,7 +27953,7 @@
         },
         "574": {
             "ModelID": 574,
-            "ModelFileID": -1,
+            "ModelFileID": 176454,
             "Names": {
                 "English": "Eerie Focus"
             },
@@ -28336,7 +28079,7 @@
         },
         "179": {
             "ModelID": 179,
-            "ModelFileID": -1,
+            "ModelFileID": 89531,
             "Names": {
                 "German": "Flammenartefakt",
                 "English": "Flame Artifact",
@@ -28859,6 +28602,28 @@
             "Category": "RareWeapon",
             "SubCategory": null,
             "WikiScraped": true
+        },
+        "2069": {
+            "ModelID": 2069,
+            "ModelFileID": 158027,
+            "Names": {
+                "English": "Fox's Greed"
+            },
+            "ItemType": "Offhand",
+            "DropInfo": "",
+            "Attributes": [
+                "HealingPrayers"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Fox's_Greed",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
         },
         "2080": {
             "ModelID": 2080,
@@ -30014,7 +29779,7 @@
         },
         "193": {
             "ModelID": 193,
-            "ModelFileID": -1,
+            "ModelFileID": 87281,
             "Names": {
                 "German": "Heil-Ankh",
                 "English": "Healing Ankh",
@@ -30290,7 +30055,7 @@
         },
         "159": {
             "ModelID": 159,
-            "ModelFileID": -1,
+            "ModelFileID": 87278,
             "Names": {
                 "German": "Götzenbild",
                 "English": "Idol",
@@ -30330,7 +30095,7 @@
         },
         "161": {
             "ModelID": 161,
-            "ModelFileID": -1,
+            "ModelFileID": 87278,
             "Names": {
                 "German": "Götzenbild",
                 "English": "Idol",
@@ -30447,6 +30212,28 @@
             "Category": null,
             "SubCategory": null,
             "WikiScraped": true
+        },
+        "1057": {
+            "ModelID": 1057,
+            "ModelFileID": 123391,
+            "Names": {
+                "English": "Idol"
+            },
+            "ItemType": "Offhand",
+            "DropInfo": "",
+            "Attributes": [
+                "BloodMagic"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Idol",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Necromancer",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
         },
         "1210": {
             "ModelID": 1210,
@@ -31356,7 +31143,7 @@
         },
         "26920": {
             "ModelID": 26920,
-            "ModelFileID": -1,
+            "ModelFileID": 301742,
             "Names": {
                 "English": "Joffs' Focus"
             },
@@ -31432,7 +31219,17 @@
             "ModelID": 8784,
             "ModelFileID": 176444,
             "Names": {
-                "English": "Lian's Lantern"
+                "German": "Lians Laterne",
+                "English": "Lian's Lantern",
+                "Korean": "리안의 초롱",
+                "French": "Lanterne de Lian",
+                "Italian": "Lanterna di Lian",
+                "Spanish": "Farol de Lian",
+                "TraditionalChinese": "蓮恩的燈籠",
+                "Japanese": "リアン ランタン",
+                "Polish": "Latarnia Liany",
+                "Russian": "Lian's Lantern",
+                "BorkBorkBork": "Leeun's Luntern"
             },
             "ItemType": "Offhand",
             "DropInfo": "",
@@ -31447,6 +31244,28 @@
             "NickIndex": null,
             "Profession": null,
             "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
+        "2026": {
+            "ModelID": 2026,
+            "ModelFileID": 158021,
+            "Names": {
+                "English": "Lion's Pride"
+            },
+            "ItemType": "Offhand",
+            "DropInfo": "",
+            "Attributes": [
+                "AirMagic"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Lion's_Pride",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": "RareWeapon",
             "SubCategory": null,
             "WikiScraped": false
         },
@@ -32765,6 +32584,28 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "573": {
+            "ModelID": 573,
+            "ModelFileID": 93140,
+            "Names": {
+                "English": "Protective Icon"
+            },
+            "ItemType": "Offhand",
+            "DropInfo": "",
+            "Attributes": [
+                "ProtectionPrayers"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Protective_Icon",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Monk",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
         "1224": {
             "ModelID": 1224,
             "ModelFileID": -1,
@@ -33191,7 +33032,7 @@
         },
         "171": {
             "ModelID": 171,
-            "ModelFileID": -1,
+            "ModelFileID": 89771,
             "Names": {
                 "German": "Sturmartefakt",
                 "English": "Storm Artifact",
@@ -34357,28 +34198,6 @@
         }
     },
     "Hammer": {
-        "1202": {
-            "ModelID": 1202,
-            "ModelFileID": -1,
-            "Names": {
-                "English": "<c=@ItemRare>Stone Crusher</c>"
-            },
-            "ItemType": "Hammer",
-            "DropInfo": "",
-            "Attributes": [
-                "HammerMastery"
-            ],
-            "CommonSalvage": {},
-            "RareSalvage": {},
-            "WikiURL": "https://wiki.guildwars.com/wiki/<c=@ItemRare>Stone_Crusher</c>",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
-            "NickIndex": null,
-            "Profession": null,
-            "Category": null,
-            "SubCategory": null,
-            "WikiScraped": false
-        },
         "38024": {
             "ModelID": 38024,
             "ModelFileID": 176049,
@@ -34413,7 +34232,7 @@
         },
         "25069": {
             "ModelID": 25069,
-            "ModelFileID": -1,
+            "ModelFileID": 302170,
             "Names": {
                 "German": "Asura-Schlägel",
                 "English": "Asuran Maul",
@@ -34813,7 +34632,7 @@
         },
         "1411": {
             "ModelID": 1411,
-            "ModelFileID": -1,
+            "ModelFileID": 230895,
             "Names": {
                 "German": "Bronzemalmer",
                 "English": "Bronze Crusher",
@@ -35171,7 +34990,7 @@
         },
         "201": {
             "ModelID": 201,
-            "ModelFileID": -1,
+            "ModelFileID": 39765,
             "Names": {
                 "German": "Feindhammer",
                 "English": "Foehammer",
@@ -35515,7 +35334,7 @@
         },
         "1421": {
             "ModelID": 1421,
-            "ModelFileID": -1,
+            "ModelFileID": 230945,
             "Names": {
                 "German": "Eisenhammer",
                 "English": "Iron Hammer",
@@ -36340,7 +36159,7 @@
         },
         "1415": {
             "ModelID": 1415,
-            "ModelFileID": -1,
+            "ModelFileID": 230915,
             "Names": {
                 "German": "Rubinschlägel",
                 "English": "Ruby Maul",
@@ -36787,6 +36606,28 @@
             "Category": null,
             "SubCategory": null,
             "WikiScraped": true
+        },
+        "1202": {
+            "ModelID": 1202,
+            "ModelFileID": -1,
+            "Names": {
+                "English": "Stone Crusher"
+            },
+            "ItemType": "Hammer",
+            "DropInfo": "",
+            "Attributes": [
+                "HammerMastery"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Stone_Crusher",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
         },
         "1419": {
             "ModelID": 1419,
@@ -37401,6 +37242,36 @@
             "Category": null,
             "SubCategory": null,
             "WikiScraped": true
+        },
+        "556": {
+            "ModelID": 556,
+            "ModelFileID": 158543,
+            "Names": {
+                "German": "Zuckerstangen-Scherbe",
+                "English": "Candy Cane Shard",
+                "Korean": "지팡이사탕 조각",
+                "French": "Fragment de canne en sucre",
+                "Italian": "Frammento di Zucchero",
+                "Spanish": "Trozo de bastón de caramelo",
+                "TraditionalChinese": "糖果碎片",
+                "Japanese": "キャンディ ステッキの破片",
+                "Polish": "Cukierkowy Odłamek",
+                "Russian": "Candy Cane Shard",
+                "BorkBorkBork": "Cundy Cune-a Shaerd"
+            },
+            "ItemType": "CC_Shards",
+            "DropInfo": "Dropped during Wintersday, randomly dropped by PvE foes",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Candy_Cane_Shard",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
         },
         "225": {
             "ModelID": 225,
@@ -38076,50 +37947,6 @@
         }
     },
     "Wand": {
-        "578": {
-            "ModelID": 578,
-            "ModelFileID": 93544,
-            "Names": {
-                "English": "<c=@ItemCommon>Cane</c>"
-            },
-            "ItemType": "Wand",
-            "DropInfo": "",
-            "Attributes": [
-                "IllusionMagic"
-            ],
-            "CommonSalvage": {},
-            "RareSalvage": {},
-            "WikiURL": "https://wiki.guildwars.com/wiki/<c=@ItemCommon>Cane</c>",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
-            "NickIndex": null,
-            "Profession": "Mesmer",
-            "Category": null,
-            "SubCategory": null,
-            "WikiScraped": false
-        },
-        "2428": {
-            "ModelID": 2428,
-            "ModelFileID": -1,
-            "Names": {
-                "English": "<c=@ItemRare>Unicorn's Wrath </c>"
-            },
-            "ItemType": "Wand",
-            "DropInfo": "",
-            "Attributes": [
-                "EnergyStorage"
-            ],
-            "CommonSalvage": {},
-            "RareSalvage": {},
-            "WikiURL": "https://wiki.guildwars.com/wiki/<c=@ItemRare>Unicorn's_Wrath_</c>",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
-            "NickIndex": null,
-            "Profession": null,
-            "Category": null,
-            "SubCategory": null,
-            "WikiScraped": false
-        },
         "267": {
             "ModelID": 267,
             "ModelFileID": -1,
@@ -38561,7 +38388,7 @@
         },
         "25078": {
             "ModelID": 25078,
-            "ModelFileID": -1,
+            "ModelFileID": 302175,
             "Names": {
                 "English": "Asuran Air Scepter"
             },
@@ -38645,7 +38472,7 @@
         },
         "25090": {
             "ModelID": 25090,
-            "ModelFileID": -1,
+            "ModelFileID": 302175,
             "Names": {
                 "English": "Asuran Channeling Scepter"
             },
@@ -38682,7 +38509,7 @@
         },
         "25087": {
             "ModelID": 25087,
-            "ModelFileID": -1,
+            "ModelFileID": 302175,
             "Names": {
                 "English": "Asuran Communing Scepter"
             },
@@ -38719,7 +38546,7 @@
         },
         "25075": {
             "ModelID": 25075,
-            "ModelFileID": -1,
+            "ModelFileID": 302175,
             "Names": {
                 "English": "Asuran Curses Scepter"
             },
@@ -38756,7 +38583,7 @@
         },
         "25076": {
             "ModelID": 25076,
-            "ModelFileID": -1,
+            "ModelFileID": 302175,
             "Names": {
                 "German": "Asura-Todeszepter",
                 "English": "Asuran Death Scepter",
@@ -38803,7 +38630,7 @@
         },
         "25083": {
             "ModelID": 25083,
-            "ModelFileID": -1,
+            "ModelFileID": 302175,
             "Names": {
                 "English": "Asuran Divine Scepter"
             },
@@ -38887,7 +38714,7 @@
         },
         "25079": {
             "ModelID": 25079,
-            "ModelFileID": -1,
+            "ModelFileID": 302175,
             "Names": {
                 "German": "Asura-Erdzepter",
                 "English": "Asuran Earth Scepter",
@@ -38934,7 +38761,7 @@
         },
         "25080": {
             "ModelID": 25080,
-            "ModelFileID": -1,
+            "ModelFileID": 302175,
             "Names": {
                 "German": "Asura-Energiespeicherungszepter",
                 "English": "Asuran Energy Storage Scepter",
@@ -38981,7 +38808,7 @@
         },
         "25071": {
             "ModelID": 25071,
-            "ModelFileID": -1,
+            "ModelFileID": 302175,
             "Names": {
                 "English": "Asuran Fast Casting Scepter"
             },
@@ -39018,7 +38845,7 @@
         },
         "25081": {
             "ModelID": 25081,
-            "ModelFileID": -1,
+            "ModelFileID": 302175,
             "Names": {
                 "English": "Asuran Fire Scepter"
             },
@@ -39055,7 +38882,7 @@
         },
         "25084": {
             "ModelID": 25084,
-            "ModelFileID": -1,
+            "ModelFileID": 302175,
             "Names": {
                 "German": "Asura-Heilzepter",
                 "English": "Asuran Healing Scepter",
@@ -39149,7 +38976,7 @@
         },
         "25072": {
             "ModelID": 25072,
-            "ModelFileID": -1,
+            "ModelFileID": 302175,
             "Names": {
                 "German": "Asura-Illusionszepter",
                 "English": "Asuran Illusion Scepter",
@@ -39196,7 +39023,7 @@
         },
         "25073": {
             "ModelID": 25073,
-            "ModelFileID": -1,
+            "ModelFileID": 302175,
             "Names": {
                 "German": "Asura-Inspirationszepter",
                 "English": "Asuran Inspiration Scepter",
@@ -39243,7 +39070,7 @@
         },
         "25085": {
             "ModelID": 25085,
-            "ModelFileID": -1,
+            "ModelFileID": 302175,
             "Names": {
                 "English": "Asuran Protection Scepter"
             },
@@ -39327,7 +39154,7 @@
         },
         "25086": {
             "ModelID": 25086,
-            "ModelFileID": -1,
+            "ModelFileID": 302175,
             "Names": {
                 "English": "Asuran Smiting Scepter"
             },
@@ -39364,7 +39191,7 @@
         },
         "25077": {
             "ModelID": 25077,
-            "ModelFileID": -1,
+            "ModelFileID": 302175,
             "Names": {
                 "English": "Asuran Soul Reaping Scepter"
             },
@@ -39401,7 +39228,7 @@
         },
         "25088": {
             "ModelID": 25088,
-            "ModelFileID": -1,
+            "ModelFileID": 302175,
             "Names": {
                 "German": "Asura-Herbeirufzepter",
                 "English": "Asuran Spawning Scepter",
@@ -39448,7 +39275,7 @@
         },
         "25082": {
             "ModelID": 25082,
-            "ModelFileID": -1,
+            "ModelFileID": 302175,
             "Names": {
                 "German": "Asura-Wasserzepter",
                 "English": "Asuran Water Scepter",
@@ -40329,7 +40156,7 @@
         },
         "251": {
             "ModelID": 251,
-            "ModelFileID": -1,
+            "ModelFileID": 93541,
             "Names": {
                 "German": "Stock",
                 "English": "Cane",
@@ -40581,7 +40408,7 @@
         },
         "257": {
             "ModelID": 257,
-            "ModelFileID": -1,
+            "ModelFileID": 93544,
             "Names": {
                 "German": "Stock",
                 "English": "Cane",
@@ -40744,9 +40571,31 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "578": {
+            "ModelID": 578,
+            "ModelFileID": 93544,
+            "Names": {
+                "English": "Cane"
+            },
+            "ItemType": "Wand",
+            "DropInfo": "",
+            "Attributes": [
+                "IllusionMagic"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Cane",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Mesmer",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
         "1231": {
             "ModelID": 1231,
-            "ModelFileID": -1,
+            "ModelFileID": 93541,
             "Names": {
                 "German": "Stock",
                 "English": "Cane",
@@ -41790,6 +41639,28 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "1644": {
+            "ModelID": 1644,
+            "ModelFileID": 230972,
+            "Names": {
+                "English": "Cloudburst Wand"
+            },
+            "ItemType": "Wand",
+            "DropInfo": "",
+            "Attributes": [
+                "AirMagic"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Cloudburst_Wand",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Elementalist",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
         "1846": {
             "ModelID": 1846,
             "ModelFileID": -1,
@@ -41832,7 +41703,7 @@
         },
         "1435": {
             "ModelID": 1435,
-            "ModelFileID": -1,
+            "ModelFileID": 230977,
             "Names": {
                 "German": "Purpurklauen-Zepter",
                 "English": "Crimson Claw Scepter",
@@ -42035,7 +41906,7 @@
         },
         "265": {
             "ModelID": 265,
-            "ModelFileID": -1,
+            "ModelFileID": 94937,
             "Names": {
                 "German": "Tödlicher Cestus",
                 "English": "Deadly Cesta",
@@ -43246,7 +43117,7 @@
         },
         "1245": {
             "ModelID": 1245,
-            "ModelFileID": -1,
+            "ModelFileID": 94211,
             "Names": {
                 "German": "Feuer-Zauberstab",
                 "English": "Fire Wand",
@@ -44990,6 +44861,28 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "1011": {
+            "ModelID": 1011,
+            "ModelFileID": 176543,
+            "Names": {
+                "English": "Platinum Wand"
+            },
+            "ItemType": "Wand",
+            "DropInfo": "",
+            "Attributes": [
+                "SpawningPower"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Platinum_Wand",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
         "2309": {
             "ModelID": 2309,
             "ModelFileID": 176543,
@@ -45634,7 +45527,7 @@
         },
         "289": {
             "ModelID": 289,
-            "ModelFileID": -1,
+            "ModelFileID": 104036,
             "Names": {
                 "German": "Peinigungs-Stecken",
                 "English": "Smiting Rod",
@@ -46035,6 +45928,28 @@
             "Category": null,
             "SubCategory": null,
             "WikiScraped": true
+        },
+        "1256": {
+            "ModelID": 1256,
+            "ModelFileID": 176623,
+            "Names": {
+                "English": "Spawning Wand"
+            },
+            "ItemType": "Wand",
+            "DropInfo": "",
+            "Attributes": [
+                "SpawningPower"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Spawning_Wand",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Ritualist",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
         },
         "1865": {
             "ModelID": 1865,
@@ -46897,7 +46812,7 @@
         },
         "261": {
             "ModelID": 261,
-            "ModelFileID": -1,
+            "ModelFileID": 94936,
             "Names": {
                 "German": "Knüppel",
                 "English": "Truncheon",
@@ -47311,6 +47226,28 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "2428": {
+            "ModelID": 2428,
+            "ModelFileID": 158039,
+            "Names": {
+                "English": "Unicorn's Wrath"
+            },
+            "ItemType": "Wand",
+            "DropInfo": "",
+            "Attributes": [
+                "EnergyStorage"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Unicorn's_Wrath",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
         "2429": {
             "ModelID": 2429,
             "ModelFileID": 158039,
@@ -47342,6 +47279,28 @@
             "Category": "RareWeapon",
             "SubCategory": null,
             "WikiScraped": true
+        },
+        "1018": {
+            "ModelID": 1018,
+            "ModelFileID": 176533,
+            "Names": {
+                "English": "Voltaic Wand"
+            },
+            "ItemType": "Wand",
+            "DropInfo": "",
+            "Attributes": [
+                "EnergyStorage"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Voltaic_Wand",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Elementalist",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
         },
         "1850": {
             "ModelID": 1850,
@@ -47575,7 +47534,7 @@
         },
         "1248": {
             "ModelID": 1248,
-            "ModelFileID": -1,
+            "ModelFileID": 176553,
             "Names": {
                 "German": "Wassergeiststecken",
                 "English": "Water Spirit Rod",
@@ -48114,50 +48073,6 @@
         }
     },
     "Shield": {
-        "17561": {
-            "ModelID": 17561,
-            "ModelFileID": -1,
-            "Names": {
-                "English": "<c=@ItemEnhance>PvP Tactics Shield</c>"
-            },
-            "ItemType": "Shield",
-            "DropInfo": "",
-            "Attributes": [
-                "Tactics"
-            ],
-            "CommonSalvage": {},
-            "RareSalvage": {},
-            "WikiURL": "https://wiki.guildwars.com/wiki/<c=@ItemEnhance>PvP_Tactics_Shield</c>",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
-            "NickIndex": null,
-            "Profession": null,
-            "Category": null,
-            "SubCategory": null,
-            "WikiScraped": false
-        },
-        "19381": {
-            "ModelID": 19381,
-            "ModelFileID": 231212,
-            "Names": {
-                "English": "<c=@ItemUnique>Sharptooth's Shield</c>"
-            },
-            "ItemType": "Shield",
-            "DropInfo": "",
-            "Attributes": [
-                "Tactics"
-            ],
-            "CommonSalvage": {},
-            "RareSalvage": {},
-            "WikiURL": "https://wiki.guildwars.com/wiki/<c=@ItemUnique>Sharptooth's_Shield</c>",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
-            "NickIndex": null,
-            "Profession": null,
-            "Category": null,
-            "SubCategory": null,
-            "WikiScraped": false
-        },
         "1541": {
             "ModelID": 1541,
             "ModelFileID": -1,
@@ -48499,7 +48414,7 @@
         },
         "25093": {
             "ModelID": 25093,
-            "ModelFileID": -1,
+            "ModelFileID": 302185,
             "Names": {
                 "English": "Asuran Command Shield"
             },
@@ -48536,7 +48451,7 @@
         },
         "25092": {
             "ModelID": 25092,
-            "ModelFileID": -1,
+            "ModelFileID": 302185,
             "Names": {
                 "German": "Asura-Schild der Motivation",
                 "English": "Asuran Motivation Shield",
@@ -48583,7 +48498,7 @@
         },
         "25094": {
             "ModelID": 25094,
-            "ModelFileID": -1,
+            "ModelFileID": 302185,
             "Names": {
                 "German": "Asura-Schild der Stärke",
                 "English": "Asuran Strength Shield",
@@ -48630,7 +48545,7 @@
         },
         "25095": {
             "ModelID": 25095,
-            "ModelFileID": -1,
+            "ModelFileID": 302185,
             "Names": {
                 "German": "Asura-Taktikschild",
                 "English": "Asuran Tactics Shield",
@@ -51212,6 +51127,28 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "17561": {
+            "ModelID": 17561,
+            "ModelFileID": -1,
+            "Names": {
+                "English": "PvP Tactics Shield"
+            },
+            "ItemType": "Shield",
+            "DropInfo": "",
+            "Attributes": [
+                "Tactics"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/PvP_Tactics_Shield",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
         "327": {
             "ModelID": 327,
             "ModelFileID": 14368,
@@ -51550,6 +51487,28 @@
             "Category": null,
             "SubCategory": null,
             "WikiScraped": true
+        },
+        "19381": {
+            "ModelID": 19381,
+            "ModelFileID": 231212,
+            "Names": {
+                "English": "Sharptooth's Shield"
+            },
+            "ItemType": "Shield",
+            "DropInfo": "",
+            "Attributes": [
+                "Tactics"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Sharptooth's_Shield",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
         },
         "1529": {
             "ModelID": 1529,
@@ -52976,9 +52935,31 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "1491": {
+            "ModelID": 1491,
+            "ModelFileID": 231149,
+            "Names": {
+                "English": "Vabbian Defender"
+            },
+            "ItemType": "Shield",
+            "DropInfo": "",
+            "Attributes": [
+                "Command"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Vabbian_Defender",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
         "1499": {
             "ModelID": 1499,
-            "ModelFileID": -1,
+            "ModelFileID": 231164,
             "Names": {
                 "German": "Vaabi-Turmschild",
                 "English": "Vabbian Tower Shield",
@@ -53026,7 +53007,7 @@
         },
         "1500": {
             "ModelID": 1500,
-            "ModelFileID": -1,
+            "ModelFileID": 231164,
             "Names": {
                 "German": "Vaabi-Turmschild",
                 "English": "Vabbian Tower Shield",
@@ -53238,75 +53219,9 @@
         }
     },
     "Staff": {
-        "598": {
-            "ModelID": 598,
-            "ModelFileID": 112081,
-            "Names": {
-                "English": "<c=@ItemCommon>Holy Staff</c>"
-            },
-            "ItemType": "Staff",
-            "DropInfo": "",
-            "Attributes": [
-                "DivineFavor"
-            ],
-            "CommonSalvage": {},
-            "RareSalvage": {},
-            "WikiURL": "https://wiki.guildwars.com/wiki/<c=@ItemCommon>Holy_Staff</c>",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
-            "NickIndex": null,
-            "Profession": "Monk",
-            "Category": null,
-            "SubCategory": null,
-            "WikiScraped": false
-        },
-        "1948": {
-            "ModelID": 1948,
-            "ModelFileID": -1,
-            "Names": {
-                "English": "<c=@ItemCommon>Smiting Staff</c>"
-            },
-            "ItemType": "Staff",
-            "DropInfo": "",
-            "Attributes": [
-                "SmitingPrayers"
-            ],
-            "CommonSalvage": {},
-            "RareSalvage": {},
-            "WikiURL": "https://wiki.guildwars.com/wiki/<c=@ItemCommon>Smiting_Staff</c>",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
-            "NickIndex": null,
-            "Profession": "Monk",
-            "Category": null,
-            "SubCategory": null,
-            "WikiScraped": false
-        },
-        "19413": {
-            "ModelID": 19413,
-            "ModelFileID": -1,
-            "Names": {
-                "English": "<c=@ItemUnique>Alsin's Walking Stick</c>"
-            },
-            "ItemType": "Staff",
-            "DropInfo": "",
-            "Attributes": [
-                "SpawningPower"
-            ],
-            "CommonSalvage": {},
-            "RareSalvage": {},
-            "WikiURL": "https://wiki.guildwars.com/wiki/<c=@ItemUnique>Alsin's_Walking_Stick</c>",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
-            "NickIndex": null,
-            "Profession": null,
-            "Category": null,
-            "SubCategory": null,
-            "WikiScraped": false
-        },
         "354": {
             "ModelID": 354,
-            "ModelFileID": -1,
+            "ModelFileID": 112078,
             "Names": {
                 "German": "Verfluchter Stab",
                 "English": "Accursed Staff",
@@ -53658,7 +53573,7 @@
         },
         "589": {
             "ModelID": 589,
-            "ModelFileID": -1,
+            "ModelFileID": 123442,
             "Names": {
                 "German": "Luft-Stab",
                 "English": "Air Staff",
@@ -54050,6 +53965,28 @@
             "SubCategory": null,
             "WikiScraped": false
         },
+        "19413": {
+            "ModelID": 19413,
+            "ModelFileID": 231331,
+            "Names": {
+                "English": "Alsin's Walking Stick"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "SpawningPower"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Alsin's_Walking_Stick",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
         "784": {
             "ModelID": 784,
             "ModelFileID": 164903,
@@ -54223,7 +54160,7 @@
         },
         "25105": {
             "ModelID": 25105,
-            "ModelFileID": -1,
+            "ModelFileID": 302193,
             "Names": {
                 "German": "Asura-Luftstab",
                 "English": "Asuran Air Staff",
@@ -54270,7 +54207,7 @@
         },
         "25101": {
             "ModelID": 25101,
-            "ModelFileID": -1,
+            "ModelFileID": 302193,
             "Names": {
                 "German": "Asura-Blutstab",
                 "English": "Asuran Blood Staff",
@@ -54317,7 +54254,7 @@
         },
         "25117": {
             "ModelID": 25117,
-            "ModelFileID": -1,
+            "ModelFileID": 302193,
             "Names": {
                 "English": "Asuran Channeling Staff"
             },
@@ -54354,7 +54291,7 @@
         },
         "25114": {
             "ModelID": 25114,
-            "ModelFileID": -1,
+            "ModelFileID": 302193,
             "Names": {
                 "German": "Asura-Zwiesprachestab",
                 "English": "Asuran Communing Staff",
@@ -54401,7 +54338,7 @@
         },
         "25102": {
             "ModelID": 25102,
-            "ModelFileID": -1,
+            "ModelFileID": 302193,
             "Names": {
                 "German": "Asura-Fluchstab",
                 "English": "Asuran Curses Staff",
@@ -54448,7 +54385,7 @@
         },
         "25103": {
             "ModelID": 25103,
-            "ModelFileID": -1,
+            "ModelFileID": 302193,
             "Names": {
                 "German": "Asura-Todesstab",
                 "English": "Asuran Death Staff",
@@ -54495,7 +54432,7 @@
         },
         "25110": {
             "ModelID": 25110,
-            "ModelFileID": -1,
+            "ModelFileID": 302193,
             "Names": {
                 "German": "Asura-Göttlichkeitsstab",
                 "English": "Asuran Divine Staff",
@@ -54589,7 +54526,7 @@
         },
         "25106": {
             "ModelID": 25106,
-            "ModelFileID": -1,
+            "ModelFileID": 302193,
             "Names": {
                 "German": "Asura-Erdstab",
                 "English": "Asuran Earth Staff",
@@ -54636,7 +54573,7 @@
         },
         "25107": {
             "ModelID": 25107,
-            "ModelFileID": -1,
+            "ModelFileID": 302193,
             "Names": {
                 "German": "Asura-Energiespeicherungsstab",
                 "English": "Asuran Energy Storage Staff",
@@ -54683,7 +54620,7 @@
         },
         "25098": {
             "ModelID": 25098,
-            "ModelFileID": -1,
+            "ModelFileID": 302193,
             "Names": {
                 "English": "Asuran Fast Casting Staff"
             },
@@ -54720,7 +54657,7 @@
         },
         "25108": {
             "ModelID": 25108,
-            "ModelFileID": -1,
+            "ModelFileID": 302193,
             "Names": {
                 "German": "Asura-Feuerstab",
                 "English": "Asuran Fire Staff",
@@ -54767,7 +54704,7 @@
         },
         "25111": {
             "ModelID": 25111,
-            "ModelFileID": -1,
+            "ModelFileID": 302193,
             "Names": {
                 "German": "Asura-Heilstab",
                 "English": "Asuran Healing Staff",
@@ -54814,7 +54751,7 @@
         },
         "25099": {
             "ModelID": 25099,
-            "ModelFileID": -1,
+            "ModelFileID": 302193,
             "Names": {
                 "German": "Asura-Illusionsstab",
                 "English": "Asuran Illusion Staff",
@@ -54861,7 +54798,7 @@
         },
         "25100": {
             "ModelID": 25100,
-            "ModelFileID": -1,
+            "ModelFileID": 302193,
             "Names": {
                 "German": "Asura-Inspirationsstab",
                 "English": "Asuran Inspiration Staff",
@@ -54908,7 +54845,7 @@
         },
         "25112": {
             "ModelID": 25112,
-            "ModelFileID": -1,
+            "ModelFileID": 302193,
             "Names": {
                 "German": "Asura-Schutzstab",
                 "English": "Asuran Protection Staff",
@@ -54955,7 +54892,7 @@
         },
         "25116": {
             "ModelID": 25116,
-            "ModelFileID": -1,
+            "ModelFileID": 302193,
             "Names": {
                 "German": "Asura-Wiederherstellungsstab",
                 "English": "Asuran Restoration Staff",
@@ -55002,7 +54939,7 @@
         },
         "25113": {
             "ModelID": 25113,
-            "ModelFileID": -1,
+            "ModelFileID": 302193,
             "Names": {
                 "German": "Asura-Peinigungsstab",
                 "English": "Asuran Smiting Staff",
@@ -55049,7 +54986,7 @@
         },
         "25104": {
             "ModelID": 25104,
-            "ModelFileID": -1,
+            "ModelFileID": 302193,
             "Names": {
                 "German": "Asura-Seelensammlungsstab",
                 "English": "Asuran Soul Reaping Staff",
@@ -55096,7 +55033,7 @@
         },
         "25115": {
             "ModelID": 25115,
-            "ModelFileID": -1,
+            "ModelFileID": 302193,
             "Names": {
                 "English": "Asuran Spawning Staff"
             },
@@ -55133,7 +55070,7 @@
         },
         "25109": {
             "ModelID": 25109,
-            "ModelFileID": -1,
+            "ModelFileID": 302193,
             "Names": {
                 "German": "Asura-Wasserstab",
                 "English": "Asuran Water Staff",
@@ -55501,7 +55438,15 @@
             "Names": {
                 "German": "Balthasars Stab",
                 "English": "Balthazar's Staff",
-                "Italian": "Bastone di Balthazar"
+                "Korean": "숙련된 발타자르의 스태프",
+                "French": "Bâton de Balthazar",
+                "Italian": "Bastone di Balthazar",
+                "Spanish": "Báculo de Balthazar",
+                "TraditionalChinese": "行家 Balthazar's Staff",
+                "Japanese": "アデプト バルタザール スタッフ",
+                "Polish": "Kostur Baltazara",
+                "Russian": "Посох Бальтазара",
+                "BorkBorkBork": "Baelthaezaer's Staeffff"
             },
             "ItemType": "Staff",
             "DropInfo": "",
@@ -58335,7 +58280,16 @@
             "ModelFileID": 152725,
             "Names": {
                 "German": "Kopf des Todes",
-                "English": "Death's Head"
+                "English": "Death's Head",
+                "Korean": "통찰력의 머리 장식 스태프(교감)",
+                "French": "Tête de la mort  (Communion)",
+                "Italian": "Testa della Morte Raccoglimento",
+                "Spanish": "Báculo de calavera  (Comunión)",
+                "TraditionalChinese": "神諭 洞察 死亡之首",
+                "Japanese": "インサイト デス ヘッド (コミューン)",
+                "Polish": "Czerep Śmierci  (Zjednoczenie)",
+                "Russian": "Death's Head",
+                "BorkBorkBork": "Deaet's Heaed ooff Cummooneeng"
             },
             "ItemType": "Staff",
             "DropInfo": "",
@@ -59007,7 +58961,7 @@
         },
         "27454": {
             "ModelID": 27454,
-            "ModelFileID": -1,
+            "ModelFileID": 330105,
             "Names": {
                 "German": "Droknars Wiederherstellungsstab",
                 "English": "Droknar's Restoration Staff",
@@ -59366,7 +59320,7 @@
         },
         "1190": {
             "ModelID": 1190,
-            "ModelFileID": -1,
+            "ModelFileID": 136218,
             "Names": {
                 "German": "Erd-Stab",
                 "English": "Earth Staff",
@@ -59420,7 +59374,7 @@
         },
         "1191": {
             "ModelID": 1191,
-            "ModelFileID": -1,
+            "ModelFileID": 87301,
             "Names": {
                 "German": "Erd-Stab",
                 "English": "Earth Staff",
@@ -59860,7 +59814,7 @@
         },
         "2362": {
             "ModelID": 2362,
-            "ModelFileID": -1,
+            "ModelFileID": 302024,
             "Names": {
                 "English": "Embercrest Staff"
             },
@@ -60271,7 +60225,7 @@
         },
         "611": {
             "ModelID": 611,
-            "ModelFileID": -1,
+            "ModelFileID": 175822,
             "Names": {
                 "German": "Feuer-Stab",
                 "English": "Fire Staff",
@@ -61600,6 +61554,28 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "598": {
+            "ModelID": 598,
+            "ModelFileID": 112081,
+            "Names": {
+                "English": "Holy Staff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "DivineFavor"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Holy_Staff",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Monk",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
         "1293": {
             "ModelID": 1293,
             "ModelFileID": -1,
@@ -61822,7 +61798,7 @@
         },
         "1393": {
             "ModelID": 1393,
-            "ModelFileID": -1,
+            "ModelFileID": 231310,
             "Names": {
                 "German": "Illusionärer Stab",
                 "English": "Illusory Staff",
@@ -61978,7 +61954,7 @@
         },
         "348": {
             "ModelID": 348,
-            "ModelFileID": -1,
+            "ModelFileID": 40745,
             "Names": {
                 "German": "Gravierter Stab",
                 "English": "Inscribed Staff",
@@ -62297,7 +62273,7 @@
         },
         "350": {
             "ModelID": 350,
-            "ModelFileID": -1,
+            "ModelFileID": 87300,
             "Names": {
                 "English": "Jeweled Staff"
             },
@@ -62349,7 +62325,7 @@
         },
         "352": {
             "ModelID": 352,
-            "ModelFileID": -1,
+            "ModelFileID": 136215,
             "Names": {
                 "English": "Jeweled Staff"
             },
@@ -63739,7 +63715,7 @@
         },
         "1406": {
             "ModelID": 1406,
-            "ModelFileID": -1,
+            "ModelFileID": 231366,
             "Names": {
                 "German": "Pyrewood-Stab",
                 "English": "Pyrewood Staff",
@@ -64911,6 +64887,28 @@
             "Category": null,
             "SubCategory": null,
             "WikiScraped": true
+        },
+        "1948": {
+            "ModelID": 1948,
+            "ModelFileID": 123446,
+            "Names": {
+                "English": "Smiting Staff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "SmitingPrayers"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Smiting_Staff",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Monk",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
         },
         "11707": {
             "ModelID": 11707,
@@ -66541,6 +66539,26 @@
             "SubCategory": null,
             "WikiScraped": false
         },
+        "24870": {
+            "ModelID": 24870,
+            "ModelFileID": 2040,
+            "Names": {
+                "English": "Asuran Shoes"
+            },
+            "ItemType": "Boots",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Asuran_Shoes",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Assassin",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
         "27226": {
             "ModelID": 27226,
             "ModelFileID": -1,
@@ -66587,6 +66605,31 @@
             "InventoryIconURL": null,
             "NickIndex": null,
             "Profession": "Ranger",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
+        "23440": {
+            "ModelID": 23440,
+            "ModelFileID": 950,
+            "Names": {
+                "German": "Cantha-Schuhe",
+                "English": "Canthan Shoes",
+                "Korean": "섀도우 칸타 부츠",
+                "French": "Chaussures canthiennes",
+                "Italian": "Stivali di Cantha",
+                "Spanish": "Par de zapatos de Cantha"
+            },
+            "ItemType": "Boots",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Canthan_Shoes",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Assassin",
             "Category": null,
             "SubCategory": null,
             "WikiScraped": false
@@ -66809,9 +66852,7 @@
             },
             "ItemType": "Boots",
             "DropInfo": "",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Assassin_Imperial_armor",
@@ -66989,6 +67030,36 @@
             "InventoryIconURL": "https://wiki.guildwars.com/images/8/81/Ritualist-tango-icon-20.png",
             "NickIndex": null,
             "Profession": "Ritualist",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
+        "25653": {
+            "ModelID": 25653,
+            "ModelFileID": 2287,
+            "Names": {
+                "German": "Monument-Schuhe",
+                "English": "Monument Shoes",
+                "Korean": "기념의 부츠",
+                "French": "Chaussures du Monument",
+                "Italian": "Scarpe Monumentali",
+                "Spanish": "Par de zapatos de monumento",
+                "TraditionalChinese": "紀念碑長靴",
+                "Japanese": "モニュメント シューズ",
+                "Polish": "Monumentowe Buty",
+                "Russian": "Monument Shoes",
+                "BorkBorkBork": "Munooment Shues"
+            },
+            "ItemType": "Boots",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Monument_Shoes",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Assassin",
             "Category": null,
             "SubCategory": null,
             "WikiScraped": false
@@ -67385,7 +67456,7 @@
         },
         "17298": {
             "ModelID": 17298,
-            "ModelFileID": -1,
+            "ModelFileID": 1491,
             "Names": {
                 "German": "Sonnenspeer-Stiefel",
                 "English": "Sunspear Boots",
@@ -67455,28 +67526,6 @@
         }
     },
     "Sword": {
-        "18114": {
-            "ModelID": 18114,
-            "ModelFileID": -1,
-            "Names": {
-                "English": "<c=@ItemEnhance>PvP Sword</c>"
-            },
-            "ItemType": "Sword",
-            "DropInfo": "",
-            "Attributes": [
-                "Swordsmanship"
-            ],
-            "CommonSalvage": {},
-            "RareSalvage": {},
-            "WikiURL": "https://wiki.guildwars.com/wiki/<c=@ItemEnhance>PvP_Sword</c>",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
-            "NickIndex": null,
-            "Profession": null,
-            "Category": null,
-            "SubCategory": null,
-            "WikiScraped": false
-        },
         "38030": {
             "ModelID": 38030,
             "ModelFileID": 330113,
@@ -67511,7 +67560,7 @@
         },
         "25118": {
             "ModelID": 25118,
-            "ModelFileID": -1,
+            "ModelFileID": 302198,
             "Names": {
                 "English": "Asuran Sword"
             },
@@ -68797,7 +68846,7 @@
         },
         "1195": {
             "ModelID": 1195,
-            "ModelFileID": -1,
+            "ModelFileID": 230539,
             "Names": {
                 "German": "Hitze- Gladius",
                 "English": "Fiery Gladius",
@@ -69075,7 +69124,7 @@
         },
         "1194": {
             "ModelID": 1194,
-            "ModelFileID": -1,
+            "ModelFileID": 230641,
             "Names": {
                 "German": "Gladius",
                 "English": "Gladius",
@@ -69885,7 +69934,7 @@
         },
         "412": {
             "ModelID": 412,
-            "ModelFileID": -1,
+            "ModelFileID": 14401,
             "Names": {
                 "German": "Langschwert",
                 "English": "Long Sword",
@@ -70398,6 +70447,28 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "18114": {
+            "ModelID": 18114,
+            "ModelFileID": -1,
+            "Names": {
+                "English": "PvP Sword"
+            },
+            "ItemType": "Sword",
+            "DropInfo": "",
+            "Attributes": [
+                "Swordsmanship"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/PvP_Sword",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
         "1567": {
             "ModelID": 1567,
             "ModelFileID": 231460,
@@ -70496,7 +70567,7 @@
         },
         "1562": {
             "ModelID": 1562,
-            "ModelFileID": -1,
+            "ModelFileID": 231439,
             "Names": {
                 "German": "Rostige Machete",
                 "English": "Rusty Machete",
@@ -70830,7 +70901,7 @@
         },
         "419": {
             "ModelID": 419,
-            "ModelFileID": -1,
+            "ModelFileID": 9549,
             "Names": {
                 "German": "Spatha",
                 "English": "Spatha",
@@ -71184,7 +71255,7 @@
         },
         "421": {
             "ModelID": 421,
-            "ModelFileID": -1,
+            "ModelFileID": 14403,
             "Names": {
                 "German": "Flügelklingenschwert",
                 "English": "Wingblade Sword",
@@ -72342,6 +72413,26 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "0": {
+            "ModelID": 0,
+            "ModelFileID": 2040,
+            "Names": {
+                "English": "Spectacles"
+            },
+            "ItemType": "Unknown",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Spectacles",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Assassin",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
         "6369": {
             "ModelID": 6369,
             "ModelFileID": -1,
@@ -72753,7 +72844,7 @@
         },
         "25047": {
             "ModelID": 25047,
-            "ModelFileID": -1,
+            "ModelFileID": 302159,
             "Names": {
                 "German": "Asura-Dolche",
                 "English": "Asuran Daggers",
@@ -74213,7 +74304,7 @@
         },
         "1386": {
             "ModelID": 1386,
-            "ModelFileID": -1,
+            "ModelFileID": 230798,
             "Names": {
                 "German": "Rubindolche",
                 "English": "Ruby Daggers",
@@ -74261,7 +74352,7 @@
         },
         "719": {
             "ModelID": 719,
-            "ModelFileID": -1,
+            "ModelFileID": 164910,
             "Names": {
                 "English": "Sai"
             },
@@ -74609,7 +74700,7 @@
         },
         "1378": {
             "ModelID": 1378,
-            "ModelFileID": -1,
+            "ModelFileID": 230766,
             "Names": {
                 "German": "Stahldolche",
                 "English": "Steel Daggers",
@@ -75033,6 +75124,26 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "24871": {
+            "ModelID": 24871,
+            "ModelFileID": 2041,
+            "Names": {
+                "English": "Asuran Guise"
+            },
+            "ItemType": "Chestpiece",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Asuran_Guise",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Assassin",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
         "25553": {
             "ModelID": 25553,
             "ModelFileID": -1,
@@ -75059,6 +75170,31 @@
             "InventoryIconURL": "https://wiki.guildwars.com/images/d/dc/Ranger-tango-icon-20.png",
             "NickIndex": null,
             "Profession": "Ranger",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
+        "23441": {
+            "ModelID": 23441,
+            "ModelFileID": 951,
+            "Names": {
+                "German": "Cantha-Verkleidung",
+                "English": "Canthan Guise",
+                "Korean": "섀도우 칸타 로브",
+                "French": "Habit canthien",
+                "Italian": "Giacca di Cantha",
+                "Spanish": "Indumentaria de Cantha"
+            },
+            "ItemType": "Chestpiece",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Canthan_Guise",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Assassin",
             "Category": null,
             "SubCategory": null,
             "WikiScraped": false
@@ -75206,9 +75342,7 @@
             },
             "ItemType": "Chestpiece",
             "DropInfo": "",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Assassin_Elite_Canthan_armor",
@@ -75419,6 +75553,36 @@
             "Category": null,
             "SubCategory": null,
             "WikiScraped": true
+        },
+        "25654": {
+            "ModelID": 25654,
+            "ModelFileID": 2288,
+            "Names": {
+                "German": "Monument-Verkleidung",
+                "English": "Monument Guise",
+                "Korean": "기념의 재킷",
+                "French": "Habit du Monument",
+                "Italian": "Giacca Monumentale",
+                "Spanish": "Indumentaria de monumento",
+                "TraditionalChinese": "紀念碑裝束",
+                "Japanese": "モニュメント ガイズ",
+                "Polish": "Monumentowy Ubiór",
+                "Russian": "Monument Guise",
+                "BorkBorkBork": "Munooment Gooeese-a"
+            },
+            "ItemType": "Chestpiece",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Monument_Guise",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Assassin",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
         },
         "25626": {
             "ModelID": 25626,
@@ -75912,7 +76076,7 @@
         },
         "17299": {
             "ModelID": 17299,
-            "ModelFileID": -1,
+            "ModelFileID": 1492,
             "Names": {
                 "German": "Sonnenspeer-Tunika",
                 "English": "Sunspear Tunic",
@@ -76250,9 +76414,7 @@
             },
             "ItemType": "Rune_Mod",
             "DropInfo": "",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Blessed_Insignia",
@@ -76372,9 +76534,7 @@
             },
             "ItemType": "Rune_Mod",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Bow_Grip",
@@ -76914,9 +77074,7 @@
             },
             "ItemType": "Rune_Mod",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Hammer_Grip",
@@ -77036,9 +77194,7 @@
             },
             "ItemType": "Rune_Mod",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Inscription",
@@ -77068,9 +77224,7 @@
             },
             "ItemType": "Rune_Mod",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Inscription",
@@ -77100,9 +77254,7 @@
             },
             "ItemType": "Rune_Mod",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Inscription",
@@ -77128,7 +77280,7 @@
                 "Japanese": "刻印: {0}",
                 "Polish": "Inskrypcja: {0}",
                 "Russian": "Надпись: {0}",
-                "BorkBorkBork": "Inscreepshun: Equippable Item"
+                "BorkBorkBork": "Inscreepshun: {0}"
             },
             "ItemType": "Rune_Mod",
             "DropInfo": "No data added yet",
@@ -77162,9 +77314,7 @@
             },
             "ItemType": "Rune_Mod",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Inscription",
@@ -77194,9 +77344,7 @@
             },
             "ItemType": "Rune_Mod",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Inscription",
@@ -78216,9 +78364,7 @@
             },
             "ItemType": "Rune_Mod",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Scythe_Grip",
@@ -78338,9 +78484,7 @@
             },
             "ItemType": "Rune_Mod",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Shield_Handle",
@@ -78358,13 +78502,19 @@
             "Names": {
                 "German": "Speergriff {0}",
                 "English": "Spear Grip {0}",
-                "Italian": "Impugnatura della Lancia {0}"
+                "Korean": "창손잡이(네크로맨서) ()",
+                "French": "Poignée de javelot ()",
+                "Italian": "Impugnatura della Lancia {0}",
+                "Spanish": "Empuñadura de lanza ()",
+                "TraditionalChinese": "the Necromancer 矛柄 ()",
+                "Japanese": "スピアのグリップ (ネクロマンサー) ()",
+                "Polish": "Drzewce Włóczni ()",
+                "Russian": "Spear Grip of некромант ()",
+                "BorkBorkBork": "Speaer Greep ()"
             },
             "ItemType": "Rune_Mod",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Spear_Grip",
@@ -78394,9 +78544,7 @@
             },
             "ItemType": "Rune_Mod",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Staff_Wrapping",
@@ -78546,9 +78694,7 @@
             },
             "ItemType": "Rune_Mod",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Sword_Pommel",
@@ -78698,9 +78844,7 @@
             },
             "ItemType": "Rune_Mod",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Wand_Wrapping",
@@ -78982,9 +79126,7 @@
             },
             "ItemType": "Rune_Mod",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Spearhead",
@@ -79100,7 +79242,7 @@
         },
         "24593": {
             "ModelID": 24593,
-            "ModelFileID": -1,
+            "ModelFileID": 152253,
             "Names": {
                 "English": "Aged Dwarven Ale"
             },
@@ -79206,9 +79348,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Armor_of_Salvation",
@@ -79238,9 +79378,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Assassin_Tome",
@@ -79310,9 +79448,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "Anniversary Celebration",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Battle_Isle_Iced_Tea",
@@ -79362,9 +79498,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "Anniversary Celebrations & Dragon Festival & Canthan New Year",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Birthday_Cupcake",
@@ -79484,9 +79618,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "Pirate Week",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Bottle_of_Grog",
@@ -79596,9 +79728,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Candy_Apple",
@@ -79628,9 +79758,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Candy_Corn",
@@ -79700,9 +79828,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "Anniversary Celebration & Wayfarer's Reverie",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Champagne_Popper",
@@ -79792,9 +79918,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "Dropped by the White Mantle & Peacekeepers",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Confessor%27s_Orders",
@@ -79874,9 +79998,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "Anniversary Celebration & Dragon Festival",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Creme_Brulee",
@@ -79906,9 +80028,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "Anniversary Celebration",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Delicious_Cake",
@@ -79938,9 +80058,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Demonic_Summoning_Stone",
@@ -79970,9 +80088,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Dervish_Tome",
@@ -80039,13 +80155,20 @@
             "ModelFileID": 158532,
             "Names": {
                 "German": "Eierflip",
-                "English": "Eggnog"
+                "English": "Eggnog",
+                "Korean": "에그노그",
+                "French": "Lait de poule",
+                "Italian": "Cocktail",
+                "Spanish": "Licor de huevo",
+                "TraditionalChinese": "蛋酒",
+                "Japanese": "エッグノッグ",
+                "Polish": "Ajerkoniak",
+                "Russian": "Eggnog",
+                "BorkBorkBork": "Iggnug"
             },
             "ItemType": "Usable",
             "DropInfo": "Wintersday & Chest of Wintersday Past",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Eggnog",
@@ -80075,9 +80198,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Elementalist_Tome",
@@ -80107,9 +80228,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Elite_Assassin_Tome",
@@ -80139,9 +80258,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Elite_Dervish_Tome",
@@ -80171,9 +80288,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Elite_Elementalist_Tome",
@@ -80203,9 +80318,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Elite_Mesmer_Tome",
@@ -80235,9 +80348,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Elite_Monk_Tome",
@@ -80267,9 +80378,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Elite_Necromancer_Tome",
@@ -80299,9 +80408,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Elite_Paragon_Tome",
@@ -80331,9 +80438,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Elite_Ranger_Tome",
@@ -80363,9 +80468,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Elite_Ritualist_Tome",
@@ -80395,9 +80498,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Elite_Warrior_Tome",
@@ -80447,9 +80548,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Essence_of_Celerity",
@@ -80539,9 +80638,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Acolyte_Sousuke_Tonic",
@@ -80651,9 +80748,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Boreal_Tonic",
@@ -80723,9 +80818,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Crate_of_Fireworks",
@@ -80815,9 +80908,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Gelatinous_Tonic",
@@ -80887,9 +80978,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Goren_Tonic",
@@ -81259,9 +81348,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "Wintersday",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Mischievous_Tonic",
@@ -81431,9 +81518,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Queen_Salma_Tonic",
@@ -81663,9 +81748,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Unseen_Tonic",
@@ -81795,9 +81878,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Flame_of_Balthazar",
@@ -81827,9 +81908,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Flasks_of_Firewater",
@@ -81843,7 +81922,7 @@
         },
         "30965": {
             "ModelID": 30965,
-            "ModelFileID": -1,
+            "ModelFileID": 346513,
             "Names": {
                 "German": "Fossil-Herbeirufstein",
                 "English": "Fossilized Summoning Stone",
@@ -81889,9 +81968,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "Lucky Treats Week",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Four-Leaf_Clover",
@@ -81961,9 +82038,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "Wintersday & Chest of Wintersday Past",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Fruitcake",
@@ -82043,9 +82118,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Ghastly_Summoning_Stone",
@@ -82105,9 +82178,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "Sweet Treats Week",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Golden_Egg",
@@ -82137,9 +82208,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Golden_Flame_of_Balthazar",
@@ -82169,9 +82238,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Grail_of_Might",
@@ -82251,9 +82318,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Hero's_Strongbox",
@@ -82283,9 +82348,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "Anniversary Celebrations & April Fools Day",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Honeycomb",
@@ -82455,9 +82518,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "Anniversary Celebration",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Krytan_Brandy",
@@ -82507,9 +82568,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Legionnaire_Summoning_Crystal",
@@ -82539,9 +82598,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "Year of the Monkey (2016)",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Lunar_Fortune",
@@ -82571,9 +82628,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "Year of the Pig (2007)",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Lunar_Fortune",
@@ -82643,9 +82698,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Mercantile_Summoning_Stone",
@@ -82675,9 +82728,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Mesmer_Tome",
@@ -82767,9 +82818,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Monk_Tome",
@@ -82839,9 +82888,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Mystical_Summoning_Stone",
@@ -82871,9 +82918,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Necromancer_Tome",
@@ -82943,9 +82988,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Paragon_Tome",
@@ -82975,9 +83018,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "Anniversary Celebration",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Party_Beacon",
@@ -83047,9 +83088,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Powerstone_of_Courage",
@@ -83079,9 +83118,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Pumpkin_Cookie",
@@ -83111,9 +83148,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "Wintersday & Chest of Wintersday Past",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Rainbow_Candy_Cane",
@@ -83143,9 +83178,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Ranger_Tome",
@@ -83235,9 +83268,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Ritualist_Tome",
@@ -83267,9 +83298,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Scroll_of_Resurrection",
@@ -83449,9 +83478,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "Special Treats Week",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Slice_of_Pumpkin_Pie",
@@ -83468,13 +83495,20 @@
             "ModelFileID": 158533,
             "Names": {
                 "German": "250 Schneemann-Macher",
-                "English": "Snowman Summoner"
+                "English": "Snowman Summoner",
+                "Korean": "250 눈사람 소환사",
+                "French": "250 Invocateurs de bonshommes de neige",
+                "Italian": "250 Crea-pupazzi",
+                "Spanish": "250 Invocadores del muñeco de nieve",
+                "TraditionalChinese": "250 雪人召喚者",
+                "Japanese": "スノーマンの使い 250個",
+                "Polish": "250 x Przyzywacz Bałwana",
+                "Russian": "250 Snowman Summoners",
+                "BorkBorkBork": "250 Snoomun Soommuners"
             },
             "ItemType": "Usable",
             "DropInfo": "Wintersday & Chest of Wintersday Past",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Snowman_Summoner",
@@ -83574,9 +83608,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Star_of_Transference",
@@ -83606,9 +83638,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "Anniversary Celebrations & Wayfarer's Reverie & Dragon Festival & Canthan New Year",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Sugary_Blue_Drink",
@@ -83638,9 +83668,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Tengu_Support_Flare",
@@ -83670,9 +83698,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Transmogrifier_Tonic",
@@ -83709,13 +83735,20 @@
             "ModelFileID": 336288,
             "Names": {
                 "German": "Süßes-oder-Saures-Tasche",
-                "English": "Trick-or-Treat Bag"
+                "English": "Trick-or-Treat Bag",
+                "Korean": "사탕줘 가방",
+                "French": "Sac de friandises",
+                "Italian": "Sacco Dolcetto o Scherzetto",
+                "Spanish": "Bolsa de truco o trato",
+                "TraditionalChinese": "搗蛋糖果袋",
+                "Japanese": "ハロウィン ボックス",
+                "Polish": "Torba Słodyczowo-Psikusowa",
+                "Russian": "Trick-or-Treat Bag",
+                "BorkBorkBork": "Treeck-oor-Treaet Baeg"
             },
             "ItemType": "Usable",
             "DropInfo": "",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Trick-or-Treat_Bag",
@@ -83745,9 +83778,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Unseen_Tonic",
@@ -83777,9 +83808,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "Halloween",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Vial_of_Absinthe",
@@ -83809,9 +83838,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "Dropped by data to be added",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/War_Supplies",
@@ -83841,9 +83868,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Warrior_Tome",
@@ -83860,13 +83885,20 @@
             "ModelFileID": 277382,
             "Names": {
                 "German": "250 Wintergrün-Zuckerstangen",
-                "English": "Wintergreen Candy Cane"
+                "English": "Wintergreen Candy Cane",
+                "Korean": "250 푸른겨울 지팡이사탕",
+                "French": "250 Cannes en sucre d'hivert",
+                "Italian": "250 Caramelle Verdinverno",
+                "Spanish": "250 Bastones de caramelo de Invierno Verde",
+                "TraditionalChinese": "250 綠色聖誕拐子糖",
+                "Japanese": "ウィンターグリーン キャンディ ステッキ 250個",
+                "Polish": "250 x Zimozielony Cukierek",
+                "Russian": "250 Wintergreen Candy Canes",
+                "BorkBorkBork": "250 Veentergreee Cundy Cune-as"
             },
             "ItemType": "Usable",
             "DropInfo": "Wintersday & Chest of Wintersday Past",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Wintergreen_Candy_Cane",
@@ -83916,9 +83948,7 @@
             },
             "ItemType": "Usable",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Yuletide_Tonic",
@@ -84030,9 +84060,7 @@
             },
             "ItemType": "Materials_Zcoins",
             "DropInfo": "Rare Material",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Amber_Chunk",
@@ -84062,9 +84090,7 @@
             },
             "ItemType": "Materials_Zcoins",
             "DropInfo": "Common Material",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Bolt_of_Cloth",
@@ -84094,9 +84120,7 @@
             },
             "ItemType": "Materials_Zcoins",
             "DropInfo": "Rare Material",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Bolt_of_Damask",
@@ -84126,9 +84150,7 @@
             },
             "ItemType": "Materials_Zcoins",
             "DropInfo": "Rare Material",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {
                 "Plant Fiber": {
                     "Amount": -1,
@@ -84166,9 +84188,7 @@
             },
             "ItemType": "Materials_Zcoins",
             "DropInfo": "Rare Material",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {
                 "Bolt of Cloth": {
                     "Amount": -1,
@@ -84213,9 +84233,7 @@
             },
             "ItemType": "Materials_Zcoins",
             "DropInfo": "Common Material",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Bone",
@@ -84245,9 +84263,7 @@
             },
             "ItemType": "Materials_Zcoins",
             "DropInfo": "Common Material",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Chitin_Fragment",
@@ -84277,9 +84293,7 @@
             },
             "ItemType": "Materials_Zcoins",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Copper_Zaishen_Coin",
@@ -84309,9 +84323,7 @@
             },
             "ItemType": "Materials_Zcoins",
             "DropInfo": "Rare Material",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {
                 "Lump of Charcoal": {
@@ -84349,9 +84361,7 @@
             },
             "ItemType": "Materials_Zcoins",
             "DropInfo": "Rare Material",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Diamond",
@@ -84381,9 +84391,7 @@
             },
             "ItemType": "Materials_Zcoins",
             "DropInfo": "Rare Material",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {
                 "Pile of Glittering Dust": {
                     "Amount": -1,
@@ -84428,9 +84436,7 @@
             },
             "ItemType": "Materials_Zcoins",
             "DropInfo": "Common Material",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Feather",
@@ -84460,9 +84466,7 @@
             },
             "ItemType": "Materials_Zcoins",
             "DropInfo": "Rare Material",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Fur_Square",
@@ -84492,9 +84496,7 @@
             },
             "ItemType": "Materials_Zcoins",
             "DropInfo": "Rare Material",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Glob_of_Ectoplasm",
@@ -84524,9 +84526,7 @@
             },
             "ItemType": "Materials_Zcoins",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {
                 "Pile of Glittering Dust": {
                     "Amount": 1,
@@ -84572,9 +84572,7 @@
             },
             "ItemType": "Materials_Zcoins",
             "DropInfo": "Common Material",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Granite_Slab",
@@ -84604,9 +84602,7 @@
             },
             "ItemType": "Materials_Zcoins",
             "DropInfo": "Common Material",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Iron_Ingot",
@@ -84636,9 +84632,7 @@
             },
             "ItemType": "Materials_Zcoins",
             "DropInfo": "Rare Material",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Jadeite_Shard",
@@ -84668,9 +84662,7 @@
             },
             "ItemType": "Materials_Zcoins",
             "DropInfo": "Rare Material",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {
                 "Tanned Hide Square": {
                     "Amount": -1,
@@ -84708,9 +84700,7 @@
             },
             "ItemType": "Materials_Zcoins",
             "DropInfo": "Rare Material",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {
                 "Wood Plank": {
                     "Amount": -1,
@@ -84748,9 +84738,7 @@
             },
             "ItemType": "Materials_Zcoins",
             "DropInfo": "Rare Material",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Monstrous_Claw",
@@ -84780,9 +84768,7 @@
             },
             "ItemType": "Materials_Zcoins",
             "DropInfo": "Rare Material",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Monstrous_Eye",
@@ -84812,9 +84798,7 @@
             },
             "ItemType": "Materials_Zcoins",
             "DropInfo": "Rare Material",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Monstrous_Fang",
@@ -84844,9 +84828,7 @@
             },
             "ItemType": "Materials_Zcoins",
             "DropInfo": "Rare Material",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Obsidian_Shard",
@@ -84876,9 +84858,7 @@
             },
             "ItemType": "Materials_Zcoins",
             "DropInfo": "Rare Material",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Onyx_Gemstone",
@@ -84908,9 +84888,7 @@
             },
             "ItemType": "Materials_Zcoins",
             "DropInfo": "Common Material",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Pile_of_Glittering_Dust",
@@ -84940,9 +84918,7 @@
             },
             "ItemType": "Materials_Zcoins",
             "DropInfo": "Common Material",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Plant_Fiber",
@@ -84972,9 +84948,7 @@
             },
             "ItemType": "Materials_Zcoins",
             "DropInfo": "Rare Material",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {
                 "Wood Plank": {
                     "Amount": -1,
@@ -85012,9 +84986,7 @@
             },
             "ItemType": "Materials_Zcoins",
             "DropInfo": "Rare Material",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Roll_of_Vellum",
@@ -85044,9 +85016,7 @@
             },
             "ItemType": "Materials_Zcoins",
             "DropInfo": "Rare Material",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Ruby",
@@ -85076,9 +85046,7 @@
             },
             "ItemType": "Materials_Zcoins",
             "DropInfo": "Rare Material",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Sapphire",
@@ -85108,9 +85076,7 @@
             },
             "ItemType": "Materials_Zcoins",
             "DropInfo": "Common Material",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Scale",
@@ -85140,9 +85106,7 @@
             },
             "ItemType": "Materials_Zcoins",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {
                 "Pile of Glittering Dust": {
                     "Amount": 1,
@@ -85188,9 +85152,7 @@
             },
             "ItemType": "Materials_Zcoins",
             "DropInfo": "Rare Material",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {
                 "Pile of Glittering Dust": {
                     "Amount": -1,
@@ -85235,9 +85197,7 @@
             },
             "ItemType": "Materials_Zcoins",
             "DropInfo": "Rare Material",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {
                 "Iron Ingot": {
                     "Amount": -1,
@@ -85283,9 +85243,7 @@
             },
             "ItemType": "Materials_Zcoins",
             "DropInfo": "Common Material",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Tanned_Hide_Square",
@@ -85315,9 +85273,7 @@
             },
             "ItemType": "Materials_Zcoins",
             "DropInfo": "Rare Material",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {
                 "Pile of Glittering Dust": {
                     "Amount": -1,
@@ -85355,9 +85311,7 @@
             },
             "ItemType": "Materials_Zcoins",
             "DropInfo": "Rare Material",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {
                 "Plant Fiber": {
                     "Amount": -1,
@@ -85403,9 +85357,7 @@
             },
             "ItemType": "Materials_Zcoins",
             "DropInfo": "Common Material",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Wood_Plank",
@@ -85419,28 +85371,6 @@
         }
     },
     "Scythe": {
-        "19358": {
-            "ModelID": 19358,
-            "ModelFileID": 231116,
-            "Names": {
-                "English": "<c=@ItemUnique>Eshekibeh's Scythe</c>"
-            },
-            "ItemType": "Scythe",
-            "DropInfo": "",
-            "Attributes": [
-                "ScytheMastery"
-            ],
-            "CommonSalvage": {},
-            "RareSalvage": {},
-            "WikiURL": "https://wiki.guildwars.com/wiki/<c=@ItemUnique>Eshekibeh's_Scythe</c>",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
-            "NickIndex": null,
-            "Profession": null,
-            "Category": null,
-            "SubCategory": null,
-            "WikiScraped": false
-        },
         "1466": {
             "ModelID": 1466,
             "ModelFileID": -1,
@@ -85543,7 +85473,7 @@
         },
         "25091": {
             "ModelID": 25091,
-            "ModelFileID": -1,
+            "ModelFileID": 302180,
             "Names": {
                 "English": "Asuran Scythe"
             },
@@ -86171,7 +86101,7 @@
         },
         "1470": {
             "ModelID": 1470,
-            "ModelFileID": -1,
+            "ModelFileID": 231058,
             "Names": {
                 "German": "Elegante Sense",
                 "English": "Elegant Scythe",
@@ -86281,7 +86211,7 @@
         },
         "1479": {
             "ModelID": 1479,
-            "ModelFileID": -1,
+            "ModelFileID": 231103,
             "Names": {
                 "German": "Geprägte Sense",
                 "English": "Embossed Scythe",
@@ -86436,6 +86366,28 @@
             "Category": null,
             "SubCategory": null,
             "WikiScraped": true
+        },
+        "19358": {
+            "ModelID": 19358,
+            "ModelFileID": 231116,
+            "Names": {
+                "English": "Eshekibeh's Scythe"
+            },
+            "ItemType": "Scythe",
+            "DropInfo": "",
+            "Attributes": [
+                "ScytheMastery"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Eshekibeh's_Scythe",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
         },
         "1473": {
             "ModelID": 1473,
@@ -86994,7 +86946,7 @@
         },
         "24577": {
             "ModelID": 24577,
-            "ModelFileID": -1,
+            "ModelFileID": 302190,
             "Names": {
                 "English": "Asuran Spear"
             },
@@ -87068,7 +87020,7 @@
         },
         "1513": {
             "ModelID": 1513,
-            "ModelFileID": -1,
+            "ModelFileID": 231245,
             "Names": {
                 "German": "Binde-Speer",
                 "English": "Banded Spear",
@@ -87178,7 +87130,7 @@
         },
         "1523": {
             "ModelID": 1523,
-            "ModelFileID": -1,
+            "ModelFileID": 231284,
             "Names": {
                 "German": "Breitspitzen-Speer",
                 "English": "Broadhead Spear",
@@ -87328,7 +87280,7 @@
         },
         "1519": {
             "ModelID": 1519,
-            "ModelFileID": -1,
+            "ModelFileID": 231266,
             "Names": {
                 "German": "Beschlagener Speer",
                 "English": "Clouded Spear",
@@ -88198,7 +88150,7 @@
         },
         "1521": {
             "ModelID": 1521,
-            "ModelFileID": -1,
+            "ModelFileID": 231276,
             "Names": {
                 "German": "Windender Speer",
                 "English": "Spiraling Spear",
@@ -88842,6 +88794,26 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "24873": {
+            "ModelID": 24873,
+            "ModelFileID": 2043,
+            "Names": {
+                "English": "Asuran Leggings"
+            },
+            "ItemType": "Leggings",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Asuran_Leggings",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Assassin",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
         "25555": {
             "ModelID": 25555,
             "ModelFileID": -1,
@@ -88868,6 +88840,31 @@
             "InventoryIconURL": "https://wiki.guildwars.com/images/d/dc/Ranger-tango-icon-20.png",
             "NickIndex": null,
             "Profession": "Ranger",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
+        "23443": {
+            "ModelID": 23443,
+            "ModelFileID": 953,
+            "Names": {
+                "German": "Cantha-Beinkleid",
+                "English": "Canthan Leggings",
+                "Korean": "섀도우 칸타 팬츠",
+                "French": "Bas canthien",
+                "Italian": "Gambali di Cantha",
+                "Spanish": "Malla de Cantha"
+            },
+            "ItemType": "Leggings",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Canthan_Leggings",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Assassin",
             "Category": null,
             "SubCategory": null,
             "WikiScraped": false
@@ -89168,6 +89165,36 @@
             "InventoryIconURL": "https://wiki.guildwars.com/images/8/81/Ritualist-tango-icon-20.png",
             "NickIndex": null,
             "Profession": "Ritualist",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
+        "25656": {
+            "ModelID": 25656,
+            "ModelFileID": 2290,
+            "Names": {
+                "German": "Monument-Beinkleid",
+                "English": "Monument Leggings",
+                "Korean": "기념의 팬츠",
+                "French": "Bas du Monument",
+                "Italian": "Gambali Monumentali",
+                "Spanish": "Malla de monumento",
+                "TraditionalChinese": "紀念碑護腿",
+                "Japanese": "モニュメント ゲートル",
+                "Polish": "Monumentowe Legginsy",
+                "Russian": "Monument Leggings",
+                "BorkBorkBork": "Munooment Leggeengs"
+            },
+            "ItemType": "Leggings",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Monument_Leggings",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Assassin",
             "Category": null,
             "SubCategory": null,
             "WikiScraped": false
@@ -89604,7 +89631,7 @@
         },
         "17301": {
             "ModelID": 17301,
-            "ModelFileID": -1,
+            "ModelFileID": 1494,
             "Names": {
                 "German": "Sonnenspeer-Beinkleid",
                 "English": "Sunspear Leggings",
@@ -89700,9 +89727,7 @@
             },
             "ItemType": "Leggings",
             "DropInfo": "",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Assassin_Vabbian_armor",
@@ -90024,9 +90049,7 @@
             },
             "ItemType": "Key",
             "DropInfo": "Foes All Regions Hard Mode",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Lockpicks",
@@ -90358,9 +90381,7 @@
             },
             "ItemType": "Kit",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Expert_Salvage_Kit",
@@ -90540,9 +90561,7 @@
             },
             "ItemType": "Kit",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Salvage_Kit",
@@ -90592,9 +90611,7 @@
             },
             "ItemType": "Kit",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Superior_Identification_Kit",
@@ -90654,9 +90671,7 @@
             },
             "ItemType": "Kit",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Superior_Salvage_Kit",
@@ -90748,9 +90763,7 @@
             },
             "ItemType": "Scroll",
             "DropInfo": "Bosses HM & Foes Fow",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Passage_Scroll_to_the_Fissure_of_Woe",
@@ -90840,9 +90853,7 @@
             },
             "ItemType": "Scroll",
             "DropInfo": "Bosses NM & HM",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Scroll_of_Berserker%27s_Insight",
@@ -90872,9 +90883,7 @@
             },
             "ItemType": "Scroll",
             "DropInfo": "Bosses NM & HM",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Scroll_of_Hero%27s_Insight",
@@ -90964,9 +90973,7 @@
             },
             "ItemType": "Scroll",
             "DropInfo": "Bosses NM & HM",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Scroll_of_Slayer%27s_Insight",
@@ -90980,7 +90987,7 @@
         },
         "21233": {
             "ModelID": 21233,
-            "ModelFileID": -1,
+            "ModelFileID": 275575,
             "Names": {
                 "German": "Schriftrolle des Lichtbringers",
                 "English": "Scroll of the Lightbringer",
@@ -91010,6 +91017,86 @@
         }
     },
     "Headpiece": {
+        "24866": {
+            "ModelID": 24866,
+            "ModelFileID": 2039,
+            "Names": {
+                "English": "Asuran Mask"
+            },
+            "ItemType": "Headpiece",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Asuran_Mask",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Assassin",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
+        "24867": {
+            "ModelID": 24867,
+            "ModelFileID": 2039,
+            "Names": {
+                "English": "Asuran Mask"
+            },
+            "ItemType": "Headpiece",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Asuran_Mask",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Assassin",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
+        "24868": {
+            "ModelID": 24868,
+            "ModelFileID": 2039,
+            "Names": {
+                "English": "Asuran Mask"
+            },
+            "ItemType": "Headpiece",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Asuran_Mask",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Assassin",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
+        "24869": {
+            "ModelID": 24869,
+            "ModelFileID": 2039,
+            "Names": {
+                "English": "Asuran Mask"
+            },
+            "ItemType": "Headpiece",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Asuran_Mask",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Assassin",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
         "25548": {
             "ModelID": 25548,
             "ModelFileID": -1,
@@ -91222,7 +91309,7 @@
         },
         "23848": {
             "ModelID": 23848,
-            "ModelFileID": -1,
+            "ModelFileID": 1032,
             "Names": {
                 "German": "Cantha-Kopfbandage",
                 "English": "Canthan Headwrap",
@@ -91279,6 +91366,106 @@
             "Category": null,
             "SubCategory": null,
             "WikiScraped": true
+        },
+        "23432": {
+            "ModelID": 23432,
+            "ModelFileID": 949,
+            "Names": {
+                "German": "Cantha-Maske",
+                "English": "Canthan Mask",
+                "Korean": "샤프 칸타 마스크",
+                "French": "Masque canthien",
+                "Italian": "Maschera di Cantha",
+                "Spanish": "Máscara de Cantha"
+            },
+            "ItemType": "Headpiece",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Canthan_Mask",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Assassin",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
+        "23433": {
+            "ModelID": 23433,
+            "ModelFileID": 949,
+            "Names": {
+                "German": "Cantha-Maske",
+                "English": "Canthan Mask",
+                "Korean": "블레이드 칸타 마스크",
+                "French": "Masque canthien",
+                "Italian": "Maschera di Cantha",
+                "Spanish": "Máscara de Cantha"
+            },
+            "ItemType": "Headpiece",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Canthan_Mask",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Assassin",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
+        "23434": {
+            "ModelID": 23434,
+            "ModelFileID": 949,
+            "Names": {
+                "German": "Cantha-Maske",
+                "English": "Canthan Mask",
+                "Korean": "데스 칸타 마스크",
+                "French": "Masque canthien",
+                "Italian": "Maschera di Cantha",
+                "Spanish": "Máscara de Cantha"
+            },
+            "ItemType": "Headpiece",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Canthan_Mask",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Assassin",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
+        "23435": {
+            "ModelID": 23435,
+            "ModelFileID": 949,
+            "Names": {
+                "German": "Cantha-Maske",
+                "English": "Canthan Mask",
+                "Korean": "고스트 칸타 마스크",
+                "French": "Masque canthien",
+                "Italian": "Maschera di Cantha",
+                "Spanish": "Máscara de Cantha"
+            },
+            "ItemType": "Headpiece",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Canthan_Mask",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Assassin",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
         },
         "23794": {
             "ModelID": 23794,
@@ -91378,9 +91565,7 @@
             },
             "ItemType": "Headpiece",
             "DropInfo": "",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Monk_scalp_designs",
@@ -91888,6 +92073,126 @@
             "InventoryIconURL": "https://wiki.guildwars.com/images/thumb/7/7c/Ritualist_Shing_Jea_Headwrap_f.jpg/64px-Ritualist_Shing_Jea_Headwrap_f.jpg",
             "NickIndex": null,
             "Profession": "Ritualist",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
+        "25649": {
+            "ModelID": 25649,
+            "ModelFileID": 2286,
+            "Names": {
+                "German": "Monument-Maske",
+                "English": "Monument Mask",
+                "Korean": "기념의 마스크",
+                "French": "Masque du Monument",
+                "Italian": "Maschera Monumentale",
+                "Spanish": "Malla de monumento",
+                "TraditionalChinese": "紀念碑面罩",
+                "Japanese": "モニュメント マスク",
+                "Polish": "Monumentowa Maska",
+                "Russian": "Monument Mask",
+                "BorkBorkBork": "Munooment Maesk"
+            },
+            "ItemType": "Headpiece",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Monument_Mask",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Assassin",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
+        "25650": {
+            "ModelID": 25650,
+            "ModelFileID": 2286,
+            "Names": {
+                "German": "Monument-Maske",
+                "English": "Monument Mask",
+                "Korean": "기념의 마스크",
+                "French": "Masque du Monument",
+                "Italian": "Maschera Monumentale",
+                "Spanish": "Malla de monumento",
+                "TraditionalChinese": "紀念碑面罩",
+                "Japanese": "モニュメント マスク",
+                "Polish": "Monumentowa Maska",
+                "Russian": "Monument Mask",
+                "BorkBorkBork": "Munooment Maesk"
+            },
+            "ItemType": "Headpiece",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Monument_Mask",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Assassin",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
+        "25651": {
+            "ModelID": 25651,
+            "ModelFileID": 2286,
+            "Names": {
+                "German": "Monument-Maske",
+                "English": "Monument Mask",
+                "Korean": "기념의 마스크",
+                "French": "Masque du Monument",
+                "Italian": "Maschera Monumentale",
+                "Spanish": "Malla de monumento",
+                "TraditionalChinese": "紀念碑面罩",
+                "Japanese": "モニュメント マスク",
+                "Polish": "Monumentowa Maska",
+                "Russian": "Monument Mask",
+                "BorkBorkBork": "Munooment Maesk"
+            },
+            "ItemType": "Headpiece",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Monument_Mask",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Assassin",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
+        "25652": {
+            "ModelID": 25652,
+            "ModelFileID": 2286,
+            "Names": {
+                "German": "Monument-Maske",
+                "English": "Monument Mask",
+                "Korean": "기념의 마스크",
+                "French": "Masque du Monument",
+                "Italian": "Maschera Monumentale",
+                "Spanish": "Malla de monumento",
+                "TraditionalChinese": "紀念碑面罩",
+                "Japanese": "モニュメント マスク",
+                "Polish": "Monumentowa Maska",
+                "Russian": "Monument Mask",
+                "BorkBorkBork": "Munooment Maesk"
+            },
+            "ItemType": "Headpiece",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Monument_Mask",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Assassin",
             "Category": null,
             "SubCategory": null,
             "WikiScraped": false
@@ -92592,6 +92897,26 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "25954": {
+            "ModelID": 25954,
+            "ModelFileID": 2119,
+            "Names": {
+                "English": "Slim Spectacles"
+            },
+            "ItemType": "Headpiece",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Slim_Spectacles",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Assassin",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
         "17785": {
             "ModelID": 17785,
             "ModelFileID": 230449,
@@ -92621,6 +92946,26 @@
             "Category": null,
             "SubCategory": null,
             "WikiScraped": true
+        },
+        "25964": {
+            "ModelID": 25964,
+            "ModelFileID": 2120,
+            "Names": {
+                "English": "Spectacles"
+            },
+            "ItemType": "Headpiece",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Spectacles",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Assassin",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
         },
         "25970": {
             "ModelID": 25970,
@@ -92794,7 +93139,7 @@
         },
         "17294": {
             "ModelID": 17294,
-            "ModelFileID": -1,
+            "ModelFileID": 1490,
             "Names": {
                 "German": "Sonnenspeer-Narbenmuster",
                 "English": "Sunspear Scar Pattern",
@@ -92842,6 +93187,26 @@
             "SubCategory": null,
             "WikiScraped": false
         },
+        "25974": {
+            "ModelID": 25974,
+            "ModelFileID": 2121,
+            "Names": {
+                "English": "Tinted Spectacles"
+            },
+            "ItemType": "Headpiece",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tinted_Spectacles",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Assassin",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
         "19818": {
             "ModelID": 19818,
             "ModelFileID": 1796,
@@ -92860,9 +93225,7 @@
             },
             "ItemType": "Headpiece",
             "DropInfo": "",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Assassin_masks",
@@ -92892,9 +93255,7 @@
             },
             "ItemType": "Headpiece",
             "DropInfo": "",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Assassin_masks",
@@ -92958,6 +93319,26 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "24872": {
+            "ModelID": 24872,
+            "ModelFileID": 2042,
+            "Names": {
+                "English": "Asuran Gloves"
+            },
+            "ItemType": "Gloves",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Asuran_Gloves",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Assassin",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
         "23858": {
             "ModelID": 23858,
             "ModelFileID": 1035,
@@ -92987,6 +93368,31 @@
             "Category": null,
             "SubCategory": null,
             "WikiScraped": true
+        },
+        "23442": {
+            "ModelID": 23442,
+            "ModelFileID": 952,
+            "Names": {
+                "German": "Cantha-Handschuhe",
+                "English": "Canthan Gloves",
+                "Korean": "섀도우 칸타 글러브",
+                "French": "Gants canthiens",
+                "Italian": "Guanti di Cantha",
+                "Spanish": "Par de guantes de Cantha"
+            },
+            "ItemType": "Gloves",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Canthan_Gloves",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Assassin",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
         },
         "23647": {
             "ModelID": 23647,
@@ -93056,9 +93462,7 @@
             },
             "ItemType": "Gloves",
             "DropInfo": "",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Chaos_Gloves",
@@ -93496,6 +93900,36 @@
             "InventoryIconURL": "https://wiki.guildwars.com/images/8/81/Ritualist-tango-icon-20.png",
             "NickIndex": null,
             "Profession": "Ritualist",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
+        "25655": {
+            "ModelID": 25655,
+            "ModelFileID": 2289,
+            "Names": {
+                "German": "Monument-Handschuhe",
+                "English": "Monument Gloves",
+                "Korean": "기념의 글러브",
+                "French": "Gants du Monument",
+                "Italian": "Guanti Monumentali",
+                "Spanish": "Par de guantes de monumento",
+                "TraditionalChinese": "紀念碑手套",
+                "Japanese": "モニュメント グローブ",
+                "Polish": "Monumentowe Rękawice",
+                "Russian": "Monument Gloves",
+                "BorkBorkBork": "Munooment Glufes"
+            },
+            "ItemType": "Gloves",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Monument_Gloves",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Assassin",
             "Category": null,
             "SubCategory": null,
             "WikiScraped": false
@@ -94002,7 +94436,7 @@
         },
         "17300": {
             "ModelID": 17300,
-            "ModelFileID": -1,
+            "ModelFileID": 1493,
             "Names": {
                 "German": "Sonnenspeer-Handschuhe",
                 "English": "Sunspear Gloves",
@@ -95550,9 +95984,7 @@
             },
             "ItemType": "Minipet",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Miniature_M.O.X.",
@@ -95962,9 +96394,7 @@
             },
             "ItemType": "Minipet",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Miniature_Seer",
@@ -96416,9 +96846,7 @@
             },
             "ItemType": "Quest_Item",
             "DropInfo": "",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Hammer_of_Kathandrax",
@@ -96448,9 +96876,7 @@
             },
             "ItemType": "Quest_Item",
             "DropInfo": "Dropped by data to be added",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Bottom_Left_Map_Piece",
@@ -96480,9 +96906,7 @@
             },
             "ItemType": "Quest_Item",
             "DropInfo": "Dropped by data to be added",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Bottom_Right_Map_Piece",
@@ -96512,9 +96936,7 @@
             },
             "ItemType": "Quest_Item",
             "DropInfo": "Dropped by data to be added",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Top_Left_Map_Piece",
@@ -96544,9 +96966,7 @@
             },
             "ItemType": "Quest_Item",
             "DropInfo": "Dropped by data to be added",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Top_Right_Map_Piece",
@@ -96602,7 +97022,7 @@
     "Storybook": {
         "27976": {
             "ModelID": 27976,
-            "ModelFileID": -1,
+            "ModelFileID": 153951,
             "Names": {
                 "German": "Verschlüsselte Charr-Schlachtpläne",
                 "English": "Encrypted Charr Battle Plans",
@@ -96632,7 +97052,7 @@
         },
         "27977": {
             "ModelID": 27977,
-            "ModelFileID": -1,
+            "ModelFileID": 153951,
             "Names": {
                 "German": "Verschlüsselte Charr-Schlachtpläne",
                 "English": "Encrypted Charr Battle Plans",
@@ -96698,9 +97118,7 @@
             },
             "ItemType": "Storybook",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Hero%27s_Handbook",
@@ -96750,9 +97168,7 @@
             },
             "ItemType": "Storybook",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Master_Dungeon_Guide",
@@ -96782,9 +97198,7 @@
             },
             "ItemType": "Storybook",
             "DropInfo": "No data added yet",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Night_Falls",
@@ -96814,9 +97228,7 @@
             },
             "ItemType": "Storybook",
             "DropInfo": "",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Night_Falls",
@@ -96846,9 +97258,7 @@
             },
             "ItemType": "Storybook",
             "DropInfo": "",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Shiro's_Return",
@@ -96878,9 +97288,7 @@
             },
             "ItemType": "Storybook",
             "DropInfo": "",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Shiro's_Return",
@@ -96910,9 +97318,7 @@
             },
             "ItemType": "Storybook",
             "DropInfo": "",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Young_Heroes_of_Tyria",
@@ -97004,9 +97410,7 @@
             },
             "ItemType": "Costume_Headpiece",
             "DropInfo": "",
-            "Attributes": [
-                "None_"
-            ],
+            "Attributes": [],
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Ice_Shard_Crest",

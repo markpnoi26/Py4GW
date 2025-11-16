@@ -1274,12 +1274,13 @@ class InventoryHandler:
             item = cache.Cached_Item(item_id, slot)
             result.cached_inventory.append(item)
             
-            if not data_collector.hasItem(item_id):
-                item.action = ItemAction.Collect_Data
-                continue
-            
             has_empty_slot = item.id == 0 or has_empty_slot
             if item.id == 0:
+                continue
+            
+            if not data_collector.hasItem(item_id):
+                item.action = ItemAction.Collect_Data
+                result.actions[item_id] = item
                 continue
             
             if item.is_blacklisted:
@@ -1289,8 +1290,6 @@ class InventoryHandler:
                 result.inventory_changed = True
             
             if (not item.is_inventory_item or item.quantity <= 0):
-                # ConsoleLog(
-                #     "LootEx", f"Item {item.name} ({item.id}) is not an inventory item or has no quantity, skipping.", Console.MessageType.Debug)
                 continue
             
             if not self.CanProcessItem(item):                
@@ -1309,6 +1308,9 @@ class InventoryHandler:
                     return False
                 
                 if not item.is_inventory_item:
+                    return False
+                
+                if existing_item.action == ItemAction.Collect_Data:
                     return False
                 
                 if existing_item.quantity != item.quantity:

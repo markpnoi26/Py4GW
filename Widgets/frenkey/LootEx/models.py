@@ -1,11 +1,13 @@
 from datetime import date, datetime, timedelta
 import json
 import math
+import os
 import re
 import base64
 from dataclasses import dataclass, field
 from typing import ClassVar, Iterable, Iterator, List, Optional, SupportsIndex, overload
 
+import Py4GW
 from PyItem import ItemModifier
 from Widgets.frenkey.LootEx import enum
 from Widgets.frenkey.LootEx.enum import Campaign, EnemyType, MaterialType, ModType, ModifierIdentifier, ModifierValueArg, ModsModels
@@ -26,6 +28,9 @@ language_order = [
     ServerLanguage.Russian,
     ServerLanguage.BorkBorkBork,
 ]
+
+item_textures_path = os.path.join(Py4GW.Console.get_projects_path(), "Textures", "Items")
+missing_texture_path = os.path.join(Py4GW.Console.get_projects_path(), "Textures", "missing_texture.png")
 
 class ModsPair:
     def __init__(self, prefix: ModsModels | None, suffix: ModsModels | None):
@@ -293,9 +298,13 @@ class ItemsByType(dict[ItemType, dict[int, 'Item']]):
         if item.item_type not in self:
             self[item.item_type] = {}
         
+        if len(item.names) == 0:
+            return
+        
         if item.model_id not in self[item.item_type]:
             self[item.item_type][item.model_id] = item
             self.All.append(item)
+            
         else:
             existing_item = self[item.item_type][item.model_id]
             existing_item.update(item)
@@ -352,6 +361,25 @@ class ItemsByType(dict[ItemType, dict[int, 'Item']]):
     def to_json(self) -> dict:
         return {item_type.name: {item.model_id : item.to_json() for item in items.values()} for item_type, items in self.items()}
     
+    def get_texture_by_name(self, name: str, language: ServerLanguage = ServerLanguage.English) -> str:
+        """
+        This is unsafe. This is not very precise since we get dozens of items with the same name and different models.
+        
+        Args:
+            name (str): The name of the item to retrieve.
+            language (ServerLanguage): The language of the item name.
+        
+        Returns:
+            Item: The Item object with the specified name, or None if not found.
+        """
+        
+        for item in self.All:
+            if item.get_name(language).lower() == name.lower():
+                if item.texture_file and not "missing_texture" in item.texture_file:
+                    return item.texture_file
+            
+        return missing_texture_path
+    
     @staticmethod
     def from_dict(data: dict) -> 'ItemsByType':
         """
@@ -376,7 +404,7 @@ class ItemsByType(dict[ItemType, dict[int, 'Item']]):
         return item_by_types
 
 @dataclass
-class Item():
+class Item():    
     model_id: int
     item_type: ItemType = ItemType.Unknown
     model_file_id: int = -1
@@ -405,7 +433,13 @@ class Item():
         self.name : str = self.get_name()
         self.next_nick_week: Optional[date] = self.get_next_nick_date()
         self.weeks_until_next_nick: Optional[int] = self.get_weeks_until_next_nick()
-
+        
+        texture_file = os.path.join(item_textures_path, f"{self.inventory_icon}")
+        if texture_file and os.path.exists(texture_file):
+            self.texture_file = texture_file
+        else:
+            self.texture_file = missing_texture_path
+            
     def get_weeks_until_next_nick(self) -> Optional[int]:
         if self.nick_index is None:
             return None
@@ -559,7 +593,7 @@ class Item():
             inventory_icon=json.get("InventoryIcon", None),
             inventory_icon_url=json.get("InventoryIconURL", None),
             attributes=[Attribute[attr] for attr in json["Attributes"]] if "Attributes" in json and json["Attributes"] else [],
-            wiki_url=json["WikiURL"],
+            wiki_url=json.get("WikiURL", ""),
             common_salvage=SalvageInfoCollection.from_dict(json.get("CommonSalvage", {})),
             rare_salvage=SalvageInfoCollection.from_dict(json.get("RareSalvage", {})), 
             nick_index=json["NickIndex"] if "NickIndex" in json else None,
@@ -679,6 +713,7 @@ class ItemMod():
         self.full_name : str = self.get_full_name()
         self.description: str  = self.get_description()
         self.applied_name : str = self.get_applied_name()
+        
         # self.identifier : str = self.names.get(ServerLanguage.English, "")
         
     def get_modifier_range(self) -> IntRange:
@@ -693,7 +728,7 @@ class ItemMod():
         self.names[language] = name        
         self.name = self.get_name(language)   
                 
-    def has_missing_names(self) -> ServerLanguage | bool:
+    def has_missing_names(self) -> Optional[ServerLanguage]:
         if not self.names:
             return ServerLanguage.English
         
@@ -702,7 +737,7 @@ class ItemMod():
                 if lang not in self.names or not self.names[lang]:
                     return lang
         
-        return False
+        return None
     
     @staticmethod
     def decode_binary_identifier(encoded: str) -> tuple[ModType, list[tuple[int, int]]]:
@@ -925,8 +960,19 @@ class Rune(ItemMod):
     vendor_value: int = 0
     profession: Profession = Profession._None
     rarity: Rarity = Rarity.White
+    
+    
+    model_id: int = -1
+    model_file_id: int = -1
+    texture_file: str = field(init=False)
+    
     inventory_icon: Optional[str] = None
     inventory_icon_url: Optional[str] = None
+    
+    def __post_init__(self):
+        super().__post_init__()
+        self.texture_file = os.path.join(item_textures_path, f"{self.inventory_icon}") if self.inventory_icon and os.path.exists(os.path.join(item_textures_path, f"{self.inventory_icon}")) else missing_texture_path
+        
         
     def get_applied_name(self, language: Optional[ServerLanguage] = None) -> str:
         if language is None:
@@ -1060,6 +1106,8 @@ class Rune(ItemMod):
     def to_json(self) -> dict:
         return {
             'Identifier': self.identifier,
+            'ModelId': self.model_id,
+            'ModelFileId': self.model_file_id,
             'Descriptions': {lang.name: name for lang, name in self.descriptions.items()},
             'Names': {lang.name: n for lang, n in self.names.items()},
             'ModType': self.mod_type.name,
@@ -1087,6 +1135,8 @@ class Rune(ItemMod):
     def from_json(json: dict) -> 'Rune':
         return Rune(       
             identifier=json["Identifier"],    
+            model_id=json.get("ModelId", -1),
+            model_file_id=json.get("ModelFileId", -1),
             descriptions={ServerLanguage[lang]: name for lang, name in json["Descriptions"].items()},
             names={ServerLanguage[lang]: name for lang, name in json["Names"].items()},
             mod_type=ModType[json["ModType"]],
@@ -1120,8 +1170,12 @@ class WeaponMod(ItemMod):
     ## extracted weapon mods share the same modelid, thus we need to check the item type it belongs to through ModifierIdentifier.ItemType which gives us a ModTargetType
 
     def __post_init__(self):
+        from Widgets.frenkey.LootEx.data import Data
+        data = Data()
+        
         ItemMod.__post_init__(self)
         self.is_inscription : bool = self.names.get(ServerLanguage.English, "").startswith("\"") if self.names else False
+        
 
     def is_in_item_modifier(self, modifiers : list["ItemModifier"], item_type : ItemType, tolerance : int = -1) -> bool:
         is_tolerance_set = tolerance if tolerance >= 0 else 0
@@ -1253,7 +1307,7 @@ class WeaponMod(ItemMod):
 
     def to_json(self) -> dict:
         return {
-            'Identifier': self.identifier,
+            'Identifier': self.identifier,          
             'Descriptions': {lang.name: name for lang, name in self.descriptions.items()},
             #Names sorted by language_order
             'Names': {lang.name : n for lang, n in sorted(self.names.items(), key=lambda x: language_order.index(x[0]))},

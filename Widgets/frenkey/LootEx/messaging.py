@@ -74,11 +74,11 @@ def MergeWhenCollectionPaused():
     data.MergeDiffItems()
     
     for acc in GLOBAL_CACHE.ShMem.GetAllAccountData():
-        if acc.AccountEmail == GLOBAL_CACHE.Player.GetAccountEmail():
+        if acc.AccountEmail == account_email:
             continue
         
-        GLOBAL_CACHE.ShMem.SendMessage(GLOBAL_CACHE.Player.GetAccountEmail(), acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.ReloadData, 0, 0))
-        GLOBAL_CACHE.ShMem.SendMessage(GLOBAL_CACHE.Player.GetAccountEmail(), acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.ResumeDataCollection, 0, 0))
+        GLOBAL_CACHE.ShMem.SendMessage(account_email, acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.ReloadData, 0, 0))
+        GLOBAL_CACHE.ShMem.SendMessage(account_email, acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.ResumeDataCollection, 0, 0))
             
     return True
 
