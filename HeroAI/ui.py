@@ -1,36 +1,30 @@
-
 from collections.abc import Callable
 import ctypes
-from enum import IntEnum
 import math
 import os
 import random
 from Py4GW import Console
+import Py4GW
 import PyImGui
-import PyUIManager
 from HeroAI import windows
 from HeroAI.cache_data import CacheData
 from HeroAI.commands import HeroAICommands
-from HeroAI.constants import MAX_NUM_PLAYERS, NUMBER_OF_SKILLS
+from HeroAI.constants import NUMBER_OF_SKILLS
 from HeroAI.settings import Settings
 from HeroAI.types import GameOptionStruct
-from HeroAI.utils import DrawFlagAll, DrawHeroFlag, IsHeroFlagged
-from HeroAI.windows import CompareAndSubmitGameOptions, SubmitGameOptions
-from Py4GWCoreLib import Agent, ImGui
-from Py4GWCoreLib.Effect import Effects
+from HeroAI.utils import IsHeroFlagged
+from HeroAI.windows import CompareAndSubmitGameOptions
+from Py4GWCoreLib import ImGui
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.GlobalCache.SharedMemory import AccountData, SharedMessage
 from Py4GWCoreLib.ImGui_src.IconsFontAwesome5 import IconsFontAwesome5
-from Py4GWCoreLib.ImGui_src.Textures import GameTexture, GameTexture, TextureSliceMode, TextureState, ThemeTexture, ThemeTextures
+from Py4GWCoreLib.ImGui_src.Textures import GameTexture, GameTexture, TextureState, ThemeTexture, ThemeTextures
 from Py4GWCoreLib.ImGui_src.WindowModule import WindowModule
-from Py4GWCoreLib.ImGui_src.types import TEXTURE_FOLDER, Alignment, ImGuiStyleVar, StyleTheme
+from Py4GWCoreLib.ImGui_src.types import Alignment, ImGuiStyleVar, StyleTheme
 from Py4GWCoreLib.Overlay import Overlay
 from Py4GWCoreLib.Player import Player
-from Py4GWCoreLib.Routines import Routines
-from Py4GWCoreLib.Skill import Skill
-from Py4GWCoreLib.Skillbar import SkillBar
-from Py4GWCoreLib.UIManager import DIALOG_CHILD_OFFSET, NPC_DIALOG_HASH, UIManager
-from Py4GWCoreLib.enums_src.GameData_enums import Allegiance, Attribute, Profession, ProfessionShort
+from Py4GWCoreLib.UIManager import UIManager
+from Py4GWCoreLib.enums_src.GameData_enums import Allegiance, Profession, ProfessionShort
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.enums_src.Multiboxing_enums import SharedCommandType
 from Py4GWCoreLib.py4gwcorelib_src.Color import Color
@@ -86,7 +80,7 @@ settings = Settings()
 casting_animation_timer = Timer()
 casting_animation_timer.Start()
 
-dialog_throttle = ThrottledTimer(125)
+dialog_throttle = ThrottledTimer(500)
 
 commands = HeroAICommands()
 gray_color = Color(150, 150, 150, 255)
@@ -1832,7 +1826,7 @@ def draw_hotbars(accounts: list[AccountData], cached_data: CacheData):
     draw_consumables_window(cached_data)
 
 dialog_open : bool = False
-frame_coords : list[tuple[int, int, int, int, int]] = []
+frame_coords : list[tuple[int, tuple[int, int, int, int]]] = []
 dialog_coords : tuple[int, int, int, int] = (0, 0, 0, 0)
 overlay = Overlay()
 
@@ -1864,43 +1858,76 @@ def is_left_mouse_clicked() -> bool:
     _left_was_pressed = pressed
 
     return clicked
-        
-            
+    
 def draw_dialog_overlay(accounts: list[AccountData], cached_data: CacheData, messages: list[tuple[int, SharedMessage]]):
     global frame_coords, dialog_open, dialog_coords
+    if not settings.ShowDialogOverlay:
+        return
+    
+    own_data = GLOBAL_CACHE.ShMem.GetAccountDataFromEmail(cached_data.account_email)
+    if own_data is None or not own_data.PlayerIsPartyLeader:
+        return
     
     if dialog_throttle.IsExpired():
         dialog_throttle.Reset()
-        dialog_open = UIManager.IsNPCDialogVisible()
-        
-        button_ids = UIManager.GetDialogButtonIDs()
-        frame_coords = [(id, *UIManager.GetFrameCoords(id)) for id in button_ids]
+        dialog_open = UIManager.IsNPCDialogVisible()        
+        frame_coords = UIManager.GetDialogButtonFrames() if dialog_open else []
             
-        fid = UIManager.GetFrameIDByHash(NPC_DIALOG_HASH)
-        dialog_coords = UIManager.GetFrameCoords(fid)
-    
-    if not frame_coords or not dialog_open or not dialog_coords:
+    if not frame_coords or not dialog_open:
         return
     
     pyimgui_io = PyImGui.get_io()
     mouse_pos = (pyimgui_io.mouse_pos_x, pyimgui_io.mouse_pos_y)
     
-    if Console.is_window_active():
-        for i, frame in enumerate(frame_coords):                        
-            if ImGui.is_mouse_in_rect((frame[1], frame[2], frame[3] - frame[1], frame[4] - frame[2]), mouse_pos):
+    if Console.is_window_active():        
+        for i, (frame_id, frame) in enumerate(frame_coords):                
+            if ImGui.is_mouse_in_rect((frame[0], frame[1], frame[2] - frame[0], frame[3] - frame[1]), mouse_pos):                
                 if is_left_mouse_clicked() and pyimgui_io.key_ctrl:
                     accounts = [acc for acc in accounts if acc.AccountEmail != cached_data.account_email]
                     commands.send_dialog(accounts, i + 1)
                     return
                 else:
-                    style = ImGui.get_style()
-                    style.WindowBg.push_color((0, 0, 0, 0))
                     ImGui.begin_tooltip()
                     ImGui.text_colored(f"Ctrl + Click to select on all accounts.", gray_color.color_tuple, 12)
                     ImGui.end_tooltip()
-                    style.WindowBg.pop_color()
 
     pass
+
+def draw_skip_cutscene_overlay():
+    in_cutscene = GLOBAL_CACHE.Map.IsInCinematic()
+    
+    if in_cutscene:
+        pyimgui_io = PyImGui.get_io()
+        mouse = (pyimgui_io.mouse_pos_x, pyimgui_io.mouse_pos_y)
+        skip_cutscene_hash = 140452905
+        button_offsets = [6,1,0]
+        skip_cutscene_id = UIManager.GetChildFrameID(skip_cutscene_hash, button_offsets)
+        
+        frame_exists = UIManager.FrameExists(skip_cutscene_id)
+        if frame_exists:          
+            frame = UIManager.GetFrameCoords(skip_cutscene_id)
+            ConsoleLog("HeroAI", f"Skip Cutscene button coords: {frame}", Py4GW.Console.MessageType.Debug)
+            
+            if ImGui.is_mouse_in_rect((frame[0], frame[1], frame[2] - frame[0], frame[3] - frame[1]), mouse):                            
+                if is_left_mouse_clicked() and pyimgui_io.key_ctrl:
+                    current_account = GLOBAL_CACHE.Player.GetAccountEmail()
+                    
+                    if current_account:                
+                        for account in GLOBAL_CACHE.ShMem.GetAllAccountData():
+                            if account.AccountEmail != current_account:
+                                ConsoleLog("HeroAI", f"Sending SkipCutscene command to account: {account.AccountEmail}", Py4GW.Console.MessageType.Info)
+                                
+                                GLOBAL_CACHE.ShMem.SendMessage(
+                                    current_account,
+                                    account.AccountEmail,
+                                    SharedCommandType.SkipCutscene,
+                                    (0, 0, 0, 0),
+                        )
+                    
+                else:
+                    ImGui.begin_tooltip()
+                    ImGui.text_colored(f"Ctrl + Click to skip cutscene on all accounts.", gray_color.color_tuple, 12)
+                    ImGui.end_tooltip()                          
 
 def draw_configure_window():
     from Widgets import HeroAI
@@ -1934,6 +1961,12 @@ def draw_configure_window():
                     if show_command_panel != settings.ShowCommandPanel:
                         settings.ShowCommandPanel = show_command_panel
                         settings.save_settings()
+                        
+                    show_dialog_overlay = ImGui.checkbox("Show Dialog Overlay", settings.ShowDialogOverlay)
+                    if show_dialog_overlay != settings.ShowDialogOverlay:
+                        settings.ShowDialogOverlay = show_dialog_overlay
+                        settings.save_settings()
+                    ImGui.show_tooltip("Overlay buttons on NPC dialog with an invisible button for quick selection on all accounts by holding CTRL.\nOnly available to the party leader.\n\nThis is quite expensive due to UI queries, so only enable if needed.")
                         
                 ImGui.end_child()
                 ImGui.end_tab_item()

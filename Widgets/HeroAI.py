@@ -51,7 +51,7 @@ from HeroAI.windows import DrawMultiboxTools
 from HeroAI.windows import DrawOptions
 from HeroAI.windows import DrawPanelButtons
 from HeroAI.windows import SubmitGameOptions
-from HeroAI.ui import draw_combined_hero_panel, draw_command_panel, draw_configure_window, draw_dialog_overlay, draw_hero_panel, draw_hotbars
+from HeroAI.ui import draw_combined_hero_panel, draw_command_panel, draw_configure_window, draw_dialog_overlay, draw_hero_panel, draw_hotbars, draw_skip_cutscene_overlay
 from Py4GWCoreLib import GLOBAL_CACHE
 from Py4GWCoreLib import ActionQueueManager
 from Py4GWCoreLib import IconsFontAwesome5
@@ -612,7 +612,7 @@ def main():
             return
 
         cached_data.Update()
-                        
+        
         if SETTINGS_THROTTLE.IsExpired():
             SETTINGS_THROTTLE.Reset()
                             
@@ -653,50 +653,7 @@ def main():
         pass
 
 def minimal():    
-    in_cutscene = GLOBAL_CACHE.Map.IsInCinematic()
-    
-    if in_cutscene:
-        skip_cutscene_hash = 140452905
-        button_offsets = [6,1,0]
-        skip_cutscene_id = UIManager.GetChildFrameID(skip_cutscene_hash, button_offsets)
-        
-        frame_exists = UIManager.FrameExists(skip_cutscene_id)
-        if frame_exists:          
-            left, top, right, bottom = UIManager.GetFrameCoords(skip_cutscene_id)
-            width = float(right - left)
-            height = float(bottom - top)
-            
-            io = PyImGui.get_io()
-            screen_w, screen_h = io.display_size_x, io.display_size_y
-            btn_size = (width, height)
-            PyImGui.set_next_window_pos(screen_w - btn_size[0], screen_h - btn_size[1])
-            PyImGui.set_next_window_size(btn_size[0] + 10, btn_size[1] + 10)
-            if PyImGui.begin("HeroAI Minimal", True, ImGui.PushTransparentWindow()):
-                ImGui.PopTransparentWindow()
-                
-                if PyImGui.invisible_button("Skip >", btn_size[0], btn_size[1]):
-                    current_account = GLOBAL_CACHE.Player.GetAccountEmail()
-                    
-                    if io.key_ctrl:
-                        if current_account:                
-                            for account in GLOBAL_CACHE.ShMem.GetAllAccountData():
-                                if account.AccountEmail != current_account:
-                                    ConsoleLog(MODULE_NAME, f"Sending SkipCutscene command to account: {account.AccountEmail}", Py4GW.Console.MessageType.Info)
-                                    
-                                    GLOBAL_CACHE.ShMem.SendMessage(
-                                        current_account,
-                                        account.AccountEmail,
-                                        SharedCommandType.SkipCutscene,
-                                        (0, 0, 0, 0),
-                            )
-                        
-                    GLOBAL_CACHE.Map.SkipCinematic()
-                    
-                ImGui.show_tooltip("Click with holding Ctrl to Skip Cutscene for all accounts.")
-            else:
-                ImGui.PopTransparentWindow()  
-                 
-            PyImGui.end()
+    draw_skip_cutscene_overlay()
 
 def on_enable():
     settings.reset()

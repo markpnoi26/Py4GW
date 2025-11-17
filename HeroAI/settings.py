@@ -90,6 +90,8 @@ class Settings:
         self.ShowPanelOnlyOnLeaderAccount = False
         self.DisableAutomationOnLeaderAccount = False
         
+        self.ShowDialogOverlay = True
+        
         self.CombinePanels = False
         self.ShowHeroPanels = True
         self.ShowHeroEffects = True
@@ -167,6 +169,7 @@ class Settings:
         
         self.ini_handler.write_key("General", "ShowPanelOnlyOnLeaderAccount", str(self.ShowPanelOnlyOnLeaderAccount))
         self.ini_handler.write_key("General", "DisableAutomationOnLeaderAccount", str(self.DisableAutomationOnLeaderAccount))
+        self.ini_handler.write_key("General", "ShowDialogOverlay", str(self.ShowDialogOverlay))
         
         self.ini_handler.write_key("General", "CombinePanels", str(self.CombinePanels))
         self.ini_handler.write_key("General", "ShowHeroPanels", str(self.ShowHeroPanels))
@@ -199,6 +202,7 @@ class Settings:
         
         self.ShowPanelOnlyOnLeaderAccount = self.ini_handler.read_bool("General", "ShowPanelOnlyOnLeaderAccount", False)
         self.DisableAutomationOnLeaderAccount = self.ini_handler.read_bool("General", "DisableAutomationOnLeaderAccount", False)
+        self.ShowDialogOverlay = self.ini_handler.read_bool("General", "ShowDialogOverlay", True)
         
         self.CombinePanels = self.ini_handler.read_bool("General", "CombinePanels", False)
         self.ShowHeroPanels = self.ini_handler.read_bool("General", "ShowHeroPanels", True)
