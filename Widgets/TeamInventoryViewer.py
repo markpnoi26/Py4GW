@@ -69,7 +69,7 @@ INVENTORY_BAGS = {
     "Bag1": Bags.Bag1.value,
     "Bag2": Bags.Bag2.value,
     "EquipmentPack": Bags.EquipmentPack.value,
-    "Equipped": Bags.EquippedItems.value,
+    "EquippedItems": Bags.EquippedItems.value,
 }
 
 STORAGE_BAGS = {
@@ -258,60 +258,65 @@ def get_storage_bag_items_coroutine(bag, bag_id, email, storage_name):
 def _collect_bag_items(bag, bag_id, email, storage_name=None, char_name=None):
     """Shared coroutine to fetch all items from a bag with modifier and Frenkey DB name support."""
 
-    # TODO(mark): remove once the StripMarkup is in utils
     def _strip_markup(text):
-        """
-        Remove all markup tags and return plain visible text only.
-        This matches the same tags used by TokenizeMarkupText.
-        """
-
         if not text:
             return ""
 
-        # 1. Remove protected color blocks but KEEP their inner text
-        #    example: <c=@gold>Hello</c> -> Hello
         text = re.sub(r"<c=[^>]+>(.*?)</c>", r"\1", text, flags=re.IGNORECASE)
-
-        # 2. Remove standalone bullet codes {s} and {sc}
         text = re.sub(r"\{s\}", "", text, flags=re.IGNORECASE)
         text = re.sub(r"\{sc\}", "", text, flags=re.IGNORECASE)
-
-        # 3. Replace known break/paragraph tags with newlines
         text = re.sub(r"<br\s*/?>", "\n", text, flags=re.IGNORECASE)
         text = re.sub(r"</?p>", "\n", text, flags=re.IGNORECASE)
-
-        # 4. Remove ANY REMAINING <...> or {...} tags
         text = re.sub(r"<[^>]+>", "", text)
         text = re.sub(r"\{[^}]+\}", "", text)
-
-        # 5. Collapse duplicated whitespace
         text = re.sub(r"[ \t]+", " ", text)
         text = re.sub(r"\n\s+", "\n", text)
 
         return text.strip()
 
-    def _find_last_name_stored(model_id, slot, count, bag_id, storage_name=None, char_name=None):
-        items = {}
+    def _find_last_name_stored(model_id, slot, count, storage_name=None, char_name=None):
+        """
+        Find an existing item name from TEAM_INVENTORY_CACHE
+        matching same model_id, slot, quantity.
+        """
         if char_name:
             items = (
                 TEAM_INVENTORY_CACHE.get(email, {})
-                .get('Characters', {})
+                .get("Characters", {})
                 .get(char_name, {})
                 .get("Inventory", {})
                 .get(Bags(bag_id).name, {})
             )
         elif storage_name:
             items = (
-                TEAM_INVENTORY_CACHE.get(email, {}).get('Storage', {}).get(storage_name, {}).get(Bags(bag_id).name, {})
+                TEAM_INVENTORY_CACHE.get(email, {})
+                .get("Storage", {})
+                .get(storage_name, {})
             )
+        else:
+            items = {}
 
         for item_name, value in items.items():
-            if value.get('model_id') == model_id and value.get('slot', {}).get(slot, 0) == count:
+            if (
+                value.get("model_id") == model_id
+                and value.get("slot", {}).get(str(slot), 0) == count
+            ):
                 return item_name
+
+        return None
+
+    def _generate_unique_key(bag_items: dict, base_name: str) -> str:
+        if base_name not in bag_items:
+            return base_name
+
+        i = 1
+        while f"{base_name} #{i}" in bag_items:
+            i += 1
+
+        return f"{base_name} #{i}"
 
     bag_items = OrderedDict()
 
-    # Ensure JSON databases are loaded
     for item in bag.GetItems():
         if not item or item.model_id == 0:
             continue
@@ -321,119 +326,47 @@ def _collect_bag_items(bag, bag_id, email, storage_name=None, char_name=None):
         quantity = item.quantity
         slot = item.slot
 
-        final_name = ''
         try:
             final_name = ModelID(model_id).name.replace("_", " ")
+
+            # Special dye handling - maybe need to hadle mods and whatever here too
             if model_id == ModelID.Vial_Of_Dye:
                 dye_int = GLOBAL_CACHE.Item.GetDyeColor(item_id)
-                final_name = f'{final_name} [{DyeColor(dye_int).name}]'
+                final_name = f"{final_name} [{DyeColor(dye_int).name}]"
         except ValueError:
             final_name = None
 
         if not final_name:
-            final_name = _find_last_name_stored(model_id, slot, quantity, bag_id, storage_name=storage_name, char_name=char_name)
+            stored_name = _find_last_name_stored(model_id, slot, quantity, storage_name=storage_name, char_name=char_name)
+            if stored_name:
+                final_name = stored_name
 
-        # === 4️⃣ Fallback to in-game request ===
         if not final_name:
             try:
-                markedup_name = yield from Routines.Yield.Items.GetItemNameByItemID(item_id)
-                final_name = _strip_markup(markedup_name)
-                # print('not found_name', final_name)
+                markedup = yield from Routines.Yield.Items.GetItemNameByItemID(item_id)
+                final_name = _strip_markup(markedup)
             except Exception as e:
                 print(f"Exception fetching name for {item_id}: {e}")
                 final_name = None
 
+        # Nothing worked → cannot name item
         if not final_name:
             continue
 
-        # === Record result ===
-        bag_items[final_name] = {"model_id": model_id, "slot": {slot: quantity}}
+        if final_name in bag_items:
+            # If the same name exists but represents a different instance,
+            # generate "Name #1", "Name #2", etc.
+            final_name = _generate_unique_key(bag_items, final_name)
+
+        if final_name not in bag_items:
+            bag_items[final_name] = {
+                "model_id": model_id,
+                "slot": {slot: quantity},
+            }
+        else:
+            bag_items[final_name]["slot"][slot] = quantity
 
     return bag_items
-
-
-# TODO(mark): Use these functions once LootEx is ready
-# def get_armor_name_from_modifiers(item):
-#     # Prefer the in-game name if available
-#     final_name = Util.GetItemDataName(item.item_id)
-#     if final_name and not final_name.startswith("Unknown"):
-#         base_name = final_name.strip()
-#     else:
-#         try:
-#             base_name = ModelID(item.model_id).name.replace("_", " ")
-#         except ValueError:
-#             base_name = None
-#         base_name = str(item.item_type.GetName()) if not base_name else base_name
-
-#     # Collect mods
-#     _, armor_mods, _ = Util.GetMods(item.item_id)
-#     prefix = None
-#     suffix = None
-
-#     for armor_mod in armor_mods:
-#         mod_name = armor_mod.identifier.strip()
-#         mod_type = armor_mod.mod_type.name
-
-#         if mod_type == "Prefix":
-#             prefix = mod_name
-#         elif mod_type == "Suffix":
-#             suffix = mod_name
-
-#     # --- Construct name ---
-#     name_parts = []
-
-#     if prefix:
-#         name_parts.append(prefix)
-
-#     name_parts.append(base_name)
-
-#     if suffix:
-#         name_parts.append(f"{suffix}")
-
-#     return " ".join(name_parts)
-
-
-# def get_weapon_name_from_modifiers(item):
-#     # Prefer the in-game name if available
-#     final_name = Util.GetItemDataName(item.item_id)
-#     if final_name and not final_name.startswith("Unknown"):
-#         base_name = final_name.strip()
-#     else:
-#         base_name = f'[{str(item.item_type.GetName())}]'
-
-#     # Collect mods
-#     _, _, weapon_mods = Util.GetMods(item.item_id)
-#     prefix = None
-#     suffix = None
-#     inherent = None
-
-#     for weapon_mod in weapon_mods:
-#         mod_name = weapon_mod.identifier.strip()
-#         mod_type = weapon_mod.mod_type.name
-
-#         if mod_type == "Prefix":
-#             prefix = mod_name
-#         elif mod_type == "Suffix":
-#             suffix = mod_name
-#         elif mod_type == "Inherent":
-#             inherent = mod_name
-
-#     # --- Construct name ---
-#     name_parts = []
-
-#     # Inherent mods like “Vampiric” or “Insightful” go before everything else
-#     if prefix:
-#         name_parts.append(prefix)
-
-#     name_parts.append(base_name)
-
-#     if suffix:
-#         name_parts.append(f"{suffix}")
-
-#     if inherent:
-#         name_parts.append(f"({inherent})")
-
-#     return " ".join(name_parts)
 
 
 def record_account_data():
