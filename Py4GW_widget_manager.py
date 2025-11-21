@@ -17,7 +17,7 @@ class Widget:
         self.module : ModuleType = module
         self.configuring : bool = False
         self.enabled : bool = bool(widget_data.get("enabled", True))
-        self.optional : bool = bool(widget_data.get("optional", True))
+        self.optional : bool = getattr(module, "OPTIONAL", True) 
         self.category : str = str(widget_data.get("category", "Miscellaneous"))
         self.subcategory : str = str(widget_data.get("subcategory", "Others"))
 

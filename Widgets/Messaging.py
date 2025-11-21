@@ -25,6 +25,7 @@ cached_data = CacheData()
 
 
 MODULE_NAME = "Messaging"
+OPTIONAL = False
 
 SUMMON_SPIRITS_LUXON = "Summon_Spirits_luxon"
 SUMMON_SPIRITS_KURZICK = "Summon_Spirits_kurzick"
