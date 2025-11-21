@@ -21,10 +21,6 @@ from Py4GWCoreLib import get_texture_for_model
 from Py4GWCoreLib.enums import Bags
 from Py4GWCoreLib.enums import ModelID
 
-# # TODO(mark): Use Once Ready
-# from Widgets.frenkey.LootEx.utility import Util
-# from Widgets.frenkey.LootEx.data import Data
-
 
 script_directory = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(script_directory, os.pardir))
