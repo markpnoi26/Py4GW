@@ -3,7 +3,6 @@ import os
 import re
 import shutil
 import traceback
-import urllib.request
 from collections import OrderedDict
 from pathlib import Path
 
@@ -20,7 +19,10 @@ from Py4GWCoreLib import Timer
 from Py4GWCoreLib import get_texture_for_model
 from Py4GWCoreLib.enums import Bags
 from Py4GWCoreLib.enums import ModelID
-from Py4GWCoreLib.enums import ItemType
+
+# # TODO(mark): Use Once Ready
+# from Widgets.frenkey.LootEx.utility import Util
+# from Widgets.frenkey.LootEx.data import Data
 
 
 script_directory = os.path.dirname(os.path.abspath(__file__))
@@ -59,13 +61,6 @@ search_query = ''
 current_character_name = ''
 
 TEAM_INVENTORY_CACHE = {}
-WEAPON_MODIFIER_DB = {}
-WEAPON_MODIFIER_LOOKUP = {}
-WEAPON_MODIFIER_DB_PATH = os.path.join(JSON_INVENTORY_PATH, "weapon_modifier_cache.json")
-WEAPON_MODIFIER_DB_URL = 'https://raw.githubusercontent.com/frenkey-derp/Py4GW/refs/heads/live_dev_lootex/Widgets/frenkey/LootEx/data/weapon_mods.json'
-ITEM_NAME_DB = {}
-ITEM_NAME_DB_PATH = os.path.join(JSON_INVENTORY_PATH, "items_cache.json")
-ITEM_NAME_DB_URL = "https://raw.githubusercontent.com/frenkey-derp/Py4GW/refs/heads/live_dev_lootex/Widgets/frenkey/LootEx/data/items.json"
 
 INVENTORY_BAGS = {
     "Backpack": Bags.Backpack.value,
@@ -92,55 +87,6 @@ STORAGE_BAGS = {
     "Storage13": Bags.Storage13.value,
     "Storage14": Bags.Storage14.value,
     "MaterialStorage": Bags.MaterialStorage.value,
-}
-
-TARGET_WEAPON_TYPES = {
-    "Weapon": [
-        ItemType.Axe,
-        ItemType.Bow,
-        ItemType.Daggers,
-        ItemType.Hammer,
-        ItemType.Scythe,
-        ItemType.Spear,
-        ItemType.Staff,
-        ItemType.Sword,
-        ItemType.Wand
-    ],
-
-    "MartialWeapon": [
-        ItemType.Axe,
-        ItemType.Bow,
-        ItemType.Daggers,
-        ItemType.Hammer,
-        ItemType.Scythe,
-        ItemType.Spear,
-        ItemType.Sword
-    ],
-
-    "OffhandOrShield": [
-        ItemType.Offhand,
-        ItemType.Shield
-    ],
-
-    "EquippableItem": [
-        ItemType.Axe,
-        ItemType.Bow,
-        ItemType.Daggers,
-        ItemType.Hammer,
-        ItemType.Offhand,
-        ItemType.Scythe,
-        ItemType.Shield,
-        ItemType.Spear,
-        ItemType.Staff,
-        ItemType.Sword,
-        ItemType.Wand
-    ],
-
-    "SpellcastingWeapon": [
-        ItemType.Offhand,
-        ItemType.Staff,
-        ItemType.Wand
-    ],
 }
 
 
@@ -196,11 +142,6 @@ class AccountJSONStore:
         TEAM_INVENTORY_CACHE[self.email] = data
         return data
 
-    def save_to_disk(self):
-        if self.email not in TEAM_INVENTORY_CACHE:
-            return
-        self._write(TEAM_INVENTORY_CACHE[self.email])
-
     def save_bag(self, char_name=None, storage_name=None, bag_name=None, bag_items={}):
         data = self._read()
         changed = False
@@ -220,6 +161,7 @@ class AccountJSONStore:
                 changed = True
 
         if changed:
+            TEAM_INVENTORY_CACHE[self.email] = data
             self._write(data)
 
     def clear_character(self, char_name):
@@ -235,6 +177,7 @@ class AccountJSONStore:
                 ConsoleLog("AccountJSONStore", f"Removed character {char_name} from {self.email}.")
             else:
                 ConsoleLog("AccountJSONStore", f"[WARN] Character {char_name} not found for {self.email}.")
+            TEAM_INVENTORY_CACHE[self.email] = data
         except Exception as e:
             ConsoleLog("AccountJSONStore", f"[ERROR] clear_character: {e}")
 
@@ -244,7 +187,7 @@ class AccountJSONStore:
                 self.file_path.unlink()
             if self.backup_path.exists():
                 self.backup_path.unlink()
-
+            TEAM_INVENTORY_CACHE[self.email] = None
             ConsoleLog("AccountJSONStore", f"Cleared all data for {self.email}.")
         except Exception as e:
             ConsoleLog("AccountJSONStore", f"[WARN] Failed to clear account {self.email}: {e}")
@@ -261,7 +204,11 @@ class MultiAccountInventoryStore:
     def load_all(self):
         """Load all JSON files into global cache."""
         for file_path in self.inventory_dir.glob("*.json"):
-            if file_path.suffix != ".json" or file_path.stem == 'items_cache' or file_path.stem == 'weapon_modifier_cache':
+            if (
+                file_path.suffix != ".json"
+                or file_path.stem == 'items_cache'
+                or file_path.stem == 'weapon_modifier_cache'
+            ):
                 continue
             email = file_path.stem
             AccountJSONStore(email).load()
@@ -282,7 +229,6 @@ class MultiAccountInventoryStore:
 
 
 multi_store = MultiAccountInventoryStore()
-# inventory = Inventory()
 
 
 # region Generators
@@ -313,11 +259,6 @@ def _collect_bag_items(bag):
     bag_items = OrderedDict()
 
     # Ensure JSON databases are loaded
-    if not ITEM_NAME_DB:
-        load_item_name_json()
-    if not WEAPON_MODIFIER_DB:
-        load_item_mods_json()
-
     for item in bag.GetItems():
         if not item or item.model_id == 0:
             continue
@@ -326,23 +267,16 @@ def _collect_bag_items(bag):
         item_id = item.item_id
         quantity = item.quantity
 
-        if GLOBAL_CACHE.Item.Type.IsWeapon(item_id):
-            final_name = get_weapon_name_from_modifiers(item)
-        else:
-            try:
-                final_name = ModelID(model_id).name.replace("_", " ")
-            except ValueError:
-                final_name = None
+        final_name = ''
+        try:
+            final_name = ModelID(model_id).name.replace("_", " ")
+        except ValueError:
+            final_name = None
 
         # === 4️⃣ Fallback to in-game request ===
         if not final_name:
             try:
-                if not GLOBAL_CACHE.Item.IsNameReady(item_id):
-                    GLOBAL_CACHE.Item.RequestName(item_id)
-                    yield from Routines.Yield.wait(200)
-
-                if GLOBAL_CACHE.Item.IsNameReady(item_id):
-                    final_name = GLOBAL_CACHE.Item.GetName(item_id)
+                final_name = yield from Routines.Yield.Items.GetItemNameByItemID(item_id)
             except Exception as e:
                 print(f"Exception fetching name for {item_id}: {e}")
                 final_name = None
@@ -358,145 +292,88 @@ def _collect_bag_items(bag):
 
     return bag_items
 
+# TODO(mark): Use these functions once LootEx is ready
+# def get_armor_name_from_modifiers(item):
+#     # Prefer the in-game name if available
+#     final_name = Util.GetItemDataName(item.item_id)
+#     if final_name and not final_name.startswith("Unknown"):
+#         base_name = final_name.strip()
+#     else:
+#         try:
+#             base_name = ModelID(item.model_id).name.replace("_", " ")
+#         except ValueError:
+#             base_name = None
+#         base_name = str(item.item_type.GetName()) if not base_name else base_name
 
-def get_weapon_name_from_modifiers(item):
-    """
-    Build a readable weapon name using only item.modifiers and WEAPON_MODIFIER_DB.
-    Returns: "Prefix BaseName Suffix (Inherent)" style name
-    """
-    def get_item_meta_keys(item_name: str) -> set[str]:
-        keys = set()
-        for meta_key, types in TARGET_WEAPON_TYPES.items():
-            if any(t.name == item_name for t in types):
-                keys.add(meta_key)
-        return keys
-    
-    # Step 1: Base name
-    base_name = str(item.item_type.GetName())
+#     # Collect mods
+#     _, armor_mods, _ = Util.GetMods(item.item_id)
+#     prefix = None
+#     suffix = None
 
-    # Step 2: Convert item modifiers to tuples
-    modifier_values = [
-        (mod.GetIdentifier(), mod.GetArg(), mod.GetArg1(), mod.GetArg2())
-        for mod in item.modifiers if mod is not None
-    ]
+#     for armor_mod in armor_mods:
+#         mod_name = armor_mod.identifier.strip()
+#         mod_type = armor_mod.mod_type.name
 
-    prefix, suffix, inherent = None, None, None
+#         if mod_type == "Prefix":
+#             prefix = mod_name
+#         elif mod_type == "Suffix":
+#             suffix = mod_name
 
-    mod_targets = []
-    # Step 3: Match item modifiers to weapon DB
-    for mod_id, arg, arg1, arg2 in modifier_values:
-        for mod_name, mod_data in WEAPON_MODIFIER_DB.items():
-            for m in mod_data.get("Modifiers", []):
-                # Skip the "ModifierValueArg" for lookup
-                value_arg = m.get("ModifierValueArg")
-                mod_targets = mod_data.get("TargetTypes", [])
-                args_to_check = {
-                    "Arg": m.get("Arg", 0),
-                    "Arg1": m.get("Arg1", 0),
-                    "Arg2": m.get("Arg2", 0),
-                }
-                if value_arg in args_to_check:
-                    args_to_check[value_arg] = None  # ignore value arg
+#     # --- Construct name ---
+#     name_parts = []
 
+#     if prefix:
+#         name_parts.append(prefix)
 
-                # Only match if Identifier matches
-                if m["Identifier"] != mod_id:
-                    continue
+#     name_parts.append(base_name)
 
-                # Check if all other args match
-                match = True
-                for k, v in args_to_check.items():
-                    if v is None:
-                        continue
-                    if k == "Arg" and v != arg:
-                        match = False
-                        break
-                    if k == "Arg1" and v != arg1:
-                        match = False
-                        break
-                    if k == "Arg2" and v != arg2:
-                        match = False
-                        break
-                if not match:
-                    continue
+#     if suffix:
+#         name_parts.append(f"{suffix}")
 
-                # If we reach here, we have a match
-                mod_type = mod_data.get("ModType", "Inherent").lower()
-                if mod_type == "prefix":
-                    prefix = mod_name
-                elif mod_type == "suffix":
-                    suffix = mod_name
-                elif mod_type == "inherent":
-                    inherent = mod_name
-
-    # Step 4: Construct final name
-    parts = []
-    if prefix:
-        parts.append(prefix)
-    parts.append(base_name)
-    if suffix:
-        parts.append(suffix)
-
-    final_name = " ".join(parts)
-    if inherent:
-        final_name += f" ({inherent})"
-
-    if 'Shield of Devotion' in final_name:
-        print(mod_targets)
-        print(item.item_type.GetName())
-
-    return final_name
-
-def load_item_name_json(force_refresh=False):
-    """Load or refresh the item name database from GitHub (cached locally)."""
-    global ITEM_NAME_DB
-
-    # Load from local file if exists and not refreshing
-    if not force_refresh and os.path.exists(ITEM_NAME_DB_PATH):
-        try:
-            with open(ITEM_NAME_DB_PATH, "r", encoding="utf-8") as f:
-                ITEM_NAME_DB = json.load(f)
-                return
-        except Exception as e:
-            print(f"[ItemNameDB] Failed to read cache: {e}")
-
-    # Otherwise, download fresh copy
-    try:
-        print("[ItemNameDB] Downloading latest items.json...")
-        with urllib.request.urlopen(ITEM_NAME_DB_URL, timeout=10) as response:
-            data = json.loads(response.read().decode("utf-8"))
-            ITEM_NAME_DB = data
-            with open(ITEM_NAME_DB_PATH, "w", encoding="utf-8") as f:
-                json.dump(data, f, indent=2)
-            print(f"[ItemNameDB] Cached {len(data)} entries.")
-    except Exception as e:
-        print(f"[ItemNameDB] Failed to download: {e}")
-        ITEM_NAME_DB = {}
+#     return " ".join(name_parts)
 
 
-def load_item_mods_json(force_refresh=False):
-    """Load or refresh the weapon modifiers database from GitHub (cached locally)."""
-    global WEAPON_MODIFIER_DB
+# def get_weapon_name_from_modifiers(item):
+#     # Prefer the in-game name if available
+#     final_name = Util.GetItemDataName(item.item_id)
+#     if final_name and not final_name.startswith("Unknown"):
+#         base_name = final_name.strip()
+#     else:
+#         base_name = f'[{str(item.item_type.GetName())}]'
 
-    if not force_refresh and os.path.exists(WEAPON_MODIFIER_DB_PATH):
-        try:
-            with open(WEAPON_MODIFIER_DB_PATH, "r", encoding="utf-8") as f:
-                WEAPON_MODIFIER_DB = json.load(f)
-        except Exception as e:
-            print(f"[ItemModsDB] Failed to read cache: {e}")
-            WEAPON_MODIFIER_DB = {}
+#     # Collect mods
+#     _, _, weapon_mods = Util.GetMods(item.item_id)
+#     prefix = None
+#     suffix = None
+#     inherent = None
 
-    if not WEAPON_MODIFIER_DB:
-        try:
-            print("[ItemModsDB] Downloading latest weapon_mods.json...")
-            with urllib.request.urlopen(WEAPON_MODIFIER_DB_URL, timeout=10) as response:
-                WEAPON_MODIFIER_DB = json.loads(response.read().decode("utf-8"))
-            with open(WEAPON_MODIFIER_DB_PATH, "w", encoding="utf-8") as f:
-                json.dump(WEAPON_MODIFIER_DB, f, indent=2)
-            print(f"[ItemModsDB] Cached {len(WEAPON_MODIFIER_DB)} entries.")
-        except Exception as e:
-            print(f"[ItemModsDB] Failed to download: {e}")
-            WEAPON_MODIFIER_DB = {}
+#     for weapon_mod in weapon_mods:
+#         mod_name = weapon_mod.identifier.strip()
+#         mod_type = weapon_mod.mod_type.name
+
+#         if mod_type == "Prefix":
+#             prefix = mod_name
+#         elif mod_type == "Suffix":
+#             suffix = mod_name
+#         elif mod_type == "Inherent":
+#             inherent = mod_name
+
+#     # --- Construct name ---
+#     name_parts = []
+
+#     # Inherent mods like “Vampiric” or “Insightful” go before everything else
+#     if prefix:
+#         name_parts.append(prefix)
+
+#     name_parts.append(base_name)
+
+#     if suffix:
+#         name_parts.append(f"{suffix}")
+
+#     if inherent:
+#         name_parts.append(f"({inherent})")
+
+#     return " ".join(name_parts)
 
 
 def record_account_data():
@@ -586,7 +463,8 @@ def draw_widget():
         PyImGui.set_next_window_pos(window_x, window_y)
         PyImGui.set_next_window_collapsed(window_collapsed, 0)
         on_first_load = False
-        # Load all accounts for search
+        # TODO(mark): Use load once LootEx is ready
+        # Data().Load()
         TEAM_INVENTORY_CACHE = multi_store.load_all()
 
     new_collapsed = PyImGui.is_window_collapsed()
