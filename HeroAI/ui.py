@@ -24,7 +24,7 @@ from Py4GWCoreLib.ImGui_src.types import Alignment, ImGuiStyleVar, StyleTheme
 from Py4GWCoreLib.Overlay import Overlay
 from Py4GWCoreLib.Player import Player
 from Py4GWCoreLib.UIManager import UIManager
-from Py4GWCoreLib.enums_src.GameData_enums import Allegiance, Profession, ProfessionShort
+from Py4GWCoreLib.enums_src.GameData_enums import Allegiance, Profession, ProfessionShort, Range
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.enums_src.Multiboxing_enums import SharedCommandType
 from Py4GWCoreLib.py4gwcorelib_src.Color import Color
@@ -1263,7 +1263,17 @@ def draw_hero_panel(window: WindowModule, account_data: AccountData, cached_data
     style.WindowPadding.push_style_var(4, 1)
     
     collapsed = window.collapse
+    player_pos = GLOBAL_CACHE.Player.GetXY()
+    hero_pos = (account_data.PlayerPosX, account_data.PlayerPosY)
+    outside_compass_range = Utils.Distance(player_pos, hero_pos) > Range.Compass.value + 10
+    
+    if outside_compass_range:
+        style.TitleBg.push_color((100, 0, 0, 150))
+        style.WindowBg.push_color((100, 0, 0, 150))
     open = window.begin(open, PyImGui.WindowFlags.AlwaysAutoResize)
+    if outside_compass_range:
+        style.WindowBg.pop_color()
+        style.TitleBg.pop_color()
     style.WindowPadding.pop_style_var()
 
     prof_primary, prof_secondary = "", ""

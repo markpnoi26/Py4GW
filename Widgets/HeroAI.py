@@ -442,7 +442,22 @@ def DrawEmbeddedWindow(cached_data: CacheData):
 
 def UpdateStatus(cached_data: CacheData):
     global hero_windows, messages
-                
+    ## Blacklisted loot
+    ## 6102 - Spear of Archemorus
+    ## None - 965
+    ## Level 1 - 966
+    ## Level 2 - 967
+    ## Level 3 - 968
+    ## Level 4 - 969
+    ## Level 5 - 970
+    
+    ## 6104 - Urn of Saint Viktor
+    ## None - 1106
+    ## Level 1 - 1107
+    ## Level 2 - 1108
+    ## Level 3 - 1109
+    ## Level 4 - 1110
+    ## Level 5 - 1111 
             
     RegisterPlayer(cached_data)
     RegisterHeroes(cached_data)
