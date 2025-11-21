@@ -16,6 +16,7 @@ from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
 from Py4GWCoreLib.enums_src.UI_enums import NumberPreference
 from Py4GWCoreLib.py4gwcorelib_src.Console import ConsoleLog
 from Py4GWCoreLib.py4gwcorelib_src.Timer import ThrottledTimer
+from Widgets.frenkey.Core.utility import string_similarity
 from Widgets.frenkey.LootEx import enum, messaging, ui_manager_extensions, utility
 from Widgets.frenkey.LootEx.cache import Cached_Item
 from Widgets.frenkey.LootEx.models import Item, ItemModifiersInformation, ItemsByType, WeaponMod
@@ -103,7 +104,7 @@ class CollectionEntry(Item):
             self.item_type = item_data.item_type
             self.name = item_data.name
             self.names = item_data.names.copy()
-            self.drop_info = item_data.drop_info
+            self.acquisition = item_data.acquisition
             self.attributes = item_data.attributes.copy()
             self.wiki_url = item_data.wiki_url
             self.common_salvage = item_data.common_salvage
@@ -477,8 +478,7 @@ class DataCollector:
     def is_item_collected(self, item: Cached_Item) -> tuple[bool, str]:        
         has_item = self.hasItem(item.id)
         return has_item, "Item data is complete" if has_item else "Item data is incomplete"
-        
-    
+            
     def hasItem(self, item_id: int) -> bool:
         if item_id <= 0:
             return True
@@ -538,6 +538,23 @@ class DataCollector:
             self.modified_weapon_mods.clear()
         
         if self.modified_items:
+            wiki_data_missing = [item for item in self.modified_items.All if not item.wiki_scraped]
+            for item in wiki_data_missing:                    
+                english_name = item.names.get(ServerLanguage.English, "")
+                if not english_name or english_name == "":
+                    continue
+                
+                ## Check if the name starts with an amount like "250"
+                parts = english_name.split(" ", 1) if english_name else []
+                contains_amount = len(parts) == 2 and parts[0].isdigit()
+                        
+                search_name = english_name.replace(parts[0], "").strip() if contains_amount else english_name
+                required_similarity = 0.95 if contains_amount else 1.0
+                
+                matching_scraped_items = [scraped_item for (key, scraped_item) in data.ScrapedItems.items() if string_similarity(scraped_item.name, search_name) >= required_similarity]
+                if matching_scraped_items and len(matching_scraped_items) == 1:
+                    item.assign_scraped_data(matching_scraped_items[0], data)
+            
             data.SaveItems(shared_file=False, items=self.modified_items)
             self.modified_items.clear()
             

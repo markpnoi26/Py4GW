@@ -188,3 +188,6 @@ cython_debug/
 
 # # But keep the .default.json ones
 !/Styles/*.default.json
+
+# Ignore VSCode settings folder
+.vscode/

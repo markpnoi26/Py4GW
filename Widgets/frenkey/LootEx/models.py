@@ -9,11 +9,13 @@ from typing import ClassVar, Iterable, Iterator, List, Optional, SupportsIndex, 
 
 import Py4GW
 from PyItem import ItemModifier
+from Widgets.frenkey.Core.utility import get_image_name
 from Widgets.frenkey.LootEx import enum
 from Widgets.frenkey.LootEx.enum import Campaign, EnemyType, MaterialType, ModType, ModifierIdentifier, ModifierValueArg, ModsModels
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.Py4GWcorelib import ConsoleLog
 from Py4GWCoreLib.enums import Attribute, Console, DamageType, ItemType, ModelID, Profession, Rarity, ServerLanguage
+from Widgets.frenkey.LootEx.texture_scraping_models import ScrapedItem
 
 language_order = [
     ServerLanguage.German,
@@ -410,7 +412,8 @@ class Item():
     model_file_id: int = -1
     name : str = ""
     names: dict[ServerLanguage, str] = field(default_factory=dict)
-    drop_info: str = ""
+    acquisition: str = ""
+    description: str = ""
     attributes: list[Attribute] = field(default_factory=list)
     wiki_url: str = ""
     common_salvage: SalvageInfoCollection = field(default_factory=SalvageInfoCollection)
@@ -533,8 +536,8 @@ class Item():
             if lang not in self.names or not self.names[lang]:
                 self.names[lang] = name
                 
-        if item.drop_info:            
-            self.drop_info = item.drop_info
+        if item.acquisition:            
+            self.acquisition = item.acquisition
         
         self.attributes = item.attributes
         self.profession = item.profession
@@ -567,7 +570,8 @@ class Item():
             #Names sorted by language_order
             "Names": {lang.name: name for lang, name in sorted(self.names.items(), key=lambda item: language_order.index(item[0]))},
             "ItemType": self.item_type.name,
-            "DropInfo": self.drop_info,
+            "Acquisition": self.acquisition,
+            "Description": self.description,
             "Attributes": [attribute.name for attribute in self.attributes] if self.attributes else [],
             "CommonSalvage": (self.common_salvage or SalvageInfoCollection()).to_dict(),
             "RareSalvage": (self.rare_salvage or SalvageInfoCollection()).to_dict(),
@@ -589,7 +593,8 @@ class Item():
             names={ServerLanguage[lang]: name for lang,
                    name in json["Names"].items()},
             item_type=ItemType[json["ItemType"]],
-            drop_info=json["DropInfo"],
+            acquisition=json.get("Acquisition", ""),
+            description=json.get("Description", ""),
             inventory_icon=json.get("InventoryIcon", None),
             inventory_icon_url=json.get("InventoryIconURL", None),
             attributes=[Attribute[attr] for attr in json["Attributes"]] if "Attributes" in json and json["Attributes"] else [],
@@ -602,6 +607,56 @@ class Item():
             sub_category=enum.ItemSubCategory[json["SubCategory"]] if "SubCategory" in json and json["SubCategory"] else enum.ItemSubCategory.None_,
             wiki_scraped=json.get("WikiScraped", False) 
         )
+
+    def assign_scraped_data(self, scraped_item : ScrapedItem, data):
+        english_name = self.names.get(ServerLanguage.English, "")
+        parts = english_name.split(" ", 1) if english_name else []
+        contains_amount = len(parts) == 2 and parts[0].isdigit()
+        
+        if contains_amount:
+            self.set_name(scraped_item.name, ServerLanguage.English)
+            
+        self.description = scraped_item.description or ""
+        self.acquisition = scraped_item.Acquisition or ""
+        self.inventory_icon = get_image_name(os.path.basename(scraped_item.inventory_icon_url)) if scraped_item.inventory_icon_url else self.inventory_icon
+        self.inventory_icon_url = scraped_item.inventory_icon_url or self.inventory_icon_url
+                            
+        common_salvage = scraped_item.common_salvage or []
+        rare_salvage = scraped_item.rare_salvage or []
+                            
+        for salvage_item in common_salvage:
+            if salvage_item not in self.common_salvage:
+                material_name = salvage_item.name
+                material = next((mat for mat in data.Materials.values() if mat.name == material_name), None)
+                
+                if material:
+                    salvage_info = SalvageInfo(
+                        material_model_id=material.model_id,
+                        material_name=material.name,
+                        amount=salvage_item.amount,
+                        min_amount=salvage_item.min_amount,
+                        max_amount=salvage_item.max_amount,
+                        average_amount=salvage_item.amount,
+                    ) 
+                    self.common_salvage[material.name] = salvage_info
+                    
+        for salvage_item in rare_salvage:
+            if salvage_item not in self.rare_salvage:
+                material_name = salvage_item.name
+                material = next((mat for mat in data.Materials.values() if mat.name == material_name), None)
+                
+                if material:
+                    salvage_info = SalvageInfo(
+                        material_model_id=material.model_id,
+                        material_name=material.name,
+                        amount=salvage_item.amount,
+                        min_amount=salvage_item.min_amount,
+                        max_amount=salvage_item.max_amount,
+                        average_amount=salvage_item.amount,
+                    ) 
+                    self.rare_salvage[material.name] = salvage_info
+        self.wiki_scraped = True
+        self.__post_init__()
 
 @dataclass
 class Material(Item):    
@@ -631,7 +686,7 @@ class Material(Item):
             model_file_id=item.model_file_id,
             names=item.names,
             item_type=item.item_type,
-            drop_info=item.drop_info,
+            acquisition=item.acquisition,
             attributes=item.attributes,
             wiki_url=item.wiki_url,
             common_salvage=item.common_salvage,

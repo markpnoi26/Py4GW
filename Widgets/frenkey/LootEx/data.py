@@ -13,6 +13,7 @@ from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.Py4GWcorelib import ConsoleLog
 from Py4GWCoreLib.enums import Attribute, ServerLanguage
 from Py4GWCoreLib.enums import ItemType, Profession
+from Widgets.frenkey.LootEx.texture_scraping_models import ScrapedItem
 
 class Data():
     _instance = None
@@ -447,6 +448,7 @@ class Data():
             ItemType.Staff: self.Caster_Attributes,
         }
 
+        self.ScrapedItems: dict[str, ScrapedItem] = {}
         self.Items: models.ItemsByType = models.ItemsByType()
         self.ItemsBySkins: dict[str, list[models.Item]] = {}
         self.Nick_Items: dict[int, models.Item] = {}
@@ -625,10 +627,38 @@ class Data():
         # Load the Materials
         self.LoadMaterials()
         
+        # Load the scraped items
+        self.LoadScrapedItems()
+        
         self.is_loaded = True
 
     def Load(self):
         self.Reload()
+        
+    def LoadScrapedItems(self):        
+        file_directory = os.path.dirname(os.path.abspath(__file__))
+        data_directory = os.path.join(file_directory, "data")
+        path = os.path.join(data_directory, "scraped_items.json")
+        
+        if os.path.exists(path):
+            with open(path, 'r', encoding='utf-8') as f:
+                item_data = json.load(f)
+            
+            scraped_items = {name: ScrapedItem.from_json(data) for name, data in item_data.items()}
+            
+            ## remove duplicates based on inventory icon and item name
+            unique_items = {}
+            for (file_name, item) in scraped_items.items():
+                key = (item.inventory_icon_url, item.name)
+                
+                if key not in unique_items:
+                    unique_items[key] = (file_name, item)
+            
+            self.ScrapedItems = {file_name: item for file_name, item in unique_items.values()}
+            return self.ScrapedItems
+        
+        self.ScrapedItems = {}
+        return self.ScrapedItems
 
     def LoadMaterials(self):
         # Load materials from data/materials.json

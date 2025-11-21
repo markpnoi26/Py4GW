@@ -6,7 +6,7 @@ MODULE_NAME = "LootEx"
 for module_name in list(sys.modules.keys()):
     if module_name not in ("sys", "importlib", "cache_data"):
         try:            
-            if f"{MODULE_NAME}." in module_name:
+            if f"frenkey." in module_name:
                 Py4GW.Console.Log(MODULE_NAME, f"Reloading module: {module_name}", Console.MessageType.Info)
                 del sys.modules[module_name]
                 # importlib.reload(module_name)
@@ -116,6 +116,7 @@ def main():
         ui.draw_inventory_controls()        
         ui.draw_vault_controls()      
         ui.draw_window()
+        ui.draw_data_collection()
     
     if not current_account:
         current_account = GLOBAL_CACHE.Player.GetAccountEmail()

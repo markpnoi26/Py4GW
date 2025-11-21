@@ -7,7 +7,7 @@ from datetime import datetime
 
 from Py4GWCoreLib.ImGui_src.types import TextDecorator
 from Widgets.frenkey.Core.iterable import chunked
-from Widgets.frenkey.Core.utility import ImGuiIniReader
+from Widgets.frenkey.Core.utility import ImGuiIniReader, get_image_name, string_similarity
 from Widgets.frenkey.Core.gui import GUI
 from Widgets.frenkey.Core import ex_style, texture_map
 from Widgets.frenkey.LootEx import skin_rule, loot_handling, profile, settings, price_check, item_configuration, utility, enum, cache, ui_manager_extensions, inventory_handling, wiki_scraper, filter, models, messaging, data_collector,wiki_scraper
@@ -16,6 +16,7 @@ from Widgets.frenkey.LootEx.data_collection import DataCollector
 from Widgets.frenkey.LootEx.item_configuration import ItemConfiguration, ConfigurationCondition
 from Widgets.frenkey.LootEx.filter import Filter
 from Widgets.frenkey.LootEx.profile import Profile
+from Widgets.frenkey.LootEx.texture_scraping_models import ScrapedItem
 from Widgets.frenkey.LootEx.ui_manager_extensions import UIManagerExtensions
 from Py4GWCoreLib import *
 
@@ -190,6 +191,14 @@ class UI:
         
         
         # self.cached_item = cache.Cached_Item(1401) 
+        self.collection_module_window : ImGui.WindowModule = ImGui.WindowModule(
+            "LootEx Data Collection",
+            "LootEx Data Collection",
+            window_size=(1200, 700),
+            window_flags=PyImGui.WindowFlags.NoFlag,
+            can_close=True,
+            collapse=collapse
+        )
         self.module_window : ImGui.WindowModule = ImGui.WindowModule(
             "LootEx",
             "LootEx",
@@ -206,6 +215,10 @@ class UI:
         self.item_textures_path = os.path.join(self.textures_folder, "Items")
         self.actions_timer = ThrottledTimer()
         self.action_summary: inventory_handling.InventoryHandler.ActionsSummary | None = None
+        
+        self.filtered_scraped_items = {}
+        self.data_collection_item : models.Item | None = None
+        self.scraped_item : ScrapedItem | None = None
         
         self.action_infos : UI.ActionInfos = UI.ActionInfos({
             enum.ItemAction.Loot: UI.ActionInfo("Loot (Pick Up)", "If the item is dropped, pick it up.", texture_map.CoreTextures.UI_Reward_Bag_Hovered.value),
@@ -1122,6 +1135,9 @@ class UI:
                     messaging.SendStartDataCollection(imgui_io.key_shift)
                     self.settings.save()
 
+            elif imgui_io.key_shift:
+                self.settings.scraper_window_visible = not self.settings.scraper_window_visible
+                
             else:
                 if self.settings.collect_items:
                     data_collector.instance.stop_collection()
@@ -2061,7 +2077,7 @@ class UI:
 
                                 ImGui.separator()
                                 ImGui.text(f"Nicholas the Traveler collects these items in: {nick_item.weeks_until_next_nick} weeks")                
-                                ImGui.text(nick_item.drop_info)                
+                                ImGui.text(nick_item.acquisition)                
                                 ImGui.end_tooltip()
                                 
                         ImGui.end_table()           
@@ -5098,6 +5114,168 @@ class UI:
                 style.WindowPadding.pop_style_var()
             ImGui.end_child()
             ImGui.end_tab_item()
+
+    #region DataCollection View
+    def draw_collected_item(self, key: str, item: ScrapedItem, is_selected: bool = False):             
+        if ImGui.begin_child(key, (0, 120), True, PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
+            if not PyImGui.is_rect_visible(0, 120):
+                ImGui.end_child()
+                return
+            
+            if ImGui.begin_child(key + "Icon", (64, 0), False, PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
+                if item.IconExists:
+                    ImGui.image(item.IconPath, (64, 64))
+                else:
+                    ImGui.dummy(64, 64)
+                    
+                if ImGui.button("Assign") and self.data_collection_item is not None:
+                    self.assign_scraped_data(self.data_collection_item, item)
+                    pass
+            
+            ImGui.end_child()
+            
+            PyImGui.same_line(0, 10)
+            
+            if ImGui.begin_child(key + "Details", (0, 0), False, PyImGui.WindowFlags.NoFlag):
+                ImGui.text_colored(item.name, Color(0, 255, 125, 255).color_tuple, 16, "Bold")
+                ImGui.text_wrapped(item.description if item.description else "No description available.")
+                
+                ImGui.separator()
+                
+                ImGui.text("Salvage Info:", 16, "Bold")
+                ImGui.text_wrapped("\n".join(str(s) for s in item.common_salvage) if item.common_salvage else "No Common Salvage Info")
+                ImGui.text_wrapped("\n".join(str(s) for s in item.rare_salvage) if item.rare_salvage else "No Rare Salvage Info")
+                
+                ImGui.separator()
+
+                ImGui.text("Acquisition Info:", 16, "Bold")
+                ImGui.text_wrapped(item.Acquisition)
+                
+            ImGui.end_child()
+            
+        ImGui.end_child()
+        
+        
+    def draw_data_item(self, data_item: models.Item, is_selected: bool = False):
+        key = f"DataItem{data_item.model_id}{data_item.item_type}"
+        style = ImGui.get_style()
+        if is_selected:
+            style.ChildBg.push_color(self.style.Selected_Colored_Item.rgb_tuple)
+            
+        if ImGui.begin_child(key, (0, 100), True, PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
+            if is_selected:
+                style.ChildBg.pop_color()
+                
+            if not PyImGui.is_rect_visible(0, 100):
+                ImGui.end_child()
+                return
+            
+            if data_item.texture_file:
+                x,y = PyImGui.get_cursor_pos()
+                ImGui.dummy(64, 64)
+                
+                PyImGui.set_cursor_pos(x, y)
+                ImGui.image(data_item.texture_file, (64, 64))
+            else:
+                ImGui.dummy(64, 64)
+                
+            PyImGui.same_line(0, 10)
+            
+            if ImGui.begin_child(key + "Details", (0, 0), False, PyImGui.WindowFlags.NoFlag):
+                ImGui.text_colored(data_item.name, Color(255, 255, 255, 255).color_tuple, 16, "Bold")
+                ImGui.text_wrapped(data_item.description if data_item.description else "No description available.")
+                ImGui.text_wrapped(data_item.acquisition if data_item.acquisition else "No acquisition info available.")
+            
+            ImGui.end_child()
+        else:
+            if is_selected:
+                style.ChildBg.pop_color()
+            
+        ImGui.end_child()
+    
+    def assign_scraped_data(self, data_item : models.Item, scraped_item : ScrapedItem):
+        data_item.assign_scraped_data(scraped_item, self.data)
+        ConsoleLog("LootEx", f"Assigned data for item: {data_item.name}", Console.MessageType.Info)
+        self.data.SaveItems(True)
+    
+    def auto_assign_data_items(self):
+        for (data_item) in [item for item in self.data.Items.All if not item.wiki_scraped]:   
+            english_name = data_item.names.get(ServerLanguage.English, "")
+            ## Check if the name starts with an amount like "250"
+            parts = english_name.split(" ", 1) if english_name else []
+            contains_amount = len(parts) == 2 and parts[0].isdigit()
+                    
+            search_name = english_name.replace(parts[0], "").strip() if contains_amount else english_name
+            required_similarity = 0.9 if contains_amount else 1.0
+            
+            matching_scraped_items = [scraped_item for (key, scraped_item) in self.data.ScrapedItems.items() if string_similarity(scraped_item.name, search_name) >= required_similarity]
+            if matching_scraped_items:
+                if len(matching_scraped_items) == 1:
+                    data_item.assign_scraped_data(matching_scraped_items[0], self.data)        
+                    ConsoleLog("LootEx", f"Auto-assigned data for item: {data_item.name}", Console.MessageType.Info)
+                    
+        self.data.SaveItems(True)
+                    
+    def draw_data_collection(self): 
+        if not self.settings.scraper_window_visible:
+            return
+        
+        style = ImGui.get_style()
+        if self.collection_module_window.begin():
+            avail = PyImGui.get_content_region_avail()
+            
+            ImGui.text("Collected Items: " + str(len(self.data.ScrapedItems)), 16, "Bold")
+            PyImGui.same_line(avail[0] - 120, 0)
+            if ImGui.button("Auto Assign Data", 120, 0):
+                self.auto_assign_data_items()
+                
+                
+            ImGui.separator()
+            
+            avail = PyImGui.get_content_region_avail()
+            if ImGui.begin_child("DataItemsChild", ((avail[0] - 10) / 2, avail[1]), False, PyImGui.WindowFlags.NoFlag):
+                for (data_item) in [item for item in self.data.Items.All if not item.wiki_scraped and utility.Util.IsArmorType(item.item_type) == False]:
+                    self.draw_data_item(data_item, is_selected=data_item == self.data_collection_item)
+                    item_rect_min, item_rect_max, item_rect_size = ImGui.get_item_rect()
+                    
+                    if ImGui.is_mouse_in_rect((*item_rect_min, *item_rect_size)) and PyImGui.is_mouse_clicked(0):
+                        self.data_collection_item = data_item if self.data_collection_item != data_item else None
+                        english_name = data_item.names.get(ServerLanguage.English, "")
+                        contains_amount = english_name.split(" ", 1)[0].isdigit() if english_name else False
+                        search_name = english_name.replace("250", "").strip() if self.data_collection_item else ""
+                        self.filtered_scraped_items = {}
+                        
+                        if self.data_collection_item:
+                            for (key, scraped_item) in self.data.ScrapedItems.items():
+                                if string_similarity(scraped_item.name, search_name) >= (0.9 if contains_amount else 1.0):
+                                    self.filtered_scraped_items[key] = scraped_item
+                            
+                            if not self.filtered_scraped_items:
+                                ConsoleLog("LootEx", f"No exact matches found for '{search_name}'. Trying partial match...", Console.MessageType.Info)                                                                 
+                                item_name_words = english_name.split(" ")
+                                
+                                for (key, scraped_item) in self.data.ScrapedItems.items():                                    
+                                    search_name_words = scraped_item.name.split(" ")
+                                                                        
+                                    if ((len(item_name_words) > 1 and len(search_name_words) > 1) or (len(item_name_words) == len(search_name_words))) and all(word.lower() in english_name.lower() for word in search_name_words):
+                                        self.filtered_scraped_items[key] = scraped_item
+                
+            ImGui.end_child()    
+            
+            PyImGui.same_line(0, 10)                    
+            
+            if ImGui.begin_child("CollectedItemsChild", ((avail[0] - 10) / 2, avail[1]), False, PyImGui.WindowFlags.NoFlag):                
+                for (key, item) in self.filtered_scraped_items.items():
+                    self.draw_collected_item(key, item, is_selected=item == self.scraped_item)        
+                    
+            ImGui.end_child()                        
+            
+            self.collection_module_window.process_window()
+        
+        self.collection_module_window.end()
+    
+    
+    #endregion
 
 
     # region general ui elements
