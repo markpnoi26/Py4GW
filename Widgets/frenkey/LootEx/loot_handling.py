@@ -48,6 +48,9 @@ class LootHandler:
         lootconfig = LootConfig()
         lootconfig.AddCustomItemCheck(self.Should_Loot_Item)
         
+        lootconfig.AddToBlacklist(6102)  # Spear of Archemorus
+        lootconfig.AddToBlacklist(6104)  # Urn of Saint Viktor
+        
         from Widgets.frenkey.LootEx.settings import Settings
         settings = Settings()
         settings.enable_loot_filters = True
@@ -80,7 +83,7 @@ class LootHandler:
                         
     def Should_Loot_Item(self, item_id: int) -> bool:
         # ConsoleLog("LootEx", f"Checking if item {item_id} should be looted.", Console.MessageType.Debug)
-        
+                
         if self.settings.profile is None:
             ConsoleLog("LootEx", "No profile selected. Cannot determine loot action.", Console.MessageType.Warning)
             return False
@@ -89,9 +92,11 @@ class LootHandler:
             return False
         
         cached_item = Cached_Item(item_id)
-        
+                
         if not cached_item.data:
-            return True
+            if cached_item.item_type != ItemType.Bundle:
+                ConsoleLog("LootEx", f"Item {item_id} has no cached data. Cannot determine loot action.", Console.MessageType.Warning)
+                return True
         
         if cached_item.model_id == ModelID.Vial_Of_Dye:
             if cached_item.IsVial_Of_DyeToKeep():
@@ -102,25 +107,30 @@ class LootHandler:
                 return False
         
         if cached_item.matches_weapon_rule:
+            ConsoleLog("LootEx", f"Item {item_id} matches weapon rule. Should loot.", Console.MessageType.Debug)
             return True
         
         if cached_item.matches_skin_rule:
+            ConsoleLog("LootEx", f"Item {item_id} matches skin rule. Should loot.", Console.MessageType.Debug)
             return True
 
         for filter in self.settings.profile.filters:
             action = filter.get_action(cached_item)
 
             if action == ItemAction.Loot:
+                ConsoleLog("LootEx", f"Item {item_id} matches filter rule. Should loot.", Console.MessageType.Debug)
                 return True
         
         # If the item is a salvage item we check for runes we want to pick up and sell
         if cached_item.is_armor:
             if cached_item.runes_to_keep:
+                ConsoleLog("LootEx", f"Item {item_id} is armor with runes to keep. Should loot.", Console.MessageType.Debug)
                 return True
         
         # If the item is a weapon we check if it has a weapon mod we want to keep
         if cached_item.is_weapon:
             if cached_item.weapon_mods_to_keep:
+                ConsoleLog("LootEx", f"Item {item_id} is weapon with mods to keep. Should loot.", Console.MessageType.Debug)
                 return True
             
         return False
