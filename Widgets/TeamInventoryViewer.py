@@ -10,6 +10,7 @@ import Py4GW  # type: ignore
 from Py4GWCoreLib import GLOBAL_CACHE
 from Py4GWCoreLib import Color
 from Py4GWCoreLib import ConsoleLog
+from Py4GWCoreLib import DyeColor
 from Py4GWCoreLib import ImGui
 from Py4GWCoreLib import IniHandler
 from Py4GWCoreLib import PyImGui
@@ -232,30 +233,82 @@ multi_store = MultiAccountInventoryStore()
 
 
 # region Generators
-def get_character_bag_items_coroutine(bag, email, char_name, bag_name):
+def get_character_bag_items_coroutine(bag, bag_id, email, char_name, bag_name):
     """Updates recorded_data[email]["Characters"][char_name]["Inventory"][bag_name]"""
 
     store = AccountJSONStore(email)
     if not email or not char_name:
         return
 
-    bag_items = yield from _collect_bag_items(bag)
+    bag_items = yield from _collect_bag_items(bag, bag_id, email, char_name=char_name)
     store.save_bag(char_name=char_name, bag_name=bag_name, bag_items=bag_items)
 
 
-def get_storage_bag_items_coroutine(bag, email, storage_name):
+def get_storage_bag_items_coroutine(bag, bag_id, email, storage_name):
     """Updates recorded_data[email]["Storage"][bag_name]"""
 
     store = AccountJSONStore(email)
     if not email:
         return
 
-    bag_items = yield from _collect_bag_items(bag)
+    bag_items = yield from _collect_bag_items(bag, bag_id, email, storage_name=storage_name)
     store.save_bag(storage_name=storage_name, bag_items=bag_items)
 
 
-def _collect_bag_items(bag):
+def _collect_bag_items(bag, bag_id, email, storage_name=None, char_name=None):
     """Shared coroutine to fetch all items from a bag with modifier and Frenkey DB name support."""
+
+    # TODO(mark): remove once the StripMarkup is in utils
+    def _strip_markup(text):
+        """
+        Remove all markup tags and return plain visible text only.
+        This matches the same tags used by TokenizeMarkupText.
+        """
+
+        if not text:
+            return ""
+
+        # 1. Remove protected color blocks but KEEP their inner text
+        #    example: <c=@gold>Hello</c> -> Hello
+        text = re.sub(r"<c=[^>]+>(.*?)</c>", r"\1", text, flags=re.IGNORECASE)
+
+        # 2. Remove standalone bullet codes {s} and {sc}
+        text = re.sub(r"\{s\}", "", text, flags=re.IGNORECASE)
+        text = re.sub(r"\{sc\}", "", text, flags=re.IGNORECASE)
+
+        # 3. Replace known break/paragraph tags with newlines
+        text = re.sub(r"<br\s*/?>", "\n", text, flags=re.IGNORECASE)
+        text = re.sub(r"</?p>", "\n", text, flags=re.IGNORECASE)
+
+        # 4. Remove ANY REMAINING <...> or {...} tags
+        text = re.sub(r"<[^>]+>", "", text)
+        text = re.sub(r"\{[^}]+\}", "", text)
+
+        # 5. Collapse duplicated whitespace
+        text = re.sub(r"[ \t]+", " ", text)
+        text = re.sub(r"\n\s+", "\n", text)
+
+        return text.strip()
+
+    def _find_last_name_stored(model_id, slot, count, bag_id, storage_name=None, char_name=None):
+        items = {}
+        if char_name:
+            items = (
+                TEAM_INVENTORY_CACHE.get(email, {})
+                .get('Characters', {})
+                .get(char_name, {})
+                .get("Inventory", {})
+                .get(Bags(bag_id).name, {})
+            )
+        elif storage_name:
+            items = (
+                TEAM_INVENTORY_CACHE.get(email, {}).get('Storage', {}).get(storage_name, {}).get(Bags(bag_id).name, {})
+            )
+
+        for item_name, value in items.items():
+            if value.get('model_id') == model_id and value.get('slot', {}).get(slot, 0) == count:
+                return item_name
+
     bag_items = OrderedDict()
 
     # Ensure JSON databases are loaded
@@ -266,17 +319,26 @@ def _collect_bag_items(bag):
         model_id = item.model_id
         item_id = item.item_id
         quantity = item.quantity
+        slot = item.slot
 
         final_name = ''
         try:
             final_name = ModelID(model_id).name.replace("_", " ")
+            if model_id == ModelID.Vial_Of_Dye:
+                dye_int = GLOBAL_CACHE.Item.GetDyeColor(item_id)
+                final_name = f'{final_name} [{DyeColor(dye_int).name}]'
         except ValueError:
             final_name = None
+
+        if not final_name:
+            final_name = _find_last_name_stored(model_id, slot, quantity, bag_id, storage_name=storage_name, char_name=char_name)
 
         # === 4️⃣ Fallback to in-game request ===
         if not final_name:
             try:
-                final_name = yield from Routines.Yield.Items.GetItemNameByItemID(item_id)
+                markedup_name = yield from Routines.Yield.Items.GetItemNameByItemID(item_id)
+                final_name = _strip_markup(markedup_name)
+                # print('not found_name', final_name)
             except Exception as e:
                 print(f"Exception fetching name for {item_id}: {e}")
                 final_name = None
@@ -285,12 +347,10 @@ def _collect_bag_items(bag):
             continue
 
         # === Record result ===
-        if final_name not in bag_items:
-            bag_items[final_name] = {"model_id": model_id, "count": quantity}
-        else:
-            bag_items[final_name]["count"] += quantity
+        bag_items[final_name] = {"model_id": model_id, "slot": {slot: quantity}}
 
     return bag_items
+
 
 # TODO(mark): Use these functions once LootEx is ready
 # def get_armor_name_from_modifiers(item):
@@ -395,6 +455,7 @@ def record_account_data():
         yield from (
             get_character_bag_items_coroutine(
                 bag,
+                bag_id,
                 current_email,
                 char_name=char_name,
                 bag_name=bag_name,
@@ -408,6 +469,7 @@ def record_account_data():
         yield from (
             get_storage_bag_items_coroutine(
                 bag,
+                bag_id,
                 current_email,
                 storage_name=storage_name,
             )
@@ -582,7 +644,10 @@ def draw_widget():
 
                                     # === COUNT ===
                                     PyImGui.table_next_column()
-                                    PyImGui.text(str(entry["count"]))
+                                    count = 0
+                                    for slot_count in entry.get("slot", {}).values():
+                                        count += slot_count
+                                    PyImGui.text(str(count) if count else str(entry.get('count', 0)))
 
                                     # === LOCATION ===
                                     PyImGui.table_next_column()
@@ -669,7 +734,10 @@ def draw_widget():
 
                                                 # === COUNT COLUMN ===
                                                 PyImGui.table_next_column()
-                                                PyImGui.text(str(info["count"]))
+                                                count = 0
+                                                for slot_count in info.get("slot", {}).values():
+                                                    count += slot_count
+                                                PyImGui.text(str(count) if count else str(info.get('count', 0)))
                                             PyImGui.end_table()
                                         PyImGui.separator()
 
@@ -723,7 +791,10 @@ def draw_widget():
 
                                             # === COUNT COLUMN ===
                                             PyImGui.table_next_column()
-                                            PyImGui.text(str(info["count"]))
+                                            count = 0
+                                            for slot_count in info.get("slot", {}).values():
+                                                count += slot_count
+                                            PyImGui.text(str(count) if count else str(info.get('count', 0)))
                                         PyImGui.end_table()
                                     PyImGui.separator()
 
@@ -820,7 +891,11 @@ def configure():
 
 def main():
     try:
-        if not Routines.Checks.Map.MapValid() or GLOBAL_CACHE.Player.InCharacterSelectScreen():
+        if (
+            not Routines.Checks.Map.MapValid()
+            or GLOBAL_CACHE.Player.InCharacterSelectScreen()
+            or not Routines.Checks.Map.IsOutpost()
+        ):
             # When swapping characters, reset everything
             return
 
