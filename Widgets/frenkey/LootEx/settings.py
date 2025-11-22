@@ -61,7 +61,7 @@ class Settings:
                 
         self.language : ServerLanguage = ServerLanguage.English
         
-        self.collect_items: bool = False
+        self.collect_items: bool = True
         self.last_xunlai_check : datetime.datetime = datetime.datetime.min
         
         self.changed = False

@@ -876,6 +876,24 @@ class Data():
                             self.Items.add_item(item)
                         else:
                             self.Items[item_type][model_id].update(item)
+              
+              
+        local_path = os.path.join(Console.get_projects_path(), "Widgets", "Config", "LootEx", "items.json")
+        if os.path.exists(local_path):
+            with open(local_path, 'r', encoding='utf-8') as file:
+                local_items = models.ItemsByType.from_dict(json.load(file))
+                
+                for item_type, items in local_items.items():
+                    if item_type not in self.Items:
+                        self.Items[item_type] = {}
+                        
+                    for model_id, item in items.items():
+                        item.is_account_data = True
+                        
+                        if model_id not in self.Items[item_type]:
+                            self.Items.add_item(item)
+                        else:
+                            self.Items[item_type][model_id].update(item)
                             
         self.ItemsBySkins.clear()
         
@@ -904,11 +922,11 @@ class Data():
         # Save items to data/items.json
         file_directory = os.path.dirname(os.path.abspath(__file__))
         data_directory = os.path.join(file_directory, "data")
-        account_name = ""
         
-        if not shared_file:
-            account_name = GLOBAL_CACHE.Player.GetAccountEmail()
-            data_directory = os.path.join(self.get_data_collection_directory(), account_name)
+        account_name = GLOBAL_CACHE.Player.GetAccountEmail()
+        account_directory = os.path.join(self.get_data_collection_directory(), account_name)
+    
+        data_directory = account_directory if shared_file else data_directory
 
         path = os.path.join(data_directory, "items.json")
 
@@ -933,8 +951,16 @@ class Data():
             if existing_item:
                 existing_item.update(item)
 
+        json_string = items.to_json()
         with open(path, 'w', encoding='utf-8') as file:
-            json.dump(items.to_json(), file, indent=4, ensure_ascii=False)
+            json.dump(json_string, file, indent=4, ensure_ascii=False)
+        
+        
+        if shared_file:
+            local_path = os.path.join(Console.get_projects_path(), "Widgets", "Config", "LootEx", "items.json")
+            
+            with open(local_path, 'w', encoding='utf-8') as file:
+                json.dump(json_string, file, indent=4, ensure_ascii=False)
 
     def MergeDiffItems(self):
         path = self.get_data_collection_directory()

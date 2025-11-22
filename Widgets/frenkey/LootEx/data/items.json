@@ -20270,20 +20270,35 @@
             },
             "ItemType": "Bow",
             "Acquisition": "",
-            "Description": "",
+            "Description": "Balthazar's Bow is a bow obtained from Zaishen Martial Weapon Master in the Isle of the Nameless in exchange for 1 Blessing of War.",
             "Attributes": [
                 "Marksmanship"
             ],
-            "CommonSalvage": {},
+            "CommonSalvage": {
+                "Granite Slab": {
+                    "Amount": 1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 955,
+                    "MaterialName": "Granite Slab"
+                },
+                "Wood Plank": {
+                    "Amount": 1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 946,
+                    "MaterialName": "Wood Plank"
+                }
+            },
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Balthazar's_Flatbow",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
+            "InventoryIcon": "Balthazar's Bow.png",
+            "InventoryIconURL": "images\\9\\9c\\Balthazar%27s_Bow.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": false
+            "WikiScraped": true
         },
         "37863": {
             "ModelID": 37863,
@@ -20293,20 +20308,35 @@
             },
             "ItemType": "Bow",
             "Acquisition": "",
-            "Description": "",
+            "Description": "Balthazar's Bow is a bow obtained from Zaishen Martial Weapon Master in the Isle of the Nameless in exchange for 1 Blessing of War.",
             "Attributes": [
                 "Marksmanship"
             ],
-            "CommonSalvage": {},
+            "CommonSalvage": {
+                "Granite Slab": {
+                    "Amount": 1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 955,
+                    "MaterialName": "Granite Slab"
+                },
+                "Wood Plank": {
+                    "Amount": 1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 946,
+                    "MaterialName": "Wood Plank"
+                }
+            },
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Balthazar's_Hornbow",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
+            "InventoryIcon": "Balthazar's Bow.png",
+            "InventoryIconURL": "images\\9\\9c\\Balthazar%27s_Bow.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": false
+            "WikiScraped": true
         },
         "37864": {
             "ModelID": 37864,
@@ -20316,20 +20346,35 @@
             },
             "ItemType": "Bow",
             "Acquisition": "",
-            "Description": "",
+            "Description": "Balthazar's Bow is a bow obtained from Zaishen Martial Weapon Master in the Isle of the Nameless in exchange for 1 Blessing of War.",
             "Attributes": [
                 "Marksmanship"
             ],
-            "CommonSalvage": {},
+            "CommonSalvage": {
+                "Granite Slab": {
+                    "Amount": 1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 955,
+                    "MaterialName": "Granite Slab"
+                },
+                "Wood Plank": {
+                    "Amount": 1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 946,
+                    "MaterialName": "Wood Plank"
+                }
+            },
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Balthazar's_Longbow",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
+            "InventoryIcon": "Balthazar's Bow.png",
+            "InventoryIconURL": "images\\9\\9c\\Balthazar%27s_Bow.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": false
+            "WikiScraped": true
         },
         "37865": {
             "ModelID": 37865,
@@ -20339,20 +20384,35 @@
             },
             "ItemType": "Bow",
             "Acquisition": "",
-            "Description": "",
+            "Description": "Balthazar's Bow is a bow obtained from Zaishen Martial Weapon Master in the Isle of the Nameless in exchange for 1 Blessing of War.",
             "Attributes": [
                 "Marksmanship"
             ],
-            "CommonSalvage": {},
+            "CommonSalvage": {
+                "Granite Slab": {
+                    "Amount": 1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 955,
+                    "MaterialName": "Granite Slab"
+                },
+                "Wood Plank": {
+                    "Amount": 1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 946,
+                    "MaterialName": "Wood Plank"
+                }
+            },
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Balthazar's_Recurve_Bow",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
+            "InventoryIcon": "Balthazar's Bow.png",
+            "InventoryIconURL": "images\\9\\9c\\Balthazar%27s_Bow.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": false
+            "WikiScraped": true
         },
         "37866": {
             "ModelID": 37866,
@@ -20362,20 +20422,35 @@
             },
             "ItemType": "Bow",
             "Acquisition": "",
-            "Description": "",
+            "Description": "Balthazar's Bow is a bow obtained from Zaishen Martial Weapon Master in the Isle of the Nameless in exchange for 1 Blessing of War.",
             "Attributes": [
                 "Marksmanship"
             ],
-            "CommonSalvage": {},
+            "CommonSalvage": {
+                "Granite Slab": {
+                    "Amount": 1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 955,
+                    "MaterialName": "Granite Slab"
+                },
+                "Wood Plank": {
+                    "Amount": 1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 946,
+                    "MaterialName": "Wood Plank"
+                }
+            },
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Balthazar's_Shortbow",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
+            "InventoryIcon": "Balthazar's Bow.png",
+            "InventoryIconURL": "images\\9\\9c\\Balthazar%27s_Bow.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": false
+            "WikiScraped": true
         },
         "1358": {
             "ModelID": 1358,
@@ -73073,6 +73148,27 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "2978": {
+            "ModelID": 2978,
+            "ModelFileID": 9454,
+            "Names": {
+                "English": "Long Sword"
+            },
+            "ItemType": "Sword",
+            "Acquisition": "",
+            "Description": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Long_Sword_of_Shelter",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
         "2979": {
             "ModelID": 2979,
             "ModelFileID": 14398,
@@ -73170,27 +73266,6 @@
             "Category": null,
             "SubCategory": null,
             "WikiScraped": true
-        },
-        "2978": {
-            "ModelID": 2978,
-            "ModelFileID": 9454,
-            "Names": {
-                "English": "Long Sword"
-            },
-            "ItemType": "Sword",
-            "Acquisition": "",
-            "Description": "",
-            "Attributes": [],
-            "CommonSalvage": {},
-            "RareSalvage": {},
-            "WikiURL": "https://wiki.guildwars.com/wiki/Long_Sword_of_Shelter",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
-            "NickIndex": null,
-            "Profession": null,
-            "Category": null,
-            "SubCategory": null,
-            "WikiScraped": false
         },
         "2127": {
             "ModelID": 2127,
@@ -91418,6 +91493,44 @@
             "WikiURL": "https://wiki.guildwars.com/wiki/Forked_Spear",
             "InventoryIcon": "Forked Spear.png",
             "InventoryIconURL": "https://wiki.guildwars.com/images/a/a1/Forked_Spear.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "2075": {
+            "ModelID": 2075,
+            "ModelFileID": 301894,
+            "Names": {
+                "English": "Greater Guardian Spear"
+            },
+            "ItemType": "Spear",
+            "Acquisition": "Core\nIsle of the Nameless\n\tZaishen Chest\nFissure of Woe\n\tChest of Woe\nUnderworld\n\tUnderworld Chest\nEye of the North\nDepths of Tyria\n\tSlavers' Exile\n\t\tChest of the Slaver\n\tCathedral of Flames\n\t\tEnchanted Spear\n\t\tLocked Chest\n\tCatacombs of Kathandrax\n\t\tChest of Kathandrax\n\tOola's Lab\n\t\tLocked Chest\n\tArachni's Haunt\n\t\tLocked Chest\nDrop research is ongoing and can be found here .",
+            "Description": "The Greater Guardian Spear is a spear found in Eye of the North. Part of a set of Guardian Spears, it is of the most complex make amongst the trio.",
+            "Attributes": [
+                "SpearMastery"
+            ],
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                },
+                "Wood Plank": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 946,
+                    "MaterialName": "Wood Plank"
+                }
+            },
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Greater_Guardian_Spear",
+            "InventoryIcon": "Greater Guardian Spear.png",
+            "InventoryIconURL": "images\\b\\b1\\Greater_Guardian_Spear.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,

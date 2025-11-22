@@ -538,22 +538,22 @@ class DataCollector:
             self.modified_weapon_mods.clear()
         
         if self.modified_items:
-            wiki_data_missing = [item for item in self.modified_items.All if not item.wiki_scraped]
-            for item in wiki_data_missing:                    
-                english_name = item.names.get(ServerLanguage.English, "")
-                if not english_name or english_name == "":
-                    continue
+            # wiki_data_missing = [item for item in self.modified_items.All if not item.wiki_scraped]
+            # for item in wiki_data_missing:
+            #     english_name = item.names.get(ServerLanguage.English, "")
+            #     if not english_name or english_name == "":
+            #         continue
                 
-                ## Check if the name starts with an amount like "250"
-                parts = english_name.split(" ", 1) if english_name else []
-                contains_amount = len(parts) == 2 and parts[0].isdigit()
+            #     ## Check if the name starts with an amount like "250"
+            #     parts = english_name.split(" ", 1) if english_name else []
+            #     contains_amount = len(parts) == 2 and parts[0].isdigit()
                         
-                search_name = english_name.replace(parts[0], "").strip() if contains_amount else english_name
-                required_similarity = 0.95 if contains_amount else 1.0
+            #     search_name = english_name.replace(parts[0], "").strip() if contains_amount else english_name
+            #     required_similarity = 0.95 if contains_amount else 1.0
                 
-                matching_scraped_items = [scraped_item for (key, scraped_item) in data.ScrapedItems.items() if string_similarity(scraped_item.name, search_name) >= required_similarity]
-                if matching_scraped_items and len(matching_scraped_items) == 1:
-                    item.assign_scraped_data(matching_scraped_items[0], data)
+            #     matching_scraped_items = [scraped_item for (key, scraped_item) in data.ScrapedItems.items() if string_similarity(scraped_item.name, search_name) >= required_similarity]
+            #     if matching_scraped_items and len(matching_scraped_items) == 1:
+            #         item.assign_scraped_data(matching_scraped_items[0], data)
             
             data.SaveItems(shared_file=False, items=self.modified_items)
             self.modified_items.clear()

@@ -1124,33 +1124,33 @@ class UI:
             "\nAutomatically stacks items and sorts them in your inventory")                  
 
     def _draw_date_collection_toggle_button(self, width):
-        if UI.transparent_button(IconsFontAwesome5.ICON_LANGUAGE, self.settings.collect_items, width, width):
-            imgui_io = self.py_io
+        if UI.transparent_button(IconsFontAwesome5.ICON_LANGUAGE, self.settings.scraper_window_visible, width, width):
+            self.settings.scraper_window_visible = not self.settings.scraper_window_visible
 
-            if imgui_io.key_ctrl:
-                if self.settings.collect_items:
-                    messaging.SendPauseDataCollection(imgui_io.key_shift)
-                    self.settings.save()
-                else:
-                    messaging.SendStartDataCollection(imgui_io.key_shift)
-                    self.settings.save()
+        #     imgui_io = self.py_io
 
-            elif imgui_io.key_shift:
-                self.settings.scraper_window_visible = not self.settings.scraper_window_visible
+        #     if imgui_io.key_ctrl:
+        #         if self.settings.collect_items:
+        #             messaging.SendPauseDataCollection(imgui_io.key_shift)
+        #             self.settings.save()
+        #         else:
+        #             messaging.SendStartDataCollection(imgui_io.key_shift)
+        #             self.settings.save()
+
+        #     elif imgui_io.key_shift:
+        #         self.settings.scraper_window_visible = not self.settings.scraper_window_visible
                 
-            else:
-                if self.settings.collect_items:
-                    data_collector.instance.stop_collection()
-                    self.settings.save()
-                else:
-                    data_collector.instance.start_collection()
-                    self.settings.save()
+        #     else:
+        #         if self.settings.collect_items:
+        #             data_collector.instance.stop_collection()
+        #             self.settings.save()
+        #         else:
+        #             data_collector.instance.start_collection()
+        #             self.settings.save()
 
         ImGui.show_tooltip(
-            ("Disable" if self.settings.collect_items else "Enable") +
-            " Item Data Collection" +
-            "\nHold Ctrl to send message to all accounts" +
-            "\nHold Shift to send message to all accounts excluding yourself"
+            ("Close" if self.settings.scraper_window_visible else "Open") +
+            " Item Data Collection"
         )
     
     def _draw_manual_window_toggle_button(self, width):
@@ -1534,11 +1534,11 @@ class UI:
                         from Widgets.frenkey.LootEx.data import Data
                         cdata = Data()
                         
-                        for item in cdata.Items.All:
-                           if utility.Util.IsWeaponType(item.item_type):
-                               continue
+                        # for item in cdata.Items.All:
+                        #    if utility.Util.IsWeaponType(item.item_type):
+                        #        continue
                            
-                           item.attributes = []
+                        #    item.attributes = []
                         
                         cdata.SaveItems(True)                        
                         return
@@ -5217,7 +5217,9 @@ class UI:
         self.data.SaveItems(True)
                     
     def draw_data_collection(self): 
-        if not self.settings.scraper_window_visible:
+        self.collection_module_window.open = self.settings.scraper_window_visible
+        
+        if not self.collection_module_window.open:
             return
         
         style = ImGui.get_style()
@@ -5273,6 +5275,9 @@ class UI:
             self.collection_module_window.process_window()
         
         self.collection_module_window.end()
+        
+        if not self.collection_module_window.open:
+            self.settings.scraper_window_visible = False
     
     
     #endregion
