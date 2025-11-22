@@ -130,6 +130,24 @@ class AccountJSONStore:
             ConsoleLog("AccountJSONStore", f"[WARN] Failed to write {self.file_path}: {e}")
             return False
 
+    def _deep_dict_equal(self, a, b):
+        """
+        Recursively checks if two dictionaries (or nested structures) are equal.
+        Supports dicts, OrderedDicts, and lists.
+        """
+        if isinstance(a, dict) or isinstance(a, OrderedDict):
+            if a.keys() != b.keys():
+                return False
+            return all(self._deep_dict_equal(a[k], b[k]) for k in a)
+
+        if isinstance(a, list):
+            if len(a) != len(b):
+                return False
+            return all(self._deep_dict_equal(x, y) for x, y in zip(a, b))
+
+        # Base case: primitive types
+        return a == b
+
     # --- Cached interface ---
     def load(self):
         if self.email in TEAM_INVENTORY_CACHE:
@@ -148,12 +166,12 @@ class AccountJSONStore:
             if char_name not in chars:
                 chars[char_name] = {"Inventory": OrderedDict()}
             inv = chars[char_name]["Inventory"]
-            if inv.get(bag_name) != bag_items:
+            if not self._deep_dict_equal(inv.get(bag_name), bag_items):
                 inv[bag_name] = bag_items
                 changed = True
         elif storage_name:
             storage = data["Storage"]
-            if storage.get(storage_name) != bag_items:
+            if not self._deep_dict_equal(storage.get(storage_name), bag_items):
                 storage[storage_name] = bag_items
                 changed = True
 
@@ -252,6 +270,7 @@ def get_storage_bag_items_coroutine(bag, bag_id, email, storage_name):
 
 
 def _collect_bag_items(bag, bag_id, email, storage_name=None, char_name=None):
+    global ITEM_ID_CACHE
     """Shared coroutine to fetch all items from a bag with modifier and Frenkey DB name support."""
 
     def _strip_markup(text):
@@ -270,11 +289,7 @@ def _collect_bag_items(bag, bag_id, email, storage_name=None, char_name=None):
 
         return text.strip()
 
-    def _find_last_name_stored(model_id, slot, count, storage_name=None, char_name=None):
-        """
-        Find an existing item name from TEAM_INVENTORY_CACHE
-        matching same model_id, slot, quantity.
-        """
+    def _find_last_name_stored_model_id(model_id, slot, count, storage_name=None, char_name=None):
         if char_name:
             items = (
                 TEAM_INVENTORY_CACHE.get(email, {})
@@ -284,19 +299,12 @@ def _collect_bag_items(bag, bag_id, email, storage_name=None, char_name=None):
                 .get(Bags(bag_id).name, {})
             )
         elif storage_name:
-            items = (
-                TEAM_INVENTORY_CACHE.get(email, {})
-                .get("Storage", {})
-                .get(storage_name, {})
-            )
+            items = TEAM_INVENTORY_CACHE.get(email, {}).get("Storage", {}).get(storage_name, {})
         else:
             items = {}
 
         for item_name, value in items.items():
-            if (
-                value.get("model_id") == model_id
-                and value.get("slot", {}).get(str(slot), 0) == count
-            ):
+            if value.get("model_id") == model_id and value.get("slot", {}).get(str(slot), 0) == count:
                 return item_name
 
         return None
@@ -333,7 +341,9 @@ def _collect_bag_items(bag, bag_id, email, storage_name=None, char_name=None):
             final_name = None
 
         if not final_name:
-            stored_name = _find_last_name_stored(model_id, slot, quantity, storage_name=storage_name, char_name=char_name)
+            stored_name = _find_last_name_stored_model_id(
+                model_id, slot, quantity, storage_name=storage_name, char_name=char_name
+            )
             if stored_name:
                 final_name = stored_name
 
@@ -350,17 +360,15 @@ def _collect_bag_items(bag, bag_id, email, storage_name=None, char_name=None):
             continue
 
         if final_name in bag_items:
-            # If the same name exists but represents a different instance,
-            # generate "Name #1", "Name #2", etc.
             final_name = _generate_unique_key(bag_items, final_name)
 
         if final_name not in bag_items:
-            bag_items[final_name] = {
+            bag_items[final_name] = OrderedDict({
                 "model_id": model_id,
-                "slot": {slot: quantity},
-            }
+                "slot": OrderedDict({str(slot): quantity}),
+            })
         else:
-            bag_items[final_name]["slot"][slot] = quantity
+            bag_items[final_name]["slot"][str(slot)] = quantity
 
     return bag_items
 
@@ -439,6 +447,7 @@ def aggregate_items_by_model(items_dict):
 # region Widget
 def draw_widget():
     global TEAM_INVENTORY_CACHE
+    global ITEM_ID_CACHE
     global window_x
     global window_y
     global window_collapsed
@@ -454,9 +463,8 @@ def draw_widget():
         PyImGui.set_next_window_pos(window_x, window_y)
         PyImGui.set_next_window_collapsed(window_collapsed, 0)
         on_first_load = False
-        # TODO(mark): Use load once LootEx is ready
-        # Data().Load()
         TEAM_INVENTORY_CACHE = multi_store.load_all()
+        ITEM_ID_CACHE = {}
 
     new_collapsed = PyImGui.is_window_collapsed()
     end_pos = PyImGui.get_window_pos()
@@ -816,6 +824,20 @@ def draw_widget():
 
 def configure():
     pass
+
+
+def json_tree_view_debug(data):
+    # Convert JSON to pretty string
+    json_str = json.dumps(data, indent=2)
+
+    # --- In your PyImGui render loop ---
+    PyImGui.begin("JSON Viewer", True)
+
+    # Display the JSON string
+    PyImGui.text_unformatted(json_str)
+
+    PyImGui.end_child()
+    PyImGui.end()
 
 
 def main():
