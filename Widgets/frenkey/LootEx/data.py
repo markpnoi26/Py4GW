@@ -1,15 +1,19 @@
 import datetime
 import json
 import os
+import shutil
 from typing import Optional
 
 from Py4GW import Console
+import Py4GW
+from Py4GWCoreLib.enums_src.GameData_enums import DyeColor
 from Widgets.frenkey.LootEx import models
-from Widgets.frenkey.LootEx.enum import ItemCategory
+from Widgets.frenkey.LootEx.enum import ItemCategory, ModType, ModsModels
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.Py4GWcorelib import ConsoleLog
 from Py4GWCoreLib.enums import Attribute, ServerLanguage
 from Py4GWCoreLib.enums import ItemType, Profession
+from Widgets.frenkey.LootEx.texture_scraping_models import ScrapedItem
 
 class Data():
     _instance = None
@@ -28,6 +32,179 @@ class Data():
         self._initialized = True
     
         self.is_loaded: bool = False
+
+        self.ColorNames: dict[ServerLanguage, dict[DyeColor, str]] = {
+            ServerLanguage.English: {
+                DyeColor.Blue: "Blue",
+                DyeColor.Green: "Green",
+                DyeColor.Purple: "Purple",
+                DyeColor.Red: "Red",
+                DyeColor.Yellow: "Yellow",
+                DyeColor.Brown: "Brown",
+                DyeColor.Orange: "Orange",
+                DyeColor.Silver: "Silver",
+                DyeColor.Black: "Black",
+                DyeColor.Gray: "Gray",
+                DyeColor.White: "White",
+                DyeColor.Pink: "Pink",
+            },
+            ServerLanguage.Korean: {
+                DyeColor.Blue: "파란색",
+                DyeColor.Green: "초록색",
+                DyeColor.Purple: "보라색",
+                DyeColor.Red: "빨간색",
+                DyeColor.Yellow: "노란색",
+                DyeColor.Brown: "갈색",
+                DyeColor.Orange: "주황색",
+                DyeColor.Silver: "은색",
+                DyeColor.Black: "검은색",
+                DyeColor.Gray: "회색",
+                DyeColor.White: "흰색",
+                DyeColor.Pink: "분홍색",
+            },
+            ServerLanguage.French: {
+                DyeColor.Blue: "Bleu",
+                DyeColor.Green: "Vert",
+                DyeColor.Purple: "Pourpre",
+                DyeColor.Red: "Rouge",
+                DyeColor.Yellow: "Jaune",
+                DyeColor.Brown: "Marrone",
+                DyeColor.Orange: "Orange",
+                DyeColor.Silver: "Argent",
+                DyeColor.Black: "Noir",
+                DyeColor.Gray: "Gris",
+                DyeColor.White: "Blanc",
+                DyeColor.Pink: "Rose",
+            },
+            ServerLanguage.German: {
+                DyeColor.Blue: "Blau",
+                DyeColor.Green: "Grün",
+                DyeColor.Purple: "Lila",
+                DyeColor.Red: "Rot",
+                DyeColor.Yellow: "Gelb",
+                DyeColor.Brown: "Braun",
+                DyeColor.Orange: "Orange",
+                DyeColor.Silver: "Silber",
+                DyeColor.Black: "Schwarz",
+                DyeColor.Gray: "Grau",
+                DyeColor.White: "Weiß",
+                DyeColor.Pink: "Rosa",
+            },
+            ServerLanguage.Italian: {
+                DyeColor.Blue: "Blu",
+                DyeColor.Green: "Verde",
+                DyeColor.Purple: "Porpora",
+                DyeColor.Red: "Rosso",
+                DyeColor.Yellow: "Giallo",
+                DyeColor.Brown: "Marrone",
+                DyeColor.Orange: "Arancione",
+                DyeColor.Silver: "Argento",
+                DyeColor.Black: "Nero",
+                DyeColor.Gray: "Grigio",
+                DyeColor.White: "Bianco",
+                DyeColor.Pink: "Rosa",
+            },
+            ServerLanguage.Spanish: {
+                DyeColor.Blue: "Azul",
+                DyeColor.Green: "Verde",
+                DyeColor.Purple: "Púrpura",
+                DyeColor.Red: "Rojo",
+                DyeColor.Yellow: "Amarillo",
+                DyeColor.Brown: "Marrón",
+                DyeColor.Orange: "Naranja",
+                DyeColor.Silver: "Plata",
+                DyeColor.Black: "Negro",
+                DyeColor.Gray: "Gris",
+                DyeColor.White: "Blanco",
+                DyeColor.Pink: "Rosa",
+            },
+            ServerLanguage.TraditionalChinese: {
+                DyeColor.Blue: "藍色",
+                DyeColor.Green: "綠色",
+                DyeColor.Purple: "紫色",
+                DyeColor.Red: "紅色",
+                DyeColor.Yellow: "黃色",
+                DyeColor.Brown: "棕色",
+                DyeColor.Orange: "橙色",
+                DyeColor.Silver: "銀色",
+                DyeColor.Black: "黑色",
+                DyeColor.Gray: "灰色",
+                DyeColor.White: "白色",
+                DyeColor.Pink: "粉紅色",
+            },
+            ServerLanguage.Japanese: {
+                DyeColor.Blue: "青",
+                DyeColor.Green: "緑",
+                DyeColor.Purple: "紫",
+                DyeColor.Red: "赤",
+                DyeColor.Yellow: "黄",
+                DyeColor.Brown: "茶色",
+                DyeColor.Orange: "オレンジ",
+                DyeColor.Silver: "銀",
+                DyeColor.Black: "黒",
+                DyeColor.Gray: "灰色",
+                DyeColor.White: "白",
+                DyeColor.Pink: "ピンク",
+            },
+            ServerLanguage.Polish: {
+                DyeColor.Blue: "Niebieski",
+                DyeColor.Green: "Zielony",
+                DyeColor.Purple: "Fioletowy",
+                DyeColor.Red: "Czerwony",
+                DyeColor.Yellow: "Żółty",
+                DyeColor.Brown: "Brązowy",
+                DyeColor.Orange: "Pomarańczowy",
+                DyeColor.Silver: "Srebrny",
+                DyeColor.Black: "Czarny",
+                DyeColor.Gray: "Szary",
+                DyeColor.White: "Biały",
+                DyeColor.Pink: "Różowy",
+            },
+            ServerLanguage.Russian: {
+                DyeColor.Blue: "Синий",
+                DyeColor.Green: "Зеленый",
+                DyeColor.Purple: "Пурпурный",
+                DyeColor.Red: "Красный",
+                DyeColor.Yellow: "Желтый",
+                DyeColor.Brown: "Коричневый",
+                DyeColor.Orange: "Оранжевый",
+                DyeColor.Silver: "Серебряный",
+                DyeColor.Black: "Черный",
+                DyeColor.Gray: "Серый",
+                DyeColor.White: "Белый",
+                DyeColor.Pink: "Розовый",
+            },
+            ServerLanguage.BorkBorkBork: {
+                DyeColor.Blue: "Blooe-a",
+                DyeColor.Green: "Greee",
+                DyeColor.Purple: "Poorple-a",
+                DyeColor.Red: "Red",
+                DyeColor.Yellow: "Yelloo",
+                DyeColor.Brown: "Broon",
+                DyeColor.Orange: "Oorunge-a",
+                DyeColor.Silver: "Seelfer",
+                DyeColor.Black: "Blaeck",
+                DyeColor.Gray: "Graey",
+                DyeColor.White: "Vheete-a",
+                DyeColor.Pink: "Peenk",
+            },
+
+        }
+        
+        self.ModsByItemType: dict[ItemType, models.ModsPair] = {
+            ItemType.Axe: models.ModsPair(ModsModels.AxeHaft, ModsModels.AxeGrip),
+            ItemType.Bow: models.ModsPair(ModsModels.BowString, ModsModels.BowGrip),
+            ItemType.Daggers: models.ModsPair(ModsModels.DaggerTang, ModsModels.DaggerHandle),
+            ItemType.Offhand: models.ModsPair(None, ModsModels.FocusCore),
+            ItemType.Hammer: models.ModsPair(ModsModels.HammerHaft, ModsModels.HammerGrip),
+            ItemType.Scythe: models.ModsPair(ModsModels.ScytheSnathe, ModsModels.ScytheGrip),
+            ItemType.Shield: models.ModsPair(None, ModsModels.ShieldHandle),
+            ItemType.Spear: models.ModsPair(ModsModels.Spearhead, ModsModels.SpearGrip),
+            ItemType.Staff: models.ModsPair(ModsModels.StaffHead, ModsModels.StaffWrapping),
+            ItemType.Sword: models.ModsPair(ModsModels.SwordPommel, ModsModels.SwordHilt),
+            ItemType.Wand: models.ModsPair(None, ModsModels.WandWrapping),
+        }
+
         self.DamageRanges: dict[ItemType, dict[int, models.IntRange]] = {
             ItemType.Axe: {
                 0:  models.IntRange(6, 12),
@@ -271,6 +448,7 @@ class Data():
             ItemType.Staff: self.Caster_Attributes,
         }
 
+        self.ScrapedItems: dict[str, ScrapedItem] = {}
         self.Items: models.ItemsByType = models.ItemsByType()
         self.ItemsBySkins: dict[str, list[models.Item]] = {}
         self.Nick_Items: dict[int, models.Item] = {}
@@ -399,6 +577,26 @@ class Data():
                     "Greater Stoneblade" 
                 ]
 
+    
+    def get_mods_models(self, item_type: ItemType) -> models.ModsPair | None:
+        try:
+            return self.ModsByItemType[item_type]
+        except KeyError:
+            return None
+
+    def get_mod_model(self, item_type: ItemType, mod_type: ModType) -> models.ModsModels | None:
+        try:
+            mods_pair = self.ModsByItemType.get(item_type, None)
+            
+            if mods_pair:
+                return mods_pair.get(mod_type)
+
+        except KeyError:
+            return None    
+        
+        return None
+        
+
     def UpdateLanguage(self, server_language: ServerLanguage):
         for item in self.Items.All:
             item.update_language(server_language)
@@ -429,10 +627,38 @@ class Data():
         # Load the Materials
         self.LoadMaterials()
         
+        # Load the scraped items
+        self.LoadScrapedItems()
+        
         self.is_loaded = True
 
     def Load(self):
         self.Reload()
+        
+    def LoadScrapedItems(self):        
+        file_directory = os.path.dirname(os.path.abspath(__file__))
+        data_directory = os.path.join(file_directory, "data")
+        path = os.path.join(data_directory, "scraped_items.json")
+        
+        if os.path.exists(path):
+            with open(path, 'r', encoding='utf-8') as f:
+                item_data = json.load(f)
+            
+            scraped_items = {name: ScrapedItem.from_json(data) for name, data in item_data.items()}
+            
+            ## remove duplicates based on inventory icon and item name
+            unique_items = {}
+            for (file_name, item) in scraped_items.items():
+                key = (item.inventory_icon_url, item.name)
+                
+                if key not in unique_items:
+                    unique_items[key] = (file_name, item)
+            
+            self.ScrapedItems = {file_name: item for file_name, item in unique_items.values()}
+            return self.ScrapedItems
+        
+        self.ScrapedItems = {}
+        return self.ScrapedItems
 
     def LoadMaterials(self):
         # Load materials from data/materials.json
@@ -650,13 +876,31 @@ class Data():
                             self.Items.add_item(item)
                         else:
                             self.Items[item_type][model_id].update(item)
+              
+              
+        local_path = os.path.join(Console.get_projects_path(), "Widgets", "Config", "LootEx", "items.json")
+        if os.path.exists(local_path):
+            with open(local_path, 'r', encoding='utf-8') as file:
+                local_items = models.ItemsByType.from_dict(json.load(file))
+                
+                for item_type, items in local_items.items():
+                    if item_type not in self.Items:
+                        self.Items[item_type] = {}
+                        
+                    for model_id, item in items.items():
+                        item.is_account_data = True
+                        
+                        if model_id not in self.Items[item_type]:
+                            self.Items.add_item(item)
+                        else:
+                            self.Items[item_type][model_id].update(item)
                             
         self.ItemsBySkins.clear()
         
         self.Items.sort_items()
         nick_items : dict[int, models.Item] = {}
         for item_type, items in self.Items.items():
-            for model_id, item in items.items():
+            for model_id, item in items.items():        
                 if item.inventory_icon:
                     if item.inventory_icon not in self.ItemsBySkins:
                         self.ItemsBySkins[item.inventory_icon] = []
@@ -670,18 +914,19 @@ class Data():
         self.Nick_Cycle = [nick_items[index] for index in range(1, self.Nick_Cycle_Count + 1) if index in nick_items]
         self.Nick_Items = {item.model_id: item for item in self.Nick_Cycle if item.model_id is not None}
         
+        
         ConsoleLog(
             "LootEx", f"Loaded {len(self.Items.All)} items ({len(self.Nick_Items)} Nick items).", Console.MessageType.Debug)
-
 
     def SaveItems(self, shared_file: bool = False, items: Optional[models.ItemsByType] = None):
         # Save items to data/items.json
         file_directory = os.path.dirname(os.path.abspath(__file__))
         data_directory = os.path.join(file_directory, "data")
-
-        if not shared_file:
-            account_name = GLOBAL_CACHE.Player.GetAccountEmail()
-            data_directory = os.path.join(self.get_data_collection_directory(), account_name)
+        
+        account_name = GLOBAL_CACHE.Player.GetAccountEmail()
+        account_directory = os.path.join(self.get_data_collection_directory(), account_name)
+    
+        data_directory = account_directory if shared_file else data_directory
 
         path = os.path.join(data_directory, "items.json")
 
@@ -699,37 +944,49 @@ class Data():
         if items is None:
             return
 
+        for item in items.All:
+            items_of_type = self.Items.get(item.item_type, {}) 
+            existing_item = items_of_type.get(item.model_id, None)
+            
+            if existing_item:
+                existing_item.update(item)
 
+        json_string = items.to_json()
         with open(path, 'w', encoding='utf-8') as file:
-            ConsoleLog(
-                "LootEx", f"Saving items ...", Console.MessageType.Debug)
-            json.dump(items.to_json(), file, indent=4, ensure_ascii=False)
+            json.dump(json_string, file, indent=4, ensure_ascii=False)
+        
+        
+        if shared_file:
+            local_path = os.path.join(Console.get_projects_path(), "Widgets", "Config", "LootEx", "items.json")
+            
+            with open(local_path, 'w', encoding='utf-8') as file:
+                json.dump(json_string, file, indent=4, ensure_ascii=False)
 
     def MergeDiffItems(self):
-        dirs = os.listdir(self.get_data_collection_directory())
+        path = self.get_data_collection_directory()
+        
+        if path == "":
+            return
+        
+        dirs = os.listdir(path)
+        
+        items_found = False
         for dir_name in dirs:
-            file_path = os.path.join(self.get_data_collection_directory(), dir_name, "items.json")
+            file_path = os.path.join(path, dir_name, "items.json")
             
-            if os.path.exists(file_path):            
-                with open(file_path, 'r', encoding='utf-8') as file:
-                    ConsoleLog(
-                        "LootEx", f"Merging diff items from {file_path}...", Console.MessageType.Debug)
-                    
+            if os.path.exists(file_path):                            
+                with open(file_path, 'r', encoding='utf-8') as file:                    
                     file_data = json.load(file)
                     file_items = models.ItemsByType.from_dict(file_data)
-
+                    items_found = len(file_items.items()) > 0 or items_found
+                    
                     for item_type, items in file_items.items():
                         if item_type not in self.Items:
                             self.Items[item_type] = {}
                             
                         # Iterate through the items in the diff file
                         for model_id, item in items.items():
-                            
-                            if model_id not in self.Items[item_type]:
-                                self.Items.add_item(item)
-                            else:
-                                # If the item already exists, we can update it
-                                self.Items[item_type][model_id].update(item)
+                            self.Items.add_item(item)
                             
                             name = item.names.get(ServerLanguage.English, None)
                             if name is not None and name != "":
@@ -739,19 +996,24 @@ class Data():
                 # Delete the diff file after merging
                 os.remove(file_path)
         
-        self.SaveItems(shared_file=True, items=self.Items)
+        if items_found:
+            ConsoleLog(
+                "LootEx", f"Saving merged items...", Console.MessageType.Debug)
+            self.SaveItems(shared_file=True, items=self.Items)
         
         
+        mods_found = False
         for dir_name in dirs:
             file_path = os.path.join(self.get_data_collection_directory(), dir_name, "weapon_mods.json")
             
             if os.path.exists(file_path):            
                 with open(file_path, 'r', encoding='utf-8') as file:
-                    ConsoleLog(
-                        "LootEx", f"Merging diff items from {file_path}...", Console.MessageType.Debug)
+                    # ConsoleLog(
+                    #     "LootEx", f"Merging diff items from {file_path}...", Console.MessageType.Debug)
                     
                     mods = json.load(file)
-
+                    mods_found = len(mods.values()) > 0 or mods_found
+                    
                     for value in mods.values():
                         mod = models.WeaponMod.from_json(value)
                         
@@ -763,5 +1025,5 @@ class Data():
             
                 # Delete the diff file after merging
                 os.remove(file_path)
-        
-        self.SaveWeaponMods(shared_file=True, mods=self.Weapon_Mods)
+        if mods_found:
+            self.SaveWeaponMods(shared_file=True, mods=self.Weapon_Mods)

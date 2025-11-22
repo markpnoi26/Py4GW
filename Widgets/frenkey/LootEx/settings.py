@@ -48,6 +48,7 @@ class Settings:
         self.window_collapsed: bool = False
         self.window_visible: bool = False
         self.manual_window_visible: bool = False
+        self.scraper_window_visible: bool = False
 
         self.settings_file_path: str = ""
         self.profiles_path: str = ""
@@ -60,7 +61,7 @@ class Settings:
                 
         self.language : ServerLanguage = ServerLanguage.English
         
-        self.collect_items: bool = False
+        self.collect_items: bool = True
         self.last_xunlai_check : datetime.datetime = datetime.datetime.min
         
         self.changed = False

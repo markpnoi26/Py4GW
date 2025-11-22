@@ -1,14 +1,10 @@
 from datetime import datetime
-from PyItem import DyeInfo, ItemModifier, PyItem
-from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
-from Py4GWCoreLib import ItemArray
+from PyItem import DyeInfo, ItemModifier
 from Py4GWCoreLib import Item
-from Py4GWCoreLib.Item import Bag
-from Py4GWCoreLib.Py4GWcorelib import ConsoleLog
-from Py4GWCoreLib.enums import Attribute, Console, DyeColor, ItemType, ModelID, Rarity
-from Widgets.frenkey.LootEx.data import Data
+from Py4GWCoreLib.enums import Attribute, DyeColor, ItemType, ModelID, Rarity
+from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
 from Widgets.frenkey.LootEx.enum import ModType, ModifierIdentifier
-from Widgets.frenkey.LootEx.models import ModifierInfo, RuneModInfo
+from Widgets.frenkey.LootEx.models import ItemModifiersInformation, RuneModInfo, WeaponModInfo
 
 class Cached_Item:
     def __init__(self, item_id: int, slot: int = -1):
@@ -23,10 +19,14 @@ class Cached_Item:
         
         self.id: int = item_id
         self.model_id: int = item.model_id if item else -1
+        self.model_file_id: int = item.model_file_id if item else -1
         self.item_type: ItemType = ItemType(
             item.item_type.ToInt()) if item else ItemType.Unknown
         self.rarity: Rarity = Rarity(
             item.rarity.value) if item and item.rarity and item.rarity.value in Rarity else Rarity.White
+        
+        self.data: models.Item | None = data.Items.get_item(
+            self.item_type, self.model_id) if self.model_id > -1 and self.item_type in data.Items else None
 
         self.is_identified: bool = item.is_identified if item else False
         self.value: int = item.value if item else 0
@@ -66,9 +66,6 @@ class Cached_Item:
             if self.model_id in data.Materials:
                 self.material = data.Materials[self.model_id]
 
-        self.data: models.Item | None = data.Items.get_item(
-            self.item_type, self.model_id) if self.model_id > -1 and self.item_type in data.Items else None
-        self.model_name: str = self.data.name if self.data else "Unknown Item"
         self.skin = self.data.inventory_icon if self.data else None
         
         # self.config = settings.current.profile.items.get_item_config(
@@ -86,17 +83,6 @@ class Cached_Item:
 
         self.has_mods: bool = False
         self.modifiers: list[ItemModifier] = item.modifiers if item else []
-
-        self.mods: list[models.RuneModInfo | models.WeaponModInfo] = []
-        self.runes: list[models.RuneModInfo] = []
-        self.weapon_mods: list[models.WeaponModInfo] = []
-
-        self.max_runes: list[models.RuneModInfo] = []
-        self.max_weapon_mods: list[models.WeaponModInfo] = []
-
-        self.runes_to_keep: list[models.RuneModInfo] = []
-        self.runes_to_sell: list[models.RuneModInfo] = []
-        self.weapon_mods_to_keep: list[models.WeaponModInfo] = []
         
         self.is_highly_salvageable: bool = False
         self.has_increased_value: bool = False
@@ -104,7 +90,29 @@ class Cached_Item:
         self.is_rare_weapon : bool = utility.Util.IsRareWeapon(self.model_id) and self.rarity == Rarity.Gold
         self.is_rare_weapon_to_keep : bool = self.is_rare_weapon and settings.profile.rare_weapons.get(self.data.name, False) if self.data and settings.profile else False
         
-        self.GetModsFromModifiers()
+        mods_info = ItemModifiersInformation.GetModsFromModifiers(self.modifiers, self.item_type, self.model_id, self.is_inscribable)
+        
+        self.target_item_type: ItemType = mods_info.target_item_type
+        self.damage: tuple[int, int] = mods_info.damage
+        self.shield_armor: tuple[int, int] = mods_info.shield_armor
+        self.requirements: int = mods_info.requirements
+        self.attribute: Attribute = mods_info.attribute
+        self.is_highly_salvageable: bool = mods_info.is_highly_salvageable
+        self.has_increased_value: bool = mods_info.has_increased_value
+        
+        self.runes: list[RuneModInfo] = mods_info.runes
+        self.max_runes: list[RuneModInfo] = mods_info.max_runes
+        self.runes_to_keep: list[RuneModInfo] = mods_info.runes_to_keep
+        self.runes_to_sell: list[RuneModInfo] = mods_info.runes_to_sell
+        
+        self.weapon_mods: list[WeaponModInfo] = mods_info.weapon_mods
+        self.max_weapon_mods: list[WeaponModInfo] = mods_info.max_weapon_mods
+        self.weapon_mods_to_keep: list[WeaponModInfo] = mods_info.weapon_mods_to_keep
+        self.mods: list[RuneModInfo | WeaponModInfo] = mods_info.mods
+        
+        self.has_mods: bool = False
+        
+        self.name : str = self.get_name()
                 
         self.skin_rule: skin_rule.SkinRule | None = None
         self.matches_skin_rule: bool = False
@@ -127,6 +135,61 @@ class Cached_Item:
             self.matches_weapon_rule = self.weapon_rule.matches(self)
 
         pass
+    
+    def get_name(self) -> str:
+        from Widgets.frenkey.LootEx.settings import Settings
+        settings = Settings()
+        
+        from Widgets.frenkey.LootEx.data import Data
+        data = Data()
+        
+        color_names = data.ColorNames.get(settings.language, {})
+        
+        if self.data:
+            if self.data.name:                
+                if self.item_type == ItemType.Dye:
+                    if self.dye_info is not None:
+                        color_name = color_names.get(DyeColor(self.dye_info.dye1.ToInt()))
+                        return self.data.name.format(color_name, self.quantity)
+                    pass
+                
+                if self.item_type == ItemType.Rune_Mod:
+                    if self.mods:
+                        if not self.is_rune:
+                            mod_name = self.mods[0].Mod.name
+                            return self.data.name.format(mod_name)
+                        else:
+                            return self.mods[0].Mod.name
+                    pass
+                
+                if self.mods:
+                    if self.is_armor or self.is_weapon:                              
+                        armor_formats = {                          
+                            ServerLanguage.German: "{Prefix} {Item} {Suffix}",
+                            ServerLanguage.English: "{Prefix} {Item} {Suffix}",
+                            ServerLanguage.Korean: "{Prefix} {Item} {Suffix}",
+                            ServerLanguage.French: "{Item} {Prefix} {Suffix}",
+                            ServerLanguage.Italian: "{Item} {Suffix} {Prefix}",   
+                            ServerLanguage.Spanish: "{Item} {Prefix} {Suffix}",                          
+                            ServerLanguage.TraditionalChinese: "{Suffix} {Prefix} {Item}",                          
+                            ServerLanguage.Japanese: "{Prefix} {Item} {Suffix}",  
+                            ServerLanguage.Polish: "{Item} {Prefix} {Suffix}",    
+                            ServerLanguage.Russian: "{Prefix} {Item} {Suffix}", 
+                            ServerLanguage.BorkBorkBork: "{Prefix} {Item} {Suffix}",                   
+                        }
+                        
+                        prefix = next((mod.Mod.name for mod in self.mods if mod.Mod.mod_type == ModType.Prefix), "")
+                        suffix = next((mod.Mod.name for mod in self.mods if mod.Mod.mod_type == ModType.Suffix), "")
+                        
+                        fmt = armor_formats.get(settings.language, "{Prefix} {Item} {Suffix}")
+                        return fmt.format(Item=self.data.name, Prefix=prefix, Suffix=suffix).strip()
+                
+                if self.is_stackable and self.quantity > 1:
+                    return f"{self.quantity} {self.data.name}"
+                
+                return self.data.name
+        
+        return "Unknown Item"
     
     def IsVial_Of_DyeToKeep(self) -> bool:
         from Widgets.frenkey.LootEx.settings import Settings
@@ -263,7 +326,7 @@ class Cached_Item:
                     self.runes_to_sell.append(rune)
 
         if self.is_weapon or (self.is_upgrade and not self.is_rune):            
-            self.weapon_mods = WeaponModInfo.get_from_modifiers(modifier_values, self.item_type) or []
+            self.weapon_mods = WeaponModInfo.get_from_modifiers(modifier_values, self.item_type, self.model_id) or []
             self.max_weapon_mods = [mod for mod in self.weapon_mods if mod.IsMaxed and (mod.WeaponMod.mod_type != ModType.Inherent or (self.is_inscribable or self.is_upgrade))]
             self.weapon_mods_to_keep = [mod for mod in self.max_weapon_mods if settings.profile and settings.profile.weapon_mods.get(mod.WeaponMod.identifier, {}).get(self.item_type.name, False)]
                             

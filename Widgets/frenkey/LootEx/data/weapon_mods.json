@@ -5,25 +5,37 @@
             "English": "Halves casting time on spells of item's attribute (Chance: {arg1}%)"
         },
         "Names": {
-            "English": "\"Aptitude not Attitude\"",
             "German": "\"Gut gewirkt ist halb gewonnen\"",
+            "English": "\"Aptitude not Attitude\"",
             "Korean": "마력석: 특성이 아니라 재능이다",
             "French": "\"Les compétences prévalent\"",
             "Italian": "\"Inclinazione non Finzione\"",
             "Spanish": "\"Aptitud, no actitud\"",
             "TraditionalChinese": "\"能力而非態度\"",
             "Japanese": "アプティテュード ノット アティテュード",
-            "BorkBorkBork": "\"Aepteetoode-a nut Aetteetoode-a\"",
             "Polish": "\"Talent a nie nastawienie\"",
-            "Russian": "\"Главное -способности, а не отношение к делу\""
+            "Russian": "\"Главное -способности, а не отношение к делу\"",
+            "BorkBorkBork": "\"Aepteetoode-a nut Aetteetoode-a\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "SpellcastingWeapon": "Inscription_SpellcastingWeapon"
+        },
         "TargetTypes": [
             "SpellcastingWeapon"
         ],
         "UpgradeExists": true,
         "ItemTypeSpecific": {},
         "Modifiers": [
+            {
+                "Identifier": 9522,
+                "Arg1": 3,
+                "Arg2": 174,
+                "Arg": 942,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            },
             {
                 "Identifier": 10248,
                 "Arg1": 20,
@@ -44,6 +56,9 @@
             "English": "\"Be Just and Fear Not\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "Offhand": "Inscription_Offhand"
+        },
         "TargetTypes": [
             "Offhand"
         ],
@@ -67,8 +82,8 @@
             "English": "Damage +{arg2[8760]}%\nEnergy -{arg2[8376]}"
         },
         "Names": {
-            "English": "\"Brawn over Brains\"",
             "German": "\"Körper über Geist\"",
+            "English": "\"Brawn over Brains\"",
             "Korean": "힘보다는 머리",
             "French": "\"Tout en muscles\"",
             "Italian": "\"Più Muscoli che Cervello\"",
@@ -80,6 +95,9 @@
             "BorkBorkBork": "\"Braevn oofer Braeeens\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "Weapon": "Inscription_Weapon"
+        },
         "TargetTypes": [
             "Weapon"
         ],
@@ -112,8 +130,8 @@
             "English": "Reduces Disease duration on you by 20%"
         },
         "Names": {
-            "English": "\"Cast Out the Unclean\"",
             "German": "\"Gute Besserung!\"",
+            "English": "\"Cast Out the Unclean\"",
             "Korean": "불결한 건 가랏!",
             "French": "\"Au rebut les impurs\"",
             "Italian": "\"Esorcizza l'Eresia\"",
@@ -125,6 +143,9 @@
             "BorkBorkBork": "\"Caest Oooot zee Uncleun\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "OffhandOrShield": "Inscription_OffhandOrShield"
+        },
         "TargetTypes": [
             "OffhandOrShield"
         ],
@@ -148,19 +169,22 @@
             "English": "Damage +{arg2}% (while in a Stance)"
         },
         "Names": {
-            "English": "\"Dance with Death\"",
             "German": "\"Tanz mit dem Tod\"",
+            "English": "\"Dance with Death\"",
             "Korean": "마력석: 죽음과 함께 춤을",
             "French": "\"Danse avec la mort\"",
             "Italian": "\"Balla coi Lutti\"",
             "Spanish": "\"Baila con la muerte\"",
             "TraditionalChinese": "\"與死亡共舞\"",
             "Japanese": "ダンス ウィズ デス",
-            "BorkBorkBork": "\"Dunce-a veet Deaet\"",
             "Polish": "\"Taniec ze śmiercią\"",
-            "Russian": "\"Танец со смертью\""
+            "Russian": "\"Танец со смертью\"",
+            "BorkBorkBork": "\"Dunce-a veet Deaet\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "Weapon": "Inscription_Weapon"
+        },
         "TargetTypes": [
             "Weapon"
         ],
@@ -184,19 +208,22 @@
             "English": "Damage +{arg2}% (while Hexed)"
         },
         "Names": {
-            "English": "\"Don't Fear the Reaper\"",
-            "BorkBorkBork": "\"Dun't Feaer zee Reaeper\"",
-            "Polish": "\"Nie bój się żniwiarza\"",
-            "Russian": "\"Не бойся жнеца\"",
             "German": "\"Keine Angst vorm Sensenmann\"",
-            "TraditionalChinese": "\"無懼死亡\"",
-            "Spanish": "\"No temas la guadaña\"",
+            "English": "\"Don't Fear the Reaper\"",
             "Korean": "사신을 두려워하지 마라",
             "French": "\"Ne craignez pas le Faucheur\"",
             "Italian": "\"Non Temere la Falce\"",
-            "Japanese": "ドント フィアー ザ リーパー"
+            "Spanish": "\"No temas la guadaña\"",
+            "TraditionalChinese": "\"無懼死亡\"",
+            "Japanese": "ドント フィアー ザ リーパー",
+            "Polish": "\"Nie bój się żniwiarza\"",
+            "Russian": "\"Не бойся жнеца\"",
+            "BorkBorkBork": "\"Dun't Feaer zee Reaeper\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "Weapon": "Inscription_Weapon"
+        },
         "TargetTypes": [
             "Weapon"
         ],
@@ -220,19 +247,22 @@
             "English": "Halves casting time of spells (Chance: +{arg1}%)"
         },
         "Names": {
-            "English": "\"Don't Think Twice\"",
-            "BorkBorkBork": "\"Dun't Theenk Tveece-a\"",
-            "Polish": "\"Nie zastanawiaj się\"",
-            "Russian": "\"А что тут думать?\"",
             "German": "\"Zauderei ist keine Zier\"",
-            "TraditionalChinese": "\"別再考慮\"",
-            "Spanish": "\"No te lo pienses\"",
+            "English": "\"Don't Think Twice\"",
             "Korean": "두 번 생각하지 마라",
             "French": "\"Pas le temps de réfléchir\"",
             "Italian": "\"Non Pensarci Due Volte\"",
-            "Japanese": "ドント シンク トゥワイス"
+            "Spanish": "\"No te lo pienses\"",
+            "TraditionalChinese": "\"別再考慮\"",
+            "Japanese": "ドント シンク トゥワイス",
+            "Polish": "\"Nie zastanawiaj się\"",
+            "Russian": "\"А что тут думать?\"",
+            "BorkBorkBork": "\"Dun't Theenk Tveece-a\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "Weapon": "Inscription_Weapon"
+        },
         "TargetTypes": [
             "Weapon"
         ],
@@ -262,19 +292,22 @@
             "English": "Energy +{arg2} (while Health is below +{arg1}%)"
         },
         "Names": {
-            "English": "\"Don't call it a comeback!\"",
-            "BorkBorkBork": "\"Dun't caell it a cumebaeck!\"",
-            "Polish": "\"Nie nazywaj tego powrotem!\"",
-            "Russian": "\"Не считай это местью!\"",
             "German": "\"Sie kehren niemals wieder\"",
-            "TraditionalChinese": "\"別說我不行！\"",
-            "Spanish": "\"¡No será la última palabra!\"",
+            "English": "\"Don't call it a comeback!\"",
             "Korean": "단순한 회복이 아니다!",
             "French": "\"Aucun recours !\"",
             "Italian": "\"Non Consideratelo un Ritorno!\"",
-            "Japanese": "ドント コール イット ア カムバック！"
+            "Spanish": "\"¡No será la última palabra!\"",
+            "TraditionalChinese": "\"別說我不行！\"",
+            "Japanese": "ドント コール イット ア カムバック！",
+            "Polish": "\"Nie nazywaj tego powrotem!\"",
+            "Russian": "\"Не считай это местью!\"",
+            "BorkBorkBork": "\"Dun't caell it a cumebaeck!\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "SpellcastingWeapon": "Inscription_SpellcastingWeapon"
+        },
         "TargetTypes": [
             "SpellcastingWeapon"
         ],
@@ -301,6 +334,9 @@
             "English": "\"Down But Not Out\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "Offhand": "Inscription_Offhand"
+        },
         "TargetTypes": [
             "Offhand"
         ],
@@ -324,19 +360,22 @@
             "English": "Armor +{arg2} (while Enchanted)"
         },
         "Names": {
-            "English": "\"Faith is My Shield\"",
             "German": "\"Der Glaube ist mein Schild!\"",
-            "French": "\"La foi est mon bouclier\"",
+            "English": "\"Faith is My Shield\"",
             "Korean": "신념은 나의 방패다",
+            "French": "\"La foi est mon bouclier\"",
             "Italian": "\"La Fede è il Mio Scudo\"",
             "Spanish": "\"La fe es mi escudo\"",
             "TraditionalChinese": "\"信念是盾\"",
+            "Japanese": "フェイス イズ マイ シールド",
             "Polish": "\"Wiara jest mą tarczą\"",
             "Russian": "\"Вера послужит мне щитом\"",
-            "BorkBorkBork": "\"Faeeet is My Sheeeld\"",
-            "Japanese": "フェイス イズ マイ シールド"
+            "BorkBorkBork": "\"Faeeet is My Sheeeld\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "Offhand": "Inscription_Offhand"
+        },
         "TargetTypes": [
             "Offhand"
         ],
@@ -360,19 +399,22 @@
             "English": "Reduces Bleeding duration on you by 20%"
         },
         "Names": {
-            "English": "\"Fear Cuts Deeper\"",
-            "BorkBorkBork": "\"Feaer Coots Deeper\"",
-            "Polish": "\"Strach rani głęboko\"",
-            "Russian": "\"Страх острее бритвы\"",
             "German": "\"Die Furcht schneidet tiefer\"",
-            "TraditionalChinese": "\"戒除恐懼\"",
-            "Spanish": "\"El miedo hace más daño\"",
+            "English": "\"Fear Cuts Deeper\"",
             "Korean": "공포는 더 깊은 상처를 낸다",
             "French": "\"La peur fait plus de mal\"",
             "Italian": "\"Il Timore Trafigge\"",
-            "Japanese": "フィアー カッツ ディーパー"
+            "Spanish": "\"El miedo hace más daño\"",
+            "TraditionalChinese": "\"戒除恐懼\"",
+            "Japanese": "フィアー カッツ ディーパー",
+            "Polish": "\"Strach rani głęboko\"",
+            "Russian": "\"Страх острее бритвы\"",
+            "BorkBorkBork": "\"Feaer Coots Deeper\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "OffhandOrShield": "Inscription_OffhandOrShield"
+        },
         "TargetTypes": [
             "OffhandOrShield"
         ],
@@ -396,19 +438,22 @@
             "English": "Halves skill recharge of item's attribute spells (Chance: {arg1}%)"
         },
         "Names": {
-            "English": "\"Forget Me Not\"",
-            "BorkBorkBork": "\"Furget Me-a Nut\"",
-            "Polish": "\"Nie zapomnij mnie\"",
-            "Russian": "\"Незабудка\"",
             "German": "\"Vergesst mein nicht!\"",
-            "TraditionalChinese": "\"勿忘我\"",
-            "Spanish": "\"No me olvides\"",
+            "English": "\"Forget Me Not\"",
             "Korean": "물망초",
             "French": "\"Souvenir gravé à jamais\"",
             "Italian": "\"Non Ti Scordar di Me\"",
-            "Japanese": "フォーゲット ミー ノット"
+            "Spanish": "\"No me olvides\"",
+            "TraditionalChinese": "\"勿忘我\"",
+            "Japanese": "フォーゲット ミー ノット",
+            "Polish": "\"Nie zapomnij mnie\"",
+            "Russian": "\"Незабудка\"",
+            "BorkBorkBork": "\"Furget Me-a Nut\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "Offhand": "Inscription_Offhand"
+        },
         "TargetTypes": [
             "Offhand"
         ],
@@ -432,19 +477,22 @@
             "English": "Damage +{arg2}% (while Enchanted)"
         },
         "Names": {
-            "English": "\"Guided by Fate\"",
             "German": "\"Wink des Schicksals\"",
+            "English": "\"Guided by Fate\"",
             "Korean": "마력석: 운명의 이끌림",
             "French": "\"Soyez maître de votre destin\"",
             "Italian": "\"Guidato dal Fato\"",
             "Spanish": "\"Guiado por el destino\"",
             "TraditionalChinese": "\"命運\"",
             "Japanese": "ガイデッド バイ フェイト",
-            "BorkBorkBork": "\"Gooeeded by Faete-a\"",
             "Polish": "\"Prowadzi mnie przeznaczenie\"",
-            "Russian": "\"Ведомый роком\""
+            "Russian": "\"Ведомый роком\"",
+            "BorkBorkBork": "\"Gooeeded by Faete-a\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "Weapon": "Inscription_Weapon"
+        },
         "TargetTypes": [
             "Weapon"
         ],
@@ -468,19 +516,22 @@
             "English": "Armor +{arg2} (while Health is above +{arg1}%)"
         },
         "Names": {
-            "English": "\"Hail to the King\"",
-            "BorkBorkBork": "\"Haeeel tu zee Keeng\"",
-            "Polish": "\"Niech żyje król\"",
-            "Russian": "\"Да здравствует король!\"",
             "German": "\"Gelobt sei der König\"",
-            "TraditionalChinese": "\"與王致敬\"",
-            "Spanish": "\"Viva el rey\"",
+            "English": "\"Hail to the King\"",
             "Korean": "국왕 폐하 만세",
             "French": "\"Longue vie au roi\"",
             "Italian": "\"Viva il Re\"",
-            "Japanese": "ヘイル トゥ ザ キング"
+            "Spanish": "\"Viva el rey\"",
+            "TraditionalChinese": "\"與王致敬\"",
+            "Japanese": "ヘイル トゥ ザ キング",
+            "Polish": "\"Niech żyje król\"",
+            "Russian": "\"Да здравствует король!\"",
+            "BorkBorkBork": "\"Haeeel tu zee Keeng\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "Offhand": "Inscription_Offhand"
+        },
         "TargetTypes": [
             "Offhand"
         ],
@@ -504,19 +555,22 @@
             "English": "Energy +{arg2} (while health is above +{arg1}%)"
         },
         "Names": {
-            "English": "\"Hale and Hearty\"",
             "German": "\"Gesund und munter\"",
+            "English": "\"Hale and Hearty\"",
             "Korean": "마력석: 원기왕성하게!",
             "French": "\"En pleine santé\"",
             "Italian": "\"Vivo e Vegeto\"",
             "Spanish": "\"Viejo pero joven\"",
             "TraditionalChinese": "\"健壯的\"",
             "Japanese": "ヘイル アンド ハーティー",
-            "BorkBorkBork": "\"Haele-a und Heaerty\"",
             "Polish": "\"Zdrowy i krzepki\"",
-            "Russian": "\"Сильный и здоровый\""
+            "Russian": "\"Сильный и здоровый\"",
+            "BorkBorkBork": "\"Haele-a und Heaerty\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "SpellcastingWeapon": "Inscription_SpellcastingWeapon"
+        },
         "TargetTypes": [
             "SpellcastingWeapon"
         ],
@@ -540,19 +594,22 @@
             "English": "Energy +{arg2} (while Enchanted)"
         },
         "Names": {
-            "English": "\"Have Faith\"",
-            "BorkBorkBork": "\"Haefe-a Faeeet\"",
-            "Polish": "\"Miej wiarę\"",
-            "Russian": "\"Не теряй веру\"",
             "German": "\"Habt Vertrauen\"",
-            "TraditionalChinese": "\"信念\"",
-            "Spanish": "\"Tened fe\"",
+            "English": "\"Have Faith\"",
             "Korean": "신념을 가져라",
             "French": "\"Ayez la foi\"",
             "Italian": "\"Abbi Fede\"",
-            "Japanese": "ハブ フェイス"
+            "Spanish": "\"Tened fe\"",
+            "TraditionalChinese": "\"信念\"",
+            "Japanese": "ハブ フェイス",
+            "Polish": "\"Miej wiarę\"",
+            "Russian": "\"Не теряй веру\"",
+            "BorkBorkBork": "\"Haefe-a Faeeet\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "SpellcastingWeapon": "Inscription_SpellcastingWeapon"
+        },
         "TargetTypes": [
             "SpellcastingWeapon"
         ],
@@ -576,19 +633,22 @@
             "English": "Reduces Blind duration on you by 20%"
         },
         "Names": {
-            "English": "\"I Can See Clearly Now\"",
             "German": "\"Klar wie Morgentau\"",
+            "English": "\"I Can See Clearly Now\"",
             "Korean": "마력석: 모든 게 뚜렷하게 보인다",
             "French": "\"Je vois clair à présent\"",
             "Italian": "\"Chiara Come Un'Alba\"",
             "Spanish": "\"He abierto los ojos\"",
             "TraditionalChinese": "\"光明再現\"",
             "Japanese": "アイ キャン シー クリアリー ナウ",
-            "BorkBorkBork": "\"I Cun See-a Cleaerly Noo\"",
             "Polish": "\"Widzę to teraz wyraźnie\"",
-            "Russian": "\"Теперь я ясно вижу\""
+            "Russian": "\"Теперь я ясно вижу\"",
+            "BorkBorkBork": "\"I Cun See-a Cleaerly Noo\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "OffhandOrShield": "Inscription_OffhandOrShield"
+        },
         "TargetTypes": [
             "OffhandOrShield"
         ],
@@ -612,19 +672,22 @@
             "English": "Energy +{arg2} (while hexed)"
         },
         "Names": {
-            "English": "\"I am Sorrow.\"",
-            "BorkBorkBork": "\"I aem Surroo.\"",
-            "Polish": "\"Jestem smutkiem.\"",
-            "Russian": "\"Я -воплощение скорби\"",
             "German": "\"Ich bin es Leid\"",
-            "TraditionalChinese": "\"倍感憂傷\"",
-            "Spanish": "\"Un mar de lágrimas\"",
+            "English": "\"I am Sorrow.\"",
             "Korean": "너무 슬프군",
             "French": "\"Je suis la douleur\"",
             "Italian": "\"Io Sono la Sofferenza\"",
-            "Japanese": "アイ アム ソロウ"
+            "Spanish": "\"Un mar de lágrimas\"",
+            "TraditionalChinese": "\"倍感憂傷\"",
+            "Japanese": "アイ アム ソロウ",
+            "Polish": "\"Jestem smutkiem.\"",
+            "Russian": "\"Я -воплощение скорби\"",
+            "BorkBorkBork": "\"I aem Surroo.\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "SpellcastingWeapon": "Inscription_SpellcastingWeapon"
+        },
         "TargetTypes": [
             "SpellcastingWeapon"
         ],
@@ -648,19 +711,22 @@
             "English": "Energy +{arg2}"
         },
         "Names": {
-            "English": "\"I have the power!\"",
             "German": "\"Ich habe die Kraft!\"",
+            "English": "\"I have the power!\"",
             "Korean": "마력석: 내겐 에너지가 있다!",
             "French": "\"Je détiens le pouvoir !\"",
             "Italian": "\"A Me Il Potere!\"",
             "Spanish": "\"¡Tengo el poder!\"",
             "TraditionalChinese": "\"充滿力量！\"",
             "Japanese": "アイ ハブ ザ パワー！",
-            "BorkBorkBork": "\"I haefe-a zee pooer!\"",
             "Polish": "\"Mam moc!\"",
-            "Russian": "\"Сила в моих руках!\""
+            "Russian": "\"Сила в моих руках!\"",
+            "BorkBorkBork": "\"I haefe-a zee pooer!\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "MartialWeapon": "Inscription_MartialWeapon"
+        },
         "TargetTypes": [
             "MartialWeapon"
         ],
@@ -684,19 +750,22 @@
             "English": "Armor +{arg2[8456]}\nEnergy -{arg2[8376]}"
         },
         "Names": {
-            "English": "\"Ignorance is Bliss\"",
-            "BorkBorkBork": "\"Ignurunce-a is Bleess\"",
-            "Polish": "\"Ignorancja jest błogosławieństwem\"",
-            "Russian": "\"Счастлив в неведении\"",
             "German": "\"Was ich nicht weiß ...\"",
-            "TraditionalChinese": "\"傻人有傻福\"",
-            "Spanish": "\"La ignorancia es felicidad\"",
+            "English": "\"Ignorance is Bliss\"",
             "Korean": "모르는 게 약이다",
             "French": "\"Il vaut mieux ne pas savoir\"",
             "Italian": "\"Benedetta Ignoranza\"",
-            "Japanese": "イグノーランス イズ ブリス"
+            "Spanish": "\"La ignorancia es felicidad\"",
+            "TraditionalChinese": "\"傻人有傻福\"",
+            "Japanese": "イグノーランス イズ ブリス",
+            "Polish": "\"Ignorancja jest błogosławieństwem\"",
+            "Russian": "\"Счастлив в неведении\"",
+            "BorkBorkBork": "\"Ignurunce-a is Bleess\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "Offhand": "Inscription_Offhand"
+        },
         "TargetTypes": [
             "Offhand"
         ],
@@ -732,6 +801,9 @@
             "English": "\"Knowing is Half the Battle\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "Offhand": "Inscription_Offhand"
+        },
         "TargetTypes": [
             "Offhand"
         ],
@@ -755,19 +827,22 @@
             "English": "Armor +{arg2} (vs. Cold damage)"
         },
         "Names": {
-            "English": "\"Leaf on the Wind\"",
-            "BorkBorkBork": "\"Leaeff oon zee Veend\"",
-            "Polish": "\"Liść na wietrze\"",
-            "Russian": "\"Лист на ветру\"",
             "German": "\"Grashalm im Wind\"",
-            "TraditionalChinese": "\"風中之葉\"",
-            "Spanish": "\"Hoja en el viento\"",
+            "English": "\"Leaf on the Wind\"",
             "Korean": "바람에 떠다니는 나뭇잎",
             "French": "\"La feuille portée par le vent\"",
             "Italian": "\"Foglia nel Vento\"",
-            "Japanese": "リーフ オン ザ ウインド"
+            "Spanish": "\"Hoja en el viento\"",
+            "TraditionalChinese": "\"風中之葉\"",
+            "Japanese": "リーフ オン ザ ウインド",
+            "Polish": "\"Liść na wietrze\"",
+            "Russian": "\"Лист на ветру\"",
+            "BorkBorkBork": "\"Leaeff oon zee Veend\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "OffhandOrShield": "Inscription_OffhandOrShield"
+        },
         "TargetTypes": [
             "OffhandOrShield"
         ],
@@ -791,8 +866,8 @@
             "English": "Halves skill recharge of spells (Chance: {arg1}%)"
         },
         "Names": {
-            "English": "\"Let the Memory Live Again\"",
             "German": "\"Auf die Erinnerung!\"",
+            "English": "\"Let the Memory Live Again\"",
             "Korean": "기억이여, 되살아나라",
             "French": "\"Vers l'infini et au-delà\"",
             "Italian": "\"Facciamo Rivivere i Ricordi\"",
@@ -804,6 +879,9 @@
             "BorkBorkBork": "\"Let zee Memury Leefe-a Aegaeeen\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "MartialWeapon": "Inscription_MartialWeapon"
+        },
         "TargetTypes": [
             "MartialWeapon"
         ],
@@ -830,6 +908,9 @@
             "English": "\"Life is Pain\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "Offhand": "Inscription_Offhand"
+        },
         "TargetTypes": [
             "Offhand"
         ],
@@ -862,19 +943,22 @@
             "English": "Armor +{arg2} (vs. Earth damage)"
         },
         "Names": {
-            "English": "\"Like a Rolling Stone\"",
-            "BorkBorkBork": "\"Leeke-a a Rulleeng Stune-a\"",
-            "Polish": "\"Jak wędrowiec\"",
-            "Russian": "\"Как перекати-поле\"",
             "German": "\"Marmor, Stein und Erde bricht\"",
-            "TraditionalChinese": "\"漂泊者\"",
-            "Spanish": "\"Like a Rolling Stone\"",
+            "English": "\"Like a Rolling Stone\"",
             "Korean": "구르는 돌처럼",
             "French": "\"Solide comme le roc\"",
             "Italian": "\"Come Una Pietra Scalciata\"",
-            "Japanese": "ライク ア ローリング ストーン"
+            "Spanish": "\"Like a Rolling Stone\"",
+            "TraditionalChinese": "\"漂泊者\"",
+            "Japanese": "ライク ア ローリング ストーン",
+            "Polish": "\"Jak wędrowiec\"",
+            "Russian": "\"Как перекати-поле\"",
+            "BorkBorkBork": "\"Leeke-a a Rulleeng Stune-a\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "OffhandOrShield": "Inscription_OffhandOrShield"
+        },
         "TargetTypes": [
             "OffhandOrShield"
         ],
@@ -898,19 +982,22 @@
             "English": "Energy +{arg2[8920]}\nEnergy regeneration -{arg2[8392]}"
         },
         "Names": {
-            "English": "\"Live for Today\"",
-            "BorkBorkBork": "\"Leefe-a fur Tudaey\"",
-            "Polish": "\"Żyj dniem dzisiejszym\"",
-            "Russian": "\"Живи сегодняшним днем\"",
             "German": "\"Lebt den Tag\"",
-            "TraditionalChinese": "\"活在當下\"",
-            "Spanish": "\"Vive el presente\"",
+            "English": "\"Live for Today\"",
             "Korean": "오늘을 위해 최선을",
             "French": "\"Aujourd'hui, la vie\"",
             "Italian": "\"Vivi alla Giornata\"",
-            "Japanese": "リブ フォー トゥデイ"
+            "Spanish": "\"Vive el presente\"",
+            "TraditionalChinese": "\"活在當下\"",
+            "Japanese": "リブ フォー トゥデイ",
+            "Polish": "\"Żyj dniem dzisiejszym\"",
+            "Russian": "\"Живи сегодняшним днем\"",
+            "BorkBorkBork": "\"Leefe-a fur Tudaey\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "Offhand": "Inscription_Offhand"
+        },
         "TargetTypes": [
             "Offhand"
         ],
@@ -943,12 +1030,12 @@
             "English": "Received physical damage -{arg2} (Chance: {arg1}%)"
         },
         "Names": {
-            "English": "\"Luck of the Draw\"",
             "German": "\"Glück im Spiel ...\"",
-            "Spanish": "\"La suerte del apostante\"",
+            "English": "\"Luck of the Draw\"",
             "Korean": "비김의 행운",
             "French": "\"Une question de chance\"",
             "Italian": "\"La Fortuna è Cieca\"",
+            "Spanish": "\"La suerte del apostante\"",
             "TraditionalChinese": "\"全憑運氣\"",
             "Japanese": "ラック オブ ザ ドロー",
             "Polish": "\"Szczęśliwe rozdanie\"",
@@ -956,6 +1043,9 @@
             "BorkBorkBork": "\"Loock ooff zee Draev\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "OffhandOrShield": "Inscription_OffhandOrShield"
+        },
         "TargetTypes": [
             "OffhandOrShield"
         ],
@@ -982,6 +1072,9 @@
             "English": "\"Man for All Seasons\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "Offhand": "Inscription_Offhand"
+        },
         "TargetTypes": [
             "Offhand"
         ],
@@ -1005,8 +1098,8 @@
             "English": "Item's attribute +1 (Chance: {arg1}%)"
         },
         "Names": {
-            "English": "\"Master of My Domain!\"",
             "German": "\"Herr in meinem Haus\"",
+            "English": "\"Master of My Domain!\"",
             "Korean": "마력석: 내 공간의 지배자",
             "French": "\"Maître du Domaine\"",
             "Italian": "\"Padrone in Casa Mia\"",
@@ -1018,6 +1111,9 @@
             "BorkBorkBork": "\"Maester ooff My Dumaeeen\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "OffhandOrShield": "Inscription_OffhandOrShield"
+        },
         "TargetTypes": [
             "OffhandOrShield"
         ],
@@ -1041,19 +1137,22 @@
             "English": "Highly salvageable"
         },
         "Names": {
-            "English": "\"Measure for Measure\"",
-            "BorkBorkBork": "\"Meaesoore-a fur Meaesoore-a\"",
-            "Polish": "\"Miarka za miarkę\"",
-            "Russian": "\"Око за око\"",
             "German": "\"Maß für Maß\"",
-            "TraditionalChinese": "\"以牙還牙\"",
-            "Spanish": "\"Ojo por ojo\"",
+            "English": "\"Measure for Measure\"",
             "Korean": "다다익선",
             "French": "\"Mesure pour mesure.\"",
             "Italian": "\"Occhio per Occhio\"",
-            "Japanese": "メジャー フォー メジャー"
+            "Spanish": "\"Ojo por ojo\"",
+            "TraditionalChinese": "\"以牙還牙\"",
+            "Japanese": "メジャー フォー メジャー",
+            "Polish": "\"Miarka za miarkę\"",
+            "Russian": "\"Око за око\"",
+            "BorkBorkBork": "\"Meaesoore-a fur Meaesoore-a\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "EquippableItem": "Inscription_EquippableItem"
+        },
         "TargetTypes": [
             "EquippableItem"
         ],
@@ -1080,6 +1179,9 @@
             "English": "\"Might Makes Right\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "Offhand": "Inscription_Offhand"
+        },
         "TargetTypes": [
             "Offhand"
         ],
@@ -1103,19 +1205,22 @@
             "English": "Armor +{arg2} (vs. Blunt damage)"
         },
         "Names": {
-            "English": "\"Not the Face!\"",
-            "BorkBorkBork": "\"Nut zee faece-a!\"",
-            "Polish": "\"Nie po twarzy!\"",
-            "Russian": "\"Только не в лицо!\"",
             "German": "\"Nicht das Gesicht!\"",
-            "TraditionalChinese": "\"不要打臉！\"",
-            "Spanish": "\"¡En la cara no!\"",
+            "English": "\"Not the Face!\"",
             "Korean": "얼굴은 안 돼!",
             "French": "\"Pas le visage !\"",
             "Italian": "\"Non al Volto!\"",
-            "Japanese": "ノット ザ フェース！"
+            "Spanish": "\"¡En la cara no!\"",
+            "TraditionalChinese": "\"不要打臉！\"",
+            "Japanese": "ノット ザ フェース！",
+            "Polish": "\"Nie po twarzy!\"",
+            "Russian": "\"Только не в лицо!\"",
+            "BorkBorkBork": "\"Nut zee faece-a!\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "OffhandOrShield": "Inscription_OffhandOrShield"
+        },
         "TargetTypes": [
             "OffhandOrShield"
         ],
@@ -1139,19 +1244,22 @@
             "English": "Received physical damage -{arg2} (while Hexed)"
         },
         "Names": {
-            "English": "\"Nothing to Fear\"",
             "German": "\"Nichts zu befürchten\"",
-            "French": "\"Rien à craindre\"",
+            "English": "\"Nothing to Fear\"",
             "Korean": "두려울 건 없다",
+            "French": "\"Rien à craindre\"",
             "Italian": "\"Niente Paura\"",
             "Spanish": "\"Nada que temer\"",
             "TraditionalChinese": "\"無畏無懼\"",
+            "Japanese": "ナッシング トゥ フィアー",
             "Polish": "\"Nieulękły\"",
             "Russian": "\"Нечего бояться\"",
-            "BorkBorkBork": "\"Nutheeng tu Feaer\"",
-            "Japanese": "ナッシング トゥ フィアー"
+            "BorkBorkBork": "\"Nutheeng tu Feaer\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "OffhandOrShield": "Inscription_OffhandOrShield"
+        },
         "TargetTypes": [
             "OffhandOrShield"
         ],
@@ -1175,19 +1283,22 @@
             "English": "Reduces Weakness duration on you by 20%"
         },
         "Names": {
-            "English": "\"Only the Strong Survive\"",
-            "BorkBorkBork": "\"Oonly zee Strung Soorfeefe-a\"",
-            "Polish": "\"Tylko silni przetrwają\"",
-            "Russian": "\"Выживает сильнейший\"",
             "German": "\"Nur die Stärksten überleben!\"",
-            "TraditionalChinese": "\"強者生存\"",
-            "Spanish": "\"Sólo sobreviven los más fuertes\"",
+            "English": "\"Only the Strong Survive\"",
             "Korean": "강자만이 살아남는다",
             "French": "\"Seuls les plus forts survivent\"",
             "Italian": "\"Superstite è soltanto il Forte\"",
-            "Japanese": "オンリー ザ ストロング サバイブ"
+            "Spanish": "\"Sólo sobreviven los más fuertes\"",
+            "TraditionalChinese": "\"強者生存\"",
+            "Japanese": "オンリー ザ ストロング サバイブ",
+            "Polish": "\"Tylko silni przetrwają\"",
+            "Russian": "\"Выживает сильнейший\"",
+            "BorkBorkBork": "\"Oonly zee Strung Soorfeefe-a\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "OffhandOrShield": "Inscription_OffhandOrShield"
+        },
         "TargetTypes": [
             "OffhandOrShield"
         ],
@@ -1211,19 +1322,22 @@
             "English": "Reduces Poison duration on you by 20%"
         },
         "Names": {
-            "English": "\"Pure of Heart\"",
-            "BorkBorkBork": "\"Poore-a ooff Heaert\"",
-            "Polish": "\"Czystość serca\"",
-            "Russian": "\"Чистые сердцем\"",
             "German": "\"Mein Herz ist rein\"",
-            "TraditionalChinese": "\"純淨之心\"",
-            "Spanish": "\"Puro de corazón\"",
+            "English": "\"Pure of Heart\"",
             "Korean": "심장의 깨끗함",
             "French": "\"Pureté du coeur\"",
             "Italian": "\"Purezza di Cuore\"",
-            "Japanese": "ピュア オブ ハート"
+            "Spanish": "\"Puro de corazón\"",
+            "TraditionalChinese": "\"純淨之心\"",
+            "Japanese": "ピュア オブ ハート",
+            "Polish": "\"Czystość serca\"",
+            "Russian": "\"Чистые сердцем\"",
+            "BorkBorkBork": "\"Poore-a ooff Heaert\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "OffhandOrShield": "Inscription_OffhandOrShield"
+        },
         "TargetTypes": [
             "OffhandOrShield"
         ],
@@ -1247,19 +1361,22 @@
             "English": "Armor +{arg2} (vs. Lightning damage)"
         },
         "Names": {
-            "English": "\"Riders on the Storm\"",
-            "BorkBorkBork": "\"Reeders oon zee Sturm\"",
-            "Polish": "\"Jeźdźcy burzy\"",
-            "Russian": "\"Всадники бури\"",
             "German": "\"Geblitzt wird nicht!\"",
-            "TraditionalChinese": "\"暴風騎士\"",
-            "Spanish": "\"Jinetes de la tormenta\"",
+            "English": "\"Riders on the Storm\"",
             "Korean": "폭풍의 기수",
             "French": "\"Les chevaliers du ciel\"",
             "Italian": "\"Viaggiatori nella Burrasca\"",
-            "Japanese": "ライダー オン ザ ストーム"
+            "Spanish": "\"Jinetes de la tormenta\"",
+            "TraditionalChinese": "\"暴風騎士\"",
+            "Japanese": "ライダー オン ザ ストーム",
+            "Polish": "\"Jeźdźcy burzy\"",
+            "Russian": "\"Всадники бури\"",
+            "BorkBorkBork": "\"Reeders oon zee Sturm\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "OffhandOrShield": "Inscription_OffhandOrShield"
+        },
         "TargetTypes": [
             "OffhandOrShield"
         ],
@@ -1283,19 +1400,22 @@
             "English": "Received physical damage -{arg2} (while in a Stance)"
         },
         "Names": {
-            "English": "\"Run For Your Life!\"",
-            "BorkBorkBork": "\"Roon Fur Yuoor Leeffe-a!\"",
-            "Polish": "\"Ratuj się kto może!\"",
-            "Russian": "\"Спасайся, кто может!\"",
             "German": "\"Rennt um Euer Leben!\"",
-            "TraditionalChinese": "\"逃命\"",
-            "Spanish": "\"¡Ponte a salvo!\"",
+            "English": "\"Run For Your Life!\"",
             "Korean": "살기 위해 달려라!",
             "French": "\"Sauve-qui-peut !\"",
             "Italian": "\"Gambe in Spalla!\"",
-            "Japanese": "ラン フォー ユア ライフ！"
+            "Spanish": "\"¡Ponte a salvo!\"",
+            "TraditionalChinese": "\"逃命\"",
+            "Japanese": "ラン フォー ユア ライフ！",
+            "Polish": "\"Ratuj się kto może!\"",
+            "Russian": "\"Спасайся, кто может!\"",
+            "BorkBorkBork": "\"Roon Fur Yuoor Leeffe-a!\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "OffhandOrShield": "Inscription_OffhandOrShield"
+        },
         "TargetTypes": [
             "OffhandOrShield"
         ],
@@ -1319,19 +1439,22 @@
             "English": "Energy +{arg2[8920]}\nEnergy regeneration -{arg2[8392]}"
         },
         "Names": {
-            "English": "\"Seize the Day\"",
-            "BorkBorkBork": "\"Leefe-a fur Tudaey\"",
-            "Polish": "\"Żyj dniem dzisiejszym\"",
-            "Russian": "\"Живи сегодняшним днем\"",
             "German": "\"Lebt den Tag\"",
-            "TraditionalChinese": "\"活在當下\"",
-            "Spanish": "\"Vive el presente\"",
+            "English": "\"Seize the Day\"",
             "Korean": "오늘을 위해 최선을",
             "French": "\"Aujourd'hui, la vie\"",
             "Italian": "\"Vivi alla Giornata\"",
-            "Japanese": "リブ フォー トゥデイ"
+            "Spanish": "\"Vive el presente\"",
+            "TraditionalChinese": "\"活在當下\"",
+            "Japanese": "リブ フォー トゥデイ",
+            "Polish": "\"Żyj dniem dzisiejszym\"",
+            "Russian": "\"Живи сегодняшним днем\"",
+            "BorkBorkBork": "\"Leefe-a fur Tudaey\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "SpellcastingWeapon": "Inscription_SpellcastingWeapon"
+        },
         "TargetTypes": [
             "SpellcastingWeapon"
         ],
@@ -1364,8 +1487,8 @@
             "English": "Halves skill recharge of spells (Chance: {arg1}%)"
         },
         "Names": {
-            "English": "\"Serenity Now\"",
             "German": "\"Auf die Gelassenheit\"",
+            "English": "\"Serenity Now\"",
             "Korean": "평정을 찾아라",
             "French": "\"Un peu de sérénité\"",
             "Italian": "\"Serenità Immediata\"",
@@ -1377,6 +1500,9 @@
             "BorkBorkBork": "\"Sereneety Noo\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "Offhand": "Inscription_Offhand"
+        },
         "TargetTypes": [
             "Offhand"
         ],
@@ -1400,19 +1526,22 @@
             "English": "Received physical damage -{arg2} (while Enchanted)"
         },
         "Names": {
-            "English": "\"Sheltered by Faith\"",
             "German": "\"Vertrauen ist gut\"",
-            "French": "\"Protégé par la Foi\"",
+            "English": "\"Sheltered by Faith\"",
             "Korean": "신념의 보호",
+            "French": "\"Protégé par la Foi\"",
             "Italian": "\"Rifugio della Speranza\"",
             "Spanish": "\"Fe ciega\"",
             "TraditionalChinese": "\"信念守護\"",
+            "Japanese": "シェルター バイ フェイス",
             "Polish": "\"Chroniony przez wiarę\"",
             "Russian": "\"Под защитой веры\"",
-            "BorkBorkBork": "\"Sheltered by Faeeet\"",
-            "Japanese": "シェルター バイ フェイス"
+            "BorkBorkBork": "\"Sheltered by Faeeet\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "OffhandOrShield": "Inscription_OffhandOrShield"
+        },
         "TargetTypes": [
             "OffhandOrShield"
         ],
@@ -1436,19 +1565,22 @@
             "English": "Improved sale value"
         },
         "Names": {
-            "English": "\"Show me the money!\"",
-            "BorkBorkBork": "\"Shoo me-a zee muney!\"",
-            "Polish": "\"Pokaż pieniądze!\"",
-            "Russian": "\"Покажи мне деньги!\"",
             "German": "\"Geld macht glücklich!\"",
-            "TraditionalChinese": "\"給我錢！\"",
-            "Spanish": "\"¡Enséñame la pasta!\"",
+            "English": "\"Show me the money!\"",
             "Korean": "돈이다!",
             "French": "\"Par ici la monnaie !\"",
             "Italian": "\"Mostrami la Grana!\"",
-            "Japanese": "ショー ミー ザ マネー！"
+            "Spanish": "\"¡Enséñame la pasta!\"",
+            "TraditionalChinese": "\"給我錢！\"",
+            "Japanese": "ショー ミー ザ マネー！",
+            "Polish": "\"Pokaż pieniądze!\"",
+            "Russian": "\"Покажи мне деньги!\"",
+            "BorkBorkBork": "\"Shoo me-a zee muney!\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "EquippableItem": "Inscription_EquippableItem"
+        },
         "TargetTypes": [
             "EquippableItem"
         ],
@@ -1472,19 +1604,22 @@
             "English": "Armor +{arg2} (vs. Fire damage)"
         },
         "Names": {
-            "English": "\"Sleep Now in the Fire\"",
-            "BorkBorkBork": "\"Sleep Noo in zee Fure-a\"",
-            "Polish": "\"Zaśnij w ogniu\"",
-            "Russian": "\"Покойся в пламени\"",
             "German": "\"Geborgenheit im Feuer\"",
-            "TraditionalChinese": "\"烈焰中歇息\"",
-            "Spanish": "\"Descansa en la hoguera\"",
+            "English": "\"Sleep Now in the Fire\"",
             "Korean": "화염 속에 잠들라",
             "French": "\"Faisons la lumière sur les ténèbres\"",
             "Italian": "\"Dormi Ardentemente\"",
-            "Japanese": "スリープ ナウ イン ザ ファイア"
+            "Spanish": "\"Descansa en la hoguera\"",
+            "TraditionalChinese": "\"烈焰中歇息\"",
+            "Japanese": "スリープ ナウ イン ザ ファイア",
+            "Polish": "\"Zaśnij w ogniu\"",
+            "Russian": "\"Покойся в пламени\"",
+            "BorkBorkBork": "\"Sleep Noo in zee Fure-a\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "OffhandOrShield": "Inscription_OffhandOrShield"
+        },
         "TargetTypes": [
             "OffhandOrShield"
         ],
@@ -1508,19 +1643,22 @@
             "English": "Reduces Dazed duration on you by 20%"
         },
         "Names": {
-            "English": "\"Soundness of Mind\"",
-            "BorkBorkBork": "\"Suoondness ooff Meend\"",
-            "Polish": "\"Mądrość umysłu\"",
-            "Russian": "\"Здравый рассудок\"",
             "German": "\"Ein gesunder Geist ...\"",
-            "TraditionalChinese": "\"堅定意念\"",
-            "Spanish": "\"Sano juicio\"",
+            "English": "\"Soundness of Mind\"",
             "Korean": "마음의 소리",
             "French": "\"Bon sens\"",
             "Italian": "\"Mente Sana\"",
-            "Japanese": "サウンドネス オブ マインド"
+            "Spanish": "\"Sano juicio\"",
+            "TraditionalChinese": "\"堅定意念\"",
+            "Japanese": "サウンドネス オブ マインド",
+            "Polish": "\"Mądrość umysłu\"",
+            "Russian": "\"Здравый рассудок\"",
+            "BorkBorkBork": "\"Suoondness ooff Meend\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "OffhandOrShield": "Inscription_OffhandOrShield"
+        },
         "TargetTypes": [
             "OffhandOrShield"
         ],
@@ -1544,19 +1682,22 @@
             "English": "Damage +{arg2}% (while Health is above +{arg1}%)"
         },
         "Names": {
-            "English": "\"Strength and Honor\"",
             "German": "\"Stärke und Ehre\"",
+            "English": "\"Strength and Honor\"",
             "Korean": "마력석: 힘과 명예",
             "French": "\"Force et honneur\"",
             "Italian": "\"Forza e Onore\"",
             "Spanish": "\"Fuerza y honor\"",
             "TraditionalChinese": "\"力與榮耀\"",
             "Japanese": "ストレングス アンド オナー",
-            "BorkBorkBork": "\"Strengt und Hunur\"",
             "Polish": "\"Siła i honor\"",
-            "Russian": "\"Сила и честь\""
+            "Russian": "\"Сила и честь\"",
+            "BorkBorkBork": "\"Strengt und Hunur\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "Weapon": "Inscription_Weapon"
+        },
         "TargetTypes": [
             "Weapon"
         ],
@@ -1580,19 +1721,22 @@
             "English": "Reduces Deep Wound duration on you by 20%"
         },
         "Names": {
-            "English": "\"Strength of Body\"",
-            "BorkBorkBork": "\"Strengt ooff Budy\"",
-            "Polish": "\"Siła ciała\"",
-            "Russian": "\"Сила тела\"",
             "German": "\"Hart im Nehmen\"",
-            "TraditionalChinese": "\"力貫全身\"",
-            "Spanish": "\"Fuerza bruta\"",
+            "English": "\"Strength of Body\"",
             "Korean": "육체의 힘",
             "French": "\"La Force réside du corps\"",
             "Italian": "\"Corpo Gagliardo\"",
-            "Japanese": "ストレングス オブ ボディ"
+            "Spanish": "\"Fuerza bruta\"",
+            "TraditionalChinese": "\"力貫全身\"",
+            "Japanese": "ストレングス オブ ボディ",
+            "Polish": "\"Siła ciała\"",
+            "Russian": "\"Сила тела\"",
+            "BorkBorkBork": "\"Strengt ooff Budy\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "OffhandOrShield": "Inscription_OffhandOrShield"
+        },
         "TargetTypes": [
             "OffhandOrShield"
         ],
@@ -1616,8 +1760,8 @@
             "English": "Armor +{arg2} (vs. Physical damage)"
         },
         "Names": {
-            "English": "\"Survival of the Fittest\"",
             "German": "\"Hart wie Stahl\"",
+            "English": "\"Survival of the Fittest\"",
             "Korean": "적자생존",
             "French": "\"La survie du plus fort\"",
             "Italian": "\"Sopravvivenza Integrale\"",
@@ -1629,6 +1773,9 @@
             "BorkBorkBork": "\"Soorfeefael ooff zee Feettest\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "Offhand": "Inscription_Offhand"
+        },
         "TargetTypes": [
             "Offhand"
         ],
@@ -1652,19 +1799,22 @@
             "English": "Reduces Crippled duration on you by 20%"
         },
         "Names": {
-            "English": "\"Swift as the Wind\"",
-            "BorkBorkBork": "\"Sveefft aes zee Veend\"",
-            "Polish": "\"Szybki niczym wiatr\"",
-            "Russian": "\"Быстрый как ветер\"",
             "German": "\"Schnell wie der Wind\"",
-            "TraditionalChinese": "\"迅捷如風\"",
-            "Spanish": "\"Veloz como el viento\"",
+            "English": "\"Swift as the Wind\"",
             "Korean": "바람처럼 빠르게",
             "French": "\"Rapide comme le vent\"",
             "Italian": "\"Raffica di Bora\"",
-            "Japanese": "スウィフト アズ ザ ウインド"
+            "Spanish": "\"Veloz como el viento\"",
+            "TraditionalChinese": "\"迅捷如風\"",
+            "Japanese": "スウィフト アズ ザ ウインド",
+            "Polish": "\"Szybki niczym wiatr\"",
+            "Russian": "\"Быстрый как ветер\"",
+            "BorkBorkBork": "\"Sveefft aes zee Veend\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "OffhandOrShield": "Inscription_OffhandOrShield"
+        },
         "TargetTypes": [
             "OffhandOrShield"
         ],
@@ -1688,19 +1838,22 @@
             "English": "Armor +{arg2} (vs. Slashing damage)"
         },
         "Names": {
-            "English": "\"The Riddle of Steel\"",
             "German": "\"Hieb-und stahlfest\"",
-            "Japanese": "ザ リドル オブ スチール",
+            "English": "\"The Riddle of Steel\"",
             "Korean": "강철의 수수께끼",
             "French": "\"L'énigme de l'acier\"",
             "Italian": "\"Enigma d'Acciaio\"",
             "Spanish": "\"El enigma de acero\"",
             "TraditionalChinese": "\"鋼鐵之謎\"",
+            "Japanese": "ザ リドル オブ スチール",
             "Polish": "\"Zagadka stali\"",
             "Russian": "\"Стальной щит\"",
             "BorkBorkBork": "\"Zee Reeddle-a ooff Steel\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "OffhandOrShield": "Inscription_OffhandOrShield"
+        },
         "TargetTypes": [
             "OffhandOrShield"
         ],
@@ -1724,19 +1877,22 @@
             "English": "Armor +{arg2} (vs. Piercing damage)"
         },
         "Names": {
-            "English": "\"Through Thick and Thin\"",
-            "BorkBorkBork": "\"Thruoogh Theeck und Theen\"",
-            "Polish": "\"Poprzez gąszcz\"",
-            "Russian": "\"Сквозь огонь и воду\"",
             "German": "\"Durch Dick und Dünn\"",
-            "TraditionalChinese": "\"同甘共苦\"",
-            "Spanish": "\"En lo bueno y en lo malo\"",
+            "English": "\"Through Thick and Thin\"",
             "Korean": "무엇이든 막아내리",
             "French": "\"Contre vents et marées\"",
             "Italian": "\"Nella Buona e nella Cattiva Sorte\"",
-            "Japanese": "スルー シック アンド シン"
+            "Spanish": "\"En lo bueno y en lo malo\"",
+            "TraditionalChinese": "\"同甘共苦\"",
+            "Japanese": "スルー シック アンド シン",
+            "Polish": "\"Poprzez gąszcz\"",
+            "Russian": "\"Сквозь огонь и воду\"",
+            "BorkBorkBork": "\"Thruoogh Theeck und Theen\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "OffhandOrShield": "Inscription_OffhandOrShield"
+        },
         "TargetTypes": [
             "OffhandOrShield"
         ],
@@ -1760,8 +1916,8 @@
             "English": "Damage +{arg2[8760]}%\nArmor -{arg2[8216]} (while attacking)"
         },
         "Names": {
-            "English": "\"To the Pain!\"",
             "German": "\"Fühlt den Schmerz!\"",
+            "English": "\"To the Pain!\"",
             "Korean": "오직 공격뿐!",
             "French": "\"Vive la douleur !\"",
             "Italian": "\"Patisci!\"",
@@ -1773,6 +1929,9 @@
             "BorkBorkBork": "\"Tu zee Paeeen!\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "Weapon": "Inscription_Weapon"
+        },
         "TargetTypes": [
             "Weapon"
         ],
@@ -1805,19 +1964,22 @@
             "English": "Damage +{arg2}% (vs. Hexed Foes)"
         },
         "Names": {
-            "English": "\"Too Much Information\"",
-            "BorkBorkBork": "\"Tuu Mooch Inffurmaeshun\"",
-            "Polish": "\"Za dużo informacji\"",
-            "Russian": "\"Слишком много информации\"",
             "German": "\"Zuviel Information\"",
-            "TraditionalChinese": "\"多說無益\"",
-            "Spanish": "\"Demasiada información\"",
+            "English": "\"Too Much Information\"",
             "Korean": "너무 많은 정보",
             "French": "\"Trop de détails\"",
             "Italian": "\"Troppe Informazioni\"",
-            "Japanese": "トゥー マッチ インフォメーション"
+            "Spanish": "\"Demasiada información\"",
+            "TraditionalChinese": "\"多說無益\"",
+            "Japanese": "トゥー マッチ インフォメーション",
+            "Polish": "\"Za dużo informacji\"",
+            "Russian": "\"Слишком много информации\"",
+            "BorkBorkBork": "\"Tuu Mooch Inffurmaeshun\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "Weapon": "Inscription_Weapon"
+        },
         "TargetTypes": [
             "Weapon"
         ],
@@ -1841,8 +2003,8 @@
             "English": "Damage +{arg2}% (while Health is below +{arg1}%)"
         },
         "Names": {
-            "English": "\"Vengeance is Mine\"",
             "German": "\"Die Rache ist mein\"",
+            "English": "\"Vengeance is Mine\"",
             "Korean": "복수는 나의 것",
             "French": "\"La vengeance sera mienne\"",
             "Italian": "\"La Vendetta è Mia\"",
@@ -1854,6 +2016,9 @@
             "BorkBorkBork": "\"Fengeunce-a is Meene-a\""
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "Weapon": "Inscription_Weapon"
+        },
         "TargetTypes": [
             "Weapon"
         ],
@@ -1880,6 +2045,7 @@
             "English": "Air Magic +1"
         },
         "ModType": "Inherent",
+        "ItemMods": {},
         "TargetTypes": [
             "Staff"
         ],
@@ -1906,6 +2072,7 @@
             "English": "Blood Magic +1"
         },
         "ModType": "Inherent",
+        "ItemMods": {},
         "TargetTypes": [
             "Staff"
         ],
@@ -1932,6 +2099,7 @@
             "English": "Channeling Magic +1"
         },
         "ModType": "Inherent",
+        "ItemMods": {},
         "TargetTypes": [
             "Staff"
         ],
@@ -1958,6 +2126,7 @@
             "English": "Communing +1"
         },
         "ModType": "Inherent",
+        "ItemMods": {},
         "TargetTypes": [
             "Staff"
         ],
@@ -1984,6 +2153,7 @@
             "English": "Curses +1"
         },
         "ModType": "Inherent",
+        "ItemMods": {},
         "TargetTypes": [
             "Staff"
         ],
@@ -2010,6 +2180,7 @@
             "English": "Death Magic +1"
         },
         "ModType": "Inherent",
+        "ItemMods": {},
         "TargetTypes": [
             "Staff"
         ],
@@ -2036,6 +2207,7 @@
             "English": "Divine Favor +1"
         },
         "ModType": "Inherent",
+        "ItemMods": {},
         "TargetTypes": [
             "Staff"
         ],
@@ -2062,6 +2234,7 @@
             "English": "Domination Magic +1"
         },
         "ModType": "Inherent",
+        "ItemMods": {},
         "TargetTypes": [
             "Staff"
         ],
@@ -2088,6 +2261,7 @@
             "English": "Earth Magic +1"
         },
         "ModType": "Inherent",
+        "ItemMods": {},
         "TargetTypes": [
             "Staff"
         ],
@@ -2114,6 +2288,7 @@
             "English": "Fire Magic +1"
         },
         "ModType": "Inherent",
+        "ItemMods": {},
         "TargetTypes": [
             "Staff"
         ],
@@ -2140,6 +2315,7 @@
             "English": "Healing Prayers +1"
         },
         "ModType": "Inherent",
+        "ItemMods": {},
         "TargetTypes": [
             "Staff"
         ],
@@ -2166,6 +2342,7 @@
             "English": "Illusion Magic +1"
         },
         "ModType": "Inherent",
+        "ItemMods": {},
         "TargetTypes": [
             "Staff"
         ],
@@ -2192,6 +2369,7 @@
             "English": "Inspiration Magic +1"
         },
         "ModType": "Inherent",
+        "ItemMods": {},
         "TargetTypes": [
             "Staff"
         ],
@@ -2218,6 +2396,7 @@
             "English": "Protection Prayers +1"
         },
         "ModType": "Inherent",
+        "ItemMods": {},
         "TargetTypes": [
             "Staff"
         ],
@@ -2244,6 +2423,9 @@
             "English": "Reduces Disease duration on you by 20%"
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "OffhandOrShield": "Inscription_OffhandOrShield"
+        },
         "TargetTypes": [
             "OffhandOrShield"
         ],
@@ -2270,6 +2452,7 @@
             "English": "Restoration Magic +1"
         },
         "ModType": "Inherent",
+        "ItemMods": {},
         "TargetTypes": [
             "Staff"
         ],
@@ -2296,6 +2479,7 @@
             "English": "Smiting Prayers +1"
         },
         "ModType": "Inherent",
+        "ItemMods": {},
         "TargetTypes": [
             "Staff"
         ],
@@ -2322,6 +2506,7 @@
             "English": "Soul Reaping +1"
         },
         "ModType": "Inherent",
+        "ItemMods": {},
         "TargetTypes": [
             "Staff"
         ],
@@ -2348,6 +2533,7 @@
             "English": "Spawning Power +1"
         },
         "ModType": "Inherent",
+        "ItemMods": {},
         "TargetTypes": [
             "Staff"
         ],
@@ -2374,6 +2560,9 @@
             "English": "Vampiric Strength"
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "Weapon": "Inscription_Weapon"
+        },
         "TargetTypes": [
             "Weapon"
         ],
@@ -2409,6 +2598,7 @@
             "English": "Water Magic +1"
         },
         "ModType": "Inherent",
+        "ItemMods": {},
         "TargetTypes": [
             "Staff"
         ],
@@ -2435,6 +2625,9 @@
             "English": "Zealous Strength"
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "Weapon": "Inscription_Weapon"
+        },
         "TargetTypes": [
             "Weapon"
         ],
@@ -2470,6 +2663,9 @@
             "English": "vs. Blunt damage"
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "OffhandOrShield": "Inscription_OffhandOrShield"
+        },
         "TargetTypes": [
             "OffhandOrShield"
         ],
@@ -2496,6 +2692,9 @@
             "English": "vs. Charr"
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "OffhandOrShield": "Inscription_OffhandOrShield"
+        },
         "TargetTypes": [
             "OffhandOrShield"
         ],
@@ -2522,6 +2721,9 @@
             "English": "vs. Cold damage"
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "OffhandOrShield": "Inscription_OffhandOrShield"
+        },
         "TargetTypes": [
             "OffhandOrShield"
         ],
@@ -2548,6 +2750,9 @@
             "English": "vs. Demons"
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "OffhandOrShield": "Inscription_OffhandOrShield"
+        },
         "TargetTypes": [
             "OffhandOrShield"
         ],
@@ -2574,6 +2779,9 @@
             "English": "vs. Dragons"
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "OffhandOrShield": "Inscription_OffhandOrShield"
+        },
         "TargetTypes": [
             "OffhandOrShield"
         ],
@@ -2600,6 +2808,9 @@
             "English": "vs. Dwarves"
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "OffhandOrShield": "Inscription_OffhandOrShield"
+        },
         "TargetTypes": [
             "OffhandOrShield"
         ],
@@ -2626,6 +2837,9 @@
             "English": "vs. Earth damage"
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "OffhandOrShield": "Inscription_OffhandOrShield"
+        },
         "TargetTypes": [
             "OffhandOrShield"
         ],
@@ -2652,6 +2866,9 @@
             "English": "vs. Fire damage"
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "OffhandOrShield": "Inscription_OffhandOrShield"
+        },
         "TargetTypes": [
             "OffhandOrShield"
         ],
@@ -2678,6 +2895,9 @@
             "English": "vs. Giants"
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "OffhandOrShield": "Inscription_OffhandOrShield"
+        },
         "TargetTypes": [
             "OffhandOrShield"
         ],
@@ -2704,6 +2924,9 @@
             "English": "vs. Lightning damage"
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "OffhandOrShield": "Inscription_OffhandOrShield"
+        },
         "TargetTypes": [
             "OffhandOrShield"
         ],
@@ -2730,6 +2953,9 @@
             "English": "vs. Ogres"
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "OffhandOrShield": "Inscription_OffhandOrShield"
+        },
         "TargetTypes": [
             "OffhandOrShield"
         ],
@@ -2756,6 +2982,9 @@
             "English": "vs. Piercing damage"
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "OffhandOrShield": "Inscription_OffhandOrShield"
+        },
         "TargetTypes": [
             "OffhandOrShield"
         ],
@@ -2782,6 +3011,9 @@
             "English": "vs. Plants"
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "OffhandOrShield": "Inscription_OffhandOrShield"
+        },
         "TargetTypes": [
             "OffhandOrShield"
         ],
@@ -2808,6 +3040,9 @@
             "English": "vs. Skeletons"
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "OffhandOrShield": "Inscription_OffhandOrShield"
+        },
         "TargetTypes": [
             "OffhandOrShield"
         ],
@@ -2834,6 +3069,9 @@
             "English": "vs. Slashing damage"
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "OffhandOrShield": "Inscription_OffhandOrShield"
+        },
         "TargetTypes": [
             "OffhandOrShield"
         ],
@@ -2860,6 +3098,9 @@
             "English": "vs. Tengu"
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "OffhandOrShield": "Inscription_OffhandOrShield"
+        },
         "TargetTypes": [
             "OffhandOrShield"
         ],
@@ -2886,6 +3127,9 @@
             "English": "vs. Trolls"
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "OffhandOrShield": "Inscription_OffhandOrShield"
+        },
         "TargetTypes": [
             "OffhandOrShield"
         ],
@@ -2912,6 +3156,9 @@
             "English": "vs. Undead"
         },
         "ModType": "Inherent",
+        "ItemMods": {
+            "OffhandOrShield": "Inscription_OffhandOrShield"
+        },
         "TargetTypes": [
             "OffhandOrShield"
         ],
@@ -2935,8 +3182,8 @@
             "English": "Halves casting time of spells of item's attribute (Chance: {arg1}%)"
         },
         "Names": {
-            "English": "Adept",
             "German": "Experten-",
+            "English": "Adept",
             "Korean": "숙련된",
             "French": "d'adepte",
             "Italian": "da Adepto",
@@ -2948,11 +3195,20 @@
             "BorkBorkBork": "Aedept"
         },
         "ModType": "Prefix",
+        "ItemMods": {
+            "Staff": "StaffHead"
+        },
         "TargetTypes": [
             "Staff"
         ],
         "UpgradeExists": true,
-        "ItemTypeSpecific": {},
+        "ItemTypeSpecific": {
+            "Staff": {
+                "Identifier": 9520,
+                "Arg1": 4,
+                "Arg2": 32
+            }
+        },
         "Modifiers": [
             {
                 "Identifier": 10248,
@@ -2971,19 +3227,27 @@
             "English": "Lengthens Bleeding duration on foes by 33%"
         },
         "Names": {
-            "English": "Barbed",
             "German": "Stachel-",
-            "BorkBorkBork": "Baerbed",
-            "Russian": "Barbed",
-            "Polish": "Kolców",
-            "Japanese": "バーブ",
-            "TraditionalChinese": "荊棘",
-            "Spanish": "con espinas",
-            "Italian": "a Punta",
+            "English": "Barbed",
+            "Korean": "가시 박힌",
             "French": "à pointes",
-            "Korean": "가시 박힌"
+            "Italian": "a Punta",
+            "Spanish": "con espinas",
+            "TraditionalChinese": "荊棘",
+            "Japanese": "バーブ",
+            "Polish": "Kolców",
+            "Russian": "Barbed",
+            "BorkBorkBork": "Baerbed"
         },
         "ModType": "Prefix",
+        "ItemMods": {
+            "Axe": "AxeHaft",
+            "Sword": "SwordPommel",
+            "Daggers": "DaggerTang",
+            "Scythe": "ScytheSnathe",
+            "Bow": "BowString",
+            "Spear": "Spearhead"
+        },
         "TargetTypes": [
             "Axe",
             "Sword",
@@ -3012,8 +3276,8 @@
             "English": "Lengthens Crippled duration on foes by 33%"
         },
         "Names": {
-            "English": "Crippling",
             "German": "Verkrüppelungs-",
+            "English": "Crippling",
             "Korean": "치명적인",
             "French": "d'infirmité",
             "Italian": "Azzoppante",
@@ -3021,10 +3285,18 @@
             "TraditionalChinese": "致殘",
             "Japanese": "クリップル",
             "Polish": "Kaleczenia",
-            "BorkBorkBork": "Creeppleeng",
-            "Russian": "Crippling"
+            "Russian": "Crippling",
+            "BorkBorkBork": "Creeppleeng"
         },
         "ModType": "Prefix",
+        "ItemMods": {
+            "Axe": "AxeHaft",
+            "Sword": "SwordPommel",
+            "Daggers": "DaggerTang",
+            "Scythe": "ScytheSnathe",
+            "Bow": "BowString",
+            "Spear": "Spearhead"
+        },
         "TargetTypes": [
             "Axe",
             "Sword",
@@ -3053,8 +3325,8 @@
             "English": "Lengthens Deep Wound duration on foes by 33%"
         },
         "Names": {
-            "English": "Cruel",
             "German": "Grausamkeits-",
+            "English": "Cruel",
             "Korean": "잔인한",
             "French": "atroce",
             "Italian": "Crudele",
@@ -3066,6 +3338,14 @@
             "BorkBorkBork": "Crooel"
         },
         "ModType": "Prefix",
+        "ItemMods": {
+            "Axe": "AxeHaft",
+            "Hammer": "HammerHaft",
+            "Sword": "SwordPommel",
+            "Daggers": "DaggerTang",
+            "Scythe": "ScytheSnathe",
+            "Spear": "Spearhead"
+        },
         "TargetTypes": [
             "Axe",
             "Hammer",
@@ -3094,8 +3374,8 @@
             "English": "Armor +{arg2}"
         },
         "Names": {
-            "English": "Defensive",
             "German": "Verteidigungs-",
+            "English": "Defensive",
             "Korean": "방어적인",
             "French": "défensif",
             "Italian": "da Difesa",
@@ -3107,6 +3387,9 @@
             "BorkBorkBork": "Deffenseefe-a"
         },
         "ModType": "Prefix",
+        "ItemMods": {
+            "Staff": "StaffHead"
+        },
         "TargetTypes": [
             "Staff"
         ],
@@ -3136,8 +3419,8 @@
             "English": "Changes Damage to {arg1}"
         },
         "Names": {
-            "English": "Ebon",
             "German": "Ebon-",
+            "English": "Ebon",
             "Korean": "흑단",
             "French": "terrestre",
             "Italian": "per danno d'ebano",
@@ -3149,6 +3432,15 @@
             "BorkBorkBork": "Ibun"
         },
         "ModType": "Prefix",
+        "ItemMods": {
+            "Axe": "AxeHaft",
+            "Bow": "BowString",
+            "Daggers": "DaggerTang",
+            "Hammer": "HammerHaft",
+            "Scythe": "ScytheSnathe",
+            "Spear": "Spearhead",
+            "Sword": "SwordPommel"
+        },
         "TargetTypes": [
             "MartialWeapon"
         ],
@@ -3172,19 +3464,28 @@
             "English": "Changes Damage to {arg1}"
         },
         "Names": {
-            "English": "Fiery",
             "German": "Hitze-",
+            "English": "Fiery",
             "Korean": "화염의",
             "French": "incendiaire",
+            "Italian": "per danno da fuoco",
             "Spanish": "con daño ardiente",
             "TraditionalChinese": "火焰",
             "Japanese": "ファイア",
             "Polish": "Ognia",
             "Russian": "Fiery",
-            "Italian": "per danno da fuoco",
             "BorkBorkBork": "Feeery"
         },
         "ModType": "Prefix",
+        "ItemMods": {
+            "Axe": "AxeHaft",
+            "Bow": "BowString",
+            "Daggers": "DaggerTang",
+            "Hammer": "HammerHaft",
+            "Scythe": "ScytheSnathe",
+            "Spear": "Spearhead",
+            "Sword": "SwordPommel"
+        },
         "TargetTypes": [
             "MartialWeapon"
         ],
@@ -3208,8 +3509,8 @@
             "English": "Double Adrenaline on hit (Chance: +{arg2}%)"
         },
         "Names": {
-            "English": "Furious",
             "German": "Zorn-",
+            "English": "Furious",
             "Korean": "격노한",
             "French": "de fureur",
             "Italian": "della Furia",
@@ -3221,6 +3522,14 @@
             "BorkBorkBork": "Fooreeuoos"
         },
         "ModType": "Prefix",
+        "ItemMods": {
+            "Axe": "AxeHaft",
+            "Hammer": "HammerHaft",
+            "Sword": "SwordPommel",
+            "Daggers": "DaggerTang",
+            "Scythe": "ScytheSnathe",
+            "Spear": "Spearhead"
+        },
         "TargetTypes": [
             "Axe",
             "Hammer",
@@ -3249,8 +3558,8 @@
             "English": "+{arg1} Health"
         },
         "Names": {
-            "English": "Hale",
             "German": "Rüstigkeits-",
+            "English": "Hale",
             "Korean": "단단한",
             "French": "de vigueur",
             "Italian": "del Vigore",
@@ -3262,6 +3571,9 @@
             "BorkBorkBork": "Haele-a"
         },
         "ModType": "Prefix",
+        "ItemMods": {
+            "Staff": "StaffHead"
+        },
         "TargetTypes": [
             "Staff"
         ],
@@ -3291,8 +3603,8 @@
             "English": "Lengthens Weakness duration on foes by 33%"
         },
         "Names": {
-            "English": "Heavy",
             "German": "Schwergewichts-",
+            "English": "Heavy",
             "Korean": "무거운",
             "French": "de poids",
             "Italian": "Pesante",
@@ -3304,6 +3616,12 @@
             "BorkBorkBork": "Heaefy"
         },
         "ModType": "Prefix",
+        "ItemMods": {
+            "Axe": "AxeHaft",
+            "Hammer": "HammerHaft",
+            "Scythe": "ScytheSnathe",
+            "Spear": "Spearhead"
+        },
         "TargetTypes": [
             "Axe",
             "Hammer",
@@ -3330,8 +3648,8 @@
             "English": "Changes Damage to {arg1}"
         },
         "Names": {
-            "English": "Icy",
             "German": "Eis-",
+            "English": "Icy",
             "Korean": "냉기",
             "French": "polaire",
             "Italian": "per danno da ghiaccio",
@@ -3343,6 +3661,15 @@
             "BorkBorkBork": "Icy"
         },
         "ModType": "Prefix",
+        "ItemMods": {
+            "Axe": "AxeHaft",
+            "Bow": "BowString",
+            "Daggers": "DaggerTang",
+            "Hammer": "HammerHaft",
+            "Scythe": "ScytheSnathe",
+            "Spear": "Spearhead",
+            "Sword": "SwordPommel"
+        },
         "TargetTypes": [
             "MartialWeapon"
         ],
@@ -3366,8 +3693,8 @@
             "English": "Energy +{arg2}"
         },
         "Names": {
-            "English": "Insightful",
             "German": "Einblick-",
+            "English": "Insightful",
             "Korean": "통찰력의",
             "French": "de vision",
             "Italian": "dell'Astuzia",
@@ -3379,6 +3706,9 @@
             "BorkBorkBork": "Inseeghtffool"
         },
         "ModType": "Prefix",
+        "ItemMods": {
+            "Staff": "StaffHead"
+        },
         "TargetTypes": [
             "Staff"
         ],
@@ -3402,8 +3732,8 @@
             "English": "Lengthens Poison duration on foes by 33%"
         },
         "Names": {
-            "English": "Poisonous",
             "German": "Gift-",
+            "English": "Poisonous",
             "Korean": "맹독의",
             "French": "de poison",
             "Italian": "del Veleno",
@@ -3415,6 +3745,14 @@
             "BorkBorkBork": "Pueesunuoos"
         },
         "ModType": "Prefix",
+        "ItemMods": {
+            "Axe": "AxeHaft",
+            "Sword": "SwordPommel",
+            "Daggers": "DaggerTang",
+            "Scythe": "ScytheSnathe",
+            "Bow": "BowString",
+            "Spear": "Spearhead"
+        },
         "TargetTypes": [
             "Axe",
             "Sword",
@@ -3443,8 +3781,8 @@
             "English": "Changes Damage to {arg1}"
         },
         "Names": {
-            "English": "Shocking",
             "German": "Schock-",
+            "English": "Shocking",
             "Korean": "충격의",
             "French": "de foudre",
             "Italian": "per danno da shock",
@@ -3456,6 +3794,15 @@
             "BorkBorkBork": "Shuckeeng"
         },
         "ModType": "Prefix",
+        "ItemMods": {
+            "Axe": "AxeHaft",
+            "Bow": "BowString",
+            "Daggers": "DaggerTang",
+            "Hammer": "HammerHaft",
+            "Scythe": "ScytheSnathe",
+            "Spear": "Spearhead",
+            "Sword": "SwordPommel"
+        },
         "TargetTypes": [
             "MartialWeapon"
         ],
@@ -3479,8 +3826,8 @@
             "English": "Lengthens Dazed duration on foes by 33%"
         },
         "Names": {
-            "English": "Silencing",
             "German": "Dämpfungs-",
+            "English": "Silencing",
             "Korean": "침묵의",
             "French": "de silence",
             "Italian": "del Silenzio",
@@ -3492,6 +3839,11 @@
             "BorkBorkBork": "Seelenceeng"
         },
         "ModType": "Prefix",
+        "ItemMods": {
+            "Daggers": "DaggerTang",
+            "Bow": "BowString",
+            "Spear": "Spearhead"
+        },
         "TargetTypes": [
             "Daggers",
             "Bow",
@@ -3517,10 +3869,10 @@
             "English": "Armor penetration +20% (Chance: {arg1}%)"
         },
         "Names": {
-            "English": "Sundering",
             "German": "Trenn-",
-            "French": "de fractionnement",
+            "English": "Sundering",
             "Korean": "날카로운",
+            "French": "de fractionnement",
             "Italian": "della Separazione",
             "Spanish": "de penetración",
             "TraditionalChinese": "分離",
@@ -3530,6 +3882,15 @@
             "BorkBorkBork": "Soondereeng"
         },
         "ModType": "Prefix",
+        "ItemMods": {
+            "Axe": "AxeHaft",
+            "Bow": "BowString",
+            "Daggers": "DaggerTang",
+            "Hammer": "HammerHaft",
+            "Scythe": "ScytheSnathe",
+            "Spear": "Spearhead",
+            "Sword": "SwordPommel"
+        },
         "TargetTypes": [
             "MartialWeapon"
         ],
@@ -3553,8 +3914,8 @@
             "English": "Halves casting time of spells (Chance: +{arg1}%)"
         },
         "Names": {
-            "English": "Swift",
             "German": "Schnelligkeits-",
+            "English": "Swift",
             "Korean": "재빠른",
             "French": "rapide",
             "Italian": "della Rapidità",
@@ -3566,6 +3927,9 @@
             "BorkBorkBork": "Sveefft"
         },
         "ModType": "Prefix",
+        "ItemMods": {
+            "Staff": "StaffHead"
+        },
         "TargetTypes": [
             "Staff"
         ],
@@ -3595,8 +3959,8 @@
             "English": "Vampiric +{arg1[9512]}\nHealth regeneration -{arg2[8424]}"
         },
         "Names": {
-            "English": "Vampiric",
             "German": "Vampir-",
+            "English": "Vampiric",
             "Korean": "흡혈의 단검자루",
             "French": "vampirique",
             "Italian": "del Vampiro",
@@ -3608,6 +3972,11 @@
             "BorkBorkBork": "Faempureec"
         },
         "ModType": "Prefix",
+        "ItemMods": {
+            "Hammer": "HammerHaft",
+            "Bow": "BowString",
+            "Scythe": "ScytheSnathe"
+        },
         "TargetTypes": [
             "Hammer",
             "Bow",
@@ -3642,8 +4011,8 @@
             "English": "Vampiric +{arg1[9512]}\nHealth regeneration -{arg2[8424]}"
         },
         "Names": {
-            "English": "Vampiric",
             "German": "Vampir-",
+            "English": "Vampiric",
             "Korean": "흡혈의 단검자루",
             "French": "vampirique",
             "Italian": "del Vampiro",
@@ -3655,6 +4024,12 @@
             "BorkBorkBork": "Faempureec"
         },
         "ModType": "Prefix",
+        "ItemMods": {
+            "Axe": "AxeHaft",
+            "Sword": "SwordPommel",
+            "Daggers": "DaggerTang",
+            "Spear": "Spearhead"
+        },
         "TargetTypes": [
             "Axe",
             "Sword",
@@ -3690,19 +4065,28 @@
             "English": "Zeal +{arg2[9496]}\nEnergy regeneration -{arg2[8392]}"
         },
         "Names": {
-            "English": "Zealous",
             "German": "Eifer-",
-            "BorkBorkBork": "Zeaeluoos",
-            "Russian": "Zealous",
-            "Polish": "Fanatyzmu",
-            "Japanese": "ゼラス",
-            "TraditionalChinese": "熱望",
-            "Spanish": "de afán",
-            "Italian": "Zelante",
+            "English": "Zealous",
+            "Korean": "광신도의",
             "French": "de zèle",
-            "Korean": "광신도의"
+            "Italian": "Zelante",
+            "Spanish": "de afán",
+            "TraditionalChinese": "熱望",
+            "Japanese": "ゼラス",
+            "Polish": "Fanatyzmu",
+            "Russian": "Zealous",
+            "BorkBorkBork": "Zeaeluoos"
         },
         "ModType": "Prefix",
+        "ItemMods": {
+            "Axe": "AxeHaft",
+            "Bow": "BowString",
+            "Daggers": "DaggerTang",
+            "Hammer": "HammerHaft",
+            "Scythe": "ScytheSnathe",
+            "Spear": "Spearhead",
+            "Sword": "SwordPommel"
+        },
         "TargetTypes": [
             "MartialWeapon"
         ],
@@ -3735,10 +4119,10 @@
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
         "Names": {
-            "English": "of Air Magic",
-            "French": "(Magie de l'air)",
             "German": "d. Luftmagie",
+            "English": "of Air Magic",
             "Korean": "(바람)",
+            "French": "(Magie de l'air)",
             "Italian": "dell'Aria",
             "Spanish": "(Magia de aire)",
             "TraditionalChinese": "風系魔法",
@@ -3748,6 +4132,9 @@
             "BorkBorkBork": "ooff Aeur Maegeec"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Staff": "StaffWrapping"
+        },
         "TargetTypes": [
             "Staff"
         ],
@@ -3771,19 +4158,22 @@
             "English": "Halves casting time on spells of item's attribute (Chance: {arg1}%)"
         },
         "Names": {
+            "German": "d. Begabung",
             "English": "of Aptitude",
-            "BorkBorkBork": "ooff Aepteetoode-a",
-            "Russian": "of Aptitude",
-            "Polish": "(Uzdolnienia)",
-            "Japanese": "(アプティテュード)",
-            "TraditionalChinese": "天賦",
-            "Spanish": "(de aptitud)",
-            "Italian": "della Perspicacia",
-            "French": "(d'aptitude)",
             "Korean": "(총명)",
-            "German": "d. Begabung"
+            "French": "(d'aptitude)",
+            "Italian": "della Perspicacia",
+            "Spanish": "(de aptitud)",
+            "TraditionalChinese": "天賦",
+            "Japanese": "(アプティテュード)",
+            "Polish": "(Uzdolnienia)",
+            "Russian": "of Aptitude",
+            "BorkBorkBork": "ooff Aepteetoode-a"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Offhand": "FocusCore"
+        },
         "TargetTypes": [
             "Offhand"
         ],
@@ -3807,19 +4197,22 @@
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
         "Names": {
-            "English": "of Axe Mastery",
             "German": "d. Axtbeherrschung",
-            "BorkBorkBork": "ooff Aexe-a Maestery",
-            "Russian": "of Axe Mastery",
-            "Polish": "(Biegłość w Toporach)",
-            "Japanese": "(アックス マスタリー)",
-            "TraditionalChinese": "精通斧術",
-            "Spanish": "(Dominio del hacha)",
-            "Italian": "Abilità con l'Ascia",
+            "English": "of Axe Mastery",
+            "Korean": "(도끼술)",
             "French": "(Maîtrise de la hache)",
-            "Korean": "(도끼술)"
+            "Italian": "Abilità con l'Ascia",
+            "Spanish": "(Dominio del hacha)",
+            "TraditionalChinese": "精通斧術",
+            "Japanese": "(アックス マスタリー)",
+            "Polish": "(Biegłość w Toporach)",
+            "Russian": "of Axe Mastery",
+            "BorkBorkBork": "ooff Aexe-a Maestery"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Axe": "AxeGrip"
+        },
         "TargetTypes": [
             "Axe"
         ],
@@ -3846,6 +4239,9 @@
             "English": "of Blood Magic"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Staff": "StaffWrapping"
+        },
         "TargetTypes": [
             "Staff"
         ],
@@ -3869,8 +4265,8 @@
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
         "Names": {
-            "English": "of Channeling Magic",
             "German": "d. Kanalisierungsmagie",
+            "English": "of Channeling Magic",
             "Korean": "(마력 증폭)",
             "French": "(Magie de la canalisation)",
             "Italian": "del bastone Magia di Incanalamento",
@@ -3882,6 +4278,9 @@
             "BorkBorkBork": "ooff Chunneleeng Maegeec"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Staff": "StaffWrapping"
+        },
         "TargetTypes": [
             "Staff"
         ],
@@ -3908,6 +4307,13 @@
             "English": "of Charrslaying"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Axe": "AxeGrip",
+            "Bow": "BowGrip",
+            "Hammer": "HammerGrip",
+            "Sword": "SwordHilt",
+            "Staff": "StaffWrapping"
+        },
         "TargetTypes": [
             "Axe",
             "Bow",
@@ -3947,6 +4353,9 @@
             "English": "of Communing"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Staff": "StaffWrapping"
+        },
         "TargetTypes": [
             "Staff"
         ],
@@ -3973,6 +4382,9 @@
             "English": "of Curses"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Staff": "StaffWrapping"
+        },
         "TargetTypes": [
             "Staff"
         ],
@@ -3996,9 +4408,8 @@
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
         "Names": {
-            "English": "of Dagger Mastery",
-            "BorkBorkBork": "ooff Daegger Maestery",
             "German": "d. Dolchbeherrschung",
+            "English": "of Dagger Mastery",
             "Korean": "(단검술)",
             "French": "(Maîtrise de la dague)",
             "Italian": "Abilità con il Pugnale",
@@ -4006,9 +4417,13 @@
             "TraditionalChinese": "匕首精通",
             "Japanese": "(ダガー マスタリー)",
             "Polish": "(Biegłość w Sztyletach)",
-            "Russian": "of Dagger Mastery"
+            "Russian": "of Dagger Mastery",
+            "BorkBorkBork": "ooff Daegger Maestery"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Daggers": "DaggerHandle"
+        },
         "TargetTypes": [
             "Daggers"
         ],
@@ -4035,6 +4450,9 @@
             "English": "of Death Magic"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Staff": "StaffWrapping"
+        },
         "TargetTypes": [
             "Staff"
         ],
@@ -4058,8 +4476,8 @@
             "English": "Damage +{arg1[41544]}% (vs. {arg1[32896]})"
         },
         "Names": {
-            "English": "of Deathbane",
             "German": "d. Todesfluches",
+            "English": "of Deathbane",
             "Korean": "(언데드 상대 무기)",
             "French": "(anti-mort)",
             "Italian": "del Flagello Mortale",
@@ -4071,6 +4489,13 @@
             "BorkBorkBork": "ooff Deaethbune-a"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Axe": "AxeGrip",
+            "Bow": "BowGrip",
+            "Hammer": "HammerGrip",
+            "Sword": "SwordHilt",
+            "Staff": "StaffWrapping"
+        },
         "TargetTypes": [
             "Axe",
             "Bow",
@@ -4107,19 +4532,29 @@
             "English": "Armor +{arg2}"
         },
         "Names": {
-            "English": "of Defense",
             "German": "d. Verteidigung",
-            "BorkBorkBork": "ooff Deffense-a",
-            "Russian": "of Defense",
-            "Polish": "(Obrony)",
-            "Japanese": "(ディフェンス)",
-            "TraditionalChinese": "防衛",
-            "Spanish": "(de protección)",
-            "Italian": "di Difesa",
+            "English": "of Defense",
+            "Korean": "(방어)",
             "French": "(de Défense)",
-            "Korean": "(방어)"
+            "Italian": "di Difesa",
+            "Spanish": "(de protección)",
+            "TraditionalChinese": "防衛",
+            "Japanese": "(ディフェンス)",
+            "Polish": "(Obrony)",
+            "Russian": "of Defense",
+            "BorkBorkBork": "ooff Deffense-a"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Axe": "AxeGrip",
+            "Bow": "BowGrip",
+            "Daggers": "DaggerHandle",
+            "Hammer": "HammerGrip",
+            "Scythe": "ScytheGrip",
+            "Spear": "SpearGrip",
+            "Sword": "SwordHilt",
+            "Staff": "StaffWrapping"
+        },
         "TargetTypes": [
             "MartialWeapon",
             "Staff"
@@ -4150,8 +4585,8 @@
             "English": "Damage +{arg1[41544]}% (vs. {arg1[32896]})"
         },
         "Names": {
-            "English": "of Demonslaying",
             "German": "d. Dämonentötung",
+            "English": "of Demonslaying",
             "Korean": "(데몬 상대 무기)",
             "French": "(anti-démons)",
             "Italian": "dell'arco Ammazza-demoni",
@@ -4163,6 +4598,13 @@
             "BorkBorkBork": "ooff Demunslaeyeeng"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Axe": "AxeGrip",
+            "Bow": "BowGrip",
+            "Hammer": "HammerGrip",
+            "Sword": "SwordHilt",
+            "Staff": "StaffWrapping"
+        },
         "TargetTypes": [
             "Axe",
             "Bow",
@@ -4199,19 +4641,24 @@
             "English": "+{arg1} Health while Enchanted"
         },
         "Names": {
-            "English": "of Devotion",
             "German": "d. Hingabe",
-            "BorkBorkBork": "ooff Defushun",
-            "Russian": "of Devotion",
-            "Polish": "(Oddania)",
-            "Japanese": "(ディボーション)",
-            "TraditionalChinese": "奉獻",
-            "Spanish": "(de devoción)",
-            "Italian": "della Devozione",
+            "English": "of Devotion",
+            "Korean": "(헌신)",
             "French": "(de dévotion)",
-            "Korean": "(헌신)"
+            "Italian": "della Devozione",
+            "Spanish": "(de devoción)",
+            "TraditionalChinese": "奉獻",
+            "Japanese": "(ディボーション)",
+            "Polish": "(Oddania)",
+            "Russian": "of Devotion",
+            "BorkBorkBork": "ooff Defushun"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Shield": "ShieldHandle",
+            "Staff": "StaffWrapping",
+            "Offhand": "FocusCore"
+        },
         "TargetTypes": [
             "Shield",
             "Staff",
@@ -4240,6 +4687,9 @@
             "English": "of Divine Favor"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Staff": "StaffWrapping"
+        },
         "TargetTypes": [
             "Staff"
         ],
@@ -4266,6 +4716,9 @@
             "English": "of Domination Magic"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Staff": "StaffWrapping"
+        },
         "TargetTypes": [
             "Staff"
         ],
@@ -4292,6 +4745,13 @@
             "English": "of Dragonslaying"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Axe": "AxeGrip",
+            "Bow": "BowGrip",
+            "Hammer": "HammerGrip",
+            "Sword": "SwordHilt",
+            "Staff": "StaffWrapping"
+        },
         "TargetTypes": [
             "Axe",
             "Bow",
@@ -4331,6 +4791,13 @@
             "English": "of Dwarfslaying"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Axe": "AxeGrip",
+            "Bow": "BowGrip",
+            "Hammer": "HammerGrip",
+            "Sword": "SwordHilt",
+            "Staff": "StaffWrapping"
+        },
         "TargetTypes": [
             "Axe",
             "Bow",
@@ -4370,6 +4837,9 @@
             "English": "of Earth Magic"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Staff": "StaffWrapping"
+        },
         "TargetTypes": [
             "Staff"
         ],
@@ -4393,19 +4863,29 @@
             "English": "+{arg2}% Enchantment Duration"
         },
         "Names": {
-            "English": "of Enchanting",
             "German": "d. Verzauberung",
-            "BorkBorkBork": "ooff Inchunteeng",
-            "Russian": "of Enchanting",
-            "Polish": "(Zaklinania)",
-            "Japanese": "(エンチャント)",
-            "TraditionalChinese": "附魔",
-            "Spanish": "(de encantamientos)",
-            "Italian": "dell'Incantesimo",
+            "English": "of Enchanting",
+            "Korean": "(강화)",
             "French": "(d'Enchantement)",
-            "Korean": "(강화)"
+            "Italian": "dell'Incantesimo",
+            "Spanish": "(de encantamientos)",
+            "TraditionalChinese": "附魔",
+            "Japanese": "(エンチャント)",
+            "Polish": "(Zaklinania)",
+            "Russian": "of Enchanting",
+            "BorkBorkBork": "ooff Inchunteeng"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Axe": "AxeGrip",
+            "Bow": "BowGrip",
+            "Daggers": "DaggerHandle",
+            "Hammer": "HammerGrip",
+            "Scythe": "ScytheGrip",
+            "Spear": "SpearGrip",
+            "Sword": "SwordHilt",
+            "Staff": "StaffWrapping"
+        },
         "TargetTypes": [
             "MartialWeapon",
             "Staff"
@@ -4430,19 +4910,24 @@
             "English": "+{arg1} Health while in a Stance"
         },
         "Names": {
-            "English": "of Endurance",
             "German": "d. Ausdauer",
-            "BorkBorkBork": "ooff Indoorunce-a",
-            "Russian": "of Endurance",
-            "Polish": "(Wytrzymałości)",
-            "Japanese": "(インデュランス)",
-            "TraditionalChinese": "忍耐",
-            "Spanish": "(de resistencia)",
-            "Italian": "della Resistenza",
+            "English": "of Endurance",
+            "Korean": "(인내)",
             "French": "(d'endurance)",
-            "Korean": "(인내)"
+            "Italian": "della Resistenza",
+            "Spanish": "(de resistencia)",
+            "TraditionalChinese": "忍耐",
+            "Japanese": "(インデュランス)",
+            "Polish": "(Wytrzymałości)",
+            "Russian": "of Endurance",
+            "BorkBorkBork": "ooff Indoorunce-a"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Shield": "ShieldHandle",
+            "Staff": "StaffWrapping",
+            "Offhand": "FocusCore"
+        },
         "TargetTypes": [
             "Shield",
             "Staff",
@@ -4468,8 +4953,8 @@
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
         "Names": {
-            "English": "of Fire Magic",
             "German": "d. Feuermagie",
+            "English": "of Fire Magic",
             "Korean": "(불)",
             "French": "(Magie du feu)",
             "Italian": "del Fuoco",
@@ -4481,6 +4966,9 @@
             "BorkBorkBork": "ooff Fure-a Maegeec"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Staff": "StaffWrapping"
+        },
         "TargetTypes": [
             "Staff"
         ],
@@ -4504,19 +4992,31 @@
             "English": "+{arg1} Health"
         },
         "Names": {
-            "English": "of Fortitude",
             "German": "d. Tapferkeit",
-            "BorkBorkBork": "ooff Furteetoode-a",
-            "Russian": "of Fortitude",
-            "Polish": "(Wytrwałości)",
-            "French": "(de Courage)",
+            "English": "of Fortitude",
             "Korean": "(견고)",
+            "French": "(de Courage)",
             "Italian": "del Coraggio",
             "Spanish": "(con poder)",
             "TraditionalChinese": "堅忍",
-            "Japanese": "(フォーティチュード)"
+            "Japanese": "(フォーティチュード)",
+            "Polish": "(Wytrwałości)",
+            "Russian": "of Fortitude",
+            "BorkBorkBork": "ooff Furteetoode-a"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Axe": "AxeGrip",
+            "Bow": "BowGrip",
+            "Daggers": "DaggerHandle",
+            "Hammer": "HammerGrip",
+            "Scythe": "ScytheGrip",
+            "Spear": "SpearGrip",
+            "Sword": "SwordHilt",
+            "Staff": "StaffWrapping",
+            "Shield": "ShieldHandle",
+            "Offhand": "FocusCore"
+        },
         "TargetTypes": [
             "MartialWeapon",
             "Staff",
@@ -4552,6 +5052,13 @@
             "English": "of Giantslaying"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Axe": "AxeGrip",
+            "Bow": "BowGrip",
+            "Hammer": "HammerGrip",
+            "Sword": "SwordHilt",
+            "Staff": "StaffWrapping"
+        },
         "TargetTypes": [
             "Axe",
             "Bow",
@@ -4588,9 +5095,8 @@
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
         "Names": {
-            "English": "of Hammer Mastery",
-            "BorkBorkBork": "ooff Haemmer Maestery",
             "German": "d. Hammerbeherrschung",
+            "English": "of Hammer Mastery",
             "Korean": "(해머술)",
             "French": "(Maîtrise du marteau)",
             "Italian": "Abilità col Martello",
@@ -4598,9 +5104,13 @@
             "TraditionalChinese": "精通鎚術",
             "Japanese": "(ハンマー マスタリー)",
             "Polish": "(Biegłość w Młotach)",
-            "Russian": "of Hammer Mastery"
+            "Russian": "of Hammer Mastery",
+            "BorkBorkBork": "ooff Haemmer Maestery"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Hammer": "HammerGrip"
+        },
         "TargetTypes": [
             "Hammer"
         ],
@@ -4627,6 +5137,9 @@
             "English": "of Healing Prayers"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Staff": "StaffWrapping"
+        },
         "TargetTypes": [
             "Staff"
         ],
@@ -4653,6 +5166,9 @@
             "English": "of Illusion Magic"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Staff": "StaffWrapping"
+        },
         "TargetTypes": [
             "Staff"
         ],
@@ -4676,8 +5192,8 @@
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
         "Names": {
-            "English": "of Inspiration Magic",
             "German": "d. Inspirationsmagie",
+            "English": "of Inspiration Magic",
             "Korean": "(영감)",
             "French": "(Magie de l'inspiration)",
             "Italian": "del bastone Magia di Ispirazione",
@@ -4689,6 +5205,9 @@
             "BorkBorkBork": "ooff Inspuraeshun Maegeec"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Staff": "StaffWrapping"
+        },
         "TargetTypes": [
             "Staff"
         ],
@@ -4712,9 +5231,8 @@
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
         "Names": {
-            "English": "of Marksmanship",
             "German": "d. Treffsicherheit",
-            "BorkBorkBork": "ooff Maerksmunsheep",
+            "English": "of Marksmanship",
             "Korean": "(궁술)",
             "French": "(Adresse au tir)",
             "Italian": "Precisione",
@@ -4722,9 +5240,13 @@
             "TraditionalChinese": "弓術精通",
             "Japanese": "(ボウ マスタリー)",
             "Polish": "(Umiejętności Strzeleckie)",
-            "Russian": "of Marksmanship"
+            "Russian": "of Marksmanship",
+            "BorkBorkBork": "ooff Maerksmunsheep"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Bow": "BowGrip"
+        },
         "TargetTypes": [
             "Bow"
         ],
@@ -4748,19 +5270,22 @@
             "English": "Item's attribute +1 (Chance: {arg1}%)"
         },
         "Names": {
-            "English": "of Mastery",
             "German": "d. Beherrschung",
+            "English": "of Mastery",
             "Korean": "(지배)",
             "French": "(de maîtrise)",
             "Italian": "della Destrezza da Difesa",
             "Spanish": "(de maestría)",
             "TraditionalChinese": "支配",
             "Japanese": "(マスタリー)",
-            "BorkBorkBork": "ooff Maestery",
             "Polish": "(Mistrzostwa)",
-            "Russian": "of Mastery"
+            "Russian": "of Mastery",
+            "BorkBorkBork": "ooff Maestery"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Staff": "StaffWrapping"
+        },
         "TargetTypes": [
             "Staff"
         ],
@@ -4784,19 +5309,22 @@
             "English": "Halves skill recharge of item's attribute spells (Chance: {arg1}%)"
         },
         "Names": {
+            "German": "d. Erinnerung",
             "English": "of Memory",
-            "BorkBorkBork": "ooff Memury",
-            "Russian": "of Memory",
-            "Polish": "(Pamięci)",
-            "Japanese": "(メモリー)",
-            "TraditionalChinese": "記憶",
-            "Spanish": "(de memoria)",
-            "Italian": "della Memoria",
-            "French": "(de mémoire)",
             "Korean": "(기억)",
-            "German": "d. Erinnerung"
+            "French": "(de mémoire)",
+            "Italian": "della Memoria",
+            "Spanish": "(de memoria)",
+            "TraditionalChinese": "記憶",
+            "Japanese": "(メモリー)",
+            "Polish": "(Pamięci)",
+            "Russian": "of Memory",
+            "BorkBorkBork": "ooff Memury"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Wand": "WandWrapping"
+        },
         "TargetTypes": [
             "Wand"
         ],
@@ -4823,6 +5351,13 @@
             "English": "of Ogreslaying"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Axe": "AxeGrip",
+            "Bow": "BowGrip",
+            "Hammer": "HammerGrip",
+            "Sword": "SwordHilt",
+            "Staff": "StaffWrapping"
+        },
         "TargetTypes": [
             "Axe",
             "Bow",
@@ -4862,6 +5397,9 @@
             "English": "of Protection Prayers"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Staff": "StaffWrapping"
+        },
         "TargetTypes": [
             "Staff"
         ],
@@ -4885,12 +5423,12 @@
             "English": "Damage +{arg1[41544]}% (vs. {arg1[32896]})"
         },
         "Names": {
-            "English": "of Pruning",
             "German": "d. Pflanzentötung",
-            "Spanish": "(mataplantas)",
+            "English": "of Pruning",
             "Korean": "(식물 상대 무기)",
             "French": "(anti-plantes)",
             "Italian": "del martello da Sfoltimento",
+            "Spanish": "(mataplantas)",
             "TraditionalChinese": "枝葉修整",
             "Japanese": "(プルーニング)",
             "Polish": "(Obcinania)",
@@ -4898,6 +5436,13 @@
             "BorkBorkBork": "ooff Prooneeng"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Axe": "AxeGrip",
+            "Bow": "BowGrip",
+            "Hammer": "HammerGrip",
+            "Sword": "SwordHilt",
+            "Staff": "StaffWrapping"
+        },
         "TargetTypes": [
             "Axe",
             "Bow",
@@ -4934,8 +5479,8 @@
             "English": "Halves skill recharge of spells (Chance: {arg1}%)"
         },
         "Names": {
-            "English": "of Quickening",
             "German": "d. Beschleunigung",
+            "English": "of Quickening",
             "Korean": "(활기)",
             "French": "(de rapidité)",
             "Italian": "dell'Accelerazione",
@@ -4947,6 +5492,9 @@
             "BorkBorkBork": "ooff Qooeeckeneeng"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Wand": "WandWrapping"
+        },
         "TargetTypes": [
             "Wand"
         ],
@@ -4970,10 +5518,10 @@
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
         "Names": {
-            "English": "of Restoration Magic",
-            "French": "(Magie de restauration)",
             "German": "d. Wiederherstellungsmagie",
+            "English": "of Restoration Magic",
             "Korean": "(마력 회복)",
+            "French": "(Magie de restauration)",
             "Italian": "del Ripristino",
             "Spanish": "(Magia de restauración)",
             "TraditionalChinese": "復原魔法",
@@ -4983,6 +5531,9 @@
             "BorkBorkBork": "ooff Resturaeshun Maegeec"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Staff": "StaffWrapping"
+        },
         "TargetTypes": [
             "Staff"
         ],
@@ -5006,9 +5557,8 @@
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
         "Names": {
-            "English": "of Scythe Mastery",
-            "BorkBorkBork": "ooff Scyzee Maestery",
             "German": "d. Sensenbeherrschung",
+            "English": "of Scythe Mastery",
             "Korean": "(사이드술)",
             "French": "(Maîtrise de la faux)",
             "Italian": "Abilità con la Falce",
@@ -5016,9 +5566,13 @@
             "TraditionalChinese": "鐮刀精通",
             "Japanese": "(サイズ マスタリー)",
             "Polish": "(Biegłość w Kosach)",
-            "Russian": "of Scythe Mastery"
+            "Russian": "of Scythe Mastery",
+            "BorkBorkBork": "ooff Scyzee Maestery"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Scythe": "ScytheGrip"
+        },
         "TargetTypes": [
             "Scythe"
         ],
@@ -5042,19 +5596,29 @@
             "English": "+{arg2} Armor vs Physical"
         },
         "Names": {
-            "English": "of Shelter",
             "German": "d. Zuflucht",
-            "BorkBorkBork": "ooff Shelter",
-            "Russian": "of Shelter",
-            "Polish": "(Ochrony)",
-            "Japanese": "(シェルター)",
-            "TraditionalChinese": "庇護",
-            "Spanish": "(de refugio)",
-            "Italian": "del Riparo",
+            "English": "of Shelter",
+            "Korean": "(보호)",
             "French": "(de Refuge)",
-            "Korean": "(보호)"
+            "Italian": "del Riparo",
+            "Spanish": "(de refugio)",
+            "TraditionalChinese": "庇護",
+            "Japanese": "(シェルター)",
+            "Polish": "(Ochrony)",
+            "Russian": "of Shelter",
+            "BorkBorkBork": "ooff Shelter"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Axe": "AxeGrip",
+            "Bow": "BowGrip",
+            "Daggers": "DaggerHandle",
+            "Hammer": "HammerGrip",
+            "Scythe": "ScytheGrip",
+            "Spear": "SpearGrip",
+            "Sword": "SwordHilt",
+            "Staff": "StaffWrapping"
+        },
         "TargetTypes": [
             "MartialWeapon",
             "Staff"
@@ -5082,6 +5646,13 @@
             "English": "of Skeletonslaying"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Axe": "AxeGrip",
+            "Bow": "BowGrip",
+            "Hammer": "HammerGrip",
+            "Sword": "SwordHilt",
+            "Staff": "StaffWrapping"
+        },
         "TargetTypes": [
             "Axe",
             "Bow",
@@ -5118,8 +5689,8 @@
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
         "Names": {
-            "English": "of Smiting Prayers",
             "German": "d. Peinigungsgebete",
+            "English": "of Smiting Prayers",
             "Korean": "(천벌)",
             "French": "(Prières de châtiment)",
             "Italian": "del bastone Preghiere Punitive",
@@ -5131,6 +5702,9 @@
             "BorkBorkBork": "ooff Smeeteeng Praeyers"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Staff": "StaffWrapping"
+        },
         "TargetTypes": [
             "Staff"
         ],
@@ -5157,6 +5731,9 @@
             "English": "of Soul Reaping"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Staff": "StaffWrapping"
+        },
         "TargetTypes": [
             "Staff"
         ],
@@ -5180,10 +5757,10 @@
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
         "Names": {
-            "English": "of Spawning Power",
-            "French": "(Puissance de l'Invocation)",
             "German": "d. Macht des Herbeirufens",
+            "English": "of Spawning Power",
             "Korean": "(생성)",
+            "French": "(Puissance de l'Invocation)",
             "Italian": "del bastone Riti Sacrificali",
             "Spanish": "(Engendramiento)",
             "TraditionalChinese": "召喚",
@@ -5193,6 +5770,9 @@
             "BorkBorkBork": "ooff Spaevneeng Pooer"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Staff": "StaffWrapping"
+        },
         "TargetTypes": [
             "Staff"
         ],
@@ -5216,9 +5796,8 @@
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
         "Names": {
-            "English": "of Spear Mastery",
-            "BorkBorkBork": "ooff Speaer Maestery",
             "German": "d. Speerbeherrschung",
+            "English": "of Spear Mastery",
             "Korean": "(창술)",
             "French": "(Maîtrise du javelot)",
             "Italian": "Abilità con la Lancia",
@@ -5226,9 +5805,13 @@
             "TraditionalChinese": "矛術精通",
             "Japanese": "(スピア マスタリー)",
             "Polish": "(Biegłość we Włóczniach)",
-            "Russian": "of Spear Mastery"
+            "Russian": "of Spear Mastery",
+            "BorkBorkBork": "ooff Speaer Maestery"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Spear": "SpearGrip"
+        },
         "TargetTypes": [
             "Spear"
         ],
@@ -5252,19 +5835,22 @@
             "English": "Halves casting time of spells (Chance: +{arg1}%)"
         },
         "Names": {
+            "German": "d. Eile",
             "English": "of Swiftness",
-            "BorkBorkBork": "ooff Sveefftness",
-            "Russian": "of Swiftness",
-            "Polish": "(Szybkości)",
-            "Japanese": "(スウィフトネス)",
-            "TraditionalChinese": "迅捷",
-            "Spanish": "(de rapidez)",
-            "Italian": "della Rapidità",
-            "French": "(de Rapidité)",
             "Korean": "(신속)",
-            "German": "d. Eile"
+            "French": "(de Rapidité)",
+            "Italian": "della Rapidità",
+            "Spanish": "(de rapidez)",
+            "TraditionalChinese": "迅捷",
+            "Japanese": "(スウィフトネス)",
+            "Polish": "(Szybkości)",
+            "Russian": "of Swiftness",
+            "BorkBorkBork": "ooff Sveefftness"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Offhand": "FocusCore"
+        },
         "TargetTypes": [
             "Offhand"
         ],
@@ -5288,9 +5874,8 @@
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
         "Names": {
-            "English": "of Swordsmanship",
-            "BorkBorkBork": "ooff Svurdsmunsheep",
             "German": "d. Schwertkunst",
+            "English": "of Swordsmanship",
             "Korean": "(검술)",
             "French": "(Maîtrise de l'épée)",
             "Italian": "Scherma",
@@ -5298,9 +5883,13 @@
             "TraditionalChinese": "精通劍術",
             "Japanese": "(ソード マスタリー)",
             "Polish": "(Biegłość w Mieczach)",
-            "Russian": "of Swordsmanship"
+            "Russian": "of Swordsmanship",
+            "BorkBorkBork": "ooff Svurdsmunsheep"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Sword": "SwordHilt"
+        },
         "TargetTypes": [
             "Sword"
         ],
@@ -5327,6 +5916,13 @@
             "English": "of Tenguslaying"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Axe": "AxeGrip",
+            "Bow": "BowGrip",
+            "Hammer": "HammerGrip",
+            "Sword": "SwordHilt",
+            "Staff": "StaffWrapping"
+        },
         "TargetTypes": [
             "Axe",
             "Bow",
@@ -5366,6 +5962,13 @@
             "English": "of Trollslaying"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Axe": "AxeGrip",
+            "Bow": "BowGrip",
+            "Hammer": "HammerGrip",
+            "Sword": "SwordHilt",
+            "Staff": "StaffWrapping"
+        },
         "TargetTypes": [
             "Axe",
             "Bow",
@@ -5402,19 +6005,24 @@
             "English": "+{arg1} Health while Hexed"
         },
         "Names": {
-            "English": "of Valor",
             "German": "d. Wertschätzung",
-            "BorkBorkBork": "ooff Faelur",
-            "Russian": "of Valor",
-            "Polish": "(Odwagi)",
-            "Japanese": "(ヴァラー)",
-            "TraditionalChinese": "英勇",
-            "Spanish": "(de valor)",
-            "Italian": "del Valore",
+            "English": "of Valor",
+            "Korean": "(용맹)",
             "French": "(de valeur)",
-            "Korean": "(용맹)"
+            "Italian": "del Valore",
+            "Spanish": "(de valor)",
+            "TraditionalChinese": "英勇",
+            "Japanese": "(ヴァラー)",
+            "Polish": "(Odwagi)",
+            "Russian": "of Valor",
+            "BorkBorkBork": "ooff Faelur"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Shield": "ShieldHandle",
+            "Staff": "StaffWrapping",
+            "Offhand": "FocusCore"
+        },
         "TargetTypes": [
             "Shield",
             "Staff",
@@ -5440,19 +6048,29 @@
             "English": "+{arg2} Armor vs Elemental"
         },
         "Names": {
-            "English": "of Warding",
             "German": "d. Abwehr",
-            "BorkBorkBork": "ooff Vaerdeeng",
-            "Russian": "of Warding",
-            "Polish": "(Zapobiegliwości)",
-            "Japanese": "(ウォーディング)",
-            "TraditionalChinese": "結界",
-            "Spanish": "(de guardia)",
-            "Italian": "della Protezione",
+            "English": "of Warding",
+            "Korean": "(결계)",
             "French": "(du Protecteur)",
-            "Korean": "(결계)"
+            "Italian": "della Protezione",
+            "Spanish": "(de guardia)",
+            "TraditionalChinese": "結界",
+            "Japanese": "(ウォーディング)",
+            "Polish": "(Zapobiegliwości)",
+            "Russian": "of Warding",
+            "BorkBorkBork": "ooff Vaerdeeng"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Axe": "AxeGrip",
+            "Bow": "BowGrip",
+            "Daggers": "DaggerHandle",
+            "Hammer": "HammerGrip",
+            "Scythe": "ScytheGrip",
+            "Spear": "SpearGrip",
+            "Sword": "SwordHilt",
+            "Staff": "StaffWrapping"
+        },
         "TargetTypes": [
             "MartialWeapon",
             "Staff"
@@ -5480,6 +6098,9 @@
             "English": "of Water Magic"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Staff": "StaffWrapping"
+        },
         "TargetTypes": [
             "Staff"
         ],
@@ -5503,8 +6124,8 @@
             "English": "{arg1}: {arg2} (if your rank is lower. No effects in PvP.)"
         },
         "Names": {
-            "English": "of the Assassin",
             "German": "d. des Assassinen",
+            "English": "of the Assassin",
             "Korean": "(어새신)",
             "French": "(l'Assassin)",
             "Italian": "dell'arco l'assassino",
@@ -5516,6 +6137,17 @@
             "BorkBorkBork": "ooff zee Aessaesseen"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Axe": "AxeGrip",
+            "Bow": "BowGrip",
+            "Daggers": "DaggerHandle",
+            "Hammer": "HammerGrip",
+            "Scythe": "ScytheGrip",
+            "Spear": "SpearGrip",
+            "Sword": "SwordHilt",
+            "Wand": "WandWrapping",
+            "Staff": "StaffWrapping"
+        },
         "TargetTypes": [
             "MartialWeapon",
             "Wand",
@@ -5541,8 +6173,8 @@
             "English": "{arg1}: {arg2} (if your rank is lower. No effects in PvP.)"
         },
         "Names": {
-            "English": "of the Dervish",
             "German": "d. des Derwischs",
+            "English": "of the Dervish",
             "Korean": "(더비시)",
             "French": "(le Derviche)",
             "Italian": "dell'arco il derviscio",
@@ -5554,6 +6186,17 @@
             "BorkBorkBork": "ooff zee Derfeesh"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Axe": "AxeGrip",
+            "Bow": "BowGrip",
+            "Daggers": "DaggerHandle",
+            "Hammer": "HammerGrip",
+            "Scythe": "ScytheGrip",
+            "Spear": "SpearGrip",
+            "Sword": "SwordHilt",
+            "Wand": "WandWrapping",
+            "Staff": "StaffWrapping"
+        },
         "TargetTypes": [
             "MartialWeapon",
             "Wand",
@@ -5582,6 +6225,17 @@
             "English": "of the Elementalist"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Axe": "AxeGrip",
+            "Bow": "BowGrip",
+            "Daggers": "DaggerHandle",
+            "Hammer": "HammerGrip",
+            "Scythe": "ScytheGrip",
+            "Spear": "SpearGrip",
+            "Sword": "SwordHilt",
+            "Wand": "WandWrapping",
+            "Staff": "StaffWrapping"
+        },
         "TargetTypes": [
             "MartialWeapon",
             "Wand",
@@ -5607,19 +6261,30 @@
             "English": "{arg1}: {arg2} (if your rank is lower. No effects in PvP.)"
         },
         "Names": {
-            "English": "of the Mesmer",
-            "BorkBorkBork": "ooff zee Mesmer",
-            "Polish": "(Mesmera)",
-            "Russian": "of месмер",
             "German": "d. des Mesmers",
-            "TraditionalChinese": "the Mesmer",
-            "Spanish": "(el hipnotizador)",
+            "English": "of the Mesmer",
+            "Korean": "(メスマー)",
             "French": "(l'Envoûteur)",
             "Italian": "il mesmerista",
+            "Spanish": "(el hipnotizador)",
+            "TraditionalChinese": "the Mesmer",
             "Japanese": "(メスマー)",
-            "Korean": "(メスマー)"
+            "Polish": "(Mesmera)",
+            "Russian": "of месмер",
+            "BorkBorkBork": "ooff zee Mesmer"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Axe": "AxeGrip",
+            "Bow": "BowGrip",
+            "Daggers": "DaggerHandle",
+            "Hammer": "HammerGrip",
+            "Scythe": "ScytheGrip",
+            "Spear": "SpearGrip",
+            "Sword": "SwordHilt",
+            "Wand": "WandWrapping",
+            "Staff": "StaffWrapping"
+        },
         "TargetTypes": [
             "MartialWeapon",
             "Wand",
@@ -5645,8 +6310,8 @@
             "English": "{arg1}: {arg2} (if your rank is lower. No effects in PvP.)"
         },
         "Names": {
-            "English": "of the Monk",
             "German": "d. des Mönchs",
+            "English": "of the Monk",
             "Korean": "(몽크)",
             "French": "(le Moine)",
             "Italian": "della Falce il monaco",
@@ -5658,6 +6323,17 @@
             "BorkBorkBork": "ooff zee Munk"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Axe": "AxeGrip",
+            "Bow": "BowGrip",
+            "Daggers": "DaggerHandle",
+            "Hammer": "HammerGrip",
+            "Scythe": "ScytheGrip",
+            "Spear": "SpearGrip",
+            "Sword": "SwordHilt",
+            "Wand": "WandWrapping",
+            "Staff": "StaffWrapping"
+        },
         "TargetTypes": [
             "MartialWeapon",
             "Wand",
@@ -5683,19 +6359,30 @@
             "English": "{arg1}: {arg2} (if your rank is lower. No effects in PvP.)"
         },
         "Names": {
-            "English": "of the Necromancer",
-            "BorkBorkBork": "ooff zee Necrumuncer",
-            "Polish": "(Nekromanty)",
-            "Russian": "of некромант",
             "German": "d. des Nekromanten",
-            "TraditionalChinese": "the Necromancer",
-            "Spanish": "(el nigromante)",
+            "English": "of the Necromancer",
+            "Korean": "(ネクロマンサー)",
             "French": "(le Nécromant)",
             "Italian": "il negromante",
+            "Spanish": "(el nigromante)",
+            "TraditionalChinese": "the Necromancer",
             "Japanese": "(ネクロマンサー)",
-            "Korean": "(ネクロマンサー)"
+            "Polish": "(Nekromanty)",
+            "Russian": "of некромант",
+            "BorkBorkBork": "ooff zee Necrumuncer"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Axe": "AxeGrip",
+            "Bow": "BowGrip",
+            "Daggers": "DaggerHandle",
+            "Hammer": "HammerGrip",
+            "Scythe": "ScytheGrip",
+            "Spear": "SpearGrip",
+            "Sword": "SwordHilt",
+            "Wand": "WandWrapping",
+            "Staff": "StaffWrapping"
+        },
         "TargetTypes": [
             "MartialWeapon",
             "Wand",
@@ -5721,8 +6408,8 @@
             "English": "{arg1}: {arg2} (if your rank is lower. No effects in PvP.)"
         },
         "Names": {
-            "English": "of the Paragon",
             "German": "d. des Paragons",
+            "English": "of the Paragon",
             "Korean": "(파라곤)",
             "French": "(le Parangon)",
             "Italian": "del bastone il campione",
@@ -5734,6 +6421,17 @@
             "BorkBorkBork": "ooff zee Paeraegun"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Axe": "AxeGrip",
+            "Bow": "BowGrip",
+            "Daggers": "DaggerHandle",
+            "Hammer": "HammerGrip",
+            "Scythe": "ScytheGrip",
+            "Spear": "SpearGrip",
+            "Sword": "SwordHilt",
+            "Wand": "WandWrapping",
+            "Staff": "StaffWrapping"
+        },
         "TargetTypes": [
             "MartialWeapon",
             "Wand",
@@ -5759,8 +6457,8 @@
             "English": "{arg1}: {arg2} (if your rank is lower. No effects in PvP.)"
         },
         "Names": {
-            "English": "of the Ranger",
             "German": "d. des Waldläufers",
+            "English": "of the Ranger",
             "Korean": "(레인저)",
             "French": "(le Rôdeur)",
             "Italian": "della Bacchetta il ranger",
@@ -5772,6 +6470,17 @@
             "BorkBorkBork": "ooff zee Runger"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Axe": "AxeGrip",
+            "Bow": "BowGrip",
+            "Daggers": "DaggerHandle",
+            "Hammer": "HammerGrip",
+            "Scythe": "ScytheGrip",
+            "Spear": "SpearGrip",
+            "Sword": "SwordHilt",
+            "Wand": "WandWrapping",
+            "Staff": "StaffWrapping"
+        },
         "TargetTypes": [
             "MartialWeapon",
             "Wand",
@@ -5797,19 +6506,30 @@
             "English": "{arg1}: {arg2} (if your rank is lower. No effects in PvP.)"
         },
         "Names": {
-            "English": "of the Ritualist",
-            "BorkBorkBork": "ooff zee Reetooaeleest",
-            "Polish": "(Rytualisty)",
-            "Russian": "of ритуалист",
             "German": "d. des Ritualisten",
-            "TraditionalChinese": "the Ritualist",
-            "Spanish": "(el ritualista)",
+            "English": "of the Ritualist",
+            "Korean": "(リチュアリスト)",
             "French": "(le Ritualiste)",
             "Italian": "il ritualista",
+            "Spanish": "(el ritualista)",
+            "TraditionalChinese": "the Ritualist",
             "Japanese": "(リチュアリスト)",
-            "Korean": "(リチュアリスト)"
+            "Polish": "(Rytualisty)",
+            "Russian": "of ритуалист",
+            "BorkBorkBork": "ooff zee Reetooaeleest"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Axe": "AxeGrip",
+            "Bow": "BowGrip",
+            "Daggers": "DaggerHandle",
+            "Hammer": "HammerGrip",
+            "Scythe": "ScytheGrip",
+            "Spear": "SpearGrip",
+            "Sword": "SwordHilt",
+            "Wand": "WandWrapping",
+            "Staff": "StaffWrapping"
+        },
         "TargetTypes": [
             "MartialWeapon",
             "Wand",
@@ -5835,19 +6555,30 @@
             "English": "{arg1}: {arg2} (if your rank is lower. No effects in PvP.)"
         },
         "Names": {
-            "English": "of the Warrior",
-            "BorkBorkBork": "ooff zee Vaerreeur",
-            "Polish": "(Wojownika)",
-            "Russian": "of воин",
             "German": "d. des Kriegers",
-            "TraditionalChinese": "the Warrior",
-            "Spanish": "(el guerrero)",
+            "English": "of the Warrior",
+            "Korean": "(ウォーリア)",
             "French": "(le Guerrier)",
             "Italian": "il guerriero",
+            "Spanish": "(el guerrero)",
+            "TraditionalChinese": "the Warrior",
             "Japanese": "(ウォーリア)",
-            "Korean": "(ウォーリア)"
+            "Polish": "(Wojownika)",
+            "Russian": "of воин",
+            "BorkBorkBork": "ooff zee Vaerreeur"
         },
         "ModType": "Suffix",
+        "ItemMods": {
+            "Axe": "AxeGrip",
+            "Bow": "BowGrip",
+            "Daggers": "DaggerHandle",
+            "Hammer": "HammerGrip",
+            "Scythe": "ScytheGrip",
+            "Spear": "SpearGrip",
+            "Sword": "SwordHilt",
+            "Wand": "WandWrapping",
+            "Staff": "StaffWrapping"
+        },
         "TargetTypes": [
             "MartialWeapon",
             "Wand",

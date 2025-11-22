@@ -906,7 +906,7 @@ class DataCollector:
         if not self.is_complete(item_id):            
             if item_name:
                 if model_id not in data.Items[item_type]:
-                    item = models.Item(model_id=model_id, item_type=item_type, profession=profession, names={self.server_language: item_name}, wiki_url=self.get_wiki_url(item_id))                    
+                    item = models.Item(model_id=model_id, model_file_id=-1, item_type=item_type, profession=profession, names={self.server_language: item_name}, wiki_url=self.get_wiki_url(item_id))                    
                     save_items = True
                     self.modified_items.add_item(item)
                     data.Items.add_item(item)    

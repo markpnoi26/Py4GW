@@ -1,6 +1,8 @@
 {
     "Blessed Insignia": {
         "Identifier": "Blessed Insignia",
+        "ModelId": 19135,
+        "ModelFileId": 265850,
         "Descriptions": {
             "English": "Armor +10 (while affected by an Enchantment Spell)"
         },
@@ -39,6 +41,8 @@
     },
     "Brawler's Insignia": {
         "Identifier": "Brawler's Insignia",
+        "ModelId": 19134,
+        "ModelFileId": 265849,
         "Descriptions": {
             "English": "Armor +10 (while attacking)"
         },
@@ -77,6 +81,8 @@
     },
     "Herald's Insignia": {
         "Identifier": "Herald's Insignia",
+        "ModelId": 19136,
+        "ModelFileId": 265851,
         "Descriptions": {
             "English": "Armor +10 (while holding an item)"
         },
@@ -115,6 +121,8 @@
     },
     "Radiant Insignia": {
         "Identifier": "Radiant Insignia",
+        "ModelId": 19131,
+        "ModelFileId": 265846,
         "Descriptions": {
             "English": "Energy +3 (on chest armor)\nEnergy +2 (on leg armor)\nEnergy +1 (on other armor)"
         },
@@ -153,6 +161,8 @@
     },
     "Sentry's Insignia": {
         "Identifier": "Sentry's Insignia",
+        "ModelId": 19137,
+        "ModelFileId": 265852,
         "Descriptions": {
             "English": "Armor +10 (while in a stance)"
         },
@@ -191,6 +201,8 @@
     },
     "Stalwart Insignia": {
         "Identifier": "Stalwart Insignia",
+        "ModelId": 19133,
+        "ModelFileId": 265848,
         "Descriptions": {
             "English": "Armor +10 (vs. physical damage)"
         },
@@ -229,6 +241,8 @@
     },
     "Survivor Insignia": {
         "Identifier": "Survivor Insignia",
+        "ModelId": 19132,
+        "ModelFileId": 265847,
         "Descriptions": {
             "English": "Health +15 (on chest armor)\nHealth +10 (on leg armor)\nHealth +5 (on other armor)"
         },
@@ -267,6 +281,8 @@
     },
     "Rune of Attunement": {
         "Identifier": "Rune of Attunement",
+        "ModelId": 898,
+        "ModelFileId": 151852,
         "Descriptions": {
             "English": "Energy +2"
         },
@@ -305,6 +321,8 @@
     },
     "Rune of Minor Vigor": {
         "Identifier": "Rune of Minor Vigor",
+        "ModelId": 898,
+        "ModelFileId": 151852,
         "Descriptions": {
             "English": "Health +30 (Non-stacking)"
         },
@@ -343,6 +361,8 @@
     },
     "Rune of Vitae": {
         "Identifier": "Rune of Vitae",
+        "ModelId": 898,
+        "ModelFileId": 151852,
         "Descriptions": {
             "English": "Health +10"
         },
@@ -381,6 +401,8 @@
     },
     "Rune of Clarity": {
         "Identifier": "Rune of Clarity",
+        "ModelId": 5550,
+        "ModelFileId": 151853,
         "Descriptions": {
             "English": "Reduces Blind duration on you by 20% (Non-stacking)\nReduces Weakness duration on you by 20% (Non-stacking)"
         },
@@ -419,6 +441,8 @@
     },
     "Rune of Major Vigor": {
         "Identifier": "Rune of Major Vigor",
+        "ModelId": 5550,
+        "ModelFileId": 151853,
         "Descriptions": {
             "English": "Health +41 (Non-stacking)"
         },
@@ -457,6 +481,8 @@
     },
     "Rune of Purity": {
         "Identifier": "Rune of Purity",
+        "ModelId": 5550,
+        "ModelFileId": 151853,
         "Descriptions": {
             "English": "Reduces Disease duration on you by 20% (Non-stacking)\nReduces Poison duration on you by 20% (Non-stacking)"
         },
@@ -495,6 +521,8 @@
     },
     "Rune of Recovery": {
         "Identifier": "Rune of Recovery",
+        "ModelId": 5550,
+        "ModelFileId": 151853,
         "Descriptions": {
             "English": "Reduces Dazed duration on you by 20% (Non-stacking)\nReduces Deep Wound duration on you by 20% (Non-stacking)"
         },
@@ -533,6 +561,8 @@
     },
     "Rune of Restoration": {
         "Identifier": "Rune of Restoration",
+        "ModelId": 5550,
+        "ModelFileId": 151853,
         "Descriptions": {
             "English": "Reduces Bleeding duration on you by 20% (Non-stacking)\nReduces Crippled duration on you by 20% (Non-stacking)"
         },
@@ -571,6 +601,8 @@
     },
     "Rune of Superior Vigor": {
         "Identifier": "Rune of Superior Vigor",
+        "ModelId": 5551,
+        "ModelFileId": 151854,
         "Descriptions": {
             "English": "Health +50 (Non-stacking)"
         },
@@ -609,6 +641,8 @@
     },
     "Dreadnought Insignia [Warrior]": {
         "Identifier": "Dreadnought Insignia [Warrior]",
+        "ModelId": 19155,
+        "ModelFileId": 265870,
         "Descriptions": {
             "English": "Armor +10 (vs. elemental damage)"
         },
@@ -647,6 +681,8 @@
     },
     "Knight's Insignia [Warrior]": {
         "Identifier": "Knight's Insignia [Warrior]",
+        "ModelId": 19152,
+        "ModelFileId": 265867,
         "Descriptions": {
             "English": "Received physical damage -3"
         },
@@ -685,6 +721,8 @@
     },
     "Lieutenant's Insignia [Warrior]": {
         "Identifier": "Lieutenant's Insignia [Warrior]",
+        "ModelId": 19153,
+        "ModelFileId": 265868,
         "Descriptions": {
             "English": "Reduces Hex durations on you by 20% and damage dealt by you by 5% (Non-stacking)\nArmor -20"
         },
@@ -723,6 +761,8 @@
     },
     "Sentinel's Insignia [Warrior]": {
         "Identifier": "Sentinel's Insignia [Warrior]",
+        "ModelId": 19156,
+        "ModelFileId": 265871,
         "Descriptions": {
             "English": "Armor +20 (Requires 13 Strength, vs. elemental damage)"
         },
@@ -761,6 +801,8 @@
     },
     "Stonefist Insignia [Warrior]": {
         "Identifier": "Stonefist Insignia [Warrior]",
+        "ModelId": 19154,
+        "ModelFileId": 265869,
         "Descriptions": {
             "English": "Increases knockdown time on foes by 1 second.\n(Maximum: 3 seconds)"
         },
@@ -799,6 +841,8 @@
     },
     "Warrior Rune of Minor Absorption": {
         "Identifier": "Warrior Rune of Minor Absorption",
+        "ModelId": 903,
+        "ModelFileId": 23691,
         "Descriptions": {
             "English": "Reduces physical damage by 1 (Non-stacking)"
         },
@@ -837,6 +881,8 @@
     },
     "Warrior Rune of Minor Axe Mastery": {
         "Identifier": "Warrior Rune of Minor Axe Mastery",
+        "ModelId": 903,
+        "ModelFileId": 23691,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -875,6 +921,8 @@
     },
     "Warrior Rune of Minor Hammer Mastery": {
         "Identifier": "Warrior Rune of Minor Hammer Mastery",
+        "ModelId": 903,
+        "ModelFileId": 23691,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -913,6 +961,8 @@
     },
     "Warrior Rune of Minor Strength": {
         "Identifier": "Warrior Rune of Minor Strength",
+        "ModelId": 903,
+        "ModelFileId": 23691,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -951,6 +1001,8 @@
     },
     "Warrior Rune of Minor Swordsmanship": {
         "Identifier": "Warrior Rune of Minor Swordsmanship",
+        "ModelId": 903,
+        "ModelFileId": 23691,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -989,6 +1041,8 @@
     },
     "Warrior Rune of Minor Tactics": {
         "Identifier": "Warrior Rune of Minor Tactics",
+        "ModelId": 903,
+        "ModelFileId": 23691,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -1027,6 +1081,8 @@
     },
     "Warrior Rune of Major Absorption": {
         "Identifier": "Warrior Rune of Major Absorption",
+        "ModelId": 5558,
+        "ModelFileId": 151883,
         "Descriptions": {
             "English": "Reduces physical damage by 2 (Non-stacking)"
         },
@@ -1065,6 +1121,8 @@
     },
     "Warrior Rune of Major Axe Mastery": {
         "Identifier": "Warrior Rune of Major Axe Mastery",
+        "ModelId": 5558,
+        "ModelFileId": 151883,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -1112,6 +1170,8 @@
     },
     "Warrior Rune of Major Hammer Mastery": {
         "Identifier": "Warrior Rune of Major Hammer Mastery",
+        "ModelId": 5558,
+        "ModelFileId": 151883,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -1159,6 +1219,8 @@
     },
     "Warrior Rune of Major Strength": {
         "Identifier": "Warrior Rune of Major Strength",
+        "ModelId": 5558,
+        "ModelFileId": 151883,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -1206,6 +1268,8 @@
     },
     "Warrior Rune of Major Swordsmanship": {
         "Identifier": "Warrior Rune of Major Swordsmanship",
+        "ModelId": 5558,
+        "ModelFileId": 151883,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -1253,6 +1317,8 @@
     },
     "Warrior Rune of Major Tactics": {
         "Identifier": "Warrior Rune of Major Tactics",
+        "ModelId": 5558,
+        "ModelFileId": 151883,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -1300,6 +1366,8 @@
     },
     "Warrior Rune of Superior Absorption": {
         "Identifier": "Warrior Rune of Superior Absorption",
+        "ModelId": 5559,
+        "ModelFileId": 151884,
         "Descriptions": {
             "English": "Reduces physical damage by 3 (Non-stacking)"
         },
@@ -1338,6 +1406,8 @@
     },
     "Warrior Rune of Superior Axe Mastery": {
         "Identifier": "Warrior Rune of Superior Axe Mastery",
+        "ModelId": 5559,
+        "ModelFileId": 151884,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -1385,6 +1455,8 @@
     },
     "Warrior Rune of Superior Hammer Mastery": {
         "Identifier": "Warrior Rune of Superior Hammer Mastery",
+        "ModelId": 5559,
+        "ModelFileId": 151884,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -1432,6 +1504,8 @@
     },
     "Warrior Rune of Superior Strength": {
         "Identifier": "Warrior Rune of Superior Strength",
+        "ModelId": 5559,
+        "ModelFileId": 151884,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -1479,6 +1553,8 @@
     },
     "Warrior Rune of Superior Swordsmanship": {
         "Identifier": "Warrior Rune of Superior Swordsmanship",
+        "ModelId": 5559,
+        "ModelFileId": 151884,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -1526,6 +1602,8 @@
     },
     "Warrior Rune of Superior Tactics": {
         "Identifier": "Warrior Rune of Superior Tactics",
+        "ModelId": 5559,
+        "ModelFileId": 151884,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -1573,6 +1651,8 @@
     },
     "Beastmaster's Insignia [Ranger]": {
         "Identifier": "Beastmaster's Insignia [Ranger]",
+        "ModelId": 19161,
+        "ModelFileId": 265876,
         "Descriptions": {
             "English": "Armor +10 (while your pet is alive)"
         },
@@ -1611,6 +1691,8 @@
     },
     "Earthbound Insignia [Ranger]": {
         "Identifier": "Earthbound Insignia [Ranger]",
+        "ModelId": 19158,
+        "ModelFileId": 265873,
         "Descriptions": {
             "English": "Armor +15 (vs. Earth damage)"
         },
@@ -1649,6 +1731,8 @@
     },
     "Frostbound Insignia [Ranger]": {
         "Identifier": "Frostbound Insignia [Ranger]",
+        "ModelId": 19157,
+        "ModelFileId": 265872,
         "Descriptions": {
             "English": "Armor +15 (vs. Cold damage)"
         },
@@ -1687,6 +1771,8 @@
     },
     "Pyrebound Insignia [Ranger]": {
         "Identifier": "Pyrebound Insignia [Ranger]",
+        "ModelId": 19159,
+        "ModelFileId": 265874,
         "Descriptions": {
             "English": "Armor +15 (vs. Fire damage)"
         },
@@ -1725,6 +1811,8 @@
     },
     "Scout's Insignia [Ranger]": {
         "Identifier": "Scout's Insignia [Ranger]",
+        "ModelId": 19162,
+        "ModelFileId": 265877,
         "Descriptions": {
             "English": "Armor +10 (while using a Preparation)"
         },
@@ -1763,6 +1851,8 @@
     },
     "Stormbound Insignia [Ranger]": {
         "Identifier": "Stormbound Insignia [Ranger]",
+        "ModelId": 19160,
+        "ModelFileId": 265875,
         "Descriptions": {
             "English": "Armor +15 (vs. Lightning damage)"
         },
@@ -1801,6 +1891,8 @@
     },
     "Ranger Rune of Minor Beast Mastery": {
         "Identifier": "Ranger Rune of Minor Beast Mastery",
+        "ModelId": 904,
+        "ModelFileId": 23696,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -1839,6 +1931,8 @@
     },
     "Ranger Rune of Minor Expertise": {
         "Identifier": "Ranger Rune of Minor Expertise",
+        "ModelId": 904,
+        "ModelFileId": 23696,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -1877,6 +1971,8 @@
     },
     "Ranger Rune of Minor Marksmanship": {
         "Identifier": "Ranger Rune of Minor Marksmanship",
+        "ModelId": 904,
+        "ModelFileId": 23696,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -1915,6 +2011,8 @@
     },
     "Ranger Rune of Minor Wilderness Survival": {
         "Identifier": "Ranger Rune of Minor Wilderness Survival",
+        "ModelId": 904,
+        "ModelFileId": 23696,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -1953,6 +2051,8 @@
     },
     "Ranger Rune of Major Beast Mastery": {
         "Identifier": "Ranger Rune of Major Beast Mastery",
+        "ModelId": 5560,
+        "ModelFileId": 151889,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -2000,6 +2100,8 @@
     },
     "Ranger Rune of Major Expertise": {
         "Identifier": "Ranger Rune of Major Expertise",
+        "ModelId": 5560,
+        "ModelFileId": 151889,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -2047,6 +2149,8 @@
     },
     "Ranger Rune of Major Marksmanship": {
         "Identifier": "Ranger Rune of Major Marksmanship",
+        "ModelId": 5560,
+        "ModelFileId": 151889,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -2094,6 +2198,8 @@
     },
     "Ranger Rune of Major Wilderness Survival": {
         "Identifier": "Ranger Rune of Major Wilderness Survival",
+        "ModelId": 5560,
+        "ModelFileId": 151889,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -2141,6 +2247,8 @@
     },
     "Ranger Rune of Superior Beast Mastery": {
         "Identifier": "Ranger Rune of Superior Beast Mastery",
+        "ModelId": 5561,
+        "ModelFileId": 151890,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -2188,6 +2296,8 @@
     },
     "Ranger Rune of Superior Expertise": {
         "Identifier": "Ranger Rune of Superior Expertise",
+        "ModelId": 5561,
+        "ModelFileId": 151890,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -2235,6 +2345,8 @@
     },
     "Ranger Rune of Superior Marksmanship": {
         "Identifier": "Ranger Rune of Superior Marksmanship",
+        "ModelId": 5561,
+        "ModelFileId": 151890,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -2282,6 +2394,8 @@
     },
     "Ranger Rune of Superior Wilderness Survival": {
         "Identifier": "Ranger Rune of Superior Wilderness Survival",
+        "ModelId": 5561,
+        "ModelFileId": 151890,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -2329,6 +2443,8 @@
     },
     "Anchorite's Insignia [Monk]": {
         "Identifier": "Anchorite's Insignia [Monk]",
+        "ModelId": 19151,
+        "ModelFileId": 265866,
         "Descriptions": {
             "English": "Armor +5 (while recharging 1 or more skills)\nArmor +5 (while recharging 3 or more skills)\nArmor +5 (while recharging 5 or more skills)"
         },
@@ -2367,6 +2483,8 @@
     },
     "Disciple's Insignia [Monk]": {
         "Identifier": "Disciple's Insignia [Monk]",
+        "ModelId": 19150,
+        "ModelFileId": 265865,
         "Descriptions": {
             "English": "Armor +15 (while affected by a Condition)"
         },
@@ -2405,6 +2523,8 @@
     },
     "Wanderer's Insignia [Monk]": {
         "Identifier": "Wanderer's Insignia [Monk]",
+        "ModelId": 19149,
+        "ModelFileId": 265864,
         "Descriptions": {
             "English": "Armor +10 (vs. elemental damage)"
         },
@@ -2443,6 +2563,8 @@
     },
     "Monk Rune of Minor Divine Favor": {
         "Identifier": "Monk Rune of Minor Divine Favor",
+        "ModelId": 902,
+        "ModelFileId": 23686,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -2481,6 +2603,8 @@
     },
     "Monk Rune of Minor Healing Prayers": {
         "Identifier": "Monk Rune of Minor Healing Prayers",
+        "ModelId": 902,
+        "ModelFileId": 23686,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -2519,6 +2643,8 @@
     },
     "Monk Rune of Minor Protection Prayers": {
         "Identifier": "Monk Rune of Minor Protection Prayers",
+        "ModelId": 902,
+        "ModelFileId": 23686,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -2557,6 +2683,8 @@
     },
     "Monk Rune of Minor Smiting Prayers": {
         "Identifier": "Monk Rune of Minor Smiting Prayers",
+        "ModelId": 902,
+        "ModelFileId": 23686,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -2595,6 +2723,8 @@
     },
     "Monk Rune of Major Divine Favor": {
         "Identifier": "Monk Rune of Major Divine Favor",
+        "ModelId": 5556,
+        "ModelFileId": 151877,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -2642,6 +2772,8 @@
     },
     "Monk Rune of Major Healing Prayers": {
         "Identifier": "Monk Rune of Major Healing Prayers",
+        "ModelId": 5556,
+        "ModelFileId": 151877,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -2689,6 +2821,8 @@
     },
     "Monk Rune of Major Protection Prayers": {
         "Identifier": "Monk Rune of Major Protection Prayers",
+        "ModelId": 5556,
+        "ModelFileId": 151877,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -2736,6 +2870,8 @@
     },
     "Monk Rune of Major Smiting Prayers": {
         "Identifier": "Monk Rune of Major Smiting Prayers",
+        "ModelId": 5556,
+        "ModelFileId": 151877,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -2783,6 +2919,8 @@
     },
     "Monk Rune of Superior Divine Favor": {
         "Identifier": "Monk Rune of Superior Divine Favor",
+        "ModelId": 5557,
+        "ModelFileId": 151878,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -2830,6 +2968,8 @@
     },
     "Monk Rune of Superior Healing Prayers": {
         "Identifier": "Monk Rune of Superior Healing Prayers",
+        "ModelId": 5557,
+        "ModelFileId": 151878,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -2877,6 +3017,8 @@
     },
     "Monk Rune of Superior Protection Prayers": {
         "Identifier": "Monk Rune of Superior Protection Prayers",
+        "ModelId": 5557,
+        "ModelFileId": 151878,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -2924,6 +3066,8 @@
     },
     "Monk Rune of Superior Smiting Prayers": {
         "Identifier": "Monk Rune of Superior Smiting Prayers",
+        "ModelId": 5557,
+        "ModelFileId": 151878,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -2971,6 +3115,8 @@
     },
     "Blighter's Insignia [Necromancer]": {
         "Identifier": "Blighter's Insignia [Necromancer]",
+        "ModelId": 19143,
+        "ModelFileId": 265858,
         "Descriptions": {
             "English": "Armor +20 (while affected by a Hex Spell)"
         },
@@ -3009,6 +3155,8 @@
     },
     "Bloodstained Insignia [Necromancer]": {
         "Identifier": "Bloodstained Insignia [Necromancer]",
+        "ModelId": 19138,
+        "ModelFileId": 265853,
         "Descriptions": {
             "English": "Reduces casting time of spells that exploit corpses by 25% (Non-stacking)"
         },
@@ -3047,6 +3195,8 @@
     },
     "Bonelace Insignia [Necromancer]": {
         "Identifier": "Bonelace Insignia [Necromancer]",
+        "ModelId": 19141,
+        "ModelFileId": 265856,
         "Descriptions": {
             "English": "Armor +15 (vs. Piercing damage)"
         },
@@ -3085,6 +3235,8 @@
     },
     "Minion Master's Insignia [Necromancer]": {
         "Identifier": "Minion Master's Insignia [Necromancer]",
+        "ModelId": 19142,
+        "ModelFileId": 265857,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -3123,6 +3275,8 @@
     },
     "Tormentor's Insignia [Necromancer]": {
         "Identifier": "Tormentor's Insignia [Necromancer]",
+        "ModelId": 19139,
+        "ModelFileId": 265854,
         "Descriptions": {
             "English": "Holy damage you receive increased by 6 (on chest armor)\nHoly damage you receive increased by 4 (on leg armor)\nHoly damage you receive increased by 2 (on other armor)\nArmor +10"
         },
@@ -3161,6 +3315,8 @@
     },
     "Undertaker's Insignia [Necromancer]": {
         "Identifier": "Undertaker's Insignia [Necromancer]",
+        "ModelId": 19140,
+        "ModelFileId": 265855,
         "Descriptions": {
             "English": "Armor +5 (while health is below 80%)\nArmor +5 (while health is below 60%)\nArmor +5 (while health is below 40%)\nArmor +5 (while health is below 20%)"
         },
@@ -3199,6 +3355,8 @@
     },
     "Necromancer Rune of Minor Blood Magic": {
         "Identifier": "Necromancer Rune of Minor Blood Magic",
+        "ModelId": 900,
+        "ModelFileId": 23676,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -3237,6 +3395,8 @@
     },
     "Necromancer Rune of Minor Curses": {
         "Identifier": "Necromancer Rune of Minor Curses",
+        "ModelId": 900,
+        "ModelFileId": 23676,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -3275,6 +3435,8 @@
     },
     "Necromancer Rune of Minor Death Magic": {
         "Identifier": "Necromancer Rune of Minor Death Magic",
+        "ModelId": 900,
+        "ModelFileId": 23676,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -3313,6 +3475,8 @@
     },
     "Necromancer Rune of Minor Soul Reaping": {
         "Identifier": "Necromancer Rune of Minor Soul Reaping",
+        "ModelId": 900,
+        "ModelFileId": 23676,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -3351,6 +3515,8 @@
     },
     "Necromancer Rune of Major Blood Magic": {
         "Identifier": "Necromancer Rune of Major Blood Magic",
+        "ModelId": 5552,
+        "ModelFileId": 151865,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -3398,6 +3564,8 @@
     },
     "Necromancer Rune of Major Curses": {
         "Identifier": "Necromancer Rune of Major Curses",
+        "ModelId": 5552,
+        "ModelFileId": 151865,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -3445,6 +3613,8 @@
     },
     "Necromancer Rune of Major Death Magic": {
         "Identifier": "Necromancer Rune of Major Death Magic",
+        "ModelId": 5552,
+        "ModelFileId": 151865,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -3492,6 +3662,8 @@
     },
     "Necromancer Rune of Major Soul Reaping": {
         "Identifier": "Necromancer Rune of Major Soul Reaping",
+        "ModelId": 5552,
+        "ModelFileId": 151865,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -3539,6 +3711,8 @@
     },
     "Necromancer Rune of Superior Blood Magic": {
         "Identifier": "Necromancer Rune of Superior Blood Magic",
+        "ModelId": 5553,
+        "ModelFileId": 151866,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -3586,6 +3760,8 @@
     },
     "Necromancer Rune of Superior Curses": {
         "Identifier": "Necromancer Rune of Superior Curses",
+        "ModelId": 5553,
+        "ModelFileId": 151866,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -3633,6 +3809,8 @@
     },
     "Necromancer Rune of Superior Death Magic": {
         "Identifier": "Necromancer Rune of Superior Death Magic",
+        "ModelId": 5553,
+        "ModelFileId": 151866,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -3680,6 +3858,8 @@
     },
     "Necromancer Rune of Superior Soul Reaping": {
         "Identifier": "Necromancer Rune of Superior Soul Reaping",
+        "ModelId": 5553,
+        "ModelFileId": 151866,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -3727,6 +3907,8 @@
     },
     "Artificer's Insignia [Mesmer]": {
         "Identifier": "Artificer's Insignia [Mesmer]",
+        "ModelId": 19128,
+        "ModelFileId": 265843,
         "Descriptions": {
             "English": "Armor +3 (for each equipped Signet)"
         },
@@ -3765,6 +3947,8 @@
     },
     "Prodigy's Insignia [Mesmer]": {
         "Identifier": "Prodigy's Insignia [Mesmer]",
+        "ModelId": 19129,
+        "ModelFileId": 265844,
         "Descriptions": {
             "English": "Armor +5 (while recharging 1 or more skills)\nArmor +5 (while recharging 3 or more skills)\nArmor +5 (while recharging 5 or more skills)"
         },
@@ -3803,6 +3987,8 @@
     },
     "Virtuoso's Insignia [Mesmer]": {
         "Identifier": "Virtuoso's Insignia [Mesmer]",
+        "ModelId": 19130,
+        "ModelFileId": 265845,
         "Descriptions": {
             "English": "Armor +15 (while activating skills)"
         },
@@ -3841,6 +4027,8 @@
     },
     "Mesmer Rune of Minor Domination Magic": {
         "Identifier": "Mesmer Rune of Minor Domination Magic",
+        "ModelId": 899,
+        "ModelFileId": 23671,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -3879,6 +4067,8 @@
     },
     "Mesmer Rune of Minor Fast Casting": {
         "Identifier": "Mesmer Rune of Minor Fast Casting",
+        "ModelId": 899,
+        "ModelFileId": 23671,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -3917,6 +4107,8 @@
     },
     "Mesmer Rune of Minor Illusion Magic": {
         "Identifier": "Mesmer Rune of Minor Illusion Magic",
+        "ModelId": 899,
+        "ModelFileId": 23671,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -3955,6 +4147,8 @@
     },
     "Mesmer Rune of Minor Inspiration Magic": {
         "Identifier": "Mesmer Rune of Minor Inspiration Magic",
+        "ModelId": 899,
+        "ModelFileId": 23671,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -3993,6 +4187,8 @@
     },
     "Mesmer Rune of Major Domination Magic": {
         "Identifier": "Mesmer Rune of Major Domination Magic",
+        "ModelId": 3612,
+        "ModelFileId": 151859,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -4040,6 +4236,8 @@
     },
     "Mesmer Rune of Major Fast Casting": {
         "Identifier": "Mesmer Rune of Major Fast Casting",
+        "ModelId": 3612,
+        "ModelFileId": 151859,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -4087,6 +4285,8 @@
     },
     "Mesmer Rune of Major Illusion Magic": {
         "Identifier": "Mesmer Rune of Major Illusion Magic",
+        "ModelId": 3612,
+        "ModelFileId": 151859,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -4134,6 +4334,8 @@
     },
     "Mesmer Rune of Major Inspiration Magic": {
         "Identifier": "Mesmer Rune of Major Inspiration Magic",
+        "ModelId": 3612,
+        "ModelFileId": 151859,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -4181,6 +4383,8 @@
     },
     "Mesmer Rune of Superior Domination Magic": {
         "Identifier": "Mesmer Rune of Superior Domination Magic",
+        "ModelId": 5549,
+        "ModelFileId": 151860,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -4228,6 +4432,8 @@
     },
     "Mesmer Rune of Superior Fast Casting": {
         "Identifier": "Mesmer Rune of Superior Fast Casting",
+        "ModelId": 5549,
+        "ModelFileId": 151860,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -4275,6 +4481,8 @@
     },
     "Mesmer Rune of Superior Illusion Magic": {
         "Identifier": "Mesmer Rune of Superior Illusion Magic",
+        "ModelId": 5549,
+        "ModelFileId": 151860,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -4322,6 +4530,8 @@
     },
     "Mesmer Rune of Superior Inspiration Magic": {
         "Identifier": "Mesmer Rune of Superior Inspiration Magic",
+        "ModelId": 5549,
+        "ModelFileId": 151860,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -4369,6 +4579,8 @@
     },
     "Aeromancer Insignia [Elementalist]": {
         "Identifier": "Aeromancer Insignia [Elementalist]",
+        "ModelId": 19148,
+        "ModelFileId": 265863,
         "Descriptions": {
             "English": "Armor +10 (vs. elemental damage)\nArmor +10 (vs. Lightning damage)"
         },
@@ -4407,6 +4619,8 @@
     },
     "Geomancer Insignia [Elementalist]": {
         "Identifier": "Geomancer Insignia [Elementalist]",
+        "ModelId": 19146,
+        "ModelFileId": 265861,
         "Descriptions": {
             "English": "Armor +10 (vs. elemental damage)\nArmor +10 (vs. Earth damage)"
         },
@@ -4445,6 +4659,8 @@
     },
     "Hydromancer Insignia [Elementalist]": {
         "Identifier": "Hydromancer Insignia [Elementalist]",
+        "ModelId": 19145,
+        "ModelFileId": 265860,
         "Descriptions": {
             "English": "Armor +10 (vs. elemental damage)\nArmor +10 (vs. Cold damage)"
         },
@@ -4483,6 +4699,8 @@
     },
     "Prismatic Insignia [Elementalist]": {
         "Identifier": "Prismatic Insignia [Elementalist]",
+        "ModelId": 19144,
+        "ModelFileId": 265859,
         "Descriptions": {
             "English": "Armor +5 (requires 9 Air Magic)\nArmor +5 (requires 9 Earth Magic)\nArmor +5 (requires 9 Fire Magic)\nArmor +5 (requires 9 Water Magic)"
         },
@@ -4521,6 +4739,8 @@
     },
     "Pyromancer Insignia [Elementalist]": {
         "Identifier": "Pyromancer Insignia [Elementalist]",
+        "ModelId": 19147,
+        "ModelFileId": 265862,
         "Descriptions": {
             "English": "Armor +10 (vs. elemental damage)\nArmor +10 (vs. Fire damage)"
         },
@@ -4559,6 +4779,8 @@
     },
     "Elementalist Rune of Minor Air Magic": {
         "Identifier": "Elementalist Rune of Minor Air Magic",
+        "ModelId": 901,
+        "ModelFileId": 23681,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -4597,6 +4819,8 @@
     },
     "Elementalist Rune of Minor Earth Magic": {
         "Identifier": "Elementalist Rune of Minor Earth Magic",
+        "ModelId": 901,
+        "ModelFileId": 23681,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -4635,6 +4859,8 @@
     },
     "Elementalist Rune of Minor Energy Storage": {
         "Identifier": "Elementalist Rune of Minor Energy Storage",
+        "ModelId": 901,
+        "ModelFileId": 23681,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -4673,6 +4899,8 @@
     },
     "Elementalist Rune of Minor Fire Magic": {
         "Identifier": "Elementalist Rune of Minor Fire Magic",
+        "ModelId": 901,
+        "ModelFileId": 23681,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -4711,6 +4939,8 @@
     },
     "Elementalist Rune of Minor Water Magic": {
         "Identifier": "Elementalist Rune of Minor Water Magic",
+        "ModelId": 901,
+        "ModelFileId": 23681,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -4749,6 +4979,8 @@
     },
     "Elementalist Rune of Major Air Magic": {
         "Identifier": "Elementalist Rune of Major Air Magic",
+        "ModelId": 5554,
+        "ModelFileId": 151871,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -4796,6 +5028,8 @@
     },
     "Elementalist Rune of Major Earth Magic": {
         "Identifier": "Elementalist Rune of Major Earth Magic",
+        "ModelId": 5554,
+        "ModelFileId": 151871,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -4843,6 +5077,8 @@
     },
     "Elementalist Rune of Major Energy Storage": {
         "Identifier": "Elementalist Rune of Major Energy Storage",
+        "ModelId": 5554,
+        "ModelFileId": 151871,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -4890,6 +5126,8 @@
     },
     "Elementalist Rune of Major Fire Magic": {
         "Identifier": "Elementalist Rune of Major Fire Magic",
+        "ModelId": 5554,
+        "ModelFileId": 151871,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -4937,6 +5175,8 @@
     },
     "Elementalist Rune of Major Water Magic": {
         "Identifier": "Elementalist Rune of Major Water Magic",
+        "ModelId": 5554,
+        "ModelFileId": 151871,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -4984,6 +5224,8 @@
     },
     "Elementalist Rune of Superior Air Magic": {
         "Identifier": "Elementalist Rune of Superior Air Magic",
+        "ModelId": 5555,
+        "ModelFileId": 151872,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -5031,6 +5273,8 @@
     },
     "Elementalist Rune of Superior Earth Magic": {
         "Identifier": "Elementalist Rune of Superior Earth Magic",
+        "ModelId": 5555,
+        "ModelFileId": 151872,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -5078,6 +5322,8 @@
     },
     "Elementalist Rune of Superior Energy Storage": {
         "Identifier": "Elementalist Rune of Superior Energy Storage",
+        "ModelId": 5555,
+        "ModelFileId": 151872,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -5125,6 +5371,8 @@
     },
     "Elementalist Rune of Superior Fire Magic": {
         "Identifier": "Elementalist Rune of Superior Fire Magic",
+        "ModelId": 5555,
+        "ModelFileId": 151872,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -5172,6 +5420,8 @@
     },
     "Elementalist Rune of Superior Water Magic": {
         "Identifier": "Elementalist Rune of Superior Water Magic",
+        "ModelId": 5555,
+        "ModelFileId": 151872,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -5219,6 +5469,8 @@
     },
     "Infiltrator's Insignia [Assassin]": {
         "Identifier": "Infiltrator's Insignia [Assassin]",
+        "ModelId": 19125,
+        "ModelFileId": 265840,
         "Descriptions": {
             "English": "Armor +10 (vs. physical damage)\nArmor +10 (vs. Piercing damage)"
         },
@@ -5257,6 +5509,8 @@
     },
     "Nightstalker's Insignia [Assassin]": {
         "Identifier": "Nightstalker's Insignia [Assassin]",
+        "ModelId": 19127,
+        "ModelFileId": 265842,
         "Descriptions": {
             "English": "Armor +15 (while attacking)"
         },
@@ -5295,6 +5549,8 @@
     },
     "Saboteur's Insignia [Assassin]": {
         "Identifier": "Saboteur's Insignia [Assassin]",
+        "ModelId": 19126,
+        "ModelFileId": 265841,
         "Descriptions": {
             "English": "Armor +10 (vs. physical damage)\nArmor +10 (vs. Slashing damage)"
         },
@@ -5333,6 +5589,8 @@
     },
     "Vanguard's Insignia [Assassin]": {
         "Identifier": "Vanguard's Insignia [Assassin]",
+        "ModelId": 19124,
+        "ModelFileId": 265839,
         "Descriptions": {
             "English": "Armor +10 (vs. physical damage)\nArmor +10 (vs. Blunt damage)"
         },
@@ -5371,6 +5629,8 @@
     },
     "Assassin Rune of Minor Critical Strikes": {
         "Identifier": "Assassin Rune of Minor Critical Strikes",
+        "ModelId": 6324,
+        "ModelFileId": 164842,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -5409,6 +5669,8 @@
     },
     "Assassin Rune of Minor Dagger Mastery": {
         "Identifier": "Assassin Rune of Minor Dagger Mastery",
+        "ModelId": 6324,
+        "ModelFileId": 164842,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -5447,6 +5709,8 @@
     },
     "Assassin Rune of Minor Deadly Arts": {
         "Identifier": "Assassin Rune of Minor Deadly Arts",
+        "ModelId": 6324,
+        "ModelFileId": 164842,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -5485,6 +5749,8 @@
     },
     "Assassin Rune of Minor Shadow Arts": {
         "Identifier": "Assassin Rune of Minor Shadow Arts",
+        "ModelId": 6324,
+        "ModelFileId": 164842,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -5523,6 +5789,8 @@
     },
     "Assassin Rune of Major Critical Strikes": {
         "Identifier": "Assassin Rune of Major Critical Strikes",
+        "ModelId": 6325,
+        "ModelFileId": 164843,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -5570,6 +5838,8 @@
     },
     "Assassin Rune of Major Dagger Mastery": {
         "Identifier": "Assassin Rune of Major Dagger Mastery",
+        "ModelId": 6325,
+        "ModelFileId": 164843,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -5617,6 +5887,8 @@
     },
     "Assassin Rune of Major Deadly Arts": {
         "Identifier": "Assassin Rune of Major Deadly Arts",
+        "ModelId": 6325,
+        "ModelFileId": 164843,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -5664,6 +5936,8 @@
     },
     "Assassin Rune of Major Shadow Arts": {
         "Identifier": "Assassin Rune of Major Shadow Arts",
+        "ModelId": 6325,
+        "ModelFileId": 164843,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -5711,6 +5985,8 @@
     },
     "Assassin Rune of Superior Critical Strikes": {
         "Identifier": "Assassin Rune of Superior Critical Strikes",
+        "ModelId": 6326,
+        "ModelFileId": 164844,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -5758,6 +6034,8 @@
     },
     "Assassin Rune of Superior Dagger Mastery": {
         "Identifier": "Assassin Rune of Superior Dagger Mastery",
+        "ModelId": 6326,
+        "ModelFileId": 164844,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -5805,6 +6083,8 @@
     },
     "Assassin Rune of Superior Deadly Arts": {
         "Identifier": "Assassin Rune of Superior Deadly Arts",
+        "ModelId": 6326,
+        "ModelFileId": 164844,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -5852,6 +6132,8 @@
     },
     "Assassin Rune of Superior Shadow Arts": {
         "Identifier": "Assassin Rune of Superior Shadow Arts",
+        "ModelId": 6326,
+        "ModelFileId": 164844,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -5899,6 +6181,8 @@
     },
     "Ghost Forge Insignia [Ritualist]": {
         "Identifier": "Ghost Forge Insignia [Ritualist]",
+        "ModelId": 19166,
+        "ModelFileId": 265881,
         "Descriptions": {
             "English": "Armor +15 (while affected by a Weapon Spell)"
         },
@@ -5937,6 +6221,8 @@
     },
     "Mystic's Insignia [Ritualist]": {
         "Identifier": "Mystic's Insignia [Ritualist]",
+        "ModelId": 19167,
+        "ModelFileId": 265882,
         "Descriptions": {
             "English": "Armor +15 (while activating skills)"
         },
@@ -5975,6 +6261,8 @@
     },
     "Shaman's Insignia [Ritualist]": {
         "Identifier": "Shaman's Insignia [Ritualist]",
+        "ModelId": 19165,
+        "ModelFileId": 265880,
         "Descriptions": {
             "English": "Armor +5 (while you control 1 or more Spirits)\nArmor +5 (while you control 2 or more Spirits)\nArmor +5 (while you control 3 or more Spirits)"
         },
@@ -6013,6 +6301,8 @@
     },
     "Ritualist Rune of Minor Channeling Magic": {
         "Identifier": "Ritualist Rune of Minor Channeling Magic",
+        "ModelId": 6327,
+        "ModelFileId": 164849,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -6051,6 +6341,8 @@
     },
     "Ritualist Rune of Minor Communing": {
         "Identifier": "Ritualist Rune of Minor Communing",
+        "ModelId": 6327,
+        "ModelFileId": 164849,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -6089,6 +6381,8 @@
     },
     "Ritualist Rune of Minor Restoration Magic": {
         "Identifier": "Ritualist Rune of Minor Restoration Magic",
+        "ModelId": 6327,
+        "ModelFileId": 164849,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -6127,6 +6421,8 @@
     },
     "Ritualist Rune of Minor Spawning Power": {
         "Identifier": "Ritualist Rune of Minor Spawning Power",
+        "ModelId": 6327,
+        "ModelFileId": 164849,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -6165,6 +6461,8 @@
     },
     "Ritualist Rune of Major Channeling Magic": {
         "Identifier": "Ritualist Rune of Major Channeling Magic",
+        "ModelId": 6328,
+        "ModelFileId": 164850,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -6212,6 +6510,8 @@
     },
     "Ritualist Rune of Major Communing": {
         "Identifier": "Ritualist Rune of Major Communing",
+        "ModelId": 6328,
+        "ModelFileId": 164850,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -6259,6 +6559,8 @@
     },
     "Ritualist Rune of Major Restoration Magic": {
         "Identifier": "Ritualist Rune of Major Restoration Magic",
+        "ModelId": 6328,
+        "ModelFileId": 164850,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -6306,6 +6608,8 @@
     },
     "Ritualist Rune of Major Spawning Power": {
         "Identifier": "Ritualist Rune of Major Spawning Power",
+        "ModelId": 6328,
+        "ModelFileId": 164850,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -6353,6 +6657,8 @@
     },
     "Ritualist Rune of Superior Channeling Magic": {
         "Identifier": "Ritualist Rune of Superior Channeling Magic",
+        "ModelId": 6329,
+        "ModelFileId": 164851,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -6400,6 +6706,8 @@
     },
     "Ritualist Rune of Superior Communing": {
         "Identifier": "Ritualist Rune of Superior Communing",
+        "ModelId": 6329,
+        "ModelFileId": 164851,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -6447,6 +6755,8 @@
     },
     "Ritualist Rune of Superior Restoration Magic": {
         "Identifier": "Ritualist Rune of Superior Restoration Magic",
+        "ModelId": 6329,
+        "ModelFileId": 164851,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -6494,6 +6804,8 @@
     },
     "Ritualist Rune of Superior Spawning Power": {
         "Identifier": "Ritualist Rune of Superior Spawning Power",
+        "ModelId": 6329,
+        "ModelFileId": 164851,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -6541,6 +6853,8 @@
     },
     "Centurion's Insignia [Paragon]": {
         "Identifier": "Centurion's Insignia [Paragon]",
+        "ModelId": 19168,
+        "ModelFileId": 265883,
         "Descriptions": {
             "English": "Armor +10 (while affected by a Shout, Echo, or Chant)"
         },
@@ -6579,6 +6893,8 @@
     },
     "Paragon Rune of Minor Command": {
         "Identifier": "Paragon Rune of Minor Command",
+        "ModelId": 15548,
+        "ModelFileId": 205908,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -6617,6 +6933,8 @@
     },
     "Paragon Rune of Minor Leadership": {
         "Identifier": "Paragon Rune of Minor Leadership",
+        "ModelId": 15548,
+        "ModelFileId": 205908,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -6655,6 +6973,8 @@
     },
     "Paragon Rune of Minor Motivation": {
         "Identifier": "Paragon Rune of Minor Motivation",
+        "ModelId": 15548,
+        "ModelFileId": 205908,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -6693,6 +7013,8 @@
     },
     "Paragon Rune of Minor Spear Mastery": {
         "Identifier": "Paragon Rune of Minor Spear Mastery",
+        "ModelId": 15548,
+        "ModelFileId": 205908,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -6731,6 +7053,8 @@
     },
     "Paragon Rune of Major Command": {
         "Identifier": "Paragon Rune of Major Command",
+        "ModelId": 15549,
+        "ModelFileId": 205909,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -6778,6 +7102,8 @@
     },
     "Paragon Rune of Major Leadership": {
         "Identifier": "Paragon Rune of Major Leadership",
+        "ModelId": 15549,
+        "ModelFileId": 205909,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -6825,6 +7151,8 @@
     },
     "Paragon Rune of Major Motivation": {
         "Identifier": "Paragon Rune of Major Motivation",
+        "ModelId": 15549,
+        "ModelFileId": 205909,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -6872,6 +7200,8 @@
     },
     "Paragon Rune of Major Spear Mastery": {
         "Identifier": "Paragon Rune of Major Spear Mastery",
+        "ModelId": 15549,
+        "ModelFileId": 205909,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -6919,6 +7249,8 @@
     },
     "Paragon Rune of Superior Command": {
         "Identifier": "Paragon Rune of Superior Command",
+        "ModelId": 15550,
+        "ModelFileId": 205910,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -6966,6 +7298,8 @@
     },
     "Paragon Rune of Superior Leadership": {
         "Identifier": "Paragon Rune of Superior Leadership",
+        "ModelId": 15550,
+        "ModelFileId": 205910,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -7013,6 +7347,8 @@
     },
     "Paragon Rune of Superior Motivation": {
         "Identifier": "Paragon Rune of Superior Motivation",
+        "ModelId": 15550,
+        "ModelFileId": 205910,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -7060,6 +7396,8 @@
     },
     "Paragon Rune of Superior Spear Mastery": {
         "Identifier": "Paragon Rune of Superior Spear Mastery",
+        "ModelId": 15550,
+        "ModelFileId": 205910,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -7107,6 +7445,8 @@
     },
     "Forsaken Insignia [Dervish]": {
         "Identifier": "Forsaken Insignia [Dervish]",
+        "ModelId": 19164,
+        "ModelFileId": 265879,
         "Descriptions": {
             "English": "Armor +10 (while not affected by an Enchantment Spell)"
         },
@@ -7145,6 +7485,8 @@
     },
     "Windwalker Insignia [Dervish]": {
         "Identifier": "Windwalker Insignia [Dervish]",
+        "ModelId": 19163,
+        "ModelFileId": 265878,
         "Descriptions": {
             "English": "Armor +5 (while affected by 1 or more Enchantment Spells)\nArmor +5 (while affected by 2 or more Enchantment Spells)\nArmor +5 (while affected by 3 or more Enchantment Spells)\nArmor +5 (while affected by 4 or more Enchantment Spells)"
         },
@@ -7183,6 +7525,8 @@
     },
     "Dervish Rune of Minor Earth Prayers": {
         "Identifier": "Dervish Rune of Minor Earth Prayers",
+        "ModelId": 15545,
+        "ModelFileId": 205901,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -7221,6 +7565,8 @@
     },
     "Dervish Rune of Minor Mysticism": {
         "Identifier": "Dervish Rune of Minor Mysticism",
+        "ModelId": 15545,
+        "ModelFileId": 205901,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -7259,6 +7605,8 @@
     },
     "Dervish Rune of Minor Scythe Mastery": {
         "Identifier": "Dervish Rune of Minor Scythe Mastery",
+        "ModelId": 15545,
+        "ModelFileId": 205901,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -7297,6 +7645,8 @@
     },
     "Dervish Rune of Minor Wind Prayers": {
         "Identifier": "Dervish Rune of Minor Wind Prayers",
+        "ModelId": 15545,
+        "ModelFileId": 205901,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -7335,6 +7685,8 @@
     },
     "Dervish Rune of Major Earth Prayers": {
         "Identifier": "Dervish Rune of Major Earth Prayers",
+        "ModelId": 15546,
+        "ModelFileId": 205906,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -7382,6 +7734,8 @@
     },
     "Dervish Rune of Major Mysticism": {
         "Identifier": "Dervish Rune of Major Mysticism",
+        "ModelId": 15546,
+        "ModelFileId": 205906,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -7429,6 +7783,8 @@
     },
     "Dervish Rune of Major Scythe Mastery": {
         "Identifier": "Dervish Rune of Major Scythe Mastery",
+        "ModelId": 15546,
+        "ModelFileId": 205906,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -7476,6 +7832,8 @@
     },
     "Dervish Rune of Major Wind Prayers": {
         "Identifier": "Dervish Rune of Major Wind Prayers",
+        "ModelId": 15546,
+        "ModelFileId": 205906,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -7523,6 +7881,8 @@
     },
     "Dervish Rune of Superior Earth Prayers": {
         "Identifier": "Dervish Rune of Superior Earth Prayers",
+        "ModelId": 15547,
+        "ModelFileId": 205907,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -7570,6 +7930,8 @@
     },
     "Dervish Rune of Superior Mysticism": {
         "Identifier": "Dervish Rune of Superior Mysticism",
+        "ModelId": 15547,
+        "ModelFileId": 205907,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -7617,6 +7979,8 @@
     },
     "Dervish Rune of Superior Scythe Mastery": {
         "Identifier": "Dervish Rune of Superior Scythe Mastery",
+        "ModelId": 15547,
+        "ModelFileId": 205907,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -7664,6 +8028,8 @@
     },
     "Dervish Rune of Superior Wind Prayers": {
         "Identifier": "Dervish Rune of Superior Wind Prayers",
+        "ModelId": 15547,
+        "ModelFileId": 205907,
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
