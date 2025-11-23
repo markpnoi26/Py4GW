@@ -34,7 +34,7 @@ try:
 
 except Exception:
     Util = None
-    Dat = None
+    Data = None
     LOOTEX_AVAILABLE = False
 
 
