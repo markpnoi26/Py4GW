@@ -21,6 +21,122 @@ from Py4GWCoreLib import get_texture_for_model
 from Py4GWCoreLib.enums import Bags
 from Py4GWCoreLib.enums import ModelID
 
+# region Frenkey Function
+
+try:
+    # We will try to use LootEx to generate Known items
+    # https://github.com/frenkey-derp/Py4GW/tree/apo_source/Widgets/frenkey
+    # This will require you to download and add to your file `Core` and `LootEx`
+    from Widgets.frenkey.LootEx.utility import Util
+    from Widgets.frenkey.LootEx.data import Data
+
+    LOOTEX_AVAILABLE = True
+
+except Exception:
+    Util = None
+    Dat = None
+    LOOTEX_AVAILABLE = False
+
+
+def get_armor_name_from_modifiers(item):
+    if not LOOTEX_AVAILABLE or not Util:
+        return None
+
+    # Prefer the in-game name if available
+    final_name = Util.GetItemDataName(item.item_id)
+    if final_name and not final_name.startswith("Unknown"):
+        base_name = final_name.strip()
+    else:
+        try:
+            base_name = ModelID(item.model_id).name.replace("_", " ")
+        except ValueError:
+            base_name = None
+
+        if not base_name:
+            base_name = INVENTORY_MODEL_ID_CACHE.get(str(item.model_id))
+
+        if not base_name:
+            return None
+
+    # Collect mods
+    _, armor_mods, _ = Util.GetMods(item.item_id)
+    prefix = None
+    suffix = None
+
+    for armor_mod in armor_mods:
+        mod_name = armor_mod.identifier.strip()
+        mod_type = armor_mod.mod_type.name
+
+        if mod_type == "Prefix":
+            prefix = mod_name
+        elif mod_type == "Suffix":
+            suffix = mod_name
+
+    # --- Construct name ---
+    name_parts = []
+
+    if prefix:
+        name_parts.append(prefix)
+
+    name_parts.append(base_name)
+
+    if suffix:
+        name_parts.append(f"{suffix}")
+
+    return " ".join(name_parts)
+
+
+def get_weapon_name_from_modifiers(item):
+    if not LOOTEX_AVAILABLE or not Util:
+        return None
+
+    # Prefer the in-game name if available
+    final_name = Util.GetItemDataName(item.item_id)
+    if final_name and not final_name.startswith("Unknown"):
+        base_name = final_name.strip()
+    else:
+        base_name = None
+
+    if not base_name:
+        base_name = INVENTORY_MODEL_ID_CACHE.get(str(item.model_id))
+
+    if not base_name:
+        return None
+
+    # Collect mods
+    _, _, weapon_mods = Util.GetMods(item.item_id)
+    prefix = None
+    suffix = None
+    inherent = None
+
+    for weapon_mod in weapon_mods:
+        mod_name = weapon_mod.identifier.strip()
+        mod_type = weapon_mod.mod_type.name
+
+        if mod_type == "Prefix":
+            prefix = mod_name
+        elif mod_type == "Suffix":
+            suffix = mod_name
+        elif mod_type == "Inherent":
+            inherent = mod_name
+
+    # --- Construct name ---
+    name_parts = []
+
+    # Inherent mods like “Vampiric” or “Insightful” go before everything else
+    if prefix:
+        name_parts.append(prefix)
+
+    name_parts.append(base_name)
+
+    if suffix:
+        name_parts.append(f"{suffix}")
+
+    if inherent:
+        name_parts.append(f"({inherent})")
+
+    return " ".join(name_parts)
+
 
 script_directory = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(script_directory, os.pardir))
@@ -29,6 +145,7 @@ project_root = os.path.abspath(os.path.join(script_directory, os.pardir))
 BASE_DIR = os.path.join(project_root, "Widgets/Config")
 DB_BASE_DIR = os.path.join(project_root, "Widgets/Data")
 JSON_INVENTORY_PATH = os.path.join(DB_BASE_DIR, "Inventory")
+JSON_INVENTORY_MODEL_IDS_PATH = os.path.join(DB_BASE_DIR, "InventoryModelIds")
 INI_WIDGET_WINDOW_PATH = os.path.join(BASE_DIR, "team_inventory_viewer.ini")
 os.makedirs(BASE_DIR, exist_ok=True)
 
@@ -38,6 +155,7 @@ save_window_timer = Timer()
 save_window_timer.Start()
 inventory_write_timer = ThrottledTimer(3000)
 inventory_read_timer = ThrottledTimer(5000)
+name_request_timer = ThrottledTimer(1000)
 
 # String consts
 MODULE_NAME = "TeamInventoryViewer"  # Change this Module name
@@ -58,6 +176,8 @@ search_query = ''
 current_character_name = ''
 
 TEAM_INVENTORY_CACHE = {}
+ITEM_ID_CACHE = {}
+INVENTORY_MODEL_ID_CACHE = {}
 
 INVENTORY_BAGS = {
     "Backpack": Bags.Backpack.value,
@@ -86,8 +206,288 @@ STORAGE_BAGS = {
     "MaterialStorage": Bags.MaterialStorage.value,
 }
 
+# ==================== ALL ATTRIBUTES (one source of truth) ====================
+ATTRIBUTES = {
+    "Axe Mastery",
+    "Hammer Mastery",
+    "Swordsmanship",
+    "Tactics",
+    "Strength",
+    "Marksmanship",
+    "Beast Mastery",
+    "Wilderness Survival",
+    "Expertise",
+    "Divine Favor",
+    "Healing Prayers",
+    "Protection Prayers",
+    "Smiting Prayers",
+    "Blood Magic",
+    "Curses",
+    "Death Magic",
+    "Soul Reaping",
+    "Domination Magic",
+    "Fast Casting",
+    "Illusion Magic",
+    "Inspiration Magic",
+    "Energy Storage",
+    "Air Magic",
+    "Earth Magic",
+    "Fire Magic",
+    "Water Magic",
+    "Critical Strikes",
+    "Dagger Mastery",
+    "Deadly Arts",
+    "Shadow Arts",
+    "Channeling Magic",
+    "Communing",
+    "Restoration Magic",
+    "Spawning Power",
+    "Command",
+    "Leadership",
+    "Motivation",
+    "Spear Mastery",
+    "Earth Prayers",
+    "Mysticism",
+    "Scythe Mastery",
+    "Wind Prayers",
+}
+
+# ==================== GENERATE ALL POSSIBLE SUFFIXES FROM ATTRIBUTES ====================
+
+# 1. Armor runes → "of Vitae", "of Major Vigor", "of Superior Soul Reaping", …
+NON_ATTRIBUTE_RUNES = {"Vitae", "Vigor", "Attunement", "Clarity", "Purity", "Recovery", "Restoration", "Absorption"}
+ARMOR_RUNE_SUFFIXES = {
+    f"of {mod}{rune}" for rune in ATTRIBUTES | NON_ATTRIBUTE_RUNES for mod in ["", "Minor ", "Major ", "Superior "]
+}
+
+# 2. Weapon grips / handles / inscriptions → "Grip of Axe Mastery", "Handle of Soul Reaping", …
+WEAPON_ATTRIBUTE_SUFFIXES = {f"of {attr}" for attr in ATTRIBUTES}
+
+# ==================== OTHER WEAPON SUFFIXES (unchanged) ====================
+OTHER_WEAPON_SUFFIXES = {
+    "of Defense",
+    "of Shelter",
+    "of Warding",
+    "of Enchanting",
+    "of Swiftness",
+    "of Aptitude",
+    "of Fortitude",
+    "of Devotion",
+    "of Endurance",
+    "of Valor",
+    "of Mastery",
+    "of Quickening",
+    "of Memory",
+    # Profession
+    "of the Warrior",
+    "of the Ranger",
+    "of the Necromancer",
+    "of the Elementalist",
+    "of the Mesmer",
+    "of the Monk",
+    "of the Ritualist",
+    "of the Assassin",
+    "of the Paragon",
+    "of the Dervish",
+    # Slaying
+    "of Charrslaying",
+    "of Demonslaying",
+    "of Dragonslaying",
+    "of Dwarfslaying",
+    "of Giantslaying",
+    "of Ogreslaying",
+    "of Plantslaying",
+    "of Tenguslaying",
+    "of Trollslaying",
+    "of Undeadbane",
+    "of Skeletonslaying",
+    "of Deathbane",
+}
+
+# ==================== ALL SUFFIXES TOGETHER ====================
+ALL_SUFFIXES = ARMOR_RUNE_SUFFIXES | WEAPON_ATTRIBUTE_SUFFIXES | OTHER_WEAPON_SUFFIXES
+
+# ==================== WEAPON PREFIXES ====================
+WEAPON_PREFIXES = {
+    "Barbed",
+    "Crippling",
+    "Cruel",
+    "Heavy",
+    "Poisonous",
+    "Silencing",
+    "Ebon",
+    "Fiery",
+    "Icy",
+    "Shocking",
+    "Furious",
+    "Sundering",
+    "Vampiric",
+    "Zealous",
+    "Adept",
+    "Defensive",
+    "Hale",
+    "Insightful",
+    "Swift",
+}
+
+# ==================== ARMOR INSIGNIAS ====================
+INSIGNIAS = {
+    "Survivor's",
+    "Radiant's",
+    "Stalwart's",
+    "Brawler's",
+    "Blessed",
+    "Herald's",
+    "Sentry's",
+    "Knight's",
+    "Stonefist's",
+    "Dreadnought's",
+    "Sentinel's",
+    "Lieutenant's",
+    "Frostbound",
+    "Pyrebound",
+    "Stormbound",
+    "Scout's",
+    "Earthbound",
+    "Beastmaster's",
+    "Wanderer's",
+    "Disciple's",
+    "Anchorite's",
+    "Bloodstained",
+    "Tormentor's",
+    "Bonelace",
+    "Minion Master's",
+    "Blighter's",
+    "Undertaker's",
+    "Virtuoso's",
+    "Artificer's",
+    "Prodigy's",
+    "Hydromancer's",
+    "Geomancer's",
+    "Pyromancer's",
+    "Aeromancer's",
+    "Prismatic",
+    "Vanguard's",
+    "Infiltrator's",
+    "Saboteur's",
+    "Nightstalker's",
+    "Shaman's",
+    "Ghostforge",
+    "Mystic's",
+    "Centurion's",
+    "Windwalker",
+    "Forsaken",
+}
+
+
+def clean_gw_item_name(item_name: str) -> str:
+    """
+    PERFECT Guild Wars 1 item name cleaner for weapons AND armor.
+    - Removes at most one prefix/insignia + one suffix/rune.
+    """
+    if not item_name:
+        return ""
+
+    words = item_name.strip().split()
+    if not words:
+        return ""
+
+    result = []
+    i = 0
+    n = len(words)
+
+    # Skip at most one prefix/insignia at the beginning
+    if i < n and words[i].rstrip(".,!?") in (WEAPON_PREFIXES | INSIGNIAS):
+        i += 1
+
+    # Collect base name until the first matching suffix
+    while i < n:
+        remaining = words[i:]
+        suffix_matched = False
+
+        # Try longest possible suffix first (up to 5 words)
+        for length in range(min(5, len(remaining)), 0, -1):
+            candidate = " ".join(remaining[:length]).rstrip(".,!?")
+            if candidate in ALL_SUFFIXES:
+                suffix_matched = True
+                break
+
+        if suffix_matched:
+            break
+
+        result.append(words[i])
+        i += 1
+
+    final_string = " ".join(result).strip()
+
+    # Remove all digits from the final string
+    final_string = ''.join(c for c in final_string if not c.isdigit())
+
+    return final_string
+
+# endregion
+
 
 # region JSONStore
+class ModelIDJSONStore:
+    def __init__(self):
+        self.path = Path(JSON_INVENTORY_MODEL_IDS_PATH)
+        self.path.mkdir(parents=True, exist_ok=True)
+        self.file_path = self.path / "model_ids.json"
+        self.backup_path = self.file_path.with_suffix(".json.bak")
+
+    def _read(self):
+        if not self.file_path.exists():
+            return {}
+
+        try:
+            with open(self.file_path, "r") as f:
+                return json.load(f, object_pairs_hook=OrderedDict)
+        except json.JSONDecodeError:
+            if self.backup_path.exists():
+                try:
+                    with open(self.backup_path, "r") as f:
+                        return json.load(f, object_pairs_hook=OrderedDict)
+                except Exception:
+                    pass
+            return {}
+
+    def _write(self, data):
+        if not Routines.Checks.Map.MapValid():
+            # Skip writing while map is invalid
+            return False
+
+        temp_file = self.file_path.with_suffix(".tmp")
+
+        try:
+            with open(temp_file, "w") as f:
+                json.dump(data, f, indent=2)
+            if self.file_path.exists():
+                shutil.copy2(self.file_path, self.backup_path)
+            os.replace(temp_file, self.file_path)
+            return True
+        except Exception as e:
+            ConsoleLog("ModelIDJSONStore", f"[WARN] Failed to write {self.file_path}: {e}")
+            return False
+
+    def save_model_id(self, model_id, model_name):
+        str_model_id = str(model_id)
+        data = self._read()
+        data[str_model_id] = model_name
+        INVENTORY_MODEL_ID_CACHE[str_model_id] = model_name
+        self._write(data)
+
+    def load(self):
+        global INVENTORY_MODEL_ID_CACHE
+
+        if INVENTORY_MODEL_ID_CACHE:
+            return INVENTORY_MODEL_ID_CACHE
+
+        data = self._read()
+        INVENTORY_MODEL_ID_CACHE = data
+        return data
+
+
 class AccountJSONStore:
     def __init__(self, email):
         self.email = email
@@ -244,6 +644,7 @@ class MultiAccountInventoryStore:
 
 
 multi_store = MultiAccountInventoryStore()
+inventory_model_ids_store = ModelIDJSONStore()
 
 
 # region Generators
@@ -271,6 +672,9 @@ def get_storage_bag_items_coroutine(bag, bag_id, email, storage_name):
 
 def _collect_bag_items(bag, bag_id, email, storage_name=None, char_name=None):
     global ITEM_ID_CACHE
+    global current_character_name
+    global multi_store
+
     """Shared coroutine to fetch all items from a bag with modifier and Frenkey DB name support."""
 
     def _strip_markup(text):
@@ -309,6 +713,17 @@ def _collect_bag_items(bag, bag_id, email, storage_name=None, char_name=None):
 
         return None
 
+    def _find_last_name_stored_item_id_model_id(item_id, model_id):
+        if current_character_name not in ITEM_ID_CACHE:
+            return None
+
+        # TODO(mark): Item id cache needs work
+        name = ITEM_ID_CACHE.get(f'{item_id}-{model_id}')
+        if name:
+            return name
+
+        return None
+
     def _generate_unique_key(bag_items: dict, base_name: str) -> str:
         if base_name not in bag_items:
             return base_name
@@ -330,16 +745,27 @@ def _collect_bag_items(bag, bag_id, email, storage_name=None, char_name=None):
         quantity = item.quantity
         slot = item.slot
 
-        try:
-            final_name = ModelID(model_id).name.replace("_", " ")
+        final_name = None
 
-            # Special dye handling - maybe need to hadle mods and whatever here too
-            if model_id == ModelID.Vial_Of_Dye:
-                dye_int = GLOBAL_CACHE.Item.GetDyeColor(item_id)
-                final_name = f"{final_name} [{DyeColor(dye_int).name}]"
-        except ValueError:
-            final_name = None
+        # Try LootEx, will fail if model id data isn't there
+        if GLOBAL_CACHE.Item.Type.IsWeapon(item_id) and not GLOBAL_CACHE.Item.Rarity.IsGreen(item_id):
+            final_name = get_weapon_name_from_modifiers(item)
+        elif GLOBAL_CACHE.Item.Type.IsArmor(item_id):
+            final_name = get_armor_name_from_modifiers(item)
 
+        # For generic items, we use Model ID
+        if not final_name:
+            try:
+                final_name = ModelID(model_id).name.replace("_", " ")
+
+                # Special dye handling - maybe need to hadle mods and whatever here too
+                if model_id == ModelID.Vial_Of_Dye:
+                    dye_int = GLOBAL_CACHE.Item.GetDyeColor(item_id)
+                    final_name = f"{final_name} [{DyeColor(dye_int).name}]"
+            except ValueError:
+                final_name = None
+
+        # Fetch from last state of the account
         if not final_name:
             stored_name = _find_last_name_stored_model_id(
                 model_id, slot, quantity, storage_name=storage_name, char_name=char_name
@@ -347,10 +773,21 @@ def _collect_bag_items(bag, bag_id, email, storage_name=None, char_name=None):
             if stored_name:
                 final_name = stored_name
 
+        # Fetch from last state of the item_id and model_id
+        if not final_name:
+            stored_name = _find_last_name_stored_item_id_model_id(item_id, model_id)
+            if stored_name:
+                final_name = stored_name
+
         if not final_name:
             try:
                 markedup = yield from Routines.Yield.Items.GetItemNameByItemID(item_id)
                 final_name = _strip_markup(markedup)
+                custom_id = f'{item_id}-{model_id}'
+                if custom_id not in ITEM_ID_CACHE and final_name:
+                    ITEM_ID_CACHE[custom_id] = final_name
+                if LOOTEX_AVAILABLE:
+                    inventory_model_ids_store.save_model_id(model_id, clean_gw_item_name(final_name))
             except Exception as e:
                 print(f"Exception fetching name for {item_id}: {e}")
                 final_name = None
@@ -359,22 +796,22 @@ def _collect_bag_items(bag, bag_id, email, storage_name=None, char_name=None):
         if not final_name:
             continue
 
+        unique_name = final_name
         if final_name in bag_items:
-            final_name = _generate_unique_key(bag_items, final_name)
+            unique_name = _generate_unique_key(bag_items, final_name)
 
-        if final_name not in bag_items:
-            bag_items[final_name] = OrderedDict({
-                "model_id": model_id,
-                "slot": OrderedDict({str(slot): quantity}),
-            })
-        else:
-            bag_items[final_name]["slot"][str(slot)] = quantity
+        # Always insert or update using the unique name
+        if unique_name not in bag_items:
+            bag_items[unique_name] = OrderedDict({"model_id": model_id, "slot": OrderedDict()})
+
+        bag_items[unique_name]["slot"][str(slot)] = quantity
 
     return bag_items
 
 
 def record_account_data():
     global current_character_name
+    global ITEM_ID_CACHE
 
     current_email = GLOBAL_CACHE.Player.GetAccountEmail()
     login_number = GLOBAL_CACHE.Party.Players.GetLoginNumberByAgentID(GLOBAL_CACHE.Player.GetAgentID())
@@ -383,6 +820,9 @@ def record_account_data():
     if not current_email or not char_name:
         yield
         return
+
+    if char_name not in ITEM_ID_CACHE:
+        ITEM_ID_CACHE = {char_name: char_name}
 
     current_character_name = char_name
     raw_item_cache = GLOBAL_CACHE.Inventory._raw_item_cache
@@ -427,26 +867,10 @@ def search(query: str, items: list[str]) -> list[str]:
     return sorted(partial_matches)
 
 
-def aggregate_items_by_model(items_dict):
-    """
-    Given a dict of items (item_name -> {"model_id", "count"}), return
-    a dict of model_id -> {"name": first_item_name, "count": total_count}.
-    """
-    agg = OrderedDict()
-    for name, info in items_dict.items():
-        model_id = info["model_id"]
-        count = info["count"]
-
-        if model_id not in agg:
-            agg[model_id] = {"name": name, "count": count}
-        else:
-            agg[model_id]["count"] += count
-    return agg
-
-
 # region Widget
 def draw_widget():
     global TEAM_INVENTORY_CACHE
+    global INVENTORY_MODEL_ID_CACHE
     global ITEM_ID_CACHE
     global window_x
     global window_y
@@ -457,13 +881,18 @@ def draw_widget():
     global on_first_load
     global current_character_name
     global multi_store
+    global inventory_model_ids_store
 
     if on_first_load:
         PyImGui.set_next_window_size(1000, 1000)
         PyImGui.set_next_window_pos(window_x, window_y)
         PyImGui.set_next_window_collapsed(window_collapsed, 0)
         on_first_load = False
+        if LOOTEX_AVAILABLE:
+            Data().Load()  # type: ignore
+
         TEAM_INVENTORY_CACHE = multi_store.load_all()
+        INVENTORY_MODEL_ID_CACHE = inventory_model_ids_store.load()
         ITEM_ID_CACHE = {}
 
     new_collapsed = PyImGui.is_window_collapsed()
@@ -517,6 +946,9 @@ def draw_widget():
                                     for bag_name, items in inv_data.items():
                                         for item_name, info in items.items():
                                             if all_accounts_search_query.lower() in item_name.lower():
+                                                count = 0
+                                                for slot_count in info.get("slot", {}).values():
+                                                    count += slot_count
                                                 search_results.append(
                                                     {
                                                         "account_label": account_label,
@@ -525,7 +957,7 @@ def draw_widget():
                                                         "bag": bag_name,
                                                         "item_name": item_name,
                                                         "model_id": info["model_id"],
-                                                        "count": info["count"],
+                                                        "count": count or str(info.get('count', 0)),
                                                         "location_type": "Character",
                                                     }
                                                 )
@@ -535,6 +967,9 @@ def draw_widget():
                                 for storage_name, items in account_data["Storage"].items():
                                     for item_name, info in items.items():
                                         if all_accounts_search_query.lower() in item_name.lower():
+                                            count = 0
+                                            for slot_count in info.get("slot", {}).values():
+                                                count += slot_count
                                             search_results.append(
                                                 {
                                                     "account_label": account_label,
@@ -543,7 +978,7 @@ def draw_widget():
                                                     "bag": storage_name,
                                                     "item_name": item_name,
                                                     "model_id": info["model_id"],
-                                                    "count": info["count"],
+                                                    "count": count or str(info.get('count', 0)),
                                                     "location_type": "Storage",
                                                 }
                                             )
@@ -826,7 +1261,7 @@ def configure():
     pass
 
 
-def json_tree_view_debug(data):
+def json_tree_view(data):
     # Convert JSON to pretty string
     json_str = json.dumps(data, indent=2)
 
