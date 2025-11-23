@@ -135,7 +135,7 @@ class ItemAction(IntEnum):
     Sell_To_Merchant = 10
     Sell_To_Trader = 11
     Destroy = 12
-    Deposit_Material = 13
+    Deposit_Material = 13    
         
 class ActionModsType(IntEnum):
     Any = 0

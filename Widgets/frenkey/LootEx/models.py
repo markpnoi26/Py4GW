@@ -442,6 +442,10 @@ class Item():
             self.texture_file = texture_file
         else:
             self.texture_file = missing_texture_path
+    
+    def is_minimum_complete(self) -> bool:
+        english_name = self.names.get(ServerLanguage.English, "")
+        return english_name != "" and self.inventory_icon is not None and self.item_type != ItemType.Unknown
             
     def get_weeks_until_next_nick(self) -> Optional[int]:
         if self.nick_index is None:
@@ -501,7 +505,7 @@ class Item():
         self.name : str = self.get_name(language)    
         
     def has_name(self, language: ServerLanguage) -> bool:        
-        return language in self.names  
+        return language in self.names and self.names[language] != ""
         
     def get_name(self, language : Optional[ServerLanguage] = None) -> str:
         if language is None:

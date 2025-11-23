@@ -2,17 +2,27 @@ import difflib
 import os
 import re
 import shutil
+import time
 from typing import Optional
 from urllib import parse
 from bs4 import BeautifulSoup, Tag
 from bs4.element import NavigableString
+import requests
+
+from .texture_scraping_models import ScrapedItem, ScrapedSalvageResult
+
+
+BASE_USER_PATH = ""
+WIKI_MIRROR_PATH = f"{BASE_USER_PATH}\\gw_wiki_mirror"
+LOOKUP_FOLDER = f"{BASE_USER_PATH}\\wiki_lookup"
+
+current_folder = os.path.dirname(os.path.abspath(__file__))
+ITEM_FILE = os.path.join(current_folder, "data", "scraped_items.json")
 
 ## Current folder path \\ data \\ scraped_items.json
-ITEM_FILE = "C:\\Users\\lasse\\OneDrive\\Programmieren\\Frenkey\\Guild Wars\\Py4GW\\Widgets\\frenkey\\LootEx\\data\\scraped_items.json"
-WIKI_FOLDER_PATH = "C:\\Users\\lasse\\OneDrive\\Programmieren\\Frenkey\\Guild Wars\\gw_wiki_mirror\\wiki.guildwars.com\\wiki"
-IMAGES_PATH = "C:\\Users\\lasse\\OneDrive\\Programmieren\\Frenkey\\Guild Wars\\gw_wiki_mirror\\wiki.guildwars.com\\images"
-BASE_PATH = "C:\\Users\\lasse\\OneDrive\\Programmieren\\Frenkey\\Guild Wars\\gw_wiki_mirror\\wiki.guildwars.com"
-LOOKUP_FOLDER = "C:\\Users\\lasse\\OneDrive\\Programmieren\\Frenkey\\Guild Wars\\wiki_lookup"
+WIKI_FOLDER_PATH = f"{WIKI_MIRROR_PATH}\\wiki.guildwars.com\\wiki"
+IMAGES_PATH = f"{WIKI_MIRROR_PATH}\\wiki.guildwars.com\\images"
+BASE_PATH = f"{WIKI_MIRROR_PATH}\\wiki.guildwars.com"
     
 item_types = [
     "Salvage",
@@ -80,84 +90,6 @@ item_types = [
 
 item_types = [it.lower() for it in item_types]
     
-class SalvageResult:
-    def __init__(self, name: str, min_amount: int = -1, max_amount: int = -1, amount: int = -1):
-        self.name = name
-        self.min_amount = min_amount
-        self.max_amount = max_amount
-        self.amount = amount        
-    
-    def to_json(self) -> dict:
-        return {
-            "name": self.name,
-            "min_amount": self.min_amount,
-            "max_amount": self.max_amount,
-            "amount": self.amount
-        }
-        
-    @staticmethod
-    def from_json(data: dict) -> 'SalvageResult':
-        return SalvageResult(
-            name=data["name"],
-            min_amount=data.get("min_amount", -1),
-            max_amount=data.get("max_amount", -1),
-            amount=data.get("amount", -1)
-        )
-
-class Item:
-    def __init__(self, name: str):
-        self.name = name
-        self.inventory_icon_url: Optional[str] = None
-        self.common_salvage: list[SalvageResult] = []
-        self.rare_salvage: list[SalvageResult] = []
-        self.item_type: Optional[str] = None
-        self.acquisition_tree : Optional[list[dict]] = None
-        self.description : Optional[str] = None
-        self._inventory_icon_exists : Optional[bool] = None
-    
-    @property
-    def IconPath(self) -> str:
-        if self.inventory_icon_url is None:
-            return ""
-        
-        relative_file_path_from_url = self.inventory_icon_url.lstrip("/\\").replace("/", "\\")
-        path = os.path.join("C:\\Users\\lasse\\OneDrive\\Programmieren\\Frenkey\\Guild Wars\\gw_wiki_mirror\\wiki.guildwars.com", relative_file_path_from_url)
-        
-        return path
-    
-    @property
-    def IconExists(self) -> bool:
-        if self._inventory_icon_exists is None:
-            relative_file_path_from_url = self.inventory_icon_url.lstrip("/\\").replace("/", "\\") if self.inventory_icon_url else None 
-            path = os.path.join("C:\\Users\\lasse\\OneDrive\\Programmieren\\Frenkey\\Guild Wars\\gw_wiki_mirror\\wiki.guildwars.com", relative_file_path_from_url) if relative_file_path_from_url else None
-            
-            self._inventory_icon_exists = os.path.exists(path) if path else False
-        
-        return bool(self._inventory_icon_exists)
-        
-    def to_json(self) -> dict:
-        return {
-            "name": self.name,
-            "inventory_icon_url": self.inventory_icon_url,
-            "common_salvage": [s.to_json() for s in self.common_salvage],
-            "rare_salvage": [s.to_json() for s in self.rare_salvage],
-            "item_type": self.item_type,
-            "acquisition_tree": self.acquisition_tree,
-            "description": self.description
-        }        
-    
-    @staticmethod
-    def from_json(data: dict) -> 'Item':
-        item = Item(data["name"])
-        item.inventory_icon_url = data.get("inventory_icon_url")
-        item.common_salvage = [SalvageResult.from_json(s) for s in data.get("common_salvage", [])]
-        item.rare_salvage = [SalvageResult.from_json(s) for s in data.get("rare_salvage", [])]
-        item.item_type = data.get("item_type")
-        item.acquisition_tree = data.get("acquisition_tree")
-        item.description = data.get("description")
-        
-        return item
-
 @staticmethod
 def string_similarity(a: str, b: str) -> float:
     """
@@ -190,8 +122,8 @@ def get_best_match(query: str, candidates: list[str], min_score: float = 0.85) -
     return best if best_score >= min_score else None
 
 @staticmethod
-def get_materials(td) -> list[SalvageResult]:
-    materials : list[SalvageResult] = []
+def get_materials(td) -> list[ScrapedSalvageResult]:
+    materials : list[ScrapedSalvageResult] = []
     if not td:
         return materials
 
@@ -228,7 +160,7 @@ def get_materials(td) -> list[SalvageResult]:
                 entry["max"] = current_amount["max"]
                 current_amount = None
                 
-            salvage_result = SalvageResult(
+            salvage_result = ScrapedSalvageResult(
                 name=material_name,
                 min_amount=entry.get("min", -1) if entry.get("min") != entry.get("max") else -1,
                 max_amount=entry.get("max", -1) if entry.get("min") != entry.get("max") else -1,
@@ -499,14 +431,14 @@ def build_acquisition_tree(nodes):
 
 unknown_item_types : list[str] = []
 @staticmethod
-def scrape_info_from_wiki(path: str) -> Optional[Item]:
+def scrape_info_from_wiki(path: str) -> Optional[ScrapedItem]:
     with open(path, 'r', encoding='utf-8') as file:
         html_text = file.read()
     
     soup = BeautifulSoup(html_text, 'html.parser')
 
     info_table = soup.find('table')
-    item : Optional[Item] = None
+    item : Optional[ScrapedItem] = None
     has_rarity = False
     has_stackable = False
     has_attributes = False
@@ -523,7 +455,7 @@ def scrape_info_from_wiki(path: str) -> Optional[Item]:
             if th:
                 if 'colspan' in th.attrs:
                     item_name = th.get_text(strip=True)
-                    item = Item(item_name)
+                    item = ScrapedItem(item_name)
                     
                 if item is None:
                     continue
@@ -670,16 +602,16 @@ illegal_name_starters = [
 import json
 
 
-items : dict[str, Item] = {}
+items : dict[str, ScrapedItem] = {}
 
-def load_items() -> dict[str, Item]:
+def load_items() -> dict[str, ScrapedItem]:
     global ITEM_FILE
     
     if os.path.exists(ITEM_FILE):
         with open(ITEM_FILE, 'r', encoding='utf-8') as f:
             item_data = json.load(f)
         
-        items = {name: Item.from_json(data) for name, data in item_data.items()}
+        items = {name: ScrapedItem.from_json(data) for name, data in item_data.items()}
         return items
     
     return {}
@@ -739,7 +671,7 @@ def update_items():
                     print(f"Updated {count} items so far...")
                     save_items()
 
-def get_image_files(items: dict[str, Item]) -> list[str]:
+def get_image_files(items: dict[str, ScrapedItem]) -> list[str]:
     image_files = []
     item_names = list(item.name for item in items.values())
     potential_files = 0
@@ -794,33 +726,8 @@ def check_duplicated_filenames(items):
             for url in urls:
                 print(f" - {url}")
 
-# get_items()
-# update_items()
-
-# images = get_image_files(items)
-# print("Found", len(images), "image files.")
-
-items_with_icon = list(item for item in items.values() if item.inventory_icon_url)
-items_with_existing_icon = list(item for item in items.values() if item.IconExists)
-
-print("Out of ", len(items), "items,", len(items_with_icon), "have an inventory icon set,", len(items_with_existing_icon), "have an existing inventory icon.")
-
-files_with_wrong_ending = {}
-for item_name, item in items.items():
-    if item.inventory_icon_url:
-        file_ending = item.inventory_icon_url.split('.')[-1]
-        if file_ending.lower() != 'png':
-            if file_ending not in files_with_wrong_ending:
-                files_with_wrong_ending[file_ending] = 0
-                
-            files_with_wrong_ending[file_ending] += 1
-
-for ending, count in files_with_wrong_ending.items():
-    print(f"Files with ending .{ending}: {count}")
-    
-
-# Talk User User TalkGuild Wars Wiki Talk File File talk MediaWiki MediaWiki talk Template Template talk Help Help talk Category talk Guild Guild talk Game link Game link talk ArenaNet ArenaNet talk Feedback Feedback talk Widget Widget talk
-illegal_file_starts = [
+def move_files():
+    illegal_file_starts = [
     "Talk%3",
     "User%3",
     "User_Talk%3",
@@ -852,41 +759,95 @@ illegal_file_starts = [
     "Special%3",
     "User_talk%3",
 ]
-
-## Count all files with illegal names in WIKI_FOLDER_PATH
-illegal_count = 0
-legal_count = 0
-
-## create  os.path.join(LOOKUP_FOLDER, "images") and os.path.join(LOOKUP_FOLDER, "pages") if not exists
-os.makedirs(os.path.join(LOOKUP_FOLDER, "images"), exist_ok=True)   
-os.makedirs(os.path.join(LOOKUP_FOLDER, "pages"), exist_ok=True)
-
-# for filename in os.listdir(WIKI_FOLDER_PATH):
-#     is_folder = os.path.isdir(os.path.join(WIKI_FOLDER_PATH, filename))
-#     if is_folder or any(filename.startswith(starter) for starter in illegal_file_starts):
-#         illegal_count += 1
-#     else:
-#         legal_count += 1
-#         ##Copy to LOOKUP_FOLDER
-#         src_path = os.path.join(WIKI_FOLDER_PATH, filename)
-#         dest_path = os.path.join(LOOKUP_FOLDER, "pages", filename)
-#         shutil.copy2(src_path, dest_path)
-
-for item in items_with_existing_icon:
-    if item is None or item.inventory_icon_url is None:
-        continue
     
-    is_folder = os.path.isdir(os.path.join(IMAGES_PATH, item.inventory_icon_url))
-    
-    if is_folder:
-        continue
-    
-    src_path = item.IconPath
-    file_name = os.path.basename(item.inventory_icon_url)
-    dest_path = os.path.join(LOOKUP_FOLDER, "images", file_name)
-    
-    if os.path.exists(src_path):
-        shutil.copy2(src_path, dest_path)
+    ## Count all files with illegal names in WIKI_FOLDER_PATH
+    illegal_count = 0
+    legal_count = 0
 
-print(f"Number of files with illegal names: {illegal_count}")
-print(f"Number of files with legal names: {legal_count}")
+    ## create  os.path.join(LOOKUP_FOLDER, "images") and os.path.join(LOOKUP_FOLDER, "pages") if not exists
+    os.makedirs(os.path.join(LOOKUP_FOLDER, "images"), exist_ok=True)   
+    os.makedirs(os.path.join(LOOKUP_FOLDER, "pages"), exist_ok=True)
+
+    for filename in os.listdir(WIKI_FOLDER_PATH):
+        is_folder = os.path.isdir(os.path.join(WIKI_FOLDER_PATH, filename))
+        if is_folder or any(filename.startswith(starter) for starter in illegal_file_starts):
+            illegal_count += 1
+        else:
+            legal_count += 1
+            ##Copy to LOOKUP_FOLDER
+            src_path = os.path.join(WIKI_FOLDER_PATH, filename)
+            dest_path = os.path.join(LOOKUP_FOLDER, "pages", filename)
+            shutil.copy2(src_path, dest_path)
+
+    for item in items_with_existing_icon:
+        if item is None or item.inventory_icon_url is None:
+            continue
+        
+        is_folder = os.path.isdir(os.path.join(IMAGES_PATH, item.inventory_icon_url))
+        
+        if is_folder:
+            continue
+        
+        src_path = item.IconPath
+        file_name = os.path.basename(item.inventory_icon_url)
+        dest_path = os.path.join(LOOKUP_FOLDER, "images", file_name)
+        
+        if os.path.exists(src_path):
+            shutil.copy2(src_path, dest_path)
+
+    print(f"Number of files with illegal names: {illegal_count}")
+    print(f"Number of files with legal names: {legal_count}")
+
+# get_items()
+# update_items()
+
+# images = get_image_files(items)
+# print("Found", len(images), "image files.")
+
+items_with_icon = list(item for item in items.values() if item.inventory_icon_url)
+items_with_existing_icon = list(item for item in items.values() if item.IconExists)
+items_without_existing_icon = list(item for item in items.values() if item.inventory_icon_url and not item.IconExists)
+print("Out of ", len(items), "items,", len(items_with_icon), "have an inventory icon set,", len(items_with_existing_icon), "have an existing inventory icon,", len(items_without_existing_icon), "do not have an existing inventory icon.")
+
+
+# Download interval in seconds
+DOWNLOAD_INTERVAL = 10
+
+# User-Agent to mimic a browser
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+}
+# ==================================================
+
+def download_images(urls):
+    # Use a session to reuse connections (keep-alive)
+    with requests.Session() as session:
+        session.headers.update(HEADERS)
+
+        for url in urls:
+            try:        
+                filename = os.path.basename(url.split("?")[0])
+                filepath = os.path.join(LOOKUP_FOLDER, "images", filename)
+
+                # Skip download if file already exists
+                if os.path.exists(filepath):
+                    print(f"[SKIP] Already exists: {filename}")
+                else:
+                    print(f"[DOWNLOAD] {filename}")
+                    response = session.get(url, stream=True, timeout=30)
+                    response.raise_for_status()
+                    with open(filepath, "wb") as f:
+                        for chunk in response.iter_content(1024):
+                            f.write(chunk)
+                    print(f"[DONE] Saved to {filepath}")
+
+                # Wait before next download
+                print(f"[WAIT] Sleeping {DOWNLOAD_INTERVAL} seconds...")
+
+            except requests.RequestException as e:
+                print(f"[ERROR] Failed to download {url}: {e}")
+            except Exception as e:
+                print(f"[ERROR] Unexpected error for {url}: {e}")
+                
+            finally:
+                time.sleep(DOWNLOAD_INTERVAL)

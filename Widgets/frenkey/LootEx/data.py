@@ -926,7 +926,7 @@ class Data():
         account_name = GLOBAL_CACHE.Player.GetAccountEmail()
         account_directory = os.path.join(self.get_data_collection_directory(), account_name)
     
-        data_directory = account_directory if shared_file else data_directory
+        data_directory = data_directory if shared_file else account_directory
 
         path = os.path.join(data_directory, "items.json")
 
@@ -957,11 +957,12 @@ class Data():
         
         
         if shared_file:
+            all_item_json_string = self.Items.to_json()
             local_path = os.path.join(Console.get_projects_path(), "Widgets", "Config", "LootEx", "items.json")
             
             with open(local_path, 'w', encoding='utf-8') as file:
-                json.dump(json_string, file, indent=4, ensure_ascii=False)
-
+                json.dump(all_item_json_string, file, indent=4, ensure_ascii=False)
+                
     def MergeDiffItems(self):
         path = self.get_data_collection_directory()
         
@@ -995,6 +996,8 @@ class Data():
             
                 # Delete the diff file after merging
                 os.remove(file_path)
+                ConsoleLog(
+                    "LootEx", f"Delete {file_path}...", Console.MessageType.Debug)
         
         if items_found:
             ConsoleLog(
@@ -1025,5 +1028,6 @@ class Data():
             
                 # Delete the diff file after merging
                 os.remove(file_path)
+        
         if mods_found:
             self.SaveWeaponMods(shared_file=True, mods=self.Weapon_Mods)

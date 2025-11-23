@@ -1,4 +1,5 @@
 from datetime import date, datetime, timedelta
+from Widgets.frenkey.Core.utility import string_similarity
 from Widgets.frenkey.LootEx.data_collection import DataCollector
 from Widgets.frenkey.LootEx.enum import MaterialType, MerchantType, ModType, SalvageKitOption, SalvageOption, ItemAction
 from Py4GWCoreLib import *
@@ -43,6 +44,7 @@ class InventoryHandler:
         self.capacity_checked = False
         self.material_capacity = 2500
         
+        self.scraped_items : dict[tuple[ItemType, int], bool] = {}
         self.actions: dict[int, cache.Cached_Item] = {}
 
         # Initialize timers and action queues
@@ -101,6 +103,7 @@ class InventoryHandler:
         self.inventory_changed = True
         self.actions.clear()
         self.cached_inventory.clear()
+        
         
         self.SetPollingInterval(
             settings.profile.polling_interval if settings.profile else 1)
@@ -1277,10 +1280,46 @@ class InventoryHandler:
             has_empty_slot = item.id == 0 or has_empty_slot
             if item.id == 0:
                 continue
-            
-            if not data_collector.hasItem(item_id):
+        
+            ## Collect ingame data
+            if not item.data or not item.data.has_name(settings.language):
                 item.action = ItemAction.Collect_Data
                 result.actions[item_id] = item
+                data_collector.collect_item(item_id, settings.language)
+                continue
+                         
+            ## Collect the inventory icon and the minimum data required for processing
+            if not item.data.is_minimum_complete():  
+                ## Collect the inventory icon
+                if not item.data.inventory_icon:
+                    item.action = ItemAction.Collect_Data
+                    result.actions[item_id] = item
+                    
+                    if not (item.item_type, item.model_id) in self.scraped_items:
+                        data_collector.auto_assign_scraped_data(item.data)
+                        self.scraped_items[(item.item_type, item.model_id)] = True
+                            
+                    if not item.data.inventory_icon:
+                        continue
+                
+                ## Collect salvage data for salvageable items
+                if item.is_salvageable and not item.data.rare_salvage and not item.data.common_salvage:
+                    item.action = ItemAction.Collect_Data
+                    result.actions[item_id] = item
+                    
+                    if not (item.item_type, item.model_id) in self.scraped_items:
+                        data_collector.auto_assign_scraped_data(item.data)
+                        self.scraped_items[(item.item_type, item.model_id)] = True
+                        
+                    if not item.data.rare_salvage and not item.data.common_salvage:
+                        continue
+                             
+                ## Collect the english name at least, since we can not automate this, it stays until the user changes the language settings
+                if not item.data.has_name(ServerLanguage.English):
+                    item.action = ItemAction.Collect_Data
+                    result.actions[item_id] = item
+                    continue
+                
                 continue
             
             if item.is_blacklisted:

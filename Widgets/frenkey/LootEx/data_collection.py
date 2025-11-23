@@ -120,6 +120,7 @@ class CollectionEntry(Item):
             self.is_account_data = item_data.is_account_data            
             
     def request_name(self):
+        ConsoleLog("LootEx DataCollector", f"Requesting name for item ID: {self.item_id}...", Console.MessageType.Debug)
         GLOBAL_CACHE._ActionQueueManager.AddAction("ACTION", lambda: GLOBAL_CACHE.Item.GetName(self.item_id))
         self.status = CollectionStatus.NameRequested
         
@@ -387,6 +388,8 @@ class DataCollector:
         
         self.fetched_cycles = 0
         self.existing_files : dict[str, bool] = {}
+        
+        self.wiki_scraped_items : dict[tuple[ItemType, int], bool] = {}
 
     def initialize(self):
         if self.ready:
@@ -441,17 +444,21 @@ class DataCollector:
     def has_uncollected_mods(self, item : Cached_Item) -> tuple[bool, str]:
         if not item.id or item.id <= 0:
             return False, "Invalid item ID"
+                
+        if len(item.mods) == 0 or not (utility.Util.CanHoldMod(item.item_type)):
+            return False, "No mods found for item"
+                
+        inherent = GLOBAL_CACHE.Item.Customization.IsInscribable(item.id) and not utility.Util.is_inscription_model_item(item.model_id)
+        prefixes = GLOBAL_CACHE.Item.Customization.IsPrefixUpgradable(item.id)
+        suffixes = GLOBAL_CACHE.Item.Customization.IsSuffixUpgradable(item.id)
+        
+        if not inherent and not prefixes and not suffixes:
+            return False, "Item has no upgradable mods"
         
         collected_item = self.collected_items.get(item.id, None)
         if collected_item is None:
             return True, "Item not collected yet"
         
-        if len(collected_item.mods_info.mods) == 0:
-            return False, "No mods found for item"
-        
-        inherent = GLOBAL_CACHE.Item.Customization.IsInscribable(item.id) and not utility.Util.is_inscription_model_item(item.model_id)
-        prefixes = GLOBAL_CACHE.Item.Customization.IsPrefixUpgradable(item.id)
-        suffixes = GLOBAL_CACHE.Item.Customization.IsSuffixUpgradable(item.id)
         
         for mod in collected_item.mods_info.mods:
             if not mod.Mod.upgrade_exists:
@@ -506,6 +513,7 @@ class DataCollector:
         # self.throttle.Stop()
         self.fetched_cycles = 0
         self.collected_items.clear()
+        self.reset_cache()
         GLOBAL_CACHE._reset()
     
     def reset_cache(self):
@@ -524,6 +532,31 @@ class DataCollector:
         for item_id in items_to_remove:
             del self.collected_items[item_id]
             
+    def auto_assign_scraped_data(self, item: Item | None):
+        if item is None:
+            return
+        
+        english_name = item.names.get(ServerLanguage.English, "")
+        if not english_name or english_name == "":
+            return
+        
+        ConsoleLog("LootEx DataCollector", f"Auto-assigning scraped data for item: {english_name}...", Console.MessageType.Info)
+        
+        from Widgets.frenkey.LootEx.data import Data
+        data = Data()
+        
+        ## Check if the name starts with an amount like "250"
+        parts = english_name.split(" ", 1) if english_name else []
+        contains_amount = len(parts) == 2 and parts[0].isdigit()
+                
+        search_name = english_name.replace(parts[0], "").strip() if contains_amount else english_name
+        required_similarity = 0.95 if contains_amount else 1.0
+        
+        matching_scraped_items = [scraped_item for (key, scraped_item) in data.ScrapedItems.items() if string_similarity(scraped_item.name, search_name) >= required_similarity]
+        if matching_scraped_items and len(matching_scraped_items) == 1:
+            item.assign_scraped_data(matching_scraped_items[0], data)
+            self.modified_items.add_item(item)
+            
     def save_items(self):
         from Widgets.frenkey.LootEx.data import Data
         data = Data()
@@ -532,30 +565,25 @@ class DataCollector:
             if entry.status == CollectionStatus.RequiresSave:
                 if entry.names:
                     self.modified_items.add_item(entry)
-                            
+            item = data.Items.get_item(entry.item_type, entry.model_id)
+            
+            if item is not None:
+                item.update(entry)
+            else:
+                data.Items.add_item(entry)
+            
         if self.modified_weapon_mods:
             data.SaveWeaponMods(shared_file=False, mods=self.modified_weapon_mods)
             self.modified_weapon_mods.clear()
         
-        if self.modified_items:
-            # wiki_data_missing = [item for item in self.modified_items.All if not item.wiki_scraped]
-            # for item in wiki_data_missing:
-            #     english_name = item.names.get(ServerLanguage.English, "")
-            #     if not english_name or english_name == "":
-            #         continue
-                
-            #     ## Check if the name starts with an amount like "250"
-            #     parts = english_name.split(" ", 1) if english_name else []
-            #     contains_amount = len(parts) == 2 and parts[0].isdigit()
-                        
-            #     search_name = english_name.replace(parts[0], "").strip() if contains_amount else english_name
-            #     required_similarity = 0.95 if contains_amount else 1.0
-                
-            #     matching_scraped_items = [scraped_item for (key, scraped_item) in data.ScrapedItems.items() if string_similarity(scraped_item.name, search_name) >= required_similarity]
-            #     if matching_scraped_items and len(matching_scraped_items) == 1:
-            #         item.assign_scraped_data(matching_scraped_items[0], data)
+        if self.modified_items:            
+            wiki_data_missing = [item for item in self.modified_items.All if not item.wiki_scraped]
             
-            data.SaveItems(shared_file=False, items=self.modified_items)
+            for item in wiki_data_missing:
+                if item is not None:
+                    self.queue_data_assignment(item)
+                
+            data.SaveItems(shared_file=False, items=self.modified_items)            
             self.modified_items.clear()
             
             for _, entry in self.collected_items.items():
@@ -568,6 +596,70 @@ class DataCollector:
                 pass
             
         pass
+
+    def queue_data_assignment(self, item : Item):
+        if item is None:
+            return
+        
+        ConsoleLog("LootEx DataCollector", f"Queueing auto-assignment of scraped data for item: {item.names.get(ServerLanguage.English, '')}...", Console.MessageType.Info)
+        
+        if not self.wiki_scraped_items.get((item.item_type, item.model_id), False):
+            GLOBAL_CACHE._ActionQueueManager.AddAction("ACTION", lambda: self.auto_assign_scraped_data(item))
+            self.wiki_scraped_items[(item.item_type, item.model_id)] = True
+    
+    def collect_item(self, item_id: int, server_language: ServerLanguage):
+        if item_id <= 0:
+            return
+        
+        if not self.ready:
+            self.initialize()
+            return
+        
+        if not self.settings.collect_items:
+            return
+        
+        if server_language == ServerLanguage.Unknown:
+            return
+        
+        if item_id not in self.collected_items:            
+            entry = CollectionEntry(item_id, self.modified_items)
+            self.collected_items[item_id] = entry
+            
+            invalid_model_ids = [4390988]
+            if entry.model_id in invalid_model_ids:
+                entry.status = CollectionStatus.DataCollected
+                return
+            
+            if not entry.has_name(server_language):
+                entry.request_name()
+                return
+            
+            else:
+                entry.status = CollectionStatus.RequiresSave if entry.changed else CollectionStatus.DataCollected
+            
+        entry = self.collected_items.get(item_id)
+        
+        
+        if entry:              
+            if entry.status is CollectionStatus.DataCollected or entry.status is CollectionStatus.BetterDataFound:
+                return
+                        
+            if entry.status == CollectionStatus.NameRequested:
+                if GLOBAL_CACHE.Item.IsNameReady(item_id):
+                    name = GLOBAL_CACHE.Item.GetName(item_id)
+                    
+                    ConsoleLog("LootEx DataCollector", f"Collected name for item ID: {item_id} | {entry.model_id} | {entry.item_type}: {name}", Console.MessageType.Debug)
+                    
+                    if not name or name == "No Item":
+                        entry.request_name()
+                        return
+                    
+                    entry.set_name(name, server_language)                           
+                return                                                                                
+            
+            if entry.status == CollectionStatus.NameCollected or entry.changed or entry.status == CollectionStatus.RequiresSave:
+                entry.status = CollectionStatus.RequiresSave
+                return
     
     def run(self):            
         if self.throttle.IsExpired():
@@ -591,60 +683,13 @@ class DataCollector:
                 available_items = self.get_available_items()
                 
                 for item_id in available_items:
-                    if item_id <= 0:
-                        continue
+                    self.collect_item(item_id, server_language)
                     
-                    if item_id not in self.collected_items:
-                        entry = CollectionEntry(item_id, self.modified_items)
-                        self.collected_items[item_id] = entry
-                                                
-                        # Get the existing entries with the same model id and item type
-                        existing_entries = [existing for existing in self.collected_items.values() if existing.model_id > 0 and entry.model_id == existing.model_id and entry.item_type.value == existing.item_type.value]
-                        
-                        # We still contain an amount in the name we need to find a single item
-                        if entry.contains_amount:
-                            if entry.quantity == 1:
-                                entry.request_name()
-                                
-                                # Mark all existing entries as better data found so we don't process them again
-                                for existing_entry in existing_entries:
-                                    existing_entry.status = CollectionStatus.BetterDataFound
-                                
-                                continue
-                        
-                        if not entry.has_name(server_language):
-                            entry.request_name()
-                            continue
-                        else:
-                            entry.status = CollectionStatus.RequiresSave if entry.changed else CollectionStatus.DataCollected
-                        
-                    entry = self.collected_items.get(item_id)
-                    
-                    if entry:  
-                        if entry.status is CollectionStatus.DataCollected or entry.status is CollectionStatus.BetterDataFound:
-                            continue
-                                    
-                        if entry.status == CollectionStatus.NameRequested:
-                            if GLOBAL_CACHE.Item.IsNameReady(item_id):
-                                name = GLOBAL_CACHE.Item.GetName(item_id)
-                                
-                                if not name or name == "No Item":
-                                    entry.request_name()
-                                    continue
-                                
-                                entry.set_name(name, server_language)                           
-                            continue
-                                                                                    
-                        if entry.status == CollectionStatus.NameCollected or entry.changed or entry.status == CollectionStatus.RequiresSave:
-                            entry.status = CollectionStatus.RequiresSave
-                            continue
-                        
                 if self.fetched_cycles >= 3:             
                     self.save_items()
                     self.fetched_cycles = 0
                     GLOBAL_CACHE.Item.name_cache.clear()
                     GLOBAL_CACHE.Item.name_requested.clear()
-                    
                 
                 self.fetched_cycles += 1
                                             

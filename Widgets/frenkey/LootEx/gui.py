@@ -5,6 +5,7 @@ from typing import Callable
 import webbrowser
 from datetime import datetime
 
+from Py4GWCoreLib.GlobalCache.ItemCache import Bag_enum
 from Py4GWCoreLib.ImGui_src.types import TextDecorator
 from Widgets.frenkey.Core.iterable import chunked
 from Widgets.frenkey.Core.utility import ImGuiIniReader, get_image_name, string_similarity
@@ -12,7 +13,7 @@ from Widgets.frenkey.Core.gui import GUI
 from Widgets.frenkey.Core import ex_style, texture_map
 from Widgets.frenkey.LootEx import skin_rule, loot_handling, profile, settings, price_check, item_configuration, utility, enum, cache, ui_manager_extensions, inventory_handling, wiki_scraper, filter, models, messaging, data_collector,wiki_scraper
 from Widgets.frenkey.LootEx.data import Data
-from Widgets.frenkey.LootEx.data_collection import DataCollector
+from Widgets.frenkey.LootEx.data_collection import ALL_BAGS, CHARACTER_INVENTORY, XUNLAI_STORAGE, DataCollector
 from Widgets.frenkey.LootEx.item_configuration import ItemConfiguration, ConfigurationCondition
 from Widgets.frenkey.LootEx.filter import Filter
 from Widgets.frenkey.LootEx.profile import Profile
@@ -213,6 +214,10 @@ class UI:
         self.textures_folder = os.path.join(Console.get_projects_path(), "Textures")
         self.icon_textures_path = os.path.join(file_directory, "textures")
         self.item_textures_path = os.path.join(self.textures_folder, "Items")
+        
+        self.collection_timer = ThrottledTimer()
+        self.collection_items: dict[str, dict[int, cache.Cached_Item]] = {}
+        
         self.actions_timer = ThrottledTimer()
         self.action_summary: inventory_handling.InventoryHandler.ActionsSummary | None = None
         
@@ -1203,8 +1208,8 @@ class UI:
                 style.ChildBg.push_color((255, 0, 0, 125))
                 colored_item += 1
             
+            collected = cached_item.data.is_minimum_complete() if cached_item.id != 0 and cached_item.data else True
             localization_missing, missing_languages = self.data_collector.is_missing_localization(cached_item)
-            collected, missing = self.data_collector.is_item_collected(cached_item) if cached_item.id != 0 else (True, "")
             mods_missing, mod_missing = self.data_collector.has_uncollected_mods(cached_item) if cached_item.id != 0 else (False, "")
             
             complete = True
@@ -1259,7 +1264,8 @@ class UI:
                     PyImGui.table_next_column()
                         
                     ImGui.text_scaled(str(cached_item.id) if cached_item.id > 0 else "", (1,1,1,0.75), 0.7)
-                    ImGui.text_scaled(str(cached_item.model_id) if cached_item.id > 0 else "", (1,1,1,1), 0.8)
+                    ImGui.text_scaled(str(cached_item.model_id) if cached_item.model_id > 0 else "", (1,1,1,1), 0.8)
+                    ImGui.text_wrapped(cached_item.data.name if cached_item.data else "Unknown Item")
                     # ImGui.text_scaled(f"x{cached_item.quantity}" if cached_item.quantity > 1 else "", (1,1,1,1), 0.8)
                     
                     ImGui.end_table()
@@ -1427,7 +1433,7 @@ class UI:
                         ImGui.end_table()
                     
                     if not collected:
-                        ImGui.text_colored(missing, (255, 0, 0, 255))
+                        ImGui.text_colored("Minimum data missing (Inventory Icon or Name)", (255, 0, 0, 255))
                         
                     if localization_missing:
                         ImGui.text_colored(missing_languages, (255, 0, 0, 255))
@@ -5130,6 +5136,8 @@ class UI:
                     
                 if ImGui.button("Assign") and self.data_collection_item is not None:
                     self.assign_scraped_data(self.data_collection_item, item)
+                    self.data_collection_item = None
+                    self.filtered_scraped_items = {}
                     pass
             
             ImGui.end_child()
@@ -5154,10 +5162,10 @@ class UI:
             ImGui.end_child()
             
         ImGui.end_child()
-        
-        
-    def draw_data_item(self, data_item: models.Item, is_selected: bool = False):
-        key = f"DataItem{data_item.model_id}{data_item.item_type}"
+                
+    def draw_data_item(self, cached_item_id: int, data_item: models.Item, is_selected: bool = False) -> bool:
+        clicked = False
+        key = f"DataItem{id}{data_item.model_id}{data_item.item_type}"
         style = ImGui.get_style()
         if is_selected:
             style.ChildBg.push_color(self.style.Selected_Colored_Item.rgb_tuple)
@@ -5168,7 +5176,7 @@ class UI:
                 
             if not PyImGui.is_rect_visible(0, 100):
                 ImGui.end_child()
-                return
+                return False
             
             if data_item.texture_file:
                 x,y = PyImGui.get_cursor_pos()
@@ -5183,37 +5191,39 @@ class UI:
             
             if ImGui.begin_child(key + "Details", (0, 0), False, PyImGui.WindowFlags.NoFlag):
                 ImGui.text_colored(data_item.name, Color(255, 255, 255, 255).color_tuple, 16, "Bold")
+                
+                ImGui.text_wrapped(str(data_item.model_id))
+                
                 ImGui.text_wrapped(data_item.description if data_item.description else "No description available.")
+                
                 ImGui.text_wrapped(data_item.acquisition if data_item.acquisition else "No acquisition info available.")
             
             ImGui.end_child()
+            clicked = clicked or PyImGui.is_item_clicked(0)
+            
         else:
             if is_selected:
                 style.ChildBg.pop_color()
             
         ImGui.end_child()
+        clicked = clicked or PyImGui.is_item_clicked(0)
+        return clicked
     
     def assign_scraped_data(self, data_item : models.Item, scraped_item : ScrapedItem):
         data_item.assign_scraped_data(scraped_item, self.data)
         ConsoleLog("LootEx", f"Assigned data for item: {data_item.name}", Console.MessageType.Info)
         self.data.SaveItems(True)
     
-    def auto_assign_data_items(self):
-        for (data_item) in [item for item in self.data.Items.All if not item.wiki_scraped]:   
-            english_name = data_item.names.get(ServerLanguage.English, "")
-            ## Check if the name starts with an amount like "250"
-            parts = english_name.split(" ", 1) if english_name else []
-            contains_amount = len(parts) == 2 and parts[0].isdigit()
-                    
-            search_name = english_name.replace(parts[0], "").strip() if contains_amount else english_name
-            required_similarity = 0.9 if contains_amount else 1.0
-            
+    def get_matching_scraped_items(self, search_name: str, required_similarity : float) -> list[ScrapedItem]:
             matching_scraped_items = [scraped_item for (key, scraped_item) in self.data.ScrapedItems.items() if string_similarity(scraped_item.name, search_name) >= required_similarity]
-            if matching_scraped_items:
-                if len(matching_scraped_items) == 1:
-                    data_item.assign_scraped_data(matching_scraped_items[0], self.data)        
-                    ConsoleLog("LootEx", f"Auto-assigned data for item: {data_item.name}", Console.MessageType.Info)
-                    
+            return matching_scraped_items
+    
+    def auto_assign_data_items(self):
+        for itemsource, items in self.collection_items.items():
+            for cached_item in items.values():
+                data_item = cached_item.data
+                self.data_collector.auto_assign_scraped_data(data_item)
+                
         self.data.SaveItems(True)
                     
     def draw_data_collection(self): 
@@ -5222,46 +5232,114 @@ class UI:
         if not self.collection_module_window.open:
             return
         
+        if self.collection_timer.IsExpired():
+            self.collection_timer.Reset()
+            
+            self.collection_items = {}
+                
+            crafter_open = ui_manager_extensions.UIManagerExtensions.IsCrafterOpen()
+            collector_open = ui_manager_extensions.UIManagerExtensions.IsCollectorOpen()
+            merchant_open = ui_manager_extensions.UIManagerExtensions.IsMerchantWindowOpen() and not crafter_open and not collector_open
+            
+            trader_array : list[int] = merchant_open and GLOBAL_CACHE.Trading.Trader.GetOfferedItems() or []
+            if trader_array:
+                cached_items = {item_id: cache.Cached_Item(item_id) for item_id in trader_array}
+                self.collection_items["Trader"] = {item_id: cached_item for item_id, cached_item in cached_items.items() if cached_item.data and not cached_item.data.wiki_scraped}
+                
+            trader2_array : list[int] = merchant_open and GLOBAL_CACHE.Trading.Trader.GetOfferedItems2() or []
+            if trader2_array:
+                cached_items = {item_id: cache.Cached_Item(item_id) for item_id in trader2_array}
+                self.collection_items["Trader 2"] = {item_id: cached_item for item_id, cached_item in cached_items.items() if cached_item.data and not cached_item.data.wiki_scraped}
+                
+            merchant_array : list[int] = merchant_open and GLOBAL_CACHE.Trading.Merchant.GetOfferedItems() or []
+            if merchant_array:
+                cached_items = {item_id: cache.Cached_Item(item_id) for item_id in merchant_array}
+                self.collection_items["Merchant"] = {item_id: cached_item for item_id, cached_item in cached_items.items() if cached_item.data and not cached_item.data.wiki_scraped}
+                
+            crafter_array : list[int] = crafter_open and GLOBAL_CACHE.Trading.Crafter.GetOfferedItems() or []
+            if crafter_array:
+                cached_items = {item_id: cache.Cached_Item(item_id) for item_id in crafter_array}
+                self.collection_items["Crafter"] = {item_id: cached_item for item_id, cached_item in cached_items.items() if cached_item.data and not cached_item.data.wiki_scraped}
+                
+            collector_array : list[int] = collector_open and GLOBAL_CACHE.Trading.Collector.GetOfferedItems() or []
+            if collector_array:
+                cached_items = {item_id: cache.Cached_Item(item_id) for item_id in collector_array}
+                self.collection_items["Collector"] = {item_id: cached_item for item_id, cached_item in cached_items.items() if cached_item.data and not cached_item.data.wiki_scraped}
+                
+            inventory_array : list[int] = GLOBAL_CACHE.ItemArray.GetItemArray(CHARACTER_INVENTORY)
+            if inventory_array:
+                cached_items = {item_id: cache.Cached_Item(item_id) for item_id in inventory_array}
+                self.collection_items["Inventory"] = {item_id: cached_item for item_id, cached_item in cached_items.items() if cached_item.data and not cached_item.data.wiki_scraped}
+                
+            for storage in XUNLAI_STORAGE:
+                items = GLOBAL_CACHE.ItemArray.GetItemArray([storage])
+                if items:
+                    cached_items = {item_id: cache.Cached_Item(item_id) for item_id in items}
+                    ## only those items with cached_item.data.wiki_scraped == False
+                    self.collection_items[f"Xunlai Storage {storage}"] = {item_id: cached_item for item_id, cached_item in cached_items.items() if cached_item.data and not cached_item.data.wiki_scraped}
+        
+            empty_keys = []
+            for k, items in self.collection_items.items():
+                if not items:
+                    # remove empty entries
+                    empty_keys.append(k)
+        
+            for k in empty_keys:
+                del self.collection_items[k]                
+
         style = ImGui.get_style()
         if self.collection_module_window.begin():
             avail = PyImGui.get_content_region_avail()
             
-            ImGui.text("Collected Items: " + str(len(self.data.ScrapedItems)), 16, "Bold")
+            ImGui.text("Collected Items: " + str(len(self.data.Items.All)), 16, "Bold")
             PyImGui.same_line(avail[0] - 120, 0)
             if ImGui.button("Auto Assign Data", 120, 0):
                 self.auto_assign_data_items()
                 
+            PyImGui.same_line(avail[0] - 250, 0)
+            if ImGui.button("Clear Cache", 120, 0):
+                self.data_collector.reset()
+                inventory_handling.InventoryHandler().scraped_items.clear()
+                                
                 
             ImGui.separator()
             
             avail = PyImGui.get_content_region_avail()
             if ImGui.begin_child("DataItemsChild", ((avail[0] - 10) / 2, avail[1]), False, PyImGui.WindowFlags.NoFlag):
-                for (data_item) in [item for item in self.data.Items.All if not item.wiki_scraped and utility.Util.IsArmorType(item.item_type) == False]:
-                    self.draw_data_item(data_item, is_selected=data_item == self.data_collection_item)
-                    item_rect_min, item_rect_max, item_rect_size = ImGui.get_item_rect()
+                # for (data_item) in [item for item in self.data.Items.All if not item.wiki_scraped and utility.Util.IsArmorType(item.item_type) == False]:
+                for itemsource, items in self.collection_items.items():
+                    if not items:
+                        continue
                     
-                    if ImGui.is_mouse_in_rect((*item_rect_min, *item_rect_size)) and PyImGui.is_mouse_clicked(0):
-                        self.data_collection_item = data_item if self.data_collection_item != data_item else None
-                        english_name = data_item.names.get(ServerLanguage.English, "")
-                        contains_amount = english_name.split(" ", 1)[0].isdigit() if english_name else False
-                        search_name = english_name.replace("250", "").strip() if self.data_collection_item else ""
-                        self.filtered_scraped_items = {}
+                    ImGui.text_colored(f"{itemsource}", Color(255, 215, 0, 255).color_tuple, 16, "Bold")
+                    ImGui.separator()
                         
-                        if self.data_collection_item:
-                            for (key, scraped_item) in self.data.ScrapedItems.items():
-                                if string_similarity(scraped_item.name, search_name) >= (0.9 if contains_amount else 1.0):
-                                    self.filtered_scraped_items[key] = scraped_item
-                            
-                            if not self.filtered_scraped_items:
-                                ConsoleLog("LootEx", f"No exact matches found for '{search_name}'. Trying partial match...", Console.MessageType.Info)                                                                 
-                                item_name_words = english_name.split(" ")
+                    for cached_item in items.values():
+                        data_item = cached_item.data
+                        
+                        if data_item and not data_item.wiki_scraped:
+                            if self.draw_data_item(cached_item.id, data_item, is_selected=data_item == self.data_collection_item):
+                                self.data_collection_item = data_item if self.data_collection_item != data_item else None
+                                english_name = data_item.names.get(ServerLanguage.English, "")
+                                contains_amount = english_name.split(" ", 1)[0].isdigit() if english_name else False
+                                search_name = english_name.replace("250", "").strip() if self.data_collection_item else ""
+                                self.filtered_scraped_items = {}
                                 
-                                for (key, scraped_item) in self.data.ScrapedItems.items():                                    
-                                    search_name_words = scraped_item.name.split(" ")
-                                                                        
-                                    if ((len(item_name_words) > 1 and len(search_name_words) > 1) or (len(item_name_words) == len(search_name_words))) and all(word.lower() in english_name.lower() for word in search_name_words):
-                                        self.filtered_scraped_items[key] = scraped_item
-                
+                                if self.data_collection_item:
+                                    for (key, scraped_item) in self.data.ScrapedItems.items():
+                                        if string_similarity(scraped_item.name, search_name) >= (0.9 if contains_amount else 1.0):
+                                            self.filtered_scraped_items[key] = scraped_item
+                                    
+                                    if not self.filtered_scraped_items:
+                                        ConsoleLog("LootEx", f"No exact matches found for '{search_name}'. Trying partial match...", Console.MessageType.Info)                                                                 
+                                        item_name_words = english_name.split(" ")
+                                        
+                                        for (key, scraped_item) in self.data.ScrapedItems.items():                                    
+                                            search_name_words = scraped_item.name.split(" ")
+                                                                                
+                                            if ((len(item_name_words) > 1 and len(search_name_words) > 1) or (len(item_name_words) == len(search_name_words))) and all(word.lower() in english_name.lower() for word in search_name_words):
+                                                self.filtered_scraped_items[key] = scraped_item
+                        
             ImGui.end_child()    
             
             PyImGui.same_line(0, 10)                    

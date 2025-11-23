@@ -307,6 +307,24 @@ class Util:
         return items.get(model_id, None)
 
     @staticmethod
+    def CanHoldMod(item_type: ItemType) -> bool:
+        match(item_type):
+            case ItemType.Axe | ItemType.Bow | ItemType.Daggers | ItemType.Hammer | ItemType.Offhand | ItemType.Scythe | ItemType.Shield | ItemType.Spear | ItemType.Staff | ItemType.Sword | ItemType.Wand:
+                return True
+            
+            case ItemType.Headpiece | ItemType.Chestpiece | ItemType.Gloves | ItemType.Leggings | ItemType.Boots:
+                return True
+            
+            case ItemType.Rune_Mod:
+                return True
+            
+            case ItemType.Salvage:
+                return True
+            
+            case _:
+                return False
+
+    @staticmethod
     def IsArmorType(itemtype: ItemType) -> bool:
         return itemtype in {
             ItemType.Headpiece,

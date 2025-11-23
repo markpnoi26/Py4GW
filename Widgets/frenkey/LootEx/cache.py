@@ -27,6 +27,7 @@ class Cached_Item:
         
         self.data: models.Item | None = data.Items.get_item(
             self.item_type, self.model_id) if self.model_id > -1 and self.item_type in data.Items else None
+        self.wiki_data_scraped: bool = self.data.wiki_scraped if self.data else False
 
         self.is_identified: bool = item.is_identified if item else False
         self.value: int = item.value if item else 0
