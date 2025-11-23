@@ -75,13 +75,13 @@ def get_armor_name_from_modifiers(item):
     # --- Construct name ---
     name_parts = []
 
-    if prefix:
-        name_parts.append(prefix)
-
     name_parts.append(base_name)
 
+    if prefix:
+        name_parts.append(f'| {prefix}')
+
     if suffix:
-        name_parts.append(f"{suffix}")
+        name_parts.append(f"| {suffix}")
 
     return " ".join(name_parts)
 
@@ -384,6 +384,7 @@ def clean_gw_item_name(item_name: str) -> str:
     """
     PERFECT Guild Wars 1 item name cleaner for weapons AND armor.
     - Removes at most one prefix/insignia + one suffix/rune.
+    - Supports partial matches: e.g. 'Survivor' matches 'Survivor's'
     """
     if not item_name:
         return ""
@@ -396,9 +397,15 @@ def clean_gw_item_name(item_name: str) -> str:
     i = 0
     n = len(words)
 
+    # Normalize prefix/insignia list for flexible matching
+    all_prefixes = WEAPON_PREFIXES | INSIGNIAS
+    normalized_prefixes = {p.lower().rstrip("'s") for p in all_prefixes}
+
     # Skip at most one prefix/insignia at the beginning
-    if i < n and words[i].rstrip(".,!?") in (WEAPON_PREFIXES | INSIGNIAS):
-        i += 1
+    if i < n:
+        w = words[i].rstrip(".,!?").lower().rstrip("'s")
+        if w in normalized_prefixes:
+            i += 1  # remove the whole prefix word
 
     # Collect base name until the first matching suffix
     while i < n:
@@ -473,9 +480,10 @@ class ModelIDJSONStore:
     def save_model_id(self, model_id, model_name):
         str_model_id = str(model_id)
         data = self._read()
-        data[str_model_id] = model_name
-        INVENTORY_MODEL_ID_CACHE[str_model_id] = model_name
-        self._write(data)
+        if model_id and model_name:
+            data[str_model_id] = model_name
+            INVENTORY_MODEL_ID_CACHE[str_model_id] = model_name
+            self._write(data)
 
     def load(self):
         global INVENTORY_MODEL_ID_CACHE
@@ -484,6 +492,14 @@ class ModelIDJSONStore:
             return INVENTORY_MODEL_ID_CACHE
 
         data = self._read()
+        keys_to_delete = []
+        for key, value in data.items():
+            if not value:
+                keys_to_delete.append(key)
+
+        for key in keys_to_delete:
+            del data[key]
+
         INVENTORY_MODEL_ID_CACHE = data
         return data
 
@@ -786,7 +802,7 @@ def _collect_bag_items(bag, bag_id, email, storage_name=None, char_name=None):
                 custom_id = f'{item_id}-{model_id}'
                 if custom_id not in ITEM_ID_CACHE and final_name:
                     ITEM_ID_CACHE[custom_id] = final_name
-                if LOOTEX_AVAILABLE:
+                if LOOTEX_AVAILABLE and final_name:
                     inventory_model_ids_store.save_model_id(model_id, clean_gw_item_name(final_name))
             except Exception as e:
                 print(f"Exception fetching name for {item_id}: {e}")
@@ -899,11 +915,11 @@ def draw_widget():
     end_pos = PyImGui.get_window_pos()
 
     # This triggers a reload of and save of bag data
-    if inventory_write_timer.IsExpired():
+    if inventory_write_timer.IsExpired() and Routines.Checks.Map.IsOutpost():
         GLOBAL_CACHE.Coroutines.append(record_account_data())
         inventory_write_timer.Reset()
 
-    if inventory_read_timer.IsExpired():
+    if inventory_read_timer.IsExpired() and Routines.Checks.Map.IsOutpost():
         TEAM_INVENTORY_CACHE = multi_store.load_all()
         inventory_read_timer.Reset()
 
@@ -1280,7 +1296,6 @@ def main():
         if (
             not Routines.Checks.Map.MapValid()
             or GLOBAL_CACHE.Player.InCharacterSelectScreen()
-            or not Routines.Checks.Map.IsOutpost()
         ):
             # When swapping characters, reset everything
             return
