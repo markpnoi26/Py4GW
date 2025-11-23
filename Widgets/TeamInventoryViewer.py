@@ -292,7 +292,7 @@ OTHER_WEAPON_SUFFIXES = {
     "of Dwarfslaying",
     "of Giantslaying",
     "of Ogreslaying",
-    "of Plantslaying",
+    "of Pruning",
     "of Tenguslaying",
     "of Trollslaying",
     "of Undeadbane",
@@ -325,16 +325,16 @@ WEAPON_PREFIXES = {
 }
 
 INSIGNIAS = {
-    "Survivor's",
-    "Radiant's",
-    "Stalwart's",
+    "Survivor",
+    "Radiant",
+    "Stalwart",
     "Brawler's",
     "Blessed",
     "Herald's",
     "Sentry's",
     "Knight's",
-    "Stonefist's",
-    "Dreadnought's",
+    "Stonefist",
+    "Dreadnought",
     "Sentinel's",
     "Lieutenant's",
     "Frostbound",
@@ -355,10 +355,10 @@ INSIGNIAS = {
     "Virtuoso's",
     "Artificer's",
     "Prodigy's",
-    "Hydromancer's",
-    "Geomancer's",
-    "Pyromancer's",
-    "Aeromancer's",
+    "Hydromancer",
+    "Geomancer",
+    "Pyromancer",
+    "Aeromancer",
     "Prismatic",
     "Vanguard's",
     "Infiltrator's",
@@ -795,7 +795,7 @@ def _collect_bag_items(bag, bag_id, email, storage_name=None, char_name=None):
                 custom_id = f'{item_id}-{model_id}'
                 if custom_id not in ITEM_ID_CACHE and final_name:
                     ITEM_ID_CACHE[custom_id] = final_name
-                if LOOTEX_AVAILABLE and final_name:
+                if final_name:
                     inventory_model_ids_store.save_model_id(model_id, clean_gw_item_name(final_name))
             except Exception as e:
                 print(f"Exception fetching name for {item_id}: {e}")
