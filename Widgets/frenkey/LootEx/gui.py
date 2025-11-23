@@ -1,28 +1,23 @@
-from argparse import Action
-import re
 import shutil
 from typing import Callable
 import webbrowser
 from datetime import datetime
 
-from Py4GWCoreLib.GlobalCache.ItemCache import Bag_enum
 from Py4GWCoreLib.ImGui_src.types import TextDecorator
 from Widgets.frenkey.Core.iterable import chunked
-from Widgets.frenkey.Core.utility import ImGuiIniReader, get_image_name, string_similarity
+from Widgets.frenkey.Core.utility import ImGuiIniReader, string_similarity
 from Widgets.frenkey.Core.gui import GUI
 from Widgets.frenkey.Core import ex_style, texture_map
-from Widgets.frenkey.LootEx import skin_rule, loot_handling, profile, settings, price_check, item_configuration, utility, enum, cache, ui_manager_extensions, inventory_handling, wiki_scraper, filter, models, messaging, data_collector,wiki_scraper
+from Widgets.frenkey.LootEx import skin_rule, loot_handling, settings, price_check, utility, enum, cache, ui_manager_extensions, inventory_handling, models, messaging
 from Widgets.frenkey.LootEx.data import Data
-from Widgets.frenkey.LootEx.data_collection import ALL_BAGS, CHARACTER_INVENTORY, XUNLAI_STORAGE, DataCollector
-from Widgets.frenkey.LootEx.item_configuration import ItemConfiguration, ConfigurationCondition
+from Widgets.frenkey.LootEx.data_collection import CHARACTER_INVENTORY, XUNLAI_STORAGE, DataCollector
+from Widgets.frenkey.LootEx.item_configuration import ConfigurationCondition
 from Widgets.frenkey.LootEx.filter import Filter
 from Widgets.frenkey.LootEx.profile import Profile
 from Widgets.frenkey.LootEx.texture_scraping_models import ScrapedItem
 from Widgets.frenkey.LootEx.ui_manager_extensions import UIManagerExtensions
 from Py4GWCoreLib import *
 
-import ctypes
-from ctypes import windll
 from Py4GWCoreLib.GlobalCache.SharedMemory import Py4GWSharedMemoryManager
 
 data = Data()
@@ -1291,16 +1286,6 @@ class UI:
             
             for _ in range(colored_item):
                 style.ChildBg.pop_color()
-            
-            if PyImGui.is_item_clicked(0) and cached_item and cached_item.data and not cached_item.data.wiki_scraped:
-                data.Reload()                  
-                item = data.Items.get_item(cached_item.item_type, cached_item.model_id)
-                
-                if item and not item.wiki_scraped:
-                    wiki_scraper.WikiScraper.scrape_multiple_entries([item])
-                    # messaging.SendMergingMessage()
-                    
-            
                 
             if cached_item:
                 if PyImGui.is_item_hovered():
@@ -1516,11 +1501,7 @@ class UI:
                         messaging.SendMergingMessage()
 
                     ImGui.show_tooltip("Merge all diff files into the data files.")
-
-                    if ImGui.button("Scrape Wiki", 160, 30):
-                        wiki_scraper.WikiScraper.scrape_missing_entries()
-                        pass
-                    
+                                        
                     if False and ImGui.button("Move Textures", 160, 30):
                         items_folder = os.path.join(Py4GW.Console.get_projects_path(), "Textures", "Items")
                         item_model_files_folder = os.path.join(Py4GW.Console.get_projects_path(), "Textures", "ItemModelFiles")

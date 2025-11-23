@@ -1,6 +1,6 @@
 import datetime
 from Py4GWCoreLib.enums_src.Py4GW_enums import Console
-from Widgets.frenkey.LootEx import data_collector, enum, inventory_handling, settings
+from Widgets.frenkey.LootEx import enum, inventory_handling, settings
 from Py4GWCoreLib import Inventory, Player
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.Py4GWcorelib import ActionQueueNode, ConsoleLog
@@ -202,22 +202,19 @@ def HandleReceivedMessages():
                         case enum.MessageActions.PauseDataCollection:
                             ConsoleLog("LootEx", f"Pausing data collection as requested by account '{message.SenderEmail}'...", Console.MessageType.Info)
                             
-                            GLOBAL_CACHE.ShMem.MarkMessageAsRunning(GLOBAL_CACHE.Player.GetAccountEmail(), index)     
-                            is_collecting = settings.collect_items
+                            GLOBAL_CACHE.ShMem.MarkMessageAsRunning(GLOBAL_CACHE.Player.GetAccountEmail(), index) 
+                            is_collecting = settings.collect_items    
+                            settings.collect_items = False
                             GLOBAL_CACHE.ShMem.MarkMessageAsFinished(GLOBAL_CACHE.Player.GetAccountEmail(), index)
                             
                         case enum.MessageActions.ResumeDataCollection:
-                            GLOBAL_CACHE.ShMem.MarkMessageAsRunning(GLOBAL_CACHE.Player.GetAccountEmail(), index)
-                            
-                            settings.collect_items = is_collecting
-                            
+                            GLOBAL_CACHE.ShMem.MarkMessageAsRunning(GLOBAL_CACHE.Player.GetAccountEmail(), index)                           
+                            settings.collect_items = is_collecting                            
                             GLOBAL_CACHE.ShMem.MarkMessageAsFinished(GLOBAL_CACHE.Player.GetAccountEmail(), index)
                             
                         case enum.MessageActions.StartDataCollection:
                             GLOBAL_CACHE.ShMem.MarkMessageAsRunning(GLOBAL_CACHE.Player.GetAccountEmail(), index)
-                            
-                            data_collector.instance.start_collection()
-                            
+                            settings.collect_items = True                            
                             GLOBAL_CACHE.ShMem.MarkMessageAsFinished(GLOBAL_CACHE.Player.GetAccountEmail(), index)
                         
                         case enum.MessageActions.Start:

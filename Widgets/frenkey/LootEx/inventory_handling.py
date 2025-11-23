@@ -1,9 +1,8 @@
 from datetime import date, datetime, timedelta
-from Widgets.frenkey.Core.utility import string_similarity
 from Widgets.frenkey.LootEx.data_collection import DataCollector
 from Widgets.frenkey.LootEx.enum import MaterialType, MerchantType, ModType, SalvageKitOption, SalvageOption, ItemAction
 from Py4GWCoreLib import *
-from Widgets.frenkey.LootEx import data_collector, filter, loot_handling, models, settings, utility, ui_manager_extensions, item_configuration, cache
+from Widgets.frenkey.LootEx import loot_handling, models, utility, ui_manager_extensions, cache
 
 # TODO: Collect salvage data for items, so we can make better decisions on what to salvage and what not to salvage.
 # TODO: Add sorting options for the inventory and storage.
