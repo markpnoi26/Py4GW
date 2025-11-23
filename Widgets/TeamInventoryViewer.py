@@ -206,7 +206,6 @@ STORAGE_BAGS = {
     "MaterialStorage": Bags.MaterialStorage.value,
 }
 
-# ==================== ALL ATTRIBUTES (one source of truth) ====================
 ATTRIBUTES = {
     "Axe Mastery",
     "Hammer Mastery",
@@ -252,8 +251,6 @@ ATTRIBUTES = {
     "Wind Prayers",
 }
 
-# ==================== GENERATE ALL POSSIBLE SUFFIXES FROM ATTRIBUTES ====================
-
 # 1. Armor runes → "of Vitae", "of Major Vigor", "of Superior Soul Reaping", …
 NON_ATTRIBUTE_RUNES = {"Vitae", "Vigor", "Attunement", "Clarity", "Purity", "Recovery", "Restoration", "Absorption"}
 ARMOR_RUNE_SUFFIXES = {
@@ -263,7 +260,6 @@ ARMOR_RUNE_SUFFIXES = {
 # 2. Weapon grips / handles / inscriptions → "Grip of Axe Mastery", "Handle of Soul Reaping", …
 WEAPON_ATTRIBUTE_SUFFIXES = {f"of {attr}" for attr in ATTRIBUTES}
 
-# ==================== OTHER WEAPON SUFFIXES (unchanged) ====================
 OTHER_WEAPON_SUFFIXES = {
     "of Defense",
     "of Shelter",
@@ -304,10 +300,8 @@ OTHER_WEAPON_SUFFIXES = {
     "of Deathbane",
 }
 
-# ==================== ALL SUFFIXES TOGETHER ====================
 ALL_SUFFIXES = ARMOR_RUNE_SUFFIXES | WEAPON_ATTRIBUTE_SUFFIXES | OTHER_WEAPON_SUFFIXES
 
-# ==================== WEAPON PREFIXES ====================
 WEAPON_PREFIXES = {
     "Barbed",
     "Crippling",
@@ -330,7 +324,6 @@ WEAPON_PREFIXES = {
     "Swift",
 }
 
-# ==================== ARMOR INSIGNIAS ====================
 INSIGNIAS = {
     "Survivor's",
     "Radiant's",
