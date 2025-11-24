@@ -897,6 +897,7 @@ class PVESkills:
         skill.Nature = SkillNature.Buff.value
         skill.Conditions.IsOutOfCombat = True
         skill.Conditions.UniqueProperty = True
+        skill.Conditions.IsMoving = True
         skill_data[skill.SkillID] = skill
         
         skill = CustomSkill()
@@ -904,8 +905,7 @@ class PVESkills:
         skill.SkillType = SkillType.Skill.value
         skill.TargetAllegiance = Skilltarget.Self.value
         skill.Nature = SkillNature.Buff.value
-        skill.Conditions.LessLife = 0.9
-        skill.Conditions.IsOutOfCombat = True
+        skill.Conditions.LessLife = 0.6
         skill.Conditions.UniqueProperty = True
         skill_data[skill.SkillID] = skill
         
