@@ -5317,6 +5317,10 @@ class UI:
             if ImGui.button("Clear Cache", 120, 0):
                 self.data_collector.reset()
                 inventory_handling.InventoryHandler().scraped_items.clear()
+                
+            PyImGui.same_line(avail[0] - 380, 0)
+            if ImGui.button("Merge Collected", 120, 0):
+                messaging.SendMergingMessage()
                                 
                 
             ImGui.separator()

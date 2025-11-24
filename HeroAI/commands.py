@@ -72,7 +72,7 @@ class HeroAICommands:
             self.Resign,
             self.DonateFaction,
             self.ResetCoroutines,
-            self.GetStuck,
+            # self.GetStuck,
             
             # self.GetBlessing,
             self.PickUpLoot,
@@ -115,7 +115,7 @@ class HeroAICommands:
             SharedCommandType.PixelStack,
             (x, y, 0, 0)
         )
-    
+        
     def reset_coroutines_command(self, accounts: list[AccountData]):
         sender_email = GLOBAL_CACHE.Player.GetAccountEmail()        
         

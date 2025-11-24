@@ -784,7 +784,7 @@ class ModelID(IntEnum):
     
     CanthanTargeTactics = 2444
     CanthanTargeStrength = 2445  # Need confirmation
-    CanthanTargeLeadership = 2446  # Need confirmation
+    CanthanTargeLeadership = 2446 
     
     DeathsHeadSoulReaping = 2447
     DeathsHeadBloodMagic = 2448
@@ -806,9 +806,9 @@ class ModelID(IntEnum):
     
     OminousAegisTactics = 2461
     OminousAegisStrength = 2462
-    OminousAegisLeadership = 2463  # Need confirmation
+    OminousAegisLeadership = 2463
     
-    SpiritbinderCommuning = 2464  # Needs confirmation
+    SpiritbinderCommuning = 2464
     SpiritbinderSpawningPower = 2465
     SpiritbinderRestoration = 2466  # Needs confirmation
     SpiritbinderChanneling = 2467

@@ -662,11 +662,65 @@ class Data():
                     "Turquoise Staff",
                     "Violet Edge",
                     "Voltaic Spear",
-                    "Wingcrest Maul",
-                    
-                    "Censor's Icon",
+                    "Wingcrest Maul"
+                
+                # Available everywhere
+                    "Bear's Sloth",
+                    "Fox's Greed",
+                    "Hog's Gluttony",
+                    "Lion's Pride",
+                    "Scorpion's Lust",
+                    "Scorpion Bow",
+                    "Snake's Envy",
+                    "Unicorn's Wrath",
+                    "Black Hawk's Lust",
+                    "Dragon's Envy",
+                    "Peacock's Wrath",
+                    "Rhino's Sloth",
+                    "Spider's Gluttony",
+                    "Tiger's Pride",
+                    "Wolf's Greed",
+                    "Bonecrusher",
+                    "Bronze Guardian",
+                    "Death's Head",
+                    "Heaven's Arch",
+                    "Quicksilver",
+                    "Storm Ember",
+                    "Ominous Aegis",
+
+                    # Only available in Tyria
+                    "Bone Idol",
                     "Canthan Targe",
+                    "Censor's Icon",
                     "Chimeric Prism",
+                    "Ithas Bow",
+                    "War Pick",
+
+                    # Only available in Cantha
+                    "Dragon Fangs",
+                    "Spiritbinder",
+                    "Japan 1st Anniversary Shield",
+
+                    # Only available in Elona
+                    "Soulbreaker",
+                    "Sunspear (weapon)",
+
+                    # Only available in Eye of the North regions
+                    "Darksteel Longbow",
+                    "Glacial Blade",
+                    "Glacial Blades",
+                    "Hourglass Staff",
+                    "Lesser Etched Sword",
+                    "Etched Sword",
+                    "Greater Etched Sword",
+                    "Arced Blade",
+                    "Greater Arced Blade",
+                    "Lesser Granite Edge",
+                    "Granite Edge",
+                    "Greater Granite Edge",
+                    "Lesser Stoneblade",
+                    "Stoneblade",
+                    "Greater Stoneblade" 
                 ]
 
     

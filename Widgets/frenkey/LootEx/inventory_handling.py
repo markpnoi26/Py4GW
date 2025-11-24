@@ -1067,12 +1067,22 @@ class InventoryHandler:
         if not self.salvaging_queue or len(self.salvaging_queue) == 0:
             return False
         
+        if not self.lesser_salvage_kits and not self.expert_salvage_kits:
+            return False
+        
+        
         if self.salvage_action is None:
             items_to_salvage = list(self.salvaging_queue.items())
             # Begin with lowest quantity to free up inventory space faster
             items_to_salvage.sort(key=lambda x: x[1].item.quantity)
             
             for _, action in items_to_salvage:
+                if action.item.salvage_option == SalvageOption.LesserCraftingMaterials and not self.lesser_salvage_kits:
+                    continue
+                
+                if action.item.salvage_option in (SalvageOption.RareCraftingMaterials, SalvageOption.Prefix, SalvageOption.Suffix, SalvageOption.Inherent) and not self.expert_salvage_kits:
+                    continue
+                
                 self.salvage_action = action
                 break
         

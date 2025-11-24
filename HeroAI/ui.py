@@ -1424,6 +1424,7 @@ consumables = [
 ]
 
 def _post_pcon_message(params, cached_data: CacheData):
+    ConsoleLog("HERO AI", f"Using consumable with params: {params}")
     self_account = GLOBAL_CACHE.ShMem.GetAccountDataFromEmail(cached_data.account_email)
     if not self_account:
         return
@@ -1461,10 +1462,15 @@ def draw_consumables_window(cached_data: CacheData):
                 if model_id == 0:
                     PyImGui.table_next_column()
                     continue
-                
-                if ImGui.invisible_button(f"##ConConfig {model_id}", btn_size, btn_size):
+                PyImGui.push_style_color(PyImGui.ImGuiCol.Button, (0, 0, 0, 0))
+                PyImGui.push_style_color(PyImGui.ImGuiCol.ButtonHovered, (0, 0, 0, 0))
+                PyImGui.push_style_color(PyImGui.ImGuiCol.ButtonActive, (0, 0, 0, 0))
+                PyImGui.push_style_color(PyImGui.ImGuiCol.Text, (0, 0, 0, 0))
+                if PyImGui.button(f"##ConConfig {model_id}", btn_size, btn_size):
+                    ConsoleLog("HERO AI", f"Configuring consumable {model_id.name}...")
                     _post_pcon_message(params, cached_data) 
-                    
+                PyImGui.pop_style_color(4)
+                
                 x,y = PyImGui.get_item_rect_min()
                 ThemeTextures.Inventory_Slots.value.get_texture().draw_in_drawlist((x, y), (btn_size, btn_size))
                 ImGui.DrawTextureInDrawList((x + 2, y + 2), (btn_size - 4, btn_size - 4), texture_path)

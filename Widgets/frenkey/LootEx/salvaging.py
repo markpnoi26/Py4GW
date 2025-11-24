@@ -15,7 +15,7 @@ from Widgets.frenkey.LootEx.cache import Cached_Item
 from Widgets.frenkey.LootEx.enum import ALL_BAGS, CHARACTER_INVENTORY, ModType, SalvageOption
 from Widgets.frenkey.LootEx import ui_manager_extensions
 
-LOG_SALVAGING = True
+LOG_SALVAGING = False
 
 # -----------------------------------------------------
 # GENERIC COROUTINE WRAPPER (same as TraderCoroutine)
