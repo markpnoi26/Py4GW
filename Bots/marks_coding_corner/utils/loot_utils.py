@@ -29,7 +29,7 @@ VIABLE_LOOT = {
     ModelID.Bottle_Of_Vabbian_Wine,
     ModelID.Dwarven_Ale,
     ModelID.Eggnog,
-    ModelID.Hard_Apple_Cider,
+    # ModelID.Hard_Apple_Cider,
     ModelID.Hunters_Ale,
     ModelID.Shamrock_Ale,
     ModelID.Witchs_Brew,
@@ -53,6 +53,8 @@ VIABLE_LOOT = {
     ModelID.Trick_Or_Treat_Bag,
     ModelID.Vial_Of_Absinthe,
     ModelID.Witchs_Brew,
+    # Sweet Treat
+    ModelID.Slice_Of_Pumpkin_Pie,
 }
 
 
