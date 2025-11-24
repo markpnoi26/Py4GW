@@ -29,6 +29,8 @@ class Data():
         if self._initialized:
             return
         
+        ConsoleLog("LootEx", "Initializing Data Module", Console.MessageType.Debug)
+        
         self._initialized = True
     
         self.is_loaded: bool = False
@@ -846,6 +848,8 @@ class Data():
         file_directory = os.path.dirname(os.path.abspath(__file__))
         data_directory = os.path.join(file_directory, "data")
         path = os.path.join(data_directory, "items.json")
+        
+        self.Items.clear()
 
         ConsoleLog(
             "LootEx", f"Loading items...", Console.MessageType.Debug)
@@ -876,7 +880,6 @@ class Data():
                             self.Items.add_item(item)
                         else:
                             self.Items[item_type][model_id].update(item)
-              
               
         local_path = os.path.join(Console.get_projects_path(), "Widgets", "Config", "LootEx", "items.json")
         if os.path.exists(local_path):

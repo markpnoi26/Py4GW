@@ -2,6 +2,7 @@ import datetime
 from typing import Optional
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib import Player, UIManager
+from Py4GWCoreLib.GlobalCache.ItemCache import Bag_enum
 from Py4GWCoreLib.Py4GWcorelib import ConsoleLog, Console
 from Py4GWCoreLib.enums import ServerLanguage
 import json
@@ -63,6 +64,8 @@ class Settings:
         
         self.collect_items: bool = True
         self.last_xunlai_check : datetime.datetime = datetime.datetime.min
+        
+        self.max_xunlai_storage : Bag_enum = Bag_enum.Storage_4
         
         self.changed = False
         self.development_mode: bool = os.path.exists("C:\\frenkey_development") 

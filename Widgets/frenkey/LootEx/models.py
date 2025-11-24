@@ -1536,6 +1536,14 @@ class WeaponModInfo(BaseModInfo):
                     return weapon_mod.modifiers[0]
                     
                 for mod in weapon_mod.modifiers:
+                    if mod.modifier_value_arg in (ModifierValueArg.Arg1, ModifierValueArg.Arg2):                    
+                        return mod
+                    
+                for mod in weapon_mod.modifiers:
+                    if mod.modifier_value_arg is ModifierValueArg.Fixed:  
+                        return mod
+                    
+                for mod in weapon_mod.modifiers:
                     return mod
                     
                 return None
@@ -1549,18 +1557,22 @@ class WeaponModInfo(BaseModInfo):
                     _, arg1, arg2 = matching_modifier if matching_modifier else (0, 0, 0)
                     
                     if mod_info.modifier_value_arg == ModifierValueArg.Arg1:
+                        # ConsoleLog("LootEx", f"Weapon Mod {weapon_mod.names.get(ServerLanguage.English, '')} Arg1 Value: {arg1}", Console.MessageType.Debug)
                         weapon_mod_info.Value = arg1
                         weapon_mod_info.IsMaxed = weapon_mod_info.Value >= mod_info.max                        
                     
                     elif mod_info.modifier_value_arg == ModifierValueArg.Arg2:
+                        # ConsoleLog("LootEx", f"Weapon Mod {weapon_mod.names.get(ServerLanguage.English, '')} Arg2 Value: {arg2}", Console.MessageType.Debug)
                         weapon_mod_info.Value = arg2
                         weapon_mod_info.IsMaxed = weapon_mod_info.Value >= mod_info.max
                     
                     elif mod_info.modifier_value_arg == ModifierValueArg.Fixed:
+                        # ConsoleLog("LootEx", f"Weapon Mod {weapon_mod.names.get(ServerLanguage.English, '')} Fixed Value", Console.MessageType.Debug)
                         weapon_mod_info.Value = 0
                         weapon_mod_info.IsMaxed = True
                     
                     elif mod_info.modifier_value_arg == ModifierValueArg.None_:
+                        # ConsoleLog("LootEx", f"Weapon Mod {weapon_mod.names.get(ServerLanguage.English, '')} No Value", Console.MessageType.Debug)
                         weapon_mod_info.Value = 0
                         weapon_mod_info.IsMaxed = True
             
