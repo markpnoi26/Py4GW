@@ -122,7 +122,7 @@ def JagaMoraineFarmRoutine(bot: Botting) -> None:
     bot.States.RemoveManagedCoroutine("HandleStuckJagaMoraine")
     bot.States.AddHeader("Loot Items")
     bot.Items.LootItems()
-    bot.Items.AutoIDAndSalvageItems()
+    # bot.Items.AutoIDAndSalvageItems()
     bot.States.AddCustomState(lambda: NeedsInventoryManagement(bot), "Needs Inventory Management")
     bot.Move.XYAndExitMap(15850,-20550, target_map_id=482) # target_map_name="Bjora Marches")
     
@@ -208,7 +208,7 @@ def EquipSkillBar(bot: Botting):
 
 def HandleInventory(bot: Botting) -> None:
     bot.States.AddHeader("Inventory Handling")
-    bot.Items.AutoIDAndSalvageAndDepositItems() #sort bags, auto id, salvage, deposit to bank
+    # bot.Items.AutoIDAndSalvageAndDepositItems() #sort bags, auto id, salvage, deposit to bank
     bot.Move.XYAndInteractNPC(-23110, 14942) # Merchant in Longeyes Ledge
     bot.Wait.ForTime(2500)
     # bot.Merchant.SellMaterialsToMerchant() # Sell materials to merchant, make space in inventory
