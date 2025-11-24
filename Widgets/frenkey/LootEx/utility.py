@@ -763,6 +763,9 @@ class Util:
             if item:
                 if item.category == ItemCategory.RareWeapon:
                     return True
+                
+                if item.model_id in data.Rare_Weapon_ModelIds:
+                    return True
 
                 name = item.names.get(ServerLanguage.English, None)
                 if name and name in data.Rare_Weapon_Names:
