@@ -176,7 +176,6 @@ search_query = ''
 current_character_name = ''
 
 TEAM_INVENTORY_CACHE = {}
-ITEM_ID_CACHE = {}
 INVENTORY_MODEL_ID_CACHE = {}
 
 INVENTORY_BAGS = {
@@ -680,7 +679,6 @@ def get_storage_bag_items_coroutine(bag, bag_id, email, storage_name):
 
 
 def _collect_bag_items(bag, bag_id, email, storage_name=None, char_name=None):
-    global ITEM_ID_CACHE
     global current_character_name
     global multi_store
 
@@ -719,17 +717,6 @@ def _collect_bag_items(bag, bag_id, email, storage_name=None, char_name=None):
         for item_name, value in items.items():
             if value.get("model_id") == model_id and value.get("slot", {}).get(str(slot), 0) == count:
                 return item_name
-
-        return None
-
-    def _find_last_name_stored_item_id_model_id(item_id, model_id):
-        if current_character_name not in ITEM_ID_CACHE:
-            return None
-
-        # TODO(mark): Item id cache needs work
-        name = ITEM_ID_CACHE.get(f'{item_id}-{model_id}')
-        if name:
-            return name
 
         return None
 
@@ -782,19 +769,10 @@ def _collect_bag_items(bag, bag_id, email, storage_name=None, char_name=None):
             if stored_name:
                 final_name = stored_name
 
-        # Fetch from last state of the item_id and model_id
-        if not final_name:
-            stored_name = _find_last_name_stored_item_id_model_id(item_id, model_id)
-            if stored_name:
-                final_name = stored_name
-
         if not final_name:
             try:
                 markedup = yield from Routines.Yield.Items.GetItemNameByItemID(item_id)
                 final_name = _strip_markup(markedup)
-                custom_id = f'{item_id}-{model_id}'
-                if custom_id not in ITEM_ID_CACHE and final_name:
-                    ITEM_ID_CACHE[custom_id] = final_name
                 if final_name:
                     inventory_model_ids_store.save_model_id(model_id, clean_gw_item_name(final_name))
             except Exception as e:
@@ -820,7 +798,6 @@ def _collect_bag_items(bag, bag_id, email, storage_name=None, char_name=None):
 
 def record_account_data():
     global current_character_name
-    global ITEM_ID_CACHE
 
     current_email = GLOBAL_CACHE.Player.GetAccountEmail()
     login_number = GLOBAL_CACHE.Party.Players.GetLoginNumberByAgentID(GLOBAL_CACHE.Player.GetAgentID())
@@ -829,9 +806,6 @@ def record_account_data():
     if not current_email or not char_name:
         yield
         return
-
-    if char_name not in ITEM_ID_CACHE:
-        ITEM_ID_CACHE = {char_name: char_name}
 
     current_character_name = char_name
     raw_item_cache = GLOBAL_CACHE.Inventory._raw_item_cache
@@ -880,7 +854,6 @@ def search(query: str, items: list[str]) -> list[str]:
 def draw_widget():
     global TEAM_INVENTORY_CACHE
     global INVENTORY_MODEL_ID_CACHE
-    global ITEM_ID_CACHE
     global window_x
     global window_y
     global window_collapsed
@@ -902,7 +875,6 @@ def draw_widget():
 
         TEAM_INVENTORY_CACHE = multi_store.load_all()
         INVENTORY_MODEL_ID_CACHE = inventory_model_ids_store.load()
-        ITEM_ID_CACHE = {}
 
     new_collapsed = PyImGui.is_window_collapsed()
     end_pos = PyImGui.get_window_pos()
