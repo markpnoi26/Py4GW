@@ -424,6 +424,7 @@ def clean_gw_item_name(item_name: str) -> str:
 
     return final_string
 
+
 # endregion
 
 
@@ -730,6 +731,14 @@ def _collect_bag_items(bag, bag_id, email, storage_name=None, char_name=None):
 
         return f"{base_name} #{i}"
 
+    def _get_frenkey_texture_file(model_id, item_type):
+        if LOOTEX_AVAILABLE and Data:
+            data = Data()
+            item_data = data.Items[item_type].get(model_id)
+            if item_data:
+                return item_data.texture_file
+        return ''
+
     bag_items = OrderedDict()
 
     for item in bag.GetItems():
@@ -740,6 +749,7 @@ def _collect_bag_items(bag, bag_id, email, storage_name=None, char_name=None):
         item_id = item.item_id
         quantity = item.quantity
         slot = item.slot
+        item_type = item.item_type.ToInt()
 
         final_name = None
 
@@ -789,7 +799,13 @@ def _collect_bag_items(bag, bag_id, email, storage_name=None, char_name=None):
 
         # Always insert or update using the unique name
         if unique_name not in bag_items:
-            bag_items[unique_name] = OrderedDict({"model_id": model_id, "slot": OrderedDict()})
+            bag_items[unique_name] = OrderedDict(
+                {
+                    "model_id": model_id,
+                    "slot": OrderedDict(),
+                    "lootex_texture_file": _get_frenkey_texture_file(model_id, item_type),
+                }
+            )
 
         bag_items[unique_name]["slot"][str(slot)] = quantity
 
@@ -982,6 +998,11 @@ def draw_widget():
 
                                 for index, entry in enumerate(search_results):
                                     texture = get_texture_for_model(entry["model_id"])
+
+                                    if '0-File_Not_found' in texture:
+                                        lootex_texture = entry.get('lootex_texture_file')
+                                        if lootex_texture:
+                                            texture = lootex_texture
                                     PyImGui.table_next_row()
 
                                     # === ICON ===
@@ -1072,6 +1093,11 @@ def draw_widget():
                                                 info = items[item_name]
                                                 texture = get_texture_for_model(info["model_id"])
 
+                                                if '0-File_Not_found' in texture:
+                                                    lootex_texture = info.get('lootex_texture_file')
+                                                    if lootex_texture:
+                                                        texture = lootex_texture
+
                                                 PyImGui.table_next_row()
 
                                                 # === ICON COLUMN ===
@@ -1128,6 +1154,11 @@ def draw_widget():
                                         for item_name in filtered_items:
                                             info = items[item_name]
                                             texture = get_texture_for_model(info["model_id"])
+
+                                            if '0-File_Not_found' in texture:
+                                                lootex_texture = info.get('lootex_texture_file')
+                                                if lootex_texture:
+                                                    texture = lootex_texture
 
                                             PyImGui.table_next_row()
 
@@ -1258,10 +1289,7 @@ def json_tree_view(data):
 
 def main():
     try:
-        if (
-            not Routines.Checks.Map.MapValid()
-            or GLOBAL_CACHE.Player.InCharacterSelectScreen()
-        ):
+        if not Routines.Checks.Map.MapValid() or GLOBAL_CACHE.Player.InCharacterSelectScreen():
             # When swapping characters, reset everything
             return
 
