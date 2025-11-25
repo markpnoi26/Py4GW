@@ -74,7 +74,7 @@ class _EVENTS:
                             return
 
                         # success condition
-                        if Routines.Checks.Party.IsAllPartyMembersInRange(Range.Spellcast.value):
+                        if Routines.Checks.Party.IsAllPartyMembersInRange(Range.Earshot.value):
                             print("Party Member in range, resuming")
                             return
 
