@@ -1,8 +1,13 @@
 from datetime import date, datetime, timedelta
+from typing import Generator
+from Py4GWCoreLib.GlobalCache.ItemCache import Bag_enum
+from Widgets.frenkey.Core.utility import string_similarity
 from Widgets.frenkey.LootEx.data_collection import DataCollector
-from Widgets.frenkey.LootEx.enum import MaterialType, MerchantType, ModType, SalvageKitOption, SalvageOption, ItemAction
+from Widgets.frenkey.LootEx.enum import XUNLAI_STORAGE, MaterialType, MerchantType, ModType, SalvageKitOption, SalvageOption, ItemAction
 from Py4GWCoreLib import *
-from Widgets.frenkey.LootEx import data_collector, filter, loot_handling, models, settings, utility, ui_manager_extensions, item_configuration, cache
+from Widgets.frenkey.LootEx import loot_handling, models, settings, utility, ui_manager_extensions, item_configuration, cache
+from Widgets.frenkey.LootEx.salvaging import SalvageAction, SalvageActionState
+from Widgets.frenkey.LootEx.trading import ActionType, TraderAction, TraderActionState
 
 # TODO: Collect salvage data for items, so we can make better decisions on what to salvage and what not to salvage.
 # TODO: Add sorting options for the inventory and storage.
@@ -40,9 +45,13 @@ class InventoryHandler:
 
         self.inventory_changed: bool = False
         self.deposited = False
+        
         self.capacity_checked = False
         self.material_capacity = 2500
         
+        self.storage_check_timer = ThrottledTimer(2500)
+        
+        self.scraped_items : dict[tuple[ItemType, int], bool] = {}
         self.actions: dict[int, cache.Cached_Item] = {}
 
         # Initialize timers and action queues
@@ -72,7 +81,13 @@ class InventoryHandler:
         self.checked_storage_for_merchant_items: bool = False
 
         self.salvage_queue: dict[int, cache.Cached_Item] = {}
-        self.trader_queue: dict[int, InventoryHandler.TraderAction] = {}
+        
+        self.salvage_action : SalvageAction | None = None
+        self.salvaging_queue: dict[int, SalvageAction] = {}
+        
+        self.trader_action : TraderAction | None = None
+        self.trading_queue: dict[int, TraderAction] = {}
+        
         self.salvaged = False
         self.salvage_windows_updated: bool = False
         self.salvage_option: SalvageOption = SalvageOption.None_
@@ -102,6 +117,7 @@ class InventoryHandler:
         self.actions.clear()
         self.cached_inventory.clear()
         
+        
         self.SetPollingInterval(
             settings.profile.polling_interval if settings.profile else 1)
 
@@ -127,9 +143,13 @@ class InventoryHandler:
             list[tuple[int, int, int]]: A list of tuples containing item_id, ItemType, model_id and quantity.
         """
 
+        from Widgets.frenkey.LootEx.settings import Settings
+        settings = Settings()
+        
         if self.item_storage is None:
             storage, _ = utility.Util.GetZeroFilledBags(
-                Bag.Storage_1, Bag.Storage_14)
+                Bag.Storage_1, Bag(settings.max_xunlai_storage.value))
+            
             self.item_storage = [
                 (item_id, ItemType(GLOBAL_CACHE.Item.GetItemType(item_id)[0]), GLOBAL_CACHE.Item.GetModelID(
                     item_id), GLOBAL_CACHE.Item.Properties.GetQuantity(item_id))
@@ -869,8 +889,8 @@ class InventoryHandler:
        
     def IsSalvageAction(self, action: ItemAction) -> bool:
         return action in (ItemAction.Salvage_Common_Materials, ItemAction.Salvage_Rare_Materials, ItemAction.Salvage, ItemAction.Salvage_Mods)
-
-    def ProcessSalvageList(self):        
+        
+    def ProcessSalvageListX(self):        
         
         if self.salvage_queue and len(self.salvage_queue) > 0:            
             self.salvage_queue = {
@@ -1027,80 +1047,61 @@ class InventoryHandler:
 
         return False
 
-    class TraderAction:
-        class ActionType(Enum):
-            Buy = 1
-            Sell = 2
-            
-        def __init__(self, item: cache.Cached_Item, trader_type: MerchantType, action: ActionType = ActionType.Sell):
-            self.item = item
-            self.price_requested:bool = False
-            self.price :int  = 0
-            self.action = action
-            self.requested: datetime = datetime.min      
-            self.trader_type : MerchantType = trader_type    
-            
-            
-        def __call__(self, *args, **kwds):
-            match self.action:
-                case InventoryHandler.TraderAction.ActionType.Buy:
-                    if not self.price_requested:
-                        ConsoleLog(
-                            "LootEx", f"Requesting quote for buying item {self.item.name} ({self.item.id})", Console.MessageType.Info)
-                        GLOBAL_CACHE.Trading.Trader.RequestQuote(self.item.id)
-                        self.price_requested = True
-                        self.requested = datetime.now()
-                        return False
-                    
-                    self.price = GLOBAL_CACHE.Trading.Trader.GetQuotedValue()
-                    
-                    if self.price >= 0:
-                        if GLOBAL_CACHE.Trading.Trader.GetQuotedItemID() != self.item.id:
-                            time_since_request = datetime.now() - self.requested
-                            
-                            if time_since_request.total_seconds() > 1:
-                                self.price_requested = False
-                                
-                            return False
-                        
-                        ConsoleLog(
-                            "LootEx", f"Buying item {self.item.name} ({self.item.id}) for {utility.Util.format_currency(self.price)}", Console.MessageType.Info)
-                        GLOBAL_CACHE.Trading.Trader.BuyItem(self.item.id, self.price)
-                        return True
-                
-                case InventoryHandler.TraderAction.ActionType.Sell:
-                    if not self.price_requested:
-                        ConsoleLog(
-                            "LootEx", f"Requesting quote for selling item {self.item.name} ({self.item.id})", Console.MessageType.Info)
-                        GLOBAL_CACHE.Trading.Trader.RequestSellQuote(self.item.id)
-                        self.price_requested = True
-                        self.requested = datetime.now()
-                        return False
-                    
-                    self.price = GLOBAL_CACHE.Trading.Trader.GetQuotedValue()
-                    if self.price >= 0:
-                        if GLOBAL_CACHE.Trading.Trader.GetQuotedItemID() != self.item.id:
-                            time_since_request = datetime.now() - self.requested
-                            
-                            if time_since_request.total_seconds() > 1:
-                                self.price_requested = False
-                            
-                            return False
-                        
-                        ConsoleLog(
-                            "LootEx", f"Selling item {self.item.name} ({self.item.id}) for {utility.Util.format_currency(self.price)}", Console.MessageType.Info)
-                        GLOBAL_CACHE.Trading.Trader.SellItem(self.item.id, self.price)
-                        return True
-            
-    def ProcessTraderList(self):
-        for item_id, trader_action in self.trader_queue.items():
-            if trader_action.trader_type == self.merchant_type != MerchantType.None_ and trader_action():
-                self.trader_queue.pop(item_id)
-                self.inventory_changed = True
+    def ProcessTraderList(self):        
+        for item_id, action in list(self.trading_queue.items()):
+            if action.trader_type == self.merchant_type != MerchantType.None_:
+                # Start coroutine if not already started
+                if action.coroutine is None:
+                    action.coroutine = action.run()
+
+                state = action.coroutine.step()
+
+                if state in (TraderActionState.Completed, TraderActionState.Timeout):
+                    del self.trading_queue[item_id]
+
                 return True
-        
+
         return False
-    
+
+    def ProcessSalvageList(self):
+        if not self.salvaging_queue or len(self.salvaging_queue) == 0:
+            return False
+        
+        if not self.lesser_salvage_kits and not self.expert_salvage_kits:
+            return False
+        
+        
+        if self.salvage_action is None:
+            items_to_salvage = list(self.salvaging_queue.items())
+            # Begin with lowest quantity to free up inventory space faster
+            items_to_salvage.sort(key=lambda x: x[1].item.quantity)
+            
+            for _, action in items_to_salvage:
+                if action.item.salvage_option == SalvageOption.LesserCraftingMaterials and not self.lesser_salvage_kits:
+                    continue
+                
+                if action.item.salvage_option in (SalvageOption.RareCraftingMaterials, SalvageOption.Prefix, SalvageOption.Suffix, SalvageOption.Inherent) and not self.expert_salvage_kits:
+                    continue
+                
+                self.salvage_action = action
+                break
+        
+        if self.salvage_action is None:
+            return False
+        
+        # Start coroutine if not already started
+        if self.salvage_action.coroutine is None:
+            self.salvage_action.coroutine = self.salvage_action.run()
+
+        state = self.salvage_action.coroutine.step()
+
+        if state in (SalvageActionState.Completed, SalvageActionState.Timeout):
+            del self.salvaging_queue[self.salvage_action.item_id]
+            self.salvage_action = None
+
+        return True                
+        
+
     def GetTraderType(self, item: cache.Cached_Item) -> MerchantType:
         if item.item_type == ItemType.Rune_Mod:
             return MerchantType.RuneTrader
@@ -1277,10 +1278,46 @@ class InventoryHandler:
             has_empty_slot = item.id == 0 or has_empty_slot
             if item.id == 0:
                 continue
-            
-            if not data_collector.hasItem(item_id):
+        
+            ## Collect ingame data
+            if not item.data or not item.data.has_name(settings.language):
                 item.action = ItemAction.Collect_Data
                 result.actions[item_id] = item
+                data_collector.collect_item(item_id, settings.language)
+                continue
+                         
+            ## Collect the inventory icon and the minimum data required for processing
+            if not item.data.is_minimum_complete():  
+                ## Collect the inventory icon
+                if not item.data.inventory_icon:
+                    item.action = ItemAction.Collect_Data
+                    result.actions[item_id] = item
+                    
+                    if not (item.item_type, item.model_id) in self.scraped_items:
+                        data_collector.auto_assign_scraped_data(item.data)
+                        self.scraped_items[(item.item_type, item.model_id)] = True
+                            
+                    if not item.data.inventory_icon:
+                        continue
+                
+                ## Collect salvage data for salvageable items
+                if item.is_salvageable and not item.data.rare_salvage and not item.data.common_salvage:
+                    item.action = ItemAction.Collect_Data
+                    result.actions[item_id] = item
+                    
+                    if not (item.item_type, item.model_id) in self.scraped_items:
+                        data_collector.auto_assign_scraped_data(item.data)
+                        self.scraped_items[(item.item_type, item.model_id)] = True
+                        
+                    if not item.data.rare_salvage and not item.data.common_salvage:
+                        continue
+                             
+                ## Collect the english name at least, since we can not automate this, it stays until the user changes the language settings
+                if not item.data.has_name(ServerLanguage.English):
+                    item.action = ItemAction.Collect_Data
+                    result.actions[item_id] = item
+                    continue
+                
                 continue
             
             if item.is_blacklisted:
@@ -1486,28 +1523,6 @@ class InventoryHandler:
                 item.action = ItemAction.Identify
                 continue
 
-            # if ShouldSalvageItem(item):
-            #     salvage_option = self.GetSalvageOption(item)
-            #     if salvage_option is None:
-            #         continue
-
-            #     if self.IsSalvageAction(item.action):
-            #         # self.salvage_option = salvage_option
-
-            #         rarity_requires_confirmation = item.rarity >= Rarity.Blue
-            #         mods_require_confirmation = item.has_mods and salvage_option is not SalvageOption.LesserCraftingMaterials
-
-            #         item.salvage_option = salvage_option
-            #         item.salvage_requires_confirmation = rarity_requires_confirmation or mods_require_confirmation
-            #         item.salvage_requires_material_confirmation = item.has_mods and (salvage_option is SalvageOption.RareCraftingMaterials or salvage_option is SalvageOption.CraftingMaterials)
-                    
-            #         if not item in result.salvage_queue:
-            #             result.salvage_queue[item.id] = item
-                        
-            #         # ConsoleLog(
-            #         #     "LootEx", f"Adding item {item.name} ({item.id}) to salvage queue with option {salvage_option.name}", Console.MessageType.Debug)
-            #         continue
-
             if ShouldSellItemToMerchant(item):
                 item.action = ItemAction.Sell_To_Merchant
                 continue
@@ -1567,7 +1582,23 @@ class InventoryHandler:
         
         if not settings.profile or not settings.automatic_inventory_handling:
             return
-
+        
+        if self.storage_check_timer.IsExpired():
+            self.storage_check_timer.Reset()
+            increased = False
+            
+            for bag in XUNLAI_STORAGE:
+                items = GLOBAL_CACHE.ItemArray.GetItemArray([bag])
+                if any(item_id != 0 for item_id in items):
+                    max_xunlai_storage = Bag_enum(max(settings.max_xunlai_storage.value, bag.value))
+                    increased = settings.max_xunlai_storage.value < max_xunlai_storage.value
+                    settings.max_xunlai_storage = max_xunlai_storage
+                    
+            if increased:
+                ConsoleLog(
+                    "LootEx", f"Updated max xunlai storage to {settings.max_xunlai_storage.name} based on current storage usage.", Console.MessageType.Info)
+                settings.save()
+                
         if settings.profile.changed:
             settings.profile.changed = False
             self.reset()
@@ -1614,12 +1645,12 @@ class InventoryHandler:
                     continue
                 
                 if self.IsSalvageAction(item.action):
-                    if item.id not in self.salvage_queue:
-                        self.salvage_queue[item.id] = item
+                    if item.id not in self.salvaging_queue:
+                        self.salvaging_queue[item.id] = SalvageAction(item)
                 
                 if item.action == ItemAction.Sell_To_Trader:
-                    if item.id not in self.trader_queue and (not item.material or item.model_id not in self.data.Common_Materials or item.quantity >= 10):
-                        self.trader_queue[item.id] = InventoryHandler.TraderAction(item, self.GetTraderType(item), InventoryHandler.TraderAction.ActionType.Sell) 
+                    if item.id not in self.trading_queue and (not item.material or item.model_id not in self.data.Common_Materials or item.quantity >= 10):
+                        self.trading_queue[item.id] = TraderAction(item, self.GetTraderType(item), ActionType.Sell) 
 
             if self.merchant_timer.IsExpired():
                 self.merchant_timer.Reset()
@@ -1662,7 +1693,7 @@ class InventoryHandler:
                             continue
 
                         ConsoleLog(
-                            "LootEx", f"Identifying item: '{item.name}' ({item.id}) with kit {identificationKit.name} ({identificationKit.id})", Console.MessageType.Info)
+                            "LootEx", f"Identifying item: '{item.name} [{item.model_id}]' ({item.id}) with kit {identificationKit.name} ({identificationKit.id})", Console.MessageType.Info)
                         Inventory.IdentifyItem(item.id, identificationKit.id)
                         identificationKit.uses -= 1
 

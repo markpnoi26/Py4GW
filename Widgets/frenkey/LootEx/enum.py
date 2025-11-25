@@ -1,6 +1,19 @@
 from enum import Enum, IntEnum
+import os
+
+from Py4GW import Console
+from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
+from Py4GWCoreLib.GlobalCache.ItemCache import Bag_enum
 from Py4GWCoreLib.enums import ModelID
 from Py4GWCoreLib.enums_src.Item_enums import ItemType
+
+ALL_BAGS = GLOBAL_CACHE.ItemArray.CreateBagList(*range(Bag_enum.Backpack.value, Bag_enum.Max.value))
+XUNLAI_STORAGE = GLOBAL_CACHE.ItemArray.CreateBagList(*range(Bag_enum.Storage_1.value, Bag_enum.Storage_14.value + 1))
+CHARACTER_INVENTORY = GLOBAL_CACHE.ItemArray.CreateBagList(*range(Bag_enum.Backpack.value, Bag_enum.Equipment_Pack.value + 1), Bag_enum.Equipped_Items.value)
+ITEM_TEXTURE_FOLDER = os.path.join(Console.get_projects_path(), "Textures", "Items")
+
+MAX_CHARACTER_GOLD = 100000
+MAX_VAULT_GOLD = 1000000
 
 COMMON_MATERIALS: list[int] = [
     ModelID.Bone,
@@ -135,7 +148,7 @@ class ItemAction(IntEnum):
     Sell_To_Merchant = 10
     Sell_To_Trader = 11
     Destroy = 12
-    Deposit_Material = 13
+    Deposit_Material = 13    
         
 class ActionModsType(IntEnum):
     Any = 0

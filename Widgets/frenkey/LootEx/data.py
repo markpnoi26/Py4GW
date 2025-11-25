@@ -7,6 +7,7 @@ from typing import Optional
 from Py4GW import Console
 import Py4GW
 from Py4GWCoreLib.enums_src.GameData_enums import DyeColor
+from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Widgets.frenkey.LootEx import models
 from Widgets.frenkey.LootEx.enum import ItemCategory, ModType, ModsModels
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
@@ -28,6 +29,8 @@ class Data():
         # only initialize once
         if self._initialized:
             return
+        
+        ConsoleLog("LootEx", "Initializing Data Module", Console.MessageType.Debug)
         
         self._initialized = True
     
@@ -468,6 +471,149 @@ class Data():
         self.Materials: dict[int, models.Material] = {}
         self.Common_Materials: dict[int, models.Material] = {}
         self.Rare_Materials: dict[int, models.Material] = {}
+        self.Rare_Weapon_ModelIds: list[int] = [
+            ModelID.LesserStoneBlade,
+            ModelID.GreaterStoneBlade,
+            ModelID.ScorpionsBow,
+            ModelID.ScorpionsLust,
+            ModelID.BlackHawksLust,
+            ModelID.IthasBow,
+            ModelID.ChimericPrismFastcasting,
+            ModelID.ChimericPrismSoulReaping,
+            ModelID.ChimericPrismEnergyStorage,
+            ModelID.ChimericPrismDivineFavor,
+            ModelID.ChimericPrismSpawningPower,
+            ModelID.BoneIdolSoulReaping,
+            ModelID.BoneIdolBloodMagic,
+            ModelID.BoneIdolCurses,
+            ModelID.BoneIdolDeathMagic,
+            ModelID.StormEmberAirMagic,
+            ModelID.StormEmberEarthMagic,
+            ModelID.StormEmberEnergyStorage,
+            ModelID.StormEmberFireMagic,
+            ModelID.StormEmberWaterMagic,
+            ModelID.LionsPrideAirMagic,
+            ModelID.LionsPrideEarthMagic,
+            ModelID.LionsPrideEnergyStorage,
+            ModelID.LionsPrideFireMagic,
+            ModelID.LionsPrideWaterMagic,
+            ModelID.TigersPrideFastcasting,
+            ModelID.TigersPrideSoulReaping,
+            ModelID.TigersPrideEnergyStorage,
+            ModelID.TigersPrideDivineFavor,
+            ModelID.TigersPrideCommuning,
+            ModelID.HeavensArchDivineFavor,
+            ModelID.HeavensArchHealingPrayers,
+            ModelID.HeavensArchProtectionPrayers,
+            ModelID.HeavensArchSmitingPrayers,
+            ModelID.FoxsGreedDivineFavor,
+            ModelID.FoxsGreedHealingPrayers,
+            ModelID.FoxsGreedProtectionPrayers,
+            ModelID.FoxsGreedSmitingPrayers,
+            ModelID.FoxsGreedCommuning,
+            ModelID.FoxsGreedSpawningPower,
+            ModelID.FoxsGreedRestoration,
+            ModelID.FoxsGreedChanneling,
+            ModelID.WolfsGreedDivineFavor,
+            ModelID.WolfsGreedHealingPrayers,
+            ModelID.WolfsGreedProtectionPrayers,
+            ModelID.WolfsGreedSmitingPrayers,
+            ModelID.WolfsGreedCommuning,
+            ModelID.WolfsGreedSpawningPower,
+            ModelID.WolfsGreedRestoration,
+            ModelID.WolfsGreedChanneling,
+            ModelID.CensorsIconProtectionPrayers,
+            ModelID.CensorsIconSmitingPrayers,
+            ModelID.CensorsIconDivineFavor,
+            ModelID.CensorsIconHealingPrayers,
+            ModelID.LesserEtchedSword,
+            ModelID.GreaterEtchedSword,
+            ModelID.LesserGraniteEdge,
+            ModelID.GreaterGraniteEdge,
+            ModelID.Stoneblade,
+            ModelID.FuriousBonecrusher,
+            ModelID.EtchedSword,
+            ModelID.BearsSloth,
+            ModelID.RhinosSloth,
+            ModelID.QuicksilverDomination,
+            ModelID.QuicksilverFastcasting,
+            ModelID.QuicksilverIllusion,
+            ModelID.QuicksilverInspiration,
+            ModelID.UnicornsWrathDomination,
+            ModelID.UnicornsWrathFastcasting,
+            ModelID.UnicornsWrathIllusion,
+            ModelID.UnicornsWrathInspiration,
+            ModelID.UnicornsWrathSoulReaping,
+            ModelID.UnicornsWrathEnergyStorage,
+            ModelID.UnicornsWrathDivineFavor,
+            ModelID.UnicornsWrathCommuning,
+            ModelID.PeacocksWrathDomination,
+            ModelID.PeacocksWrathFastcasting,
+            ModelID.PeacocksWrathIllusion,
+            ModelID.PeacocksWrathInspiration,
+            ModelID.BronzeGuardianTactics,
+            ModelID.BronzeGuardianStrength,
+            ModelID.BronzeGuardianLeadership,
+            ModelID.HogsGluttonyTactics,
+            ModelID.HogsGluttonyStrength,
+            ModelID.HogsGluttonyLeadership,
+            ModelID.SpidersGluttonyTactics,
+            ModelID.SpidersGluttonyStrength,
+            ModelID.SpidersGluttonyLeadership,
+            ModelID.CanthanTargeTactics,
+            ModelID.CanthanTargeStrength,
+            ModelID.CanthanTargeLeadership,
+            ModelID.DeathsHeadSoulReaping,
+            ModelID.DeathsHeadBloodMagic,
+            ModelID.DeathsHeadCurses,
+            ModelID.DeathsHeadDeathMagic,
+            ModelID.SnakesEnvySoulReaping,
+            ModelID.SnakesEnvyBloodMagic,
+            ModelID.SnakesEnvyCurses,
+            ModelID.SnakesEnvyDeathMagic,
+            ModelID.DragonsEnvyFastcasting,
+            ModelID.DragonsEnvySoulReaping,
+            ModelID.DragonsEnvyEnergyStorage,
+            ModelID.DragonsEnvyDivineFavor,
+            ModelID.DragonsEnvyCommuning,
+            ModelID.DragonFangs,
+            ModelID.OminousAegisTactics,
+            ModelID.OminousAegisStrength,
+            ModelID.OminousAegisLeadership,
+            ModelID.SpiritbinderCommuning,
+            ModelID.SpiritbinderSpawningPower,
+            ModelID.SpiritbinderRestoration,
+            ModelID.SpiritbinderChanneling,
+            ModelID.Soulbreaker,
+            ModelID.JapanAnniversaryShieldStrength,
+            ModelID.JapanAnniversaryShieldLeadership,
+            ModelID.Sunspear,
+            ModelID.DarksteelLongbow,
+            ModelID.GlacialBlade,
+            ModelID.GlacialBlades,
+            ModelID.HourglassStaffDomination,
+            ModelID.HourglassStaffFastcasting,
+            ModelID.HourglassStaffIllusion,
+            ModelID.HourglassStaffInspiration,
+            ModelID.HourglassStaffSoulReaping,
+            ModelID.HourglassStaffBloodMagic,
+            ModelID.HourglassStaffCurses,
+            ModelID.HourglassStaffDeathMagic,
+            ModelID.HourglassStaffAirMagic,
+            ModelID.HourglassStaffEarthMagic,
+            ModelID.HourglassStaffEnergyStorage,
+            ModelID.HourglassStaffFireMagic,
+            ModelID.HourglassStaffWaterMagic,
+            ModelID.HourglassStaffDivineFavor,
+            ModelID.HourglassStaffHealingPrayers,
+            ModelID.HourglassStaffProtectionPrayers,
+            ModelID.HourglassStaffSmitingPrayers,
+            ModelID.HourglassStaffCommuning,
+            ModelID.HourglassStaffSpawningPower,
+            ModelID.HourglassStaffRestoration,
+            ModelID.HourglassStaffChanneling,
+        ]
+        
         self.Rare_Weapon_Names = [
                 # Dungeon & Elite Area weapons
                     "Astral Staff",
@@ -846,6 +992,8 @@ class Data():
         file_directory = os.path.dirname(os.path.abspath(__file__))
         data_directory = os.path.join(file_directory, "data")
         path = os.path.join(data_directory, "items.json")
+        
+        self.Items.clear()
 
         ConsoleLog(
             "LootEx", f"Loading items...", Console.MessageType.Debug)
@@ -876,7 +1024,6 @@ class Data():
                             self.Items.add_item(item)
                         else:
                             self.Items[item_type][model_id].update(item)
-              
               
         local_path = os.path.join(Console.get_projects_path(), "Widgets", "Config", "LootEx", "items.json")
         if os.path.exists(local_path):
@@ -926,7 +1073,7 @@ class Data():
         account_name = GLOBAL_CACHE.Player.GetAccountEmail()
         account_directory = os.path.join(self.get_data_collection_directory(), account_name)
     
-        data_directory = account_directory if shared_file else data_directory
+        data_directory = data_directory if shared_file else account_directory
 
         path = os.path.join(data_directory, "items.json")
 
@@ -957,11 +1104,12 @@ class Data():
         
         
         if shared_file:
+            all_item_json_string = self.Items.to_json()
             local_path = os.path.join(Console.get_projects_path(), "Widgets", "Config", "LootEx", "items.json")
             
             with open(local_path, 'w', encoding='utf-8') as file:
-                json.dump(json_string, file, indent=4, ensure_ascii=False)
-
+                json.dump(all_item_json_string, file, indent=4, ensure_ascii=False)
+                
     def MergeDiffItems(self):
         path = self.get_data_collection_directory()
         
@@ -995,6 +1143,8 @@ class Data():
             
                 # Delete the diff file after merging
                 os.remove(file_path)
+                ConsoleLog(
+                    "LootEx", f"Delete {file_path}...", Console.MessageType.Debug)
         
         if items_found:
             ConsoleLog(
@@ -1025,5 +1175,6 @@ class Data():
             
                 # Delete the diff file after merging
                 os.remove(file_path)
+        
         if mods_found:
             self.SaveWeaponMods(shared_file=True, mods=self.Weapon_Mods)

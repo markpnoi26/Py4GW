@@ -3,6 +3,7 @@ from PyItem import DyeInfo, ItemModifier
 from Py4GWCoreLib import Item
 from Py4GWCoreLib.enums import Attribute, DyeColor, ItemType, ModelID, Rarity
 from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
+from Py4GWCoreLib.py4gwcorelib_src.Console import Console, ConsoleLog
 from Widgets.frenkey.LootEx.enum import ModType, ModifierIdentifier
 from Widgets.frenkey.LootEx.models import ItemModifiersInformation, RuneModInfo, WeaponModInfo
 
@@ -18,6 +19,7 @@ class Cached_Item:
         item = Item.item_instance(item_id) if item_id > 0 else None
         
         self.id: int = item_id
+        self.is_valid: bool = item.IsItemValid(item_id) if item else False
         self.model_id: int = item.model_id if item else -1
         self.model_file_id: int = item.model_file_id if item else -1
         self.item_type: ItemType = ItemType(
@@ -27,6 +29,7 @@ class Cached_Item:
         
         self.data: models.Item | None = data.Items.get_item(
             self.item_type, self.model_id) if self.model_id > -1 and self.item_type in data.Items else None
+        self.wiki_data_scraped: bool = self.data.wiki_scraped if self.data else False
 
         self.is_identified: bool = item.is_identified if item else False
         self.value: int = item.value if item else 0
@@ -65,6 +68,9 @@ class Cached_Item:
         if self.item_type == ItemType.Materials_Zcoins:
             if self.model_id in data.Materials:
                 self.material = data.Materials[self.model_id]
+        
+        self.common_material : bool = self.material in data.Common_Materials.values() if self.material else False
+        self.rare_material : bool = self.material in data.Rare_Materials.values() if self.material else False
 
         self.skin = self.data.inventory_icon if self.data else None
         
@@ -208,9 +214,10 @@ class Cached_Item:
     
     def Update(self):
         item = Item.item_instance(self.id) if self.id > 0 else None
-        if item is None:
+        if item is None or not item.IsItemValid(self.id):
             return
         
+        self.is_inventory_item = item.is_inventory_item
         self.quantity = item.quantity
         self.uses = item.uses
         self.is_customized = item.is_customized

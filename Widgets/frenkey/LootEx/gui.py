@@ -1,27 +1,25 @@
-from argparse import Action
-import re
 import shutil
 from typing import Callable
 import webbrowser
 from datetime import datetime
 
+from Py4GWCoreLib.GlobalCache.ItemCache import Bag_enum
 from Py4GWCoreLib.ImGui_src.types import TextDecorator
 from Widgets.frenkey.Core.iterable import chunked
-from Widgets.frenkey.Core.utility import ImGuiIniReader, get_image_name, string_similarity
+from Widgets.frenkey.Core.utility import ImGuiIniReader, string_similarity
 from Widgets.frenkey.Core.gui import GUI
 from Widgets.frenkey.Core import ex_style, texture_map
-from Widgets.frenkey.LootEx import skin_rule, loot_handling, profile, settings, price_check, item_configuration, utility, enum, cache, ui_manager_extensions, inventory_handling, wiki_scraper, filter, models, messaging, data_collector,wiki_scraper
+from Widgets.frenkey.LootEx import skin_rule, loot_handling, settings, price_check, utility, cache, ui_manager_extensions, inventory_handling, models, messaging
 from Widgets.frenkey.LootEx.data import Data
 from Widgets.frenkey.LootEx.data_collection import DataCollector
-from Widgets.frenkey.LootEx.item_configuration import ItemConfiguration, ConfigurationCondition
+from Widgets.frenkey.LootEx.enum import CHARACTER_INVENTORY, XUNLAI_STORAGE, ActionModsType, ItemAction, ItemCategory, ItemSubCategory, ModType
+from Widgets.frenkey.LootEx.item_configuration import ConfigurationCondition
 from Widgets.frenkey.LootEx.filter import Filter
 from Widgets.frenkey.LootEx.profile import Profile
 from Widgets.frenkey.LootEx.texture_scraping_models import ScrapedItem
 from Widgets.frenkey.LootEx.ui_manager_extensions import UIManagerExtensions
 from Py4GWCoreLib import *
 
-import ctypes
-from ctypes import windll
 from Py4GWCoreLib.GlobalCache.SharedMemory import Py4GWSharedMemoryManager
 
 data = Data()
@@ -113,22 +111,22 @@ class UI:
             self.description: str = description
             self.icon: str = icon
     
-    class ActionInfos(dict[enum.ItemAction, "UI.ActionInfo"]):
-        def __init__(self, dict : dict[enum.ItemAction, "UI.ActionInfo"] = {}):
+    class ActionInfos(dict[ItemAction, "UI.ActionInfo"]):
+        def __init__(self, dict : dict[ItemAction, "UI.ActionInfo"] = {}):
             super().__init__()
 
             for action, info in dict.items():
                 self[action] = info                
         
-        def __getitem__(self, key: enum.ItemAction) -> "UI.ActionInfo":
+        def __getitem__(self, key: ItemAction) -> "UI.ActionInfo":
             return super().__getitem__(key)
         
-        def get_texture(self, action: enum.ItemAction, default = None):
+        def get_texture(self, action: ItemAction, default = None):
             """
             Returns the texture path for the given action.
             
             Args:
-                action (enum.ItemAction): The action for which to get the texture.
+                action (ItemAction): The action for which to get the texture.
             
             Returns:
                 str: The texture path for the action.
@@ -138,12 +136,12 @@ class UI:
             
             return self[action].icon
         
-        def get_name(self, action: enum.ItemAction, default = None):
+        def get_name(self, action: ItemAction, default = None):
             """
             Returns the name for the given action.
             
             Args:
-                action (enum.ItemAction): The action for which to get the name.
+                action (ItemAction): The action for which to get the name.
             
             Returns:
                 str: The name for the action.
@@ -153,12 +151,12 @@ class UI:
             
             return self[action].name
         
-        def get_description(self, action: enum.ItemAction, default = None):
+        def get_description(self, action: ItemAction, default = None):
             """
             Returns the description for the given action.
             
             Args:
-                action (enum.ItemAction): The action for which to get the description.
+                action (ItemAction): The action for which to get the description.
             
             Returns:
                 str: The description for the action.
@@ -213,6 +211,10 @@ class UI:
         self.textures_folder = os.path.join(Console.get_projects_path(), "Textures")
         self.icon_textures_path = os.path.join(file_directory, "textures")
         self.item_textures_path = os.path.join(self.textures_folder, "Items")
+        
+        self.collection_timer = ThrottledTimer()
+        self.collection_items: dict[str, dict[int, cache.Cached_Item]] = {}
+        
         self.actions_timer = ThrottledTimer()
         self.action_summary: inventory_handling.InventoryHandler.ActionsSummary | None = None
         
@@ -221,24 +223,24 @@ class UI:
         self.scraped_item : ScrapedItem | None = None
         
         self.action_infos : UI.ActionInfos = UI.ActionInfos({
-            enum.ItemAction.Loot: UI.ActionInfo("Loot (Pick Up)", "If the item is dropped, pick it up.", texture_map.CoreTextures.UI_Reward_Bag_Hovered.value),
-            enum.ItemAction.Collect_Data: UI.ActionInfo("Collect Data", "Collect data about the item.", os.path.join(self.icon_textures_path, "wiki_logo.png")),
-            enum.ItemAction.Identify: UI.ActionInfo("Identify", "Use an Identification Kit to identify the item.", data.Items.get_texture_by_name("Identification Kit.png")),
-            enum.ItemAction.Hold: UI.ActionInfo("Hold", "Hold on to the item without stashing.", texture_map.CoreTextures.UI_Backpack.value),
-            enum.ItemAction.Stash: UI.ActionInfo("Stash", "Stash the item in your Xunlai Chest.", os.path.join(self.icon_textures_path, "xunlai_chest.png")),
-            enum.ItemAction.Salvage_Mods: UI.ActionInfo("Salvage Mods", "Salvage the mods from the item.", data.Items[ItemType.Rune_Mod][17059].texture_file),
-            enum.ItemAction.Salvage: UI.ActionInfo("Salvage for Common or Rare Materials", "Use a Salvage Kit to salvage the item.", os.path.join(self.icon_textures_path, "expert_or_common_salvage_kit.png")),
-            enum.ItemAction.Salvage_Common_Materials: UI.ActionInfo("Salvage Common Materials", "Use a Salvage Kit to salvage common materials from the item.", data.Items.get_texture_by_name("Salvage Kit.png")),
-            enum.ItemAction.Salvage_Rare_Materials: UI.ActionInfo("Salvage Rare Materials", "Use an Expert Salvage Kit to salvage rare materials from the item.", data.Items.get_texture_by_name("Expert Salvage Kit.png")),
-            enum.ItemAction.Sell_To_Merchant: UI.ActionInfo("Sell to Merchant", "Sell the item to a merchant for gold.", texture_map.CoreTextures.UI_Gold.value),
-            enum.ItemAction.Sell_To_Trader: UI.ActionInfo("Sell to Trader (Runes, Scrolls, Dyes...)", "Sell the item to a trader for gold.", texture_map.CoreTextures.UI_Gold.value),
-            enum.ItemAction.Destroy: UI.ActionInfo("Destroy", "Destroy the item permanently.", texture_map.CoreTextures.UI_Destroy.value),
-            enum.ItemAction.Deposit_Material: UI.ActionInfo("Deposit Material", "Deposit the item as a material in your Xunlai Chest.", os.path.join(self.icon_textures_path, "xunlai_chest.png")),
-            enum.ItemAction.NONE: UI.ActionInfo("No Action", "No action will be performed on the item.", ""),
+            ItemAction.Loot: UI.ActionInfo("Loot (Pick Up)", "If the item is dropped, pick it up.", texture_map.CoreTextures.UI_Reward_Bag_Hovered.value),
+            ItemAction.Collect_Data: UI.ActionInfo("Collect Data", "Collect data about the item.", os.path.join(self.icon_textures_path, "wiki_logo.png")),
+            ItemAction.Identify: UI.ActionInfo("Identify", "Use an Identification Kit to identify the item.", data.Items.get_texture_by_name("Identification Kit.png")),
+            ItemAction.Hold: UI.ActionInfo("Hold", "Hold on to the item without stashing.", texture_map.CoreTextures.UI_Backpack.value),
+            ItemAction.Stash: UI.ActionInfo("Stash", "Stash the item in your Xunlai Chest.", os.path.join(self.icon_textures_path, "xunlai_chest.png")),
+            ItemAction.Salvage_Mods: UI.ActionInfo("Salvage Mods", "Salvage the mods from the item.", data.Items[ItemType.Rune_Mod][17059].texture_file),
+            ItemAction.Salvage: UI.ActionInfo("Salvage for Common or Rare Materials", "Use a Salvage Kit to salvage the item.", os.path.join(self.icon_textures_path, "expert_or_common_salvage_kit.png")),
+            ItemAction.Salvage_Common_Materials: UI.ActionInfo("Salvage Common Materials", "Use a Salvage Kit to salvage common materials from the item.", data.Items.get_texture_by_name("Salvage Kit.png")),
+            ItemAction.Salvage_Rare_Materials: UI.ActionInfo("Salvage Rare Materials", "Use an Expert Salvage Kit to salvage rare materials from the item.", data.Items.get_texture_by_name("Expert Salvage Kit.png")),
+            ItemAction.Sell_To_Merchant: UI.ActionInfo("Sell to Merchant", "Sell the item to a merchant for gold.", texture_map.CoreTextures.UI_Gold.value),
+            ItemAction.Sell_To_Trader: UI.ActionInfo("Sell to Trader (Runes, Scrolls, Dyes...)", "Sell the item to a trader for gold.", texture_map.CoreTextures.UI_Gold.value),
+            ItemAction.Destroy: UI.ActionInfo("Destroy", "Destroy the item permanently.", texture_map.CoreTextures.UI_Destroy.value),
+            ItemAction.Deposit_Material: UI.ActionInfo("Deposit Material", "Deposit the item as a material in your Xunlai Chest.", os.path.join(self.icon_textures_path, "xunlai_chest.png")),
+            ItemAction.NONE: UI.ActionInfo("No Action", "No action will be performed on the item.", ""),
         })        
         self.keep_actions = [
-            enum.ItemAction.Hold,
-            enum.ItemAction.Stash
+            ItemAction.Hold,
+            ItemAction.Stash
         ]
         self.keep_action_names = [self.action_infos[action].name for action in self.keep_actions]
         self.py_io = PyImGui.get_io()
@@ -306,47 +308,47 @@ class UI:
         self.inherent_names = ["Any"]
         self.inventory_coords: Optional[settings.FrameCoords] = None
         
-        self.mod_textures : dict[ItemType, dict[enum.ModType, str]] = {
+        self.mod_textures : dict[ItemType, dict[ModType, str]] = {
             ItemType.Axe: {
-                enum.ModType.Prefix: data.Items.get_texture_by_name("Axe Haft"),
-                enum.ModType.Suffix: data.Items.get_texture_by_name("Axe Grip"),
+                ModType.Prefix: data.Items.get_texture_by_name("Axe Haft"),
+                ModType.Suffix: data.Items.get_texture_by_name("Axe Grip"),
             },
             ItemType.Bow: {
-                enum.ModType.Prefix: data.Items.get_texture_by_name("Bow String"),
-                enum.ModType.Suffix: data.Items.get_texture_by_name("Bow Grip"),
+                ModType.Prefix: data.Items.get_texture_by_name("Bow String"),
+                ModType.Suffix: data.Items.get_texture_by_name("Bow Grip"),
             },
             ItemType.Offhand: {
-                enum.ModType.Suffix: data.Items.get_texture_by_name("Focus Core"),
+                ModType.Suffix: data.Items.get_texture_by_name("Focus Core"),
             },
             ItemType.Hammer: {
-                enum.ModType.Prefix: data.Items.get_texture_by_name("Hammer Haft"),
-                enum.ModType.Suffix: data.Items.get_texture_by_name("Hammer Grip"),
+                ModType.Prefix: data.Items.get_texture_by_name("Hammer Haft"),
+                ModType.Suffix: data.Items.get_texture_by_name("Hammer Grip"),
             },
             ItemType.Wand: {
-                enum.ModType.Suffix: data.Items.get_texture_by_name("Wand Wrapping"),
+                ModType.Suffix: data.Items.get_texture_by_name("Wand Wrapping"),
             },
             ItemType.Shield: {
-                enum.ModType.Suffix: data.Items.get_texture_by_name("Shield Handle"),                        
+                ModType.Suffix: data.Items.get_texture_by_name("Shield Handle"),                        
             },
             ItemType.Staff: {
-                enum.ModType.Prefix: data.Items.get_texture_by_name("Staff Head"),
-                enum.ModType.Suffix: data.Items.get_texture_by_name("Staff Wrapping"),
+                ModType.Prefix: data.Items.get_texture_by_name("Staff Head"),
+                ModType.Suffix: data.Items.get_texture_by_name("Staff Wrapping"),
             },
             ItemType.Sword: {
-                enum.ModType.Prefix: data.Items.get_texture_by_name("Sword Hilt"),
-                enum.ModType.Suffix: data.Items.get_texture_by_name("Sword Pommel"),
+                ModType.Prefix: data.Items.get_texture_by_name("Sword Hilt"),
+                ModType.Suffix: data.Items.get_texture_by_name("Sword Pommel"),
             },
             ItemType.Daggers: {
-                enum.ModType.Prefix: data.Items.get_texture_by_name("Dagger Tang"),
-                enum.ModType.Suffix: data.Items.get_texture_by_name("Dagger Handle"),
+                ModType.Prefix: data.Items.get_texture_by_name("Dagger Tang"),
+                ModType.Suffix: data.Items.get_texture_by_name("Dagger Handle"),
             },
             ItemType.Spear: {
-                enum.ModType.Prefix: data.Items.get_texture_by_name("Spearhead"),
-                enum.ModType.Suffix: data.Items.get_texture_by_name("Spear Grip"),
+                ModType.Prefix: data.Items.get_texture_by_name("Spearhead"),
+                ModType.Suffix: data.Items.get_texture_by_name("Spear Grip"),
             },
             ItemType.Scythe: {
-                enum.ModType.Prefix: data.Items.get_texture_by_name("Scythe Snathe"),
-                enum.ModType.Suffix: data.Items.get_texture_by_name("Scythe Grip"),
+                ModType.Prefix: data.Items.get_texture_by_name("Scythe Snathe"),
+                ModType.Suffix: data.Items.get_texture_by_name("Scythe Grip"),
             },                            
         }
         
@@ -466,13 +468,13 @@ class UI:
         self.bag_index = 0
         
         for mod in data.Weapon_Mods.values():
-            if mod.mod_type == enum.ModType.Prefix:
+            if mod.mod_type == ModType.Prefix:
                 self.prefix_names.append(mod.name)
 
-            elif mod.mod_type == enum.ModType.Suffix:
+            elif mod.mod_type == ModType.Suffix:
                 self.suffix_names.append(mod.name)
 
-            elif mod.mod_type == enum.ModType.Inherent:
+            elif mod.mod_type == ModType.Inherent:
                 self.inherent_names.append(mod.name)
 
         sorted_item_types = [
@@ -522,15 +524,15 @@ class UI:
         ]
         
         self.filter_actions = [
-            enum.ItemAction.Loot,
-            enum.ItemAction.Hold,
-            enum.ItemAction.Stash,
-            enum.ItemAction.Salvage,
-            enum.ItemAction.Salvage_Common_Materials,
-            enum.ItemAction.Salvage_Rare_Materials,
-            enum.ItemAction.Sell_To_Merchant,
-            enum.ItemAction.Sell_To_Trader,
-            enum.ItemAction.Destroy,
+            ItemAction.Loot,
+            ItemAction.Hold,
+            ItemAction.Stash,
+            ItemAction.Salvage,
+            ItemAction.Salvage_Common_Materials,
+            ItemAction.Salvage_Rare_Materials,
+            ItemAction.Sell_To_Merchant,
+            ItemAction.Sell_To_Trader,
+            ItemAction.Destroy,
         ]
         
         default_item_types = [
@@ -554,8 +556,8 @@ class UI:
             ]
         ]
         
-        self.action_item_types_map : dict[enum.ItemAction, list[ItemType]] = {            
-            enum.ItemAction.Loot : [
+        self.action_item_types_map : dict[ItemAction, list[ItemType]] = {            
+            ItemAction.Loot : [
                 item_type for item_type in sorted_item_types if item_type not in [
                     ItemType.Weapon,
                     ItemType.MartialWeapon,
@@ -564,7 +566,7 @@ class UI:
                     ItemType.SpellcastingWeapon,
                 ]
             ],
-            enum.ItemAction.Stash : [
+            ItemAction.Stash : [
                 item_type for item_type in sorted_item_types if item_type not in [
                     ItemType.Weapon,
                     ItemType.MartialWeapon,
@@ -574,7 +576,7 @@ class UI:
                     ItemType.Bundle,
                 ]
             ],
-            enum.ItemAction.Salvage : [
+            ItemAction.Salvage : [
                 ItemType.Axe,
                 ItemType.Bow,
                 ItemType.Daggers,
@@ -591,7 +593,7 @@ class UI:
                 ItemType.Salvage,
                 ItemType.Trophy,
             ],
-            enum.ItemAction.Salvage_Common_Materials : [
+            ItemAction.Salvage_Common_Materials : [
                 ItemType.Axe,
                 ItemType.Bow,
                 ItemType.Daggers,
@@ -608,7 +610,7 @@ class UI:
                 ItemType.Salvage,
                 ItemType.Trophy,
             ],
-            enum.ItemAction.Salvage_Rare_Materials : [
+            ItemAction.Salvage_Rare_Materials : [
                 ItemType.Axe,
                 ItemType.Bow,
                 ItemType.Daggers,
@@ -625,14 +627,14 @@ class UI:
                 ItemType.Salvage,
                 ItemType.Trophy,
             ],
-            enum.ItemAction.Sell_To_Merchant : default_item_types,
-            enum.ItemAction.Sell_To_Trader : [
+            ItemAction.Sell_To_Merchant : default_item_types,
+            ItemAction.Sell_To_Trader : [
                 ItemType.Scroll,
                 ItemType.Dye,
                 ItemType.Materials_Zcoins,
                 ItemType.Rune_Mod,
             ],
-            enum.ItemAction.Destroy : default_item_types,
+            ItemAction.Destroy : default_item_types,
         }
         
         self.filter_action_names = [
@@ -640,15 +642,15 @@ class UI:
         ]
                 
         self.item_actions = [
-            enum.ItemAction.Loot,
-            enum.ItemAction.Hold,
-            enum.ItemAction.Stash,
-            enum.ItemAction.Sell_To_Merchant,
-            enum.ItemAction.Sell_To_Trader,
-            enum.ItemAction.Salvage,
-            enum.ItemAction.Salvage_Common_Materials,
-            enum.ItemAction.Salvage_Rare_Materials,
-            enum.ItemAction.Destroy,
+            ItemAction.Loot,
+            ItemAction.Hold,
+            ItemAction.Stash,
+            ItemAction.Sell_To_Merchant,
+            ItemAction.Sell_To_Trader,
+            ItemAction.Salvage,
+            ItemAction.Salvage_Common_Materials,
+            ItemAction.Salvage_Rare_Materials,
+            ItemAction.Destroy,
         ]
         self.item_action_names = [
             self.action_infos[a].name if a in self.action_infos else a.name for a in self.item_actions 
@@ -673,9 +675,9 @@ class UI:
         self.sharedMemoryManager = Py4GWSharedMemoryManager()
         self.filter_popup = False
 
-        self.action_heights: dict[enum.ItemAction, float] = {
-                            enum.ItemAction.Salvage: 250,
-                            enum.ItemAction.Stash: 75,
+        self.action_heights: dict[ItemAction, float] = {
+                            ItemAction.Salvage: 250,
+                            ItemAction.Stash: 75,
                         }
         self.selected_filter: Optional[ItemFilter] = None
         self.filters : list[ItemFilter] = [
@@ -702,21 +704,21 @@ class UI:
                 ItemType.Gloves,
             ]),
             ItemFilter("Upgrades", lambda item: item.item_type == ItemType.Rune_Mod),
-            ItemFilter("Consumables", lambda item: item.category == enum.ItemCategory.Alcohol or
-                                                    item.category == enum.ItemCategory.Sweet or
-                                                    item.category == enum.ItemCategory.Party or
-                                                    item.category == enum.ItemCategory.DeathPenaltyRemoval),
-            ItemFilter("Alcohol", lambda item: item.category == enum.ItemCategory.Alcohol),
-            ItemFilter("Sweets", lambda item: item.category == enum.ItemCategory.Sweet),
-            ItemFilter("Party", lambda item: item.category == enum.ItemCategory.Party),
-            ItemFilter("Death Penalty Removal", lambda item: item.category == enum.ItemCategory.DeathPenaltyRemoval),
-            ItemFilter("Scrolls", lambda item: item.category == enum.ItemCategory.Scroll),
-            ItemFilter("Tomes", lambda item: item.category == enum.ItemCategory.Tome),
-            ItemFilter("Keys", lambda item: item.category == enum.ItemCategory.Key),
-            ItemFilter("Materials", lambda item: item.category == enum.ItemCategory.Material),
-            ItemFilter("Trophies", lambda item: item.category == enum.ItemCategory.Trophy),
-            ItemFilter("Reward Trophies", lambda item: item.category == enum.ItemCategory.RewardTrophy),
-            ItemFilter("Quest Items", lambda item: item.category == enum.ItemCategory.QuestItem), 
+            ItemFilter("Consumables", lambda item: item.category == ItemCategory.Alcohol or
+                                                    item.category == ItemCategory.Sweet or
+                                                    item.category == ItemCategory.Party or
+                                                    item.category == ItemCategory.DeathPenaltyRemoval),
+            ItemFilter("Alcohol", lambda item: item.category == ItemCategory.Alcohol),
+            ItemFilter("Sweets", lambda item: item.category == ItemCategory.Sweet),
+            ItemFilter("Party", lambda item: item.category == ItemCategory.Party),
+            ItemFilter("Death Penalty Removal", lambda item: item.category == ItemCategory.DeathPenaltyRemoval),
+            ItemFilter("Scrolls", lambda item: item.category == ItemCategory.Scroll),
+            ItemFilter("Tomes", lambda item: item.category == ItemCategory.Tome),
+            ItemFilter("Keys", lambda item: item.category == ItemCategory.Key),
+            ItemFilter("Materials", lambda item: item.category == ItemCategory.Material),
+            ItemFilter("Trophies", lambda item: item.category == ItemCategory.Trophy),
+            ItemFilter("Reward Trophies", lambda item: item.category == ItemCategory.RewardTrophy),
+            ItemFilter("Quest Items", lambda item: item.category == ItemCategory.QuestItem), 
             ItemFilter("Miniatures", lambda item: item.item_type == ItemType.Minipet),   
         ]
         self.selected_skin_filter: Optional[ItemFilter] = None
@@ -750,22 +752,22 @@ class UI:
             ] for item_type in [item.item_type for item in rule.get_items()])),
             RuleFilter("Upgrades", lambda rule: any(item.item_type == ItemType.Rune_Mod for item in rule.get_items())),
             RuleFilter("Consumables", lambda rule: any(item.category in [
-                enum.ItemCategory.Alcohol,
-                enum.ItemCategory.Sweet,
-                enum.ItemCategory.Party,
-                enum.ItemCategory.DeathPenaltyRemoval
+                ItemCategory.Alcohol,
+                ItemCategory.Sweet,
+                ItemCategory.Party,
+                ItemCategory.DeathPenaltyRemoval
             ] for item in rule.get_items())),
-            RuleFilter("Alcohol", lambda rule: any(item.category == enum.ItemCategory.Alcohol for item in rule.get_items())),
-            RuleFilter("Sweets", lambda rule: any(item.category == enum.ItemCategory.Sweet for item in rule.get_items())),
-            RuleFilter("Party", lambda rule: any(item.category == enum.ItemCategory.Party for item in rule.get_items())),
-            RuleFilter("Death Penalty Removal", lambda rule: any(item.category == enum.ItemCategory .DeathPenaltyRemoval for item in rule.get_items())),
-            RuleFilter("Scrolls", lambda rule: any(item.category == enum.ItemCategory.Scroll for item in rule.get_items())),
-            RuleFilter("Tomes", lambda rule: any(item.category == enum.ItemCategory.Tome for item in rule.get_items())),
-            RuleFilter("Keys", lambda rule: any(item.category == enum.ItemCategory.Key for item in rule.get_items())),
-            RuleFilter("Materials", lambda rule: any(item.category == enum.ItemCategory.Material for item in rule.get_items())),
-            RuleFilter("Trophies", lambda rule: any(item.category == enum.ItemCategory.Trophy for item in rule.get_items())),
-            RuleFilter("Reward Trophies", lambda rule: any(item.category == enum.ItemCategory.RewardTrophy for item in rule.get_items())),
-            RuleFilter("Quest Items", lambda rule: any(item.category == enum.ItemCategory.QuestItem for item in rule.get_items())),            
+            RuleFilter("Alcohol", lambda rule: any(item.category == ItemCategory.Alcohol for item in rule.get_items())),
+            RuleFilter("Sweets", lambda rule: any(item.category == ItemCategory.Sweet for item in rule.get_items())),
+            RuleFilter("Party", lambda rule: any(item.category == ItemCategory.Party for item in rule.get_items())),
+            RuleFilter("Death Penalty Removal", lambda rule: any(item.category == ItemCategory .DeathPenaltyRemoval for item in rule.get_items())),
+            RuleFilter("Scrolls", lambda rule: any(item.category == ItemCategory.Scroll for item in rule.get_items())),
+            RuleFilter("Tomes", lambda rule: any(item.category == ItemCategory.Tome for item in rule.get_items())),
+            RuleFilter("Keys", lambda rule: any(item.category == ItemCategory.Key for item in rule.get_items())),
+            RuleFilter("Materials", lambda rule: any(item.category == ItemCategory.Material for item in rule.get_items())),
+            RuleFilter("Trophies", lambda rule: any(item.category == ItemCategory.Trophy for item in rule.get_items())),
+            RuleFilter("Reward Trophies", lambda rule: any(item.category == ItemCategory.RewardTrophy for item in rule.get_items())),
+            RuleFilter("Quest Items", lambda rule: any(item.category == ItemCategory.QuestItem for item in rule.get_items())),            
         ]
         self.ensure_window_on_screen = True
         
@@ -1203,8 +1205,8 @@ class UI:
                 style.ChildBg.push_color((255, 0, 0, 125))
                 colored_item += 1
             
+            collected = cached_item.data.is_minimum_complete() if cached_item.id != 0 and cached_item.data else True
             localization_missing, missing_languages = self.data_collector.is_missing_localization(cached_item)
-            collected, missing = self.data_collector.is_item_collected(cached_item) if cached_item.id != 0 else (True, "")
             mods_missing, mod_missing = self.data_collector.has_uncollected_mods(cached_item) if cached_item.id != 0 else (False, "")
             
             complete = True
@@ -1259,7 +1261,8 @@ class UI:
                     PyImGui.table_next_column()
                         
                     ImGui.text_scaled(str(cached_item.id) if cached_item.id > 0 else "", (1,1,1,0.75), 0.7)
-                    ImGui.text_scaled(str(cached_item.model_id) if cached_item.id > 0 else "", (1,1,1,1), 0.8)
+                    ImGui.text_scaled(str(cached_item.model_id) if cached_item.model_id > 0 else "", (1,1,1,1), 0.8)
+                    ImGui.text_wrapped(cached_item.data.name if cached_item.data else "Unknown Item")
                     # ImGui.text_scaled(f"x{cached_item.quantity}" if cached_item.quantity > 1 else "", (1,1,1,1), 0.8)
                     
                     ImGui.end_table()
@@ -1285,16 +1288,6 @@ class UI:
             
             for _ in range(colored_item):
                 style.ChildBg.pop_color()
-            
-            if PyImGui.is_item_clicked(0) and cached_item and cached_item.data and not cached_item.data.wiki_scraped:
-                data.Reload()                  
-                item = data.Items.get_item(cached_item.item_type, cached_item.model_id)
-                
-                if item and not item.wiki_scraped:
-                    wiki_scraper.WikiScraper.scrape_multiple_entries([item])
-                    # messaging.SendMergingMessage()
-                    
-            
                 
             if cached_item:
                 if PyImGui.is_item_hovered():
@@ -1374,6 +1367,14 @@ class UI:
                             PyImGui.table_next_column()
                             for mod in cached_item.weapon_mods:
                                 ImGui.text(utility.Util.reformat_string(mod.WeaponMod.name))
+                                
+                        if cached_item.max_weapon_mods:
+                            PyImGui.table_next_column()
+                            ImGui.text("Max Mods")
+                            
+                            PyImGui.table_next_column()
+                            for mod in cached_item.max_weapon_mods:
+                                ImGui.text(utility.Util.reformat_string(mod.WeaponMod.name))
                         
                         if cached_item.is_rare_weapon:
                             PyImGui.table_next_column()
@@ -1427,7 +1428,7 @@ class UI:
                         ImGui.end_table()
                     
                     if not collected:
-                        ImGui.text_colored(missing, (255, 0, 0, 255))
+                        ImGui.text_colored("Minimum data missing (Inventory Icon or Name)", (255, 0, 0, 255))
                         
                     if localization_missing:
                         ImGui.text_colored(missing_languages, (255, 0, 0, 255))
@@ -1510,11 +1511,7 @@ class UI:
                         messaging.SendMergingMessage()
 
                     ImGui.show_tooltip("Merge all diff files into the data files.")
-
-                    if ImGui.button("Scrape Wiki", 160, 30):
-                        wiki_scraper.WikiScraper.scrape_missing_entries()
-                        pass
-                    
+                                        
                     if False and ImGui.button("Move Textures", 160, 30):
                         items_folder = os.path.join(Py4GW.Console.get_projects_path(), "Textures", "Items")
                         item_model_files_folder = os.path.join(Py4GW.Console.get_projects_path(), "Textures", "ItemModelFiles")
@@ -1531,6 +1528,12 @@ class UI:
                         pass
 
                     def on_test_button_clicked(): 
+                        item = cache.Cached_Item(1113)
+                        for mod in item.weapon_mods:
+                            ConsoleLog("LootEx Test", f"Mod: {mod.WeaponMod.name} | Value: {mod.Value} | Modifiers: {mod.Modifiers}", Console.MessageType.Info)
+                            
+                        return
+                    
                         from Widgets.frenkey.LootEx.data import Data
                         cdata = Data()
                         
@@ -1552,7 +1555,7 @@ class UI:
                             cdata = Data()
                             
                             for m in cdata.Weapon_Mods.values():
-                                if m.mod_type != enum.ModType.Inherent:
+                                if m.mod_type != ModType.Inherent:
                                     m.item_mods = {}
                                     item_types = [cdata.ItemType_MetaTypes.get(target_type, []) for target_type in m.target_types]
                                     # Flatten the list
@@ -1665,88 +1668,89 @@ class UI:
             PyImGui.same_line(0, 5)
             
             if ImGui.begin_child("DataCollectorIventory", tab2_size, True, PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
-                child_size = PyImGui.get_content_region_avail()
-                                                             
-                PyImGui.push_item_width(child_size[0] - 135)
-                self.bag_index = ImGui.combo(
-                    "##Bag",
-                    self.bag_index,
-                    self.bag_names
-                )
-                PyImGui.pop_item_width()
+                if True:
+                    child_size = PyImGui.get_content_region_avail()
+                                                                
+                    PyImGui.push_item_width(child_size[0] - 135)
+                    self.bag_index = ImGui.combo(
+                        "##Bag",
+                        self.bag_index,
+                        self.bag_names
+                    )
+                    PyImGui.pop_item_width()
+                                            
+                    PyImGui.same_line(0, 5)
+                    
+                    PyImGui.push_item_width(100)
+                    index = ImGui.input_int("##BagRange", self.bag_index)  
+                    PyImGui.pop_item_width()
+                            
+                    if index > len(self.bag_names) - 1:
+                        index = len(self.bag_names) - 1
+                    elif index < 0:
+                        index = 0
+                    
+                    if index != self.bag_index:
+                        self.bag_index = index
+                        self.action_summary = None
+                    
+                    bag_range = self.bag_ranges[self.bag_names[self.bag_index]]       
+                    PyImGui.same_line(0, 5)
+                    
+                    self.inventory_view = ImGui.checkbox("##Inventory View", self.inventory_view)
+                    ImGui.show_tooltip("Show items in a grid view instead of a list view.")
+                                    
+                    if self.actions_timer.IsExpired() or self.action_summary is None:
+                        if self.bag_names[self.bag_index] == "Merchant/Trader":
+                            self.action_summary = inventory_handling.InventoryHandler().GetActions(item_ids=GLOBAL_CACHE.Trading.Merchant.GetOfferedItems() or GLOBAL_CACHE.Trading.Trader.GetOfferedItems() or GLOBAL_CACHE.Trading.Collector.GetOfferedItems() or GLOBAL_CACHE.Trading.Crafter.GetOfferedItems(),  preview=True)
+                        else:
+                            self.action_summary = inventory_handling.InventoryHandler().GetActions(start_bag=bag_range[0], end_bag=bag_range[1],  preview=True)
+                            
+                        self.actions_timer.Reset()
+                    
+                    ImGui.separator()
+                    child_size = PyImGui.get_content_region_avail()
+                    PyImGui.push_style_var2(ImGui.ImGuiStyleVar.CellPadding, 2, 2)
+                    if self.inventory_view: 
+                        if self.action_summary and self.action_summary.cached_inventory and self.inventory_coords: 
+                            inventory_width = self.inventory_coords.right - self.inventory_coords.left
+                            columns = math.floor((inventory_width - 24) // 37) if self.bag_index == 0 else 5
+                            rows = math.ceil(len(self.action_summary.cached_inventory) / columns)
+                            
+                            if PyImGui.is_rect_visible(0, 20):
+                                if ImGui.begin_table("Inventory Debug Table#InvView", columns, PyImGui.TableFlags.NoBordersInBody , child_size[0], child_size[1]):
+                                    remaining_size = PyImGui.get_content_region_avail()
+                                    button_width = math.floor(remaining_size[0] / columns) - 3                           
+                                    button_height = math.floor((child_size[1] - 45) / rows)
+                                    
+                                    PyImGui.table_next_row()
+                                    
+                                    for i, item in enumerate(self.action_summary.cached_inventory):
+                                        PyImGui.table_next_column()     
+                                        self.draw_debug_item(i, item, button_width, button_height)   
                                         
-                PyImGui.same_line(0, 5)
-                
-                PyImGui.push_item_width(100)
-                index = ImGui.input_int("##BagRange", self.bag_index)  
-                PyImGui.pop_item_width()
-                         
-                if index > len(self.bag_names) - 1:
-                    index = len(self.bag_names) - 1
-                elif index < 0:
-                    index = 0
-                
-                if index != self.bag_index:
-                    self.bag_index = index
-                    self.action_summary = None
-                
-                bag_range = self.bag_ranges[self.bag_names[self.bag_index]]       
-                PyImGui.same_line(0, 5)
-                
-                self.inventory_view = ImGui.checkbox("##Inventory View", self.inventory_view)
-                ImGui.show_tooltip("Show items in a grid view instead of a list view.")
-                                
-                if self.actions_timer.IsExpired() or self.action_summary is None:
-                    if self.bag_names[self.bag_index] == "Merchant/Trader":
-                        self.action_summary = inventory_handling.InventoryHandler().GetActions(item_ids=GLOBAL_CACHE.Trading.Merchant.GetOfferedItems() or GLOBAL_CACHE.Trading.Trader.GetOfferedItems() or GLOBAL_CACHE.Trading.Collector.GetOfferedItems() or GLOBAL_CACHE.Trading.Crafter.GetOfferedItems(),  preview=True)
+                                            
+                                ImGui.end_table()
                     else:
-                        self.action_summary = inventory_handling.InventoryHandler().GetActions(start_bag=bag_range[0], end_bag=bag_range[1],  preview=True)
-                        
-                    self.actions_timer.Reset()
-                
-                ImGui.separator()
-                child_size = PyImGui.get_content_region_avail()
-                PyImGui.push_style_var2(ImGui.ImGuiStyleVar.CellPadding, 2, 2)
-                if self.inventory_view: 
-                    if self.action_summary and self.action_summary.cached_inventory and self.inventory_coords: 
-                        inventory_width = self.inventory_coords.right - self.inventory_coords.left
-                        columns = math.floor((inventory_width - 24) // 37) if self.bag_index == 0 else 5
-                        rows = math.ceil(len(self.action_summary.cached_inventory) / columns)
-                        
-                        if PyImGui.is_rect_visible(0, 20):
-                            if ImGui.begin_table("Inventory Debug Table#InvView", columns, PyImGui.TableFlags.NoBordersInBody , child_size[0], child_size[1]):
-                                remaining_size = PyImGui.get_content_region_avail()
-                                button_width = math.floor(remaining_size[0] / columns) - 3                           
-                                button_height = math.floor((child_size[1] - 45) / rows)
-                                
-                                PyImGui.table_next_row()
-                                
-                                for i, item in enumerate(self.action_summary.cached_inventory):
-                                    PyImGui.table_next_column()     
-                                    self.draw_debug_item(i, item, button_width, button_height)   
+                        if self.action_summary and self.action_summary.cached_inventory: 
+                            remaining_size = PyImGui.get_content_region_avail()
+                            columns = math.floor(remaining_size[0] // 125)
+                            
+                            if PyImGui.is_rect_visible(0, 20):
+                                if ImGui.begin_table("Inventory Debug Table##NoInvView", columns, PyImGui.TableFlags.ScrollY, remaining_size[0], child_size[1]):
+                                    remaining_size = PyImGui.get_content_region_avail()
+                                    button_width = math.floor(remaining_size[0] / columns) - 8
+                                    button_height = 90
                                     
-                                        
-                            ImGui.end_table()
-                else:
-                    if self.action_summary and self.action_summary.cached_inventory: 
-                        remaining_size = PyImGui.get_content_region_avail()
-                        columns = math.floor(remaining_size[0] // 125)
-                        
-                        if PyImGui.is_rect_visible(0, 20):
-                            if ImGui.begin_table("Inventory Debug Table##NoInvView", columns, PyImGui.TableFlags.ScrollY, remaining_size[0], child_size[1]):
-                                remaining_size = PyImGui.get_content_region_avail()
-                                button_width = math.floor(remaining_size[0] / columns) - 8
-                                button_height = 90
-                                
-                                PyImGui.table_next_row()
-                                
-                                for i, item in enumerate(self.action_summary.cached_inventory):
-                                    PyImGui.table_next_column()     
-                                    self.draw_debug_item(i, item, button_width, button_height)   
+                                    PyImGui.table_next_row()
                                     
+                                    for i, item in enumerate(self.action_summary.cached_inventory):
+                                        PyImGui.table_next_column()     
+                                        self.draw_debug_item(i, item, button_width, button_height)   
                                         
-                            ImGui.end_table()
-            PyImGui.pop_style_var(1)
+                                            
+                                ImGui.end_table()
+                    PyImGui.pop_style_var(1)
             
             ImGui.end_child()
             
@@ -1945,6 +1949,13 @@ class UI:
                     #     self.settings.profile.deposit_full_stacks = deposit_full_stacks
                     #     self.settings.profile.save()
                     # ImGui.show_tooltip("When a full stack of items is found in the inventory, it will be deposited automatically.")
+                    
+                    xunlai_tabs = [utility.Util.reformat_string(tab.name) for tab in XUNLAI_STORAGE]
+                    
+                    max_xunlai_storage = ImGui.combo("Max Xunlai Tab", self.settings.max_xunlai_storage.value - Bag_enum.Storage_1.value, xunlai_tabs)
+                    if max_xunlai_storage != self.settings.max_xunlai_storage.value - Bag_enum.Storage_1.value:
+                        self.settings.max_xunlai_storage = Bag_enum(Bag_enum.Storage_1.value + max_xunlai_storage)
+                        self.settings.profile.save()
                         
                     polling_interval = ImGui.slider_float("Polling Interval (sec)", self.settings.profile.polling_interval, 0.1, 5)
                     
@@ -2330,7 +2341,7 @@ class UI:
                                 filter.action = self.item_actions[action]
                                 self.settings.profile.save()
                             
-                            ImGui.show_tooltip((f"{self.action_infos.get_name(enum.ItemAction.Loot)} and " if filter.action not in [enum.ItemAction.NONE, enum.ItemAction.Loot, enum.ItemAction.Destroy] else "") + f"{self.action_infos.get_name(filter.action)}")
+                            ImGui.show_tooltip((f"{self.action_infos.get_name(ItemAction.Loot)} and " if filter.action not in [ItemAction.NONE, ItemAction.Loot, ItemAction.Destroy] else "") + f"{self.action_infos.get_name(filter.action)}")
                                         
                         def draw_salvage_options():
                             if not self.settings.profile:
@@ -2357,21 +2368,21 @@ class UI:
                             item_width = 36
                             columns = max(1, math.floor(width / item_width))
                             
-                            has_common_materials = len(data.Common_Materials) > 0 if filter.action in [enum.ItemAction.Salvage, enum.ItemAction.Salvage_Common_Materials] else False
-                            has_rare_materials = len(data.Rare_Materials) > 0 if filter.action in [enum.ItemAction.Salvage, enum.ItemAction.Salvage_Rare_Materials] else False
+                            has_common_materials = len(data.Common_Materials) > 0 if filter.action in [ItemAction.Salvage, ItemAction.Salvage_Common_Materials] else False
+                            has_rare_materials = len(data.Rare_Materials) > 0 if filter.action in [ItemAction.Salvage, ItemAction.Salvage_Rare_Materials] else False
                             
                             rows = (math.ceil(len(data.Common_Materials) / columns) if has_common_materials else 0) + (math.ceil(len(data.Rare_Materials) / columns) if has_rare_materials else 0)
                                                             
-                            self.action_heights[enum.ItemAction.Salvage_Rare_Materials] = (rows * item_width) + 123 + 8
-                            self.action_heights[enum.ItemAction.Salvage_Common_Materials] = (rows * item_width) + 125 + 8
-                            self.action_heights[enum.ItemAction.Salvage] = (rows * item_width) + 123 + 8 + 20
+                            self.action_heights[ItemAction.Salvage_Rare_Materials] = (rows * item_width) + 123 + 8
+                            self.action_heights[ItemAction.Salvage_Common_Materials] = (rows * item_width) + 125 + 8
+                            self.action_heights[ItemAction.Salvage] = (rows * item_width) + 123 + 8 + 20
                             
                             ImGui.begin_child("salvage_materials", (0, 0), True, PyImGui.WindowFlags.NoFlag)      
                                                                                         
-                            if PyImGui.is_rect_visible(0, self.action_heights[enum.ItemAction.Salvage] - 20):
+                            if PyImGui.is_rect_visible(0, self.action_heights[ItemAction.Salvage] - 20):
                                 style.CellPadding.push_style_var(0, 2)
                                 ImGui.begin_table("salvage_materials_table", columns, PyImGui.TableFlags.ScrollY, 0, 0)                                
-                                if filter.action == enum.ItemAction.Salvage or filter.action == enum.ItemAction.Salvage_Common_Materials:
+                                if filter.action == ItemAction.Salvage or filter.action == ItemAction.Salvage_Common_Materials:
                                     for material in data.Common_Materials.values():
                                         PyImGui.table_next_column()
                                         changed, selected = self.draw_material_selectable(material, filter.materials.get(material.model_id, False))
@@ -2396,14 +2407,14 @@ class UI:
                                     
                                     PyImGui.table_next_row()
                                 
-                                if filter.action == enum.ItemAction.Salvage:
+                                if filter.action == ItemAction.Salvage:
                                     ypos = PyImGui.get_cursor_pos_y() + 2
                                     for _ in range(columns):
                                         PyImGui.table_next_column()
                                         PyImGui.set_cursor_pos_y(ypos)
                                         ImGui.separator()
                                     
-                                if filter.action == enum.ItemAction.Salvage_Rare_Materials or filter.action == enum.ItemAction.Salvage:    
+                                if filter.action == ItemAction.Salvage_Rare_Materials or filter.action == ItemAction.Salvage:    
                                     for material in data.Rare_Materials.values():
                                         PyImGui.table_next_column()
                                         changed, selected = self.draw_material_selectable(material, filter.materials.get(material.model_id, False))
@@ -2431,18 +2442,18 @@ class UI:
                             ImGui.end_child()
                                 
                         match filter.action:
-                            case enum.ItemAction.Salvage:
+                            case ItemAction.Salvage:
                                 draw_salvage_options()                                        
                                 pass
-                            case enum.ItemAction.Salvage_Common_Materials:
+                            case ItemAction.Salvage_Common_Materials:
                                 draw_salvage_options()                                        
                                 pass
-                            case enum.ItemAction.Salvage_Rare_Materials:
+                            case ItemAction.Salvage_Rare_Materials:
                                 draw_salvage_options()                                        
                                 pass
                             
-                            case enum.ItemAction.Stash:                                        
-                                if filter.action == enum.ItemAction.Stash:
+                            case ItemAction.Stash:                                        
+                                if filter.action == ItemAction.Stash:
                                     PyImGui.indent(25)
                                     full_stack_only = ImGui.checkbox("Only stash full stacks", filter.full_stack_only)
                                     if full_stack_only != filter.full_stack_only:
@@ -3269,7 +3280,7 @@ class UI:
                                 
                         ImGui.end_child()                                
                                                                
-                    if ImGui.begin_child("rule action", (0, 75 if rule.action == enum.ItemAction.Stash else 45), True, PyImGui.WindowFlags.NoFlag):    
+                    if ImGui.begin_child("rule action", (0, 75 if rule.action == ItemAction.Stash else 45), True, PyImGui.WindowFlags.NoFlag):    
                         action_info = self.action_infos.get(rule.action, None)
                         action_texture = action_info.icon if action_info else None
                         height = 24
@@ -3287,9 +3298,9 @@ class UI:
                             rule.action = self.item_actions[action]
                             self.settings.profile.save()
                         
-                        ImGui.show_tooltip((f"{self.action_infos.get_name(enum.ItemAction.Loot)} and " if rule.action not in [enum.ItemAction.NONE, enum.ItemAction.Loot, enum.ItemAction.Destroy] else "") + f"{self.action_infos.get_name(rule.action)}")
+                        ImGui.show_tooltip((f"{self.action_infos.get_name(ItemAction.Loot)} and " if rule.action not in [ItemAction.NONE, ItemAction.Loot, ItemAction.Destroy] else "") + f"{self.action_infos.get_name(rule.action)}")
                     
-                        if rule.action == enum.ItemAction.Stash:
+                        if rule.action == ItemAction.Stash:
                             full_stack_only = ImGui.checkbox("Only stash full stacks", rule.full_stack_only)
                             if full_stack_only != rule.full_stack_only:
                                 rule.full_stack_only = full_stack_only
@@ -3413,13 +3424,13 @@ class UI:
                                     PyImGui.same_line(mods_size[0] - combo_width + 10, 0)
                                     PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() - 5)                                    
                                     PyImGui.push_item_width(combo_width)
-                                    mod_type_selection = [utility.Util.reformat_string(mod.name) for mod in  enum.ActionModsType]
+                                    mod_type_selection = [utility.Util.reformat_string(mod.name) for mod in  ActionModsType]
                                     index = mod_type_selection.index(utility.Util.reformat_string(rule.mods_type.name))
                                     mod_index = ImGui.combo("##ModType", index, mod_type_selection)
                                     PyImGui.pop_item_width()
                                     
                                     if index != mod_index:
-                                        rule.mods_type = enum.ActionModsType(mod_index)
+                                        rule.mods_type = ActionModsType(mod_index)
                                         self.settings.profile.save()
                                         
                                     PyImGui.spacing()
@@ -3441,7 +3452,7 @@ class UI:
                                         
                                         if ImGui.begin_child("selectable_mods", (0, 0), False, PyImGui.WindowFlags.NoFlag):
                                             for mod in data.Weapon_Mods.values():
-                                                if mod.mod_type == enum.ModType.Inherent:
+                                                if mod.mod_type == ModType.Inherent:
                                                     for item in self.selectable_items:
                                                         if not mod.has_item_type(item.item_type):
                                                             continue
@@ -3774,13 +3785,13 @@ class UI:
                         PyImGui.same_line(mods_size[0] - combo_width + 10, 0)
                         PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() - 5)                                    
                         PyImGui.push_item_width(combo_width)
-                        mod_type_selection = [utility.Util.reformat_string(mod.name) for mod in  enum.ActionModsType]
+                        mod_type_selection = [utility.Util.reformat_string(mod.name) for mod in  ActionModsType]
                         index = mod_type_selection.index(utility.Util.reformat_string(rule.mods_type.name))
                         mod_index = ImGui.combo("##ModType", index, mod_type_selection)
                         PyImGui.pop_item_width()
                         
                         if index != mod_index:
-                            rule.mods_type = enum.ActionModsType(mod_index)
+                            rule.mods_type = ActionModsType(mod_index)
                             self.settings.profile.save()
                             
                         PyImGui.spacing()
@@ -3802,7 +3813,7 @@ class UI:
                             
                             if ImGui.begin_child("selectable_mods", (0, 0), False, PyImGui.WindowFlags.NoFlag):
                                 for mod in data.Weapon_Mods.values():
-                                    if mod.mod_type == enum.ModType.Inherent:
+                                    if mod.mod_type == ModType.Inherent:
                                         if not mod.has_item_type(selected_item_type):
                                             continue
                                         
@@ -4014,10 +4025,10 @@ class UI:
                         summaries = [salvage_info.summary for salvage_info in item_info.rare_salvage.values()]   
                         ImGui.text("Rare Salvage: " + ", ".join(summaries))
                         
-                    if item_info.category is not enum.ItemCategory.None_:
+                    if item_info.category is not ItemCategory.None_:
                         ImGui.text("Category: " + str(utility.Util.reformat_string(item_info.category.name)))
                         
-                    if item_info.sub_category is not enum.ItemSubCategory.None_:
+                    if item_info.sub_category is not ItemSubCategory.None_:
                         ImGui.text("Sub Category: " + str(utility.Util.reformat_string(item_info.sub_category.name)))
                 
             ImGui.end_child()
@@ -4090,10 +4101,10 @@ class UI:
                         summaries = [salvage_info.summary for salvage_info in item_info.rare_salvage.values()]   
                         ImGui.text("Rare Salvage: " + ", ".join(summaries))
                         
-                    if item_info.category is not enum.ItemCategory.None_:
+                    if item_info.category is not ItemCategory.None_:
                         ImGui.text("Category: " + str(utility.Util.reformat_string(item_info.category.name)))
                         
-                    if item_info.sub_category is not enum.ItemSubCategory.None_:
+                    if item_info.sub_category is not ItemSubCategory.None_:
                         ImGui.text("Sub Category: " + str(utility.Util.reformat_string(item_info.sub_category.name)))
                 
             ImGui.end_child()
@@ -4115,9 +4126,9 @@ class UI:
             lines += 1
         if item_info.rare_salvage:
             lines += 1
-        if item_info.category is not enum.ItemCategory.None_:
+        if item_info.category is not ItemCategory.None_:
             lines += 1
-        if item_info.sub_category is not enum.ItemSubCategory.None_:
+        if item_info.sub_category is not ItemSubCategory.None_:
             lines += 1
                 
         return (lines * PyImGui.get_text_line_height_with_spacing()) + 0
@@ -5130,6 +5141,8 @@ class UI:
                     
                 if ImGui.button("Assign") and self.data_collection_item is not None:
                     self.assign_scraped_data(self.data_collection_item, item)
+                    self.data_collection_item = None
+                    self.filtered_scraped_items = {}
                     pass
             
             ImGui.end_child()
@@ -5154,10 +5167,10 @@ class UI:
             ImGui.end_child()
             
         ImGui.end_child()
-        
-        
-    def draw_data_item(self, data_item: models.Item, is_selected: bool = False):
-        key = f"DataItem{data_item.model_id}{data_item.item_type}"
+                
+    def draw_data_item(self, cached_item_id: int, data_item: models.Item, is_selected: bool = False) -> bool:
+        clicked = False
+        key = f"DataItem{id}{data_item.model_id}{data_item.item_type}"
         style = ImGui.get_style()
         if is_selected:
             style.ChildBg.push_color(self.style.Selected_Colored_Item.rgb_tuple)
@@ -5168,7 +5181,7 @@ class UI:
                 
             if not PyImGui.is_rect_visible(0, 100):
                 ImGui.end_child()
-                return
+                return False
             
             if data_item.texture_file:
                 x,y = PyImGui.get_cursor_pos()
@@ -5183,37 +5196,39 @@ class UI:
             
             if ImGui.begin_child(key + "Details", (0, 0), False, PyImGui.WindowFlags.NoFlag):
                 ImGui.text_colored(data_item.name, Color(255, 255, 255, 255).color_tuple, 16, "Bold")
+                
+                ImGui.text_wrapped(str(data_item.model_id))
+                
                 ImGui.text_wrapped(data_item.description if data_item.description else "No description available.")
+                
                 ImGui.text_wrapped(data_item.acquisition if data_item.acquisition else "No acquisition info available.")
             
             ImGui.end_child()
+            clicked = clicked or PyImGui.is_item_clicked(0)
+            
         else:
             if is_selected:
                 style.ChildBg.pop_color()
             
         ImGui.end_child()
+        clicked = clicked or PyImGui.is_item_clicked(0)
+        return clicked
     
     def assign_scraped_data(self, data_item : models.Item, scraped_item : ScrapedItem):
         data_item.assign_scraped_data(scraped_item, self.data)
         ConsoleLog("LootEx", f"Assigned data for item: {data_item.name}", Console.MessageType.Info)
         self.data.SaveItems(True)
     
-    def auto_assign_data_items(self):
-        for (data_item) in [item for item in self.data.Items.All if not item.wiki_scraped]:   
-            english_name = data_item.names.get(ServerLanguage.English, "")
-            ## Check if the name starts with an amount like "250"
-            parts = english_name.split(" ", 1) if english_name else []
-            contains_amount = len(parts) == 2 and parts[0].isdigit()
-                    
-            search_name = english_name.replace(parts[0], "").strip() if contains_amount else english_name
-            required_similarity = 0.9 if contains_amount else 1.0
-            
+    def get_matching_scraped_items(self, search_name: str, required_similarity : float) -> list[ScrapedItem]:
             matching_scraped_items = [scraped_item for (key, scraped_item) in self.data.ScrapedItems.items() if string_similarity(scraped_item.name, search_name) >= required_similarity]
-            if matching_scraped_items:
-                if len(matching_scraped_items) == 1:
-                    data_item.assign_scraped_data(matching_scraped_items[0], self.data)        
-                    ConsoleLog("LootEx", f"Auto-assigned data for item: {data_item.name}", Console.MessageType.Info)
-                    
+            return matching_scraped_items
+    
+    def auto_assign_data_items(self):
+        for itemsource, items in self.collection_items.items():
+            for cached_item in items.values():
+                data_item = cached_item.data
+                self.data_collector.auto_assign_scraped_data(data_item)
+                
         self.data.SaveItems(True)
                     
     def draw_data_collection(self): 
@@ -5222,46 +5237,130 @@ class UI:
         if not self.collection_module_window.open:
             return
         
+        if self.collection_timer.IsExpired():
+            self.collection_timer.Reset()
+            
+            self.collection_items = {}
+                
+            crafter_open = ui_manager_extensions.UIManagerExtensions.IsCrafterOpen()
+            collector_open = ui_manager_extensions.UIManagerExtensions.IsCollectorOpen()
+            merchant_open = ui_manager_extensions.UIManagerExtensions.IsMerchantWindowOpen() and not crafter_open and not collector_open
+            
+            trader_array : list[int] = merchant_open and GLOBAL_CACHE.Trading.Trader.GetOfferedItems() or []
+            if trader_array:
+                cached_items = {item_id: cache.Cached_Item(item_id) for item_id in trader_array}
+                self.collection_items["Trader"] = {item_id: cached_item for item_id, cached_item in cached_items.items() if cached_item.data and not cached_item.data.wiki_scraped}
+                
+            trader2_array : list[int] = merchant_open and GLOBAL_CACHE.Trading.Trader.GetOfferedItems2() or []
+            if trader2_array:
+                cached_items = {item_id: cache.Cached_Item(item_id) for item_id in trader2_array}
+                self.collection_items["Trader 2"] = {item_id: cached_item for item_id, cached_item in cached_items.items() if cached_item.data and not cached_item.data.wiki_scraped}
+                
+            merchant_array : list[int] = merchant_open and GLOBAL_CACHE.Trading.Merchant.GetOfferedItems() or []
+            if merchant_array:
+                cached_items = {item_id: cache.Cached_Item(item_id) for item_id in merchant_array}
+                self.collection_items["Merchant"] = {item_id: cached_item for item_id, cached_item in cached_items.items() if cached_item.data and not cached_item.data.wiki_scraped}
+                
+            crafter_array : list[int] = crafter_open and GLOBAL_CACHE.Trading.Crafter.GetOfferedItems() or []
+            if crafter_array:
+                cached_items = {item_id: cache.Cached_Item(item_id) for item_id in crafter_array}
+                self.collection_items["Crafter"] = {item_id: cached_item for item_id, cached_item in cached_items.items() if cached_item.data and not cached_item.data.wiki_scraped}
+                
+            collector_array : list[int] = collector_open and GLOBAL_CACHE.Trading.Collector.GetOfferedItems() or []
+            if collector_array:
+                cached_items = {item_id: cache.Cached_Item(item_id) for item_id in collector_array}
+                self.collection_items["Collector"] = {item_id: cached_item for item_id, cached_item in cached_items.items() if cached_item.data and not cached_item.data.wiki_scraped}
+                
+            inventory_array : list[int] = GLOBAL_CACHE.ItemArray.GetItemArray(CHARACTER_INVENTORY)
+            if inventory_array:
+                cached_items = {item_id: cache.Cached_Item(item_id) for item_id in inventory_array}
+                self.collection_items["Inventory"] = {item_id: cached_item for item_id, cached_item in cached_items.items() if cached_item.data and not cached_item.data.wiki_scraped}
+                
+            for storage in XUNLAI_STORAGE:
+                items = GLOBAL_CACHE.ItemArray.GetItemArray([storage])
+                if items:
+                    cached_items = {item_id: cache.Cached_Item(item_id) for item_id in items}
+                    ## only those items with cached_item.data.wiki_scraped == False
+                    self.collection_items[f"Xunlai Storage {storage}"] = {item_id: cached_item for item_id, cached_item in cached_items.items() if cached_item.data and not cached_item.data.wiki_scraped}
+        
+            empty_keys = []
+            for k, items in self.collection_items.items():
+                if not items:
+                    # remove empty entries
+                    empty_keys.append(k)
+                else:
+                    # remove all items which are armor
+                    armor_keys = []
+                    for item_id, cached_item in items.items():
+                        if utility.Util.IsArmorType(cached_item.item_type):
+                            armor_keys.append(item_id)
+                            
+                    for ak in armor_keys:
+                        del items[ak]
+                    
+                    if not items:
+                        empty_keys.append(k)
+        
+            for k in empty_keys:
+                del self.collection_items[k]                
+
         style = ImGui.get_style()
         if self.collection_module_window.begin():
             avail = PyImGui.get_content_region_avail()
             
-            ImGui.text("Collected Items: " + str(len(self.data.ScrapedItems)), 16, "Bold")
+            ImGui.text("Collected Items: " + str(len(self.data.Items.All)), 16, "Bold")
             PyImGui.same_line(avail[0] - 120, 0)
             if ImGui.button("Auto Assign Data", 120, 0):
                 self.auto_assign_data_items()
                 
+            PyImGui.same_line(avail[0] - 250, 0)
+            if ImGui.button("Clear Cache", 120, 0):
+                self.data_collector.reset()
+                inventory_handling.InventoryHandler().scraped_items.clear()
+                
+            PyImGui.same_line(avail[0] - 380, 0)
+            if ImGui.button("Merge Collected", 120, 0):
+                messaging.SendMergingMessage()
+                                
                 
             ImGui.separator()
             
             avail = PyImGui.get_content_region_avail()
             if ImGui.begin_child("DataItemsChild", ((avail[0] - 10) / 2, avail[1]), False, PyImGui.WindowFlags.NoFlag):
-                for (data_item) in [item for item in self.data.Items.All if not item.wiki_scraped and utility.Util.IsArmorType(item.item_type) == False]:
-                    self.draw_data_item(data_item, is_selected=data_item == self.data_collection_item)
-                    item_rect_min, item_rect_max, item_rect_size = ImGui.get_item_rect()
+                # for (data_item) in [item for item in self.data.Items.All if not item.wiki_scraped and utility.Util.IsArmorType(item.item_type) == False]:
+                for itemsource, items in self.collection_items.items():
+                    if not items:
+                        continue
                     
-                    if ImGui.is_mouse_in_rect((*item_rect_min, *item_rect_size)) and PyImGui.is_mouse_clicked(0):
-                        self.data_collection_item = data_item if self.data_collection_item != data_item else None
-                        english_name = data_item.names.get(ServerLanguage.English, "")
-                        contains_amount = english_name.split(" ", 1)[0].isdigit() if english_name else False
-                        search_name = english_name.replace("250", "").strip() if self.data_collection_item else ""
-                        self.filtered_scraped_items = {}
+                    ImGui.text_colored(f"{itemsource}", Color(255, 215, 0, 255).color_tuple, 16, "Bold")
+                    ImGui.separator()
                         
-                        if self.data_collection_item:
-                            for (key, scraped_item) in self.data.ScrapedItems.items():
-                                if string_similarity(scraped_item.name, search_name) >= (0.9 if contains_amount else 1.0):
-                                    self.filtered_scraped_items[key] = scraped_item
-                            
-                            if not self.filtered_scraped_items:
-                                ConsoleLog("LootEx", f"No exact matches found for '{search_name}'. Trying partial match...", Console.MessageType.Info)                                                                 
-                                item_name_words = english_name.split(" ")
+                    for cached_item in items.values():
+                        data_item = cached_item.data
+                        
+                        if data_item and not data_item.wiki_scraped:
+                            if self.draw_data_item(cached_item.id, data_item, is_selected=data_item == self.data_collection_item):
+                                self.data_collection_item = data_item if self.data_collection_item != data_item else None
+                                english_name = data_item.names.get(ServerLanguage.English, "")
+                                contains_amount = english_name.split(" ", 1)[0].isdigit() if english_name else False
+                                search_name = english_name.replace("250", "").strip() if self.data_collection_item else ""
+                                self.filtered_scraped_items = {}
                                 
-                                for (key, scraped_item) in self.data.ScrapedItems.items():                                    
-                                    search_name_words = scraped_item.name.split(" ")
-                                                                        
-                                    if ((len(item_name_words) > 1 and len(search_name_words) > 1) or (len(item_name_words) == len(search_name_words))) and all(word.lower() in english_name.lower() for word in search_name_words):
-                                        self.filtered_scraped_items[key] = scraped_item
-                
+                                if self.data_collection_item:
+                                    for (key, scraped_item) in self.data.ScrapedItems.items():
+                                        if string_similarity(scraped_item.name, search_name) >= (0.9 if contains_amount else 1.0):
+                                            self.filtered_scraped_items[key] = scraped_item
+                                    
+                                    if not self.filtered_scraped_items:
+                                        ConsoleLog("LootEx", f"No exact matches found for '{search_name}'. Trying partial match...", Console.MessageType.Info)                                                                 
+                                        item_name_words = english_name.split(" ")
+                                        
+                                        for (key, scraped_item) in self.data.ScrapedItems.items():                                    
+                                            search_name_words = scraped_item.name.split(" ")
+                                                                                
+                                            if ((len(item_name_words) > 1 and len(search_name_words) > 1) or (len(item_name_words) == len(search_name_words))) and all(word.lower() in english_name.lower() for word in search_name_words):
+                                                self.filtered_scraped_items[key] = scraped_item
+                        
             ImGui.end_child()    
             
             PyImGui.same_line(0, 10)                    
