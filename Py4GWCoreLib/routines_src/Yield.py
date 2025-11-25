@@ -533,7 +533,7 @@ class Yield:
                         stuck_count = 0  # reset stuck count if making progress
                         ConsoleLog("FollowPath", "Progress detected, reset retry counters.", Console.MessageType.Debug, log=detailed_log)
 
-
+                    #common
                     previous_distance = current_distance
 
                     if current_distance <= tolerance:
@@ -1704,6 +1704,11 @@ class Yield:
         @staticmethod
         def TakeScreenshot(log=False):
             yield from Yield.Keybinds.PressKeybind(ControlAction.ControlAction_Screenshot.value, 75, log=log)
+        
+        @staticmethod
+        def CallTarget(log=False):
+            ActionQueueManager().AddAction("ACTION", Keystroke.PressAndReleaseCombo, [Key.Ctrl.value, Key.Space.value])
+            yield from Yield.wait(100)
            
         #Panels
         @staticmethod
