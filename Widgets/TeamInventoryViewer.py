@@ -164,9 +164,9 @@ X_POS = "x"
 Y_POS = "y"
 
 # load last‐saved window state (fallback to 100,100 / un-collapsed)
-window_x = ini_window.read_int(MODULE_NAME, X_POS, 100)
-window_y = ini_window.read_int(MODULE_NAME, Y_POS, 100)
-window_collapsed = ini_window.read_bool(MODULE_NAME, COLLAPSED, False)
+window_x = ini_window.read_int(MODULE_NAME, X_POS, 1512)
+window_y = ini_window.read_int(MODULE_NAME, Y_POS, 0)
+window_collapsed = ini_window.read_bool(MODULE_NAME, COLLAPSED, True)
 
 # View data
 first_run = True
