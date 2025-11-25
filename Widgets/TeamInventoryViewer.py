@@ -866,7 +866,7 @@ def draw_widget():
     global inventory_model_ids_store
 
     if on_first_load:
-        PyImGui.set_next_window_size(1000, 2000)
+        PyImGui.set_next_window_size(1000, 1250)
         PyImGui.set_next_window_pos(window_x, window_y)
         PyImGui.set_next_window_collapsed(window_collapsed, 0)
         on_first_load = False
