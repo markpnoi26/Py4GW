@@ -1382,6 +1382,8 @@ def draw_widget():
             else:
                 if PyImGui.button("Manual Record"):
                     GLOBAL_CACHE.Coroutines.append(record_account_data())
+                PyImGui.same_line(0, -1)
+                if PyImGui.button("Manual Refresh"):
                     TEAM_INVENTORY_CACHE = multi_store.load_all()
 
             if PyImGui.begin_table("clear_buttons_table", 3, PyImGui.TableFlags.BordersInnerV):
