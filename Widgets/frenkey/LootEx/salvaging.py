@@ -17,10 +17,6 @@ from Widgets.frenkey.LootEx import ui_manager_extensions
 
 LOG_SALVAGING = False
 
-# -----------------------------------------------------
-# GENERIC COROUTINE WRAPPER (same as TraderCoroutine)
-# -----------------------------------------------------
-
 class SalvageActionState(Enum):
     Pending = 0
     Running = 1
@@ -64,11 +60,6 @@ class SalvageCoroutine:
             self.state = SalvageActionState.Timeout
             return self.state
 
-
-# -----------------------------------------------------
-# SALVAGE ACTION — FULL PIPELINE
-# -----------------------------------------------------
-
 class SalvageAction:
     def __init__(self, item: Cached_Item, desired_quantity: int = -1):
         self.item = item
@@ -93,10 +84,7 @@ class SalvageAction:
     def run(self) -> SalvageCoroutine:
         return SalvageCoroutine(self._gen_main)
 
-    # -----------------------------------------------------
-    # MAIN LOOP
-    # -----------------------------------------------------
-
+    # Main generator function
     def _gen_main(self) -> Generator:
         ConsoleLog(
             "LootEx",
@@ -117,9 +105,7 @@ class SalvageAction:
             LOG_SALVAGING
         )
 
-    # -----------------------------------------------------
-    # EXIT CONDITION
-    # -----------------------------------------------------
+    # Condition to stop the salvaging action
     def _is_done(self) -> bool:
         self._update()
         
@@ -163,9 +149,7 @@ class SalvageAction:
 
         return False
         
-    # -----------------------------------------------------
-    # STEP 1 — SALVAGE
-    # -----------------------------------------------------
+    # Start the salvage by using Inventory.SalvageItem
     def _salvage(self) -> Generator:
         if self._is_done():
             return
@@ -180,10 +164,7 @@ class SalvageAction:
     
         yield
 
-    # -----------------------------------------------------
-    # STEP 2 — WAIT UNTIL CONFIRMATION WINDOW APPEARS
-    # -----------------------------------------------------
-
+    # Confirm salvage windows if needed
     def _confirm_salvage_windows(self) -> Generator:
         start_wait = datetime.now()
 
@@ -235,9 +216,7 @@ class SalvageAction:
                     
         pass
 
-    # ---------------------------------------------------
-    # UPDATE ITEM
-    # ---------------------------------------------------
+    # Update item state
     def _update(self) -> None:
         self.item.Update()
         
@@ -280,9 +259,7 @@ class SalvageAction:
         
         return
 
-    # -----------------------------------------------------
-    # STEP 4 — WAIT FOR SALVAGE COMPLETION
-    # -----------------------------------------------------
+    # Wait for the salvage action to complete
     def _wait_for_completion(self) -> Generator:
         start = datetime.now()
 

@@ -85,15 +85,11 @@ class TraderAction:
 
         self.coroutine: TraderCoroutine | None = None
 
-    # ---------------------------------------------------
-    # ENTRY POINT
-    # ---------------------------------------------------
+    # Entry point
     def run(self) -> TraderCoroutine:
         return TraderCoroutine(self._gen_main)
 
-    # ---------------------------------------------------
-    # MAIN COROUTINE LOOP — REPEATS UNTIL DONE
-    # ---------------------------------------------------
+    # Main generator function
     def _gen_main(self) -> Generator:
         """
         Loop until quantity objective is reached:
@@ -121,9 +117,7 @@ class TraderAction:
                     False
         )
 
-    # ---------------------------------------------------
-    # CONDITION: Are we finished?
-    # ---------------------------------------------------
+    # Condition to stop the trading action
     def _is_done(self) -> bool:
         self._update_item()
         
@@ -194,9 +188,7 @@ class TraderAction:
         # normal items
         return q <= self.desired_quantity
 
-    # ---------------------------------------------------
-    # REQUEST PRICE
-    # ---------------------------------------------------
+    # Request a price quote from the merchant
     def _request_price(self) -> Generator:             
         self._update_item()
         if not self.is_item_valid:
@@ -225,9 +217,7 @@ class TraderAction:
         self._start_quote_time = datetime.now()
         yield
 
-    # ---------------------------------------------------
-    # WAIT FOR PRICE
-    # ---------------------------------------------------
+    # Wait until we receive a price quote
     def _wait_for_price(self) -> Generator:
         while True:     
             self._update_item()
@@ -268,9 +258,7 @@ class TraderAction:
 
             yield
 
-    # ---------------------------------------------------
-    # EXECUTE TRADE
-    # ---------------------------------------------------
+    # Execute the trade at the quoted price
     def _execute_trade(self) -> Generator:        
         self._update_item()
         if not self.is_item_valid:
@@ -296,17 +284,13 @@ class TraderAction:
         self._start_trade_time = datetime.now()
         yield
         
-    # ---------------------------------------------------
-    # UPDATE ITEM
-    # ---------------------------------------------------
+    # Update item validity and quantity
     def _update_item(self) -> None:
         item = PyItem(self.item.id)
         self.is_item_valid = item.IsItemValid(self.item.id) and (self.action is not ActionType.Sell or item.is_inventory_item) if item else False
         self.item.quantity = 0 if not self.is_item_valid else item.quantity
 
-    # ---------------------------------------------------
-    # CONFIRM TRADE
-    # ---------------------------------------------------
+    # Confirm that the trade has completed
     def _confirm_trade(self) -> Generator:
         """
         We watch the item's quantity and wait until it changes.

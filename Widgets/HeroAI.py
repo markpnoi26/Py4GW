@@ -8,13 +8,9 @@ for module_name in list(sys.modules.keys()):
     if module_name not in ("sys", "importlib", "cache_data"):
         try:   
             if f"{MODULE_NAME}." in module_name:
-                Py4GW.Console.Log(MODULE_NAME, f"Reloading module: {module_name}", Py4GW.Console.MessageType.Info)
                 del sys.modules[module_name]
-                # importlib.reload(module_name)
-                pass
         except Exception as e:
             Py4GW.Console.Log(MODULE_NAME, f"Error reloading module {module_name}: {e}", Py4GW.Console.MessageType.Error)
-
 
 from enum import Enum
 from PyMap import PyMap

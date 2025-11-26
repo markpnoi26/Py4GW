@@ -6,11 +6,9 @@ MODULE_NAME = "LootEx"
 for module_name in list(sys.modules.keys()):
     if module_name not in ("sys", "importlib", "cache_data"):
         try:            
-            if f"frenkey." in module_name:
+            if f"{MODULE_NAME}." in module_name:
                 Py4GW.Console.Log(MODULE_NAME, f"Reloading module: {module_name}", Console.MessageType.Info)
                 del sys.modules[module_name]
-                # importlib.reload(module_name)
-                pass
         except Exception as e:
             Py4GW.Console.Log(MODULE_NAME, f"Error reloading module {module_name}: {e}")
 
@@ -68,6 +66,11 @@ def Initialize_And_Load():
         loot_handler.Start()
     else:
         loot_handler.Stop()
+        
+    if settings.automatic_inventory_handling:
+        inventory_handler.Start()
+    else:
+        inventory_handler.Stop()
     
 
 def CreateDirectories():
