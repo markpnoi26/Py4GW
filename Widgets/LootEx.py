@@ -223,6 +223,6 @@ def main():
 
     
     inventory_handler.Run()       
-    data_collector.run()
+    # data_collector.run()
 
 __all__ = ['main', 'configure']

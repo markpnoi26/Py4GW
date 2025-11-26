@@ -121,7 +121,7 @@ class Profile:
         
         self.rare_weapons : dict[str, bool] = {}
         from Widgets.frenkey.LootEx.data import Data
-        self.rare_weapons = {name: True for name in Data().Rare_Weapon_Names}
+        self.rare_weapons = {name: True for (name, _) in Data().Rare_Weapon_ModelIds.keys()}
 
     def setup_lookups(self):
         self.filters_by_item_type.clear()

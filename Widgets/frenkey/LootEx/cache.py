@@ -335,7 +335,7 @@ class Cached_Item:
 
         if self.is_weapon or (self.is_upgrade and not self.is_rune):            
             self.weapon_mods = WeaponModInfo.get_from_modifiers(modifier_values, self.item_type, self.model_id) or []
-            self.max_weapon_mods = [mod for mod in self.weapon_mods if mod.IsMaxed and (mod.WeaponMod.mod_type != ModType.Inherent or (self.is_inscribable or self.is_upgrade))]
+            self.max_weapon_mods = [mod for mod in self.weapon_mods if mod.IsMaxed]
             self.weapon_mods_to_keep = [mod for mod in self.max_weapon_mods if settings.profile and settings.profile.weapon_mods.get(mod.WeaponMod.identifier, {}).get(self.item_type.name, False)]
                             
         

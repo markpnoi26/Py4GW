@@ -1094,7 +1094,14 @@ class UI:
                     inventory_handling.InventoryHandler().Stop()
                 else:
                     inventory_handling.InventoryHandler().Start()  
-                         
+                     
+        ImGui.show_tooltip(
+            ("Disable" if self.settings.automatic_inventory_handling else "Enable") +
+            " Inventory Handling" +
+            "\nHold Ctrl to send message to all accounts" +
+            "\nHold Shift to send message to all accounts excluding yourself"
+        )
+            
         if UI.transparent_button(IconsFontAwesome5.ICON_COINS, self.settings.enable_loot_filters, width, width):
             imgui_io = self.py_io
 
@@ -1110,15 +1117,15 @@ class UI:
                 else:
                     loot_handling.LootHandler().Start()                    
 
-        # ImGui.show_tooltip(
-        #     ("Disable" if self.settings.automatic_inventory_handling else "Enable") +
-        #     " Inventory Handling" +
-        #     "\nHold Ctrl to send message to all accounts" +
-        #     "\nHold Shift to send message to all accounts excluding yourself"
-        # )
+        ImGui.show_tooltip(
+            ("Disable" if self.settings.enable_loot_filters else "Enable") +
+            " Loot Filters" +
+            "\nHold Ctrl to send message to all accounts" +
+            "\nHold Shift to send message to all accounts excluding yourself"
+        )
 
     def _draw_sort_inventory_button(self, width):
-        if UI.transparent_button(IconsFontAwesome5.ICON_SORT_ALPHA_DOWN, self.settings.automatic_inventory_handling, width, width):
+        if UI.transparent_button(IconsFontAwesome5.ICON_SORT_ALPHA_DOWN, True, width, width):
             inventory_handling.InventoryHandler().CompactInventory()      
         
         ImGui.show_tooltip(
@@ -1262,7 +1269,7 @@ class UI:
                         
                     ImGui.text_scaled(str(cached_item.id) if cached_item.id > 0 else "", (1,1,1,0.75), 0.7)
                     ImGui.text_scaled(str(cached_item.model_id) if cached_item.model_id > 0 else "", (1,1,1,1), 0.8)
-                    ImGui.text_wrapped(cached_item.data.name if cached_item.data else "Unknown Item")
+                    ImGui.text_wrapped(cached_item.name if cached_item.name else "Unknown Item")
                     # ImGui.text_scaled(f"x{cached_item.quantity}" if cached_item.quantity > 1 else "", (1,1,1,1), 0.8)
                     
                     ImGui.end_table()
@@ -1291,7 +1298,7 @@ class UI:
                 
             if cached_item:
                 if PyImGui.is_item_hovered():
-                    PyImGui.set_next_window_size(400, 0)
+                    PyImGui.set_next_window_size(500, 0)
                     
                     ImGui.begin_tooltip()
                     if cached_item.data:
@@ -1366,7 +1373,10 @@ class UI:
                             
                             PyImGui.table_next_column()
                             for mod in cached_item.weapon_mods:
-                                ImGui.text(utility.Util.reformat_string(mod.WeaponMod.name))
+                                ImGui.text(f"{utility.Util.reformat_string(mod.WeaponMod.name)}")
+                                value = mod.Value
+                                desc = mod.WeaponMod.get_description_with_values(ServerLanguage.English, arg1=value, arg2=value)
+                                ImGui.text(f"{utility.Util.reformat_string(desc)}", 12)
                                 
                         if cached_item.max_weapon_mods:
                             PyImGui.table_next_column()
@@ -1374,6 +1384,14 @@ class UI:
                             
                             PyImGui.table_next_column()
                             for mod in cached_item.max_weapon_mods:
+                                ImGui.text(utility.Util.reformat_string(mod.WeaponMod.name))
+                        
+                        if cached_item.weapon_mods_to_keep:
+                            PyImGui.table_next_column()
+                            ImGui.text("Desired Mods")
+                            
+                            PyImGui.table_next_column()
+                            for mod in cached_item.weapon_mods_to_keep:
                                 ImGui.text(utility.Util.reformat_string(mod.WeaponMod.name))
                         
                         if cached_item.is_rare_weapon:
@@ -5103,21 +5121,28 @@ class UI:
             
             if ImGui.begin_child("Rare Weapons#1", (0, 0), True, PyImGui.WindowFlags.NoFlag):
                 style.WindowPadding.push_style_var(5, 5)
-                for weapon_name in data.Rare_Weapon_Names:
+                for (weapon_name, weapon_type), model_ids in data.Rare_Weapon_ModelIds.items():
                     if ImGui.begin_child(f"RareWeaponSelectable{weapon_name}", (0, 34), True, PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
-                        # find the weapon info in data.Items.All
-                        weapon_info = next((weapon for weapon in data.Items.All if weapon.name == weapon_name and weapon.model_file_id > 0), None)
-                        weapon_texture = weapon_info.texture_file if weapon_info and weapon_info.texture_file else None
+                        items = data.Items.get(weapon_type, {})
+                        
+                        #get an item which has toe correct model id
+                        weapon_info = next((item for item in items.values() if item.model_id in model_ids), None)                            
+                        if weapon_info is None:
+                            # get an item with the correct name as fallback
+                            weapon_info = next((item for item in items.values() if item.name == weapon_name), None)
+                            
+                        weapon_texture = weapon_info.texture_file if weapon_info and weapon_info.texture_file else os.path.join(Py4GW.Console.get_projects_path(), "Textures", "missing_texture.png")
                         if weapon_texture:
                             ImGui.image(weapon_texture, (24, 24))
                         else:
                             PyImGui.dummy(24, 24)
                             
                         PyImGui.same_line(0, 5)
-                        included = self.settings.profile.rare_weapons.get(weapon_name, False)
-                        checked = ImGui.checkbox(weapon_name, included)
+                        name = weapon_name
+                        included = self.settings.profile.rare_weapons.get(name, False)
+                        checked = ImGui.checkbox(name, included)
                         if checked != included:
-                            self.settings.profile.rare_weapons[weapon_name] = checked
+                            self.settings.profile.rare_weapons[name] = checked
                             self.settings.profile.save()
                         
                     ImGui.end_child()

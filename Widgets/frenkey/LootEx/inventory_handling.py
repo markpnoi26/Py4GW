@@ -1755,12 +1755,18 @@ class InventoryHandler:
                 
                 elif item.is_weapon:
                     if item.weapon_mods_to_keep and len(item.weapon_mods_to_keep) == 1:
+                        if not item.weapon_mods_to_keep[0].WeaponMod.upgrade_exists:
+                            item.action = settings.profile.weapon_mod_action if settings.profile else ItemAction.Hold
+                            continue
+                        
                         item.action = ItemAction.Salvage_Mods
                         item.salvage_option = utility.Util.GetSalvageOptionFromModType(
                             item.weapon_mods_to_keep[0].WeaponMod.mod_type)
                         item.salvage_requires_confirmation = True
+                        
                         if not item in result.salvage_queue:
                             result.salvage_queue[item.id] = item
+                            
                     elif item.weapon_mods_to_keep and len(item.weapon_mods_to_keep) > 1:
                         item.action = settings.profile.weapon_mod_action if settings.profile else ItemAction.Hold
 

@@ -768,8 +768,10 @@ class Util:
                     return True
 
                 name = item.names.get(ServerLanguage.English, None)
-                if name and name in data.Rare_Weapon_Names:
-                    return True
+                if name:
+                    if (name, item.item_type) in data.Rare_Weapon_ModelIds:
+                        model_ids = data.Rare_Weapon_ModelIds[(name, item.item_type)]
+                        return not model_ids or model_id in model_ids
 
         return False
 
