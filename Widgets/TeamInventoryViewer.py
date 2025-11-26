@@ -30,7 +30,7 @@ try:
     from Widgets.frenkey.LootEx.utility import Util
     from Widgets.frenkey.LootEx.data import Data
 
-    LOOTEX_AVAILABLE = True
+    LOOTEX_AVAILABLE = False
 
 except Exception:
     Util = None
@@ -41,6 +41,33 @@ except Exception:
 
 def get_armor_name_from_modifiers(item):
     if not LOOTEX_AVAILABLE or not Util:
+        try:
+            base_name = ModelID(item.model_id).name.replace("_", " ")
+        except ValueError:
+            base_name = None
+
+        base_name = INVENTORY_MODEL_ID_CACHE.get(str(item.model_id))
+        if not base_name:
+            return None
+
+        if base_name:
+            mod_hash = ModHashJSONStore.hash_mods(item.modifiers)
+            if mod_hash not in INVENTORY_MOD_HASH_CACHE:
+                return None
+
+            prefix, suffix = INVENTORY_MOD_HASH_CACHE.get(mod_hash, [None, None])
+
+            name_parts = []
+
+            if prefix:
+                name_parts.append(prefix)
+
+            name_parts.append(base_name)
+
+            if suffix:
+                name_parts.append(suffix)
+
+            return " ".join(name_parts)
         return None
 
     # Prefer the in-game name if available
@@ -89,6 +116,33 @@ def get_armor_name_from_modifiers(item):
 
 def get_weapon_name_from_modifiers(item):
     if not LOOTEX_AVAILABLE or not Util:
+        try:
+            base_name = ModelID(item.model_id).name.replace("_", " ")
+        except ValueError:
+            base_name = None
+
+        base_name = INVENTORY_MODEL_ID_CACHE.get(str(item.model_id))
+        if not base_name:
+            return None
+
+        if base_name:
+            mod_hash = ModHashJSONStore.hash_mods(item.modifiers)
+            if mod_hash not in INVENTORY_MOD_HASH_CACHE:
+                return None
+
+            prefix, suffix = INVENTORY_MOD_HASH_CACHE.get(mod_hash, [None, None])
+
+            name_parts = []
+            # Inherent mods like “Vampiric” or “Insightful” go before everything else
+            if prefix:
+                name_parts.append(prefix)
+
+            name_parts.append(base_name)
+
+            if suffix:
+                name_parts.append(f"{suffix}")
+
+            return " ".join(name_parts)
         return None
 
     # Prefer the in-game name if available
@@ -147,6 +201,7 @@ BASE_DIR = os.path.join(project_root, "Widgets/Config")
 DB_BASE_DIR = os.path.join(project_root, "Widgets/Data")
 JSON_INVENTORY_PATH = os.path.join(DB_BASE_DIR, "Inventory")
 JSON_INVENTORY_MODEL_IDS_PATH = os.path.join(DB_BASE_DIR, "InventoryModelIds")
+JSON_INVENTORY_MOD_HASH_PATH = os.path.join(DB_BASE_DIR, "InventoryModHash")
 INI_WIDGET_WINDOW_PATH = os.path.join(BASE_DIR, "team_inventory_viewer.ini")
 os.makedirs(BASE_DIR, exist_ok=True)
 
@@ -178,6 +233,7 @@ current_character_name = ''
 
 TEAM_INVENTORY_CACHE = {}
 INVENTORY_MODEL_ID_CACHE = {}
+INVENTORY_MOD_HASH_CACHE = {}
 
 INVENTORY_BAGS = {
     "Backpack": Bags.Backpack.value,
@@ -373,20 +429,24 @@ INSIGNIAS = {
 }
 
 
-def clean_gw_item_name(item_name: str) -> str:
+def clean_gw_item_name(item_name: str):
     """
     PERFECT Guild Wars 1 item name cleaner for weapons AND armor.
     - Removes at most one prefix/insignia + one suffix/rune.
-    - Supports partial matches: e.g. 'Survivor' matches 'Survivor's'
+    - Supports partial matches like: 'Survivor' -> "Survivor's"
+    - Returns: (base_name, removed_prefix, removed_suffix)
     """
     if not item_name:
-        return ""
+        return "", None, None
 
     words = item_name.strip().split()
     if not words:
-        return ""
+        return "", None, None
 
     result = []
+    removed_prefix = None
+    removed_suffix = None
+
     i = 0
     n = len(words)
 
@@ -394,21 +454,23 @@ def clean_gw_item_name(item_name: str) -> str:
     all_prefixes = WEAPON_PREFIXES | INSIGNIAS
     normalized_prefixes = {p.lower().rstrip("'s") for p in all_prefixes}
 
-    # Skip at most one prefix/insignia at the beginning
     if i < n:
-        w = words[i].rstrip(".,!?").lower().rstrip("'s")
-        if w in normalized_prefixes:
-            i += 1  # remove the whole prefix word
+        original = words[i].rstrip(".,!?")
+        normalized = original.lower().rstrip("'s")
 
-    # Collect base name until the first matching suffix
+        if normalized in normalized_prefixes:
+            removed_prefix = original  # store EXACT original prefix
+            i += 1
+
     while i < n:
         remaining = words[i:]
         suffix_matched = False
 
-        # Try longest possible suffix first (up to 5 words)
+        # Try longest suffix first (up to 5 words)
         for length in range(min(5, len(remaining)), 0, -1):
             candidate = " ".join(remaining[:length]).rstrip(".,!?")
             if candidate in ALL_SUFFIXES:
+                removed_suffix = candidate  # store EXACT matched suffix phrase
                 suffix_matched = True
                 break
 
@@ -418,12 +480,11 @@ def clean_gw_item_name(item_name: str) -> str:
         result.append(words[i])
         i += 1
 
-    final_string = " ".join(result).strip()
+    # Final cleanup of base name
+    base_name = " ".join(result).strip()
+    base_name = ''.join(c for c in base_name if not c.isdigit())
 
-    # Remove all digits from the final string
-    final_string = ''.join(c for c in final_string if not c.isdigit())
-
-    return final_string
+    return base_name, removed_prefix, removed_suffix
 
 
 # endregion
@@ -495,6 +556,107 @@ class ModelIDJSONStore:
             del data[key]
 
         INVENTORY_MODEL_ID_CACHE = data
+        return data
+
+
+class ModHashJSONStore:
+    def __init__(self):
+        self.path = Path(JSON_INVENTORY_MOD_HASH_PATH)
+        self.path.mkdir(parents=True, exist_ok=True)
+        self.file_path = self.path / "mod_hash.json"
+        self.backup_path = self.file_path.with_suffix(".json.bak")
+
+    @staticmethod
+    def hash_mods(modifiers):
+        """
+        Generates a stable 64-bit hash for a list of modifier objects.
+        Extracts identifier + args + modbits from each mod.
+        """
+
+        def safe_int(v):
+            try:
+                return int(v)
+            except Exception:
+                return 0  # fallback for None or weird values
+
+        # Build the integer matrix
+        data = []
+        for mod in modifiers:
+            data.append([
+                safe_int(mod.GetIdentifier()),
+                safe_int(mod.GetArg1()),
+                safe_int(mod.GetArg2()),
+                safe_int(mod.GetArg()),
+                safe_int(mod.GetModBits()),
+            ])
+
+        # === Fast 64-bit hash mixer ===
+        h = 0
+        for lst in data:
+            for num in lst:
+                h = (h * 1315423911) ^ num ^ (h >> 5)
+                h &= 0xFFFFFFFFFFFFFFFF  # keep 64 bits
+
+        return hex(h)[2:]
+
+    def _read(self):
+        if not self.file_path.exists():
+            return {}
+
+        try:
+            with open(self.file_path, "r") as f:
+                return json.load(f, object_pairs_hook=OrderedDict)
+        except json.JSONDecodeError:
+            if self.backup_path.exists():
+                try:
+                    with open(self.backup_path, "r") as f:
+                        return json.load(f, object_pairs_hook=OrderedDict)
+                except Exception:
+                    pass
+            return {}
+
+    def _write(self, data):
+        if not Routines.Checks.Map.MapValid():
+            # Skip writing while map is invalid
+            return False
+
+        temp_file = self.file_path.with_suffix(".tmp")
+
+        try:
+            with open(temp_file, "w") as f:
+                json.dump(data, f, indent=2)
+            if self.file_path.exists():
+                shutil.copy2(self.file_path, self.backup_path)
+            os.replace(temp_file, self.file_path)
+            return True
+        except Exception as e:
+            ConsoleLog("ModelHashJSONStore", f"[WARN] Failed to write {self.file_path}: {e}")
+            return False
+
+    def save_mod_hash(self, mod_hash, prefix=None, suffix=None):
+        str_mod_hash = str(mod_hash)
+        data = self._read()
+        if mod_hash and (prefix or suffix):
+            data[str_mod_hash] = [prefix, suffix]
+            INVENTORY_MOD_HASH_CACHE[str_mod_hash] = [prefix, suffix]
+            self._write(data)
+
+    def load(self):
+        global INVENTORY_MOD_HASH_CACHE
+
+        if INVENTORY_MOD_HASH_CACHE:
+            return INVENTORY_MOD_HASH_CACHE
+
+        data = self._read()
+        keys_to_delete = []
+        for key, value in data.items():
+            if not value:
+                keys_to_delete.append(key)
+
+        for key in keys_to_delete:
+            del data[key]
+
+        INVENTORY_MOD_HASH_CACHE = data
         return data
 
 
@@ -655,6 +817,7 @@ class MultiAccountInventoryStore:
 
 multi_store = MultiAccountInventoryStore()
 inventory_model_ids_store = ModelIDJSONStore()
+inventory_mod_hash_store = ModHashJSONStore()
 
 
 # region Generators
@@ -785,7 +948,12 @@ def _collect_bag_items(bag, bag_id, email, storage_name=None, char_name=None):
                 markedup = yield from Routines.Yield.Items.GetItemNameByItemID(item_id)
                 final_name = _strip_markup(markedup)
                 if final_name:
-                    inventory_model_ids_store.save_model_id(model_id, clean_gw_item_name(final_name))
+                    model_name, prefix, suffix = clean_gw_item_name(final_name)
+                    inventory_model_ids_store.save_model_id(model_id, model_name)
+                    mod_hash = ModHashJSONStore.hash_mods(item.modifiers)
+                    print(prefix, suffix)
+                    inventory_mod_hash_store.save_mod_hash(mod_hash, prefix, suffix)
+
             except Exception as e:
                 print(f"Exception fetching name for {item_id}: {e}")
                 final_name = None
@@ -871,6 +1039,7 @@ def search(query: str, items: list[str]) -> list[str]:
 def draw_widget():
     global TEAM_INVENTORY_CACHE
     global INVENTORY_MODEL_ID_CACHE
+    global INVENTORY_MOD_HASH_CACHE
     global window_x
     global window_y
     global window_collapsed
@@ -881,6 +1050,7 @@ def draw_widget():
     global current_character_name
     global multi_store
     global inventory_model_ids_store
+    global inventory_mod_hash_store
 
     if on_first_load:
         PyImGui.set_next_window_size(1000, 1250)
@@ -892,6 +1062,7 @@ def draw_widget():
 
         TEAM_INVENTORY_CACHE = multi_store.load_all()
         INVENTORY_MODEL_ID_CACHE = inventory_model_ids_store.load()
+        INVENTORY_MOD_HASH_CACHE = inventory_mod_hash_store.load()
 
     new_collapsed = PyImGui.is_window_collapsed()
     end_pos = PyImGui.get_window_pos()
@@ -955,6 +1126,7 @@ def draw_widget():
                                                         "bag": bag_name,
                                                         "item_name": item_name,
                                                         "model_id": info["model_id"],
+                                                        "lootex_texture_file": info.get("lootex_texture_file"),
                                                         "count": count or str(info.get('count', 0)),
                                                         "location_type": "Character",
                                                     }
@@ -976,6 +1148,7 @@ def draw_widget():
                                                     "bag": storage_name,
                                                     "item_name": item_name,
                                                     "model_id": info["model_id"],
+                                                    "lootex_texture_file": info.get("lootex_texture_file"),
                                                     "count": count or str(info.get('count', 0)),
                                                     "location_type": "Storage",
                                                 }
