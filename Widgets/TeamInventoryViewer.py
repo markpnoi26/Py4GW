@@ -61,10 +61,7 @@ name_request_timer = ThrottledTimer(1000)
 # String consts
 MODULE_NAME = "TeamInventoryViewer"  # Change this Module name
 COLLAPSED = "collapsed"
-<<<<<<< HEAD
 AUTO_SAVE = "autosave"
-=======
->>>>>>> main
 X_POS = "x"
 Y_POS = "y"
 
@@ -72,10 +69,7 @@ Y_POS = "y"
 window_x = ini_window.read_int(MODULE_NAME, X_POS, 1512)
 window_y = ini_window.read_int(MODULE_NAME, Y_POS, 0)
 window_collapsed = ini_window.read_bool(MODULE_NAME, COLLAPSED, True)
-<<<<<<< HEAD
 autosave_enabled = ini_window.read_bool(MODULE_NAME, AUTO_SAVE, True)
-=======
->>>>>>> main
 
 # View data
 first_run = True
