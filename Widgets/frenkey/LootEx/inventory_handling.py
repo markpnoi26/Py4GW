@@ -11,6 +11,7 @@ from Widgets.frenkey.LootEx.data_collection import DataCollector
 from Widgets.frenkey.LootEx.enum import XUNLAI_STORAGE, MaterialType, MerchantType, ModType, SalvageKitOption, SalvageOption, ItemAction
 from Py4GWCoreLib import *
 from Widgets.frenkey.LootEx import loot_handling, models, settings, utility, ui_manager_extensions, item_configuration, cache
+from Widgets.frenkey.LootEx.instance_manager import InstanceManager
 from Widgets.frenkey.LootEx.salvaging import SalvageAction, SalvageActionState
 from Widgets.frenkey.LootEx.trading import ActionType, TraderAction, TraderActionState
 
@@ -283,7 +284,6 @@ class LootEx_Merchant_Handler(MerchantHandler):
             if not can_afford:
                 ConsoleLog("LootEx_Merchant_Handler", "Cannot afford any salvage kits to restock.", Console.MessageType.Debug, self.LOG_LOOTEX_MERCHANT_HANDLER)
                 return
-            
 
 class InventoryHandler:
     instance = None
@@ -301,21 +301,7 @@ class InventoryHandler:
         from Widgets.frenkey.LootEx.data import Data
         self.data = Data()
             
-        if getattr(self, "merchant_handler", None) is None:
-            self.merchant_handler = MerchantHandler()
-            ConsoleLog("InventoryHandler", f"Initialized default MerchantHandler: {self.merchant_handler._instance}.", Console.MessageType.Debug)
-        
-        if getattr(self, "lootex_merchant_handler", None) is None:
-            self.lootex_merchant_handler = LootEx_Merchant_Handler(self)
-            ConsoleLog("InventoryHandler", f"Initialized default LootEx_Merchant_Handler: {self.lootex_merchant_handler._instance}.", Console.MessageType.Debug)
-            
-        if getattr(self, "auto_inventory_handler", None) is None:
-            self.auto_inventory_handler = AutoInventoryHandler()
-        
-        if getattr(self, "lootex_auto_inventory_handler", None) is None:
-            self.lootex_auto_inventory_handler = LootExAutoInventoryHandler(self)      
-               
-                  
+        self.instance_manager = InstanceManager(self)
         
         self._initialized = True
         self.run_once = False
@@ -1856,10 +1842,6 @@ class InventoryHandler:
         from Widgets.frenkey.LootEx.settings import Settings
         settings = Settings()
         
-        ## Disable auto inventory handler while manual inventory handler is active
-        self.auto_inventory_handler.module_active = False
-        
-        
         global time_results, actiontime_results
         self.run_once = False
         self.soft_reset()
@@ -2043,11 +2025,11 @@ class InventoryHandler:
         settings.automatic_inventory_handling = False
         settings.save()
 
-        MerchantHandler._instance = self.merchant_handler
-        ConsoleLog("LootEx", f"Restored MerchantHandler instance to {MerchantHandler._instance}", Console.MessageType.Info)
+        MerchantHandler._instance = self.instance_manager.merchant_handler
+        ConsoleLog("LootEx", f"Restored MerchantHandler instance to {MerchantHandler._instance.__class__.__name__}", Console.MessageType.Info)
         
-        AutoInventoryHandler._instance = self.auto_inventory_handler
-        ConsoleLog("LootEx", f"Restored AutoInventoryHandler instance to {AutoInventoryHandler._instance}", Console.MessageType.Info)
+        AutoInventoryHandler._instance = self.instance_manager.auto_inventory_handler
+        ConsoleLog("LootEx", f"Restored AutoInventoryHandler instance to {AutoInventoryHandler._instance.__class__.__name__}", Console.MessageType.Info)
         
         return True
 
@@ -2062,11 +2044,11 @@ class InventoryHandler:
         settings.automatic_inventory_handling = True
         settings.save()
 
-        MerchantHandler._instance = self.lootex_merchant_handler
-        ConsoleLog("LootEx", f"Hijacked MerchantHandler instance to {MerchantHandler._instance}", Console.MessageType.Info)
+        MerchantHandler._instance = self.instance_manager.lootex_merchant_handler
+        ConsoleLog("LootEx", f"Hijacked MerchantHandler instance to {MerchantHandler._instance.__class__.__name__}", Console.MessageType.Info)
 
-        AutoInventoryHandler._instance = self.lootex_auto_inventory_handler
-        ConsoleLog("LootEx", f"Hijacked AutoInventoryHandler instance to {AutoInventoryHandler._instance}", Console.MessageType.Info)
+        AutoInventoryHandler._instance = self.instance_manager.lootex_auto_inventory_handler
+        ConsoleLog("LootEx", f"Hijacked AutoInventoryHandler instance to {AutoInventoryHandler._instance.__class__.__name__}", Console.MessageType.Info)
         
         return True
 

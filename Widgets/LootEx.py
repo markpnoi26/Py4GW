@@ -3,14 +3,30 @@ from Py4GWCoreLib import *
 from ctypes import windll
 
 MODULE_NAME = "LootEx"
-for module_name in list(sys.modules.keys()):
-    if module_name not in ("sys", "importlib", "cache_data"):
-        try:            
-            if f"{MODULE_NAME}." in module_name:
-                Py4GW.Console.Log(MODULE_NAME, f"Reloading module: {module_name}", Console.MessageType.Info)
-                del sys.modules[module_name]
-        except Exception as e:
-            Py4GW.Console.Log(MODULE_NAME, f"Error reloading module {module_name}: {e}")
+ # Copy keys so we can delete from sys.modules safely
+module_names = list(sys.modules.keys())
+
+for name in module_names:    
+    if MODULE_NAME not in name:
+        continue
+
+    module = sys.modules.get(name, None)
+    if module is None:
+        continue
+
+    # Check persistence flag (proper bugfix)
+    is_persistent = getattr(module, "PERSISTENT", False)
+
+    if is_persistent:
+        ConsoleLog(MODULE_NAME, f"Skipping reloading for persistent module: {name}", Console.MessageType.Info)
+        continue
+
+    try:
+        ConsoleLog(MODULE_NAME, f"Reloading module: {name}", Console.MessageType.Info)
+        del sys.modules[name]
+        
+    except Exception as e:
+        ConsoleLog(MODULE_NAME, f"Error unloading {name}: {e}", Console.MessageType.Error)
 
 
 from Widgets.frenkey.LootEx.data import Data
