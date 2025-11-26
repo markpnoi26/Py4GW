@@ -1,5 +1,6 @@
 from datetime import date, datetime, timedelta
 from typing import Any, Callable, Generator, override
+from Py4GWCoreLib.Builds.SF_Ass_vaettir import SF_Ass_vaettir
 from Py4GWCoreLib.GlobalCache.ItemCache import Bag_enum
 from Py4GWCoreLib.botting_src.helpers import BottingHelpers
 from Py4GWCoreLib.botting_src.helpers_src.Merchant import _Merchant
@@ -78,14 +79,18 @@ class LootExAutoInventoryHandler(AutoInventoryHandler):
             return
         
         while True:
-            items_to_identify = [item for item in self.inventory_handler.actions.values() if item.action == ItemAction.Identify]
+            items_to_identify = [item for item in self.inventory_handler.actions.values() if item.action == ItemAction.Identify and not item.is_identified]
             
             if not items_to_identify:
                 ConsoleLog("LootExAutoInventoryHandler", "No items left to identify.", Console.MessageType.Debug, self.LOG_LOOTEX_AUTO_INVENTORY_HANDLER)
                 return
             
             ConsoleLog("LootExAutoInventoryHandler", f"Identifying {len(items_to_identify)} items.", Console.MessageType.Debug, self.LOG_LOOTEX_AUTO_INVENTORY_HANDLER)
-            yield
+            
+            for item in items_to_identify:
+                ConsoleLog("LootExAutoInventoryHandler", f"Item to identify: {item.data.name if item.data else item.name}.", Console.MessageType.Debug, self.LOG_LOOTEX_AUTO_INVENTORY_HANDLER)
+                
+            yield from Routines.Yield.wait(250)
                 
     @override
     def SalvageItems(self, progress_callback: Optional[Callable[[float], None]] = None, log: bool = False):
@@ -113,7 +118,8 @@ class LootExAutoInventoryHandler(AutoInventoryHandler):
                 return
             
             ConsoleLog("LootExAutoInventoryHandler", f"Salvaging {len(salvage_queue)} items.", Console.MessageType.Debug, self.LOG_LOOTEX_AUTO_INVENTORY_HANDLER)            
-            yield
+            
+            yield from Routines.Yield.wait(250)
         
     @override
     def DepositItemsAuto(self):
@@ -145,7 +151,8 @@ class LootExAutoInventoryHandler(AutoInventoryHandler):
                 return
             
             ConsoleLog("LootExAutoInventoryHandler", f"Depositing {len(items_to_stash)} items.", Console.MessageType.Debug, self.LOG_LOOTEX_AUTO_INVENTORY_HANDLER)
-            yield
+            
+            yield from Routines.Yield.wait(250)
     
     @override
     def IDAndSalvageItems(self, progress_callback: Optional[Callable[[float], None]] = None):
@@ -284,6 +291,25 @@ class LootEx_Merchant_Handler(MerchantHandler):
             if not can_afford:
                 ConsoleLog("LootEx_Merchant_Handler", "Cannot afford any salvage kits to restock.", Console.MessageType.Debug, self.LOG_LOOTEX_MERCHANT_HANDLER)
                 return
+
+
+
+def DefensiveActions(self):
+    player_agent_id = GLOBAL_CACHE.Player.GetAgentID()
+    has_deadly_paradox = Routines.Checks.Effects.HasBuff(player_agent_id, self.deadly_paradox)
+    has_shroud_of_distress = Routines.Checks.Effects.HasBuff(player_agent_id, self.shroud_of_distress)
+    
+    if (yield from Routines.Yield.Skills.IsSkillIDUsable(self.shadow_form)):
+        if (yield from self._CastSkillID(self.deadly_paradox,extra_condition=(not has_deadly_paradox), log=False, aftercast_delay=100)):
+            ConsoleLog(self.build_name, "Casting Deadly Paradox.", Py4GW.Console.MessageType.Info, log=False)
+            
+        if (yield from self._CastSkillID(self.shadow_form, log=False, aftercast_delay=1750)):
+            ConsoleLog(self.build_name, "Casting Shadow Form.", Py4GW.Console.MessageType.Info, log=False)
+            
+        if (yield from self._CastSkillID(self.shroud_of_distress,extra_condition=(not has_shroud_of_distress), log=False, aftercast_delay=1750)):
+            ConsoleLog(self.build_name, "Casting Shroud of Distress.", Py4GW.Console.MessageType.Info, log=False)
+            
+SF_Ass_vaettir.DefensiveActions = DefensiveActions
 
 class InventoryHandler:
     instance = None

@@ -218,6 +218,7 @@ class Cached_Item:
             return
         
         self.is_inventory_item = item.is_inventory_item
+        self.is_identified = item.is_identified
         self.quantity = item.quantity
         self.uses = item.uses
         self.is_customized = item.is_customized
