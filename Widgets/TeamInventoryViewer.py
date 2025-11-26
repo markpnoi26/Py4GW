@@ -30,7 +30,7 @@ try:
     from Widgets.frenkey.LootEx.utility import Util
     from Widgets.frenkey.LootEx.data import Data
 
-    LOOTEX_AVAILABLE = False
+    LOOTEX_AVAILABLE = True
 
 except Exception:
     Util = None
