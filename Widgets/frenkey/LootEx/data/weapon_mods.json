@@ -2,7 +2,7 @@
     "\"Aptitude not Attitude\"": {
         "Identifier": "\"Aptitude not Attitude\"",
         "Descriptions": {
-            "English": "Halves casting time on spells of item's attribute (Chance: {arg1}%)"
+            "English": "Halves casting time on spells of item's attribute (Chance: {arg1[10248]}%)"
         },
         "Names": {
             "German": "\"Gut gewirkt ist halb gewonnen\"",
@@ -105,15 +105,6 @@
         "ItemTypeSpecific": {},
         "Modifiers": [
             {
-                "Identifier": 8376,
-                "Arg1": 0,
-                "Arg2": 5,
-                "Arg": 5,
-                "ModifierValueArg": "Fixed",
-                "Min": 5,
-                "Max": 5
-            },
-            {
                 "Identifier": 8760,
                 "Arg1": 0,
                 "Arg2": 15,
@@ -121,6 +112,24 @@
                 "ModifierValueArg": "Arg2",
                 "Min": 10,
                 "Max": 15
+            },
+            {
+                "Identifier": 9522,
+                "Arg1": 2,
+                "Arg2": 210,
+                "Arg": 722,
+                "ModifierValueArg": "None_",
+                "Min": 0,
+                "Max": 255
+            },
+            {
+                "Identifier": 8376,
+                "Arg1": 0,
+                "Arg2": 5,
+                "Arg": 5,
+                "ModifierValueArg": "Fixed",
+                "Min": 5,
+                "Max": 5
             }
         ]
     },
@@ -780,6 +789,15 @@
                 "ModifierValueArg": "Arg2",
                 "Min": 4,
                 "Max": 5
+            },
+            {
+                "Identifier": 9522,
+                "Arg1": 3,
+                "Arg2": 108,
+                "Arg": 876,
+                "ModifierValueArg": "None_",
+                "Min": 0,
+                "Max": 255
             },
             {
                 "Identifier": 8376,
@@ -1946,6 +1964,15 @@
                 "ModifierValueArg": "Arg2",
                 "Min": 10,
                 "Max": 15
+            },
+            {
+                "Identifier": 9522,
+                "Arg1": 2,
+                "Arg2": 212,
+                "Arg": 724,
+                "ModifierValueArg": "None_",
+                "Min": 0,
+                "Max": 255
             },
             {
                 "Identifier": 8216,
@@ -3995,6 +4022,15 @@
                 "Max": 5
             },
             {
+                "Identifier": 9520,
+                "Arg1": 2,
+                "Arg2": 102,
+                "Arg": 614,
+                "ModifierValueArg": "None_",
+                "Min": 0,
+                "Max": 255
+            },
+            {
                 "Identifier": 8424,
                 "Arg1": 0,
                 "Arg2": 1,
@@ -4049,6 +4085,15 @@
                 "Max": 3
             },
             {
+                "Identifier": 9520,
+                "Arg1": 2,
+                "Arg2": 102,
+                "Arg": 614,
+                "ModifierValueArg": "None_",
+                "Min": 0,
+                "Max": 255
+            },
+            {
                 "Identifier": 8424,
                 "Arg1": 0,
                 "Arg2": 1,
@@ -4101,6 +4146,15 @@
                 "ModifierValueArg": "Fixed",
                 "Min": 1,
                 "Max": 1
+            },
+            {
+                "Identifier": 9520,
+                "Arg1": 2,
+                "Arg2": 102,
+                "Arg": 614,
+                "ModifierValueArg": "None_",
+                "Min": 0,
+                "Max": 255
             },
             {
                 "Identifier": 8392,

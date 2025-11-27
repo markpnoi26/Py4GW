@@ -1062,8 +1062,7 @@ class Rune(ItemMod):
     
     def __post_init__(self):
         super().__post_init__()
-        self.texture_file = os.path.join(item_textures_path, f"{self.inventory_icon}") if self.inventory_icon and os.path.exists(os.path.join(item_textures_path, f"{self.inventory_icon}")) else missing_texture_path
-        
+        self.texture_file = os.path.join(item_textures_path, f"{self.inventory_icon}") if self.inventory_icon and os.path.exists(os.path.join(item_textures_path, f"{self.inventory_icon}")) else missing_texture_path       
         
     def get_applied_name(self, language: Optional[ServerLanguage] = None) -> str:
         if language is None:
@@ -1166,7 +1165,6 @@ class Rune(ItemMod):
             return False, False
         
         return all(result[0] for result in results), all(result[1] for result in results)        
-        
         
     def to_json(self) -> dict:
         return {
@@ -1358,6 +1356,8 @@ class BaseModInfo():
         self.Arg1 : int = 0
         self.Arg2 : int = 0
         
+        self.Description : str = ""
+        
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, BaseModInfo):
             return NotImplemented
@@ -1372,7 +1372,6 @@ class BaseModInfo():
         if not isinstance(other, BaseModInfo):
             return NotImplemented
         return (self.Value, len(self.Modifiers)) < (other.Value, len(other.Modifiers))
-
     
 class RuneModInfo(BaseModInfo):
     @property
@@ -1558,10 +1557,107 @@ class WeaponModInfo(BaseModInfo):
             weapon_mod_info.Arg1 = mod_info.arg1
             weapon_mod_info.Arg2 = mod_info.arg2
             weapon_mod_info.IsMaxed = weapon_mod_info.Value >= mod_info.max 
+            weapon_mod_info.Description = weapon_mod_info.get_description()
                             
             mod_infos.append(weapon_mod_info)
             
         return mod_infos
+    
+    def get_description(self, language: Optional[ServerLanguage] = None) -> str:
+        if language is None:
+            language = get_server_language()
+
+        description = self.Mod.descriptions.get(
+            language, self.Mod.descriptions.get(ServerLanguage.English, "")
+        )
+
+        if not description:
+            return ""
+                
+        def get_modifier_info_by_id(identifier: int) -> Optional[ModifierInfo]:
+            for mod in self.Mod.modifiers:
+                if mod.identifier == identifier:
+                    return mod
+                
+            return None
+
+        def get_single_modifier() -> Optional[ModifierInfo]:
+            return self.Mod.modifiers[0] if len(self.Mod.modifiers) == 1 else None
+
+        def format_enum_name(name: str) -> str:
+            parts = []
+            for char in name:
+                if char.isupper() and parts:
+                    parts.append(' ')
+                parts.append(char)
+            name = ''.join(parts)
+            return name.replace("_", " ")
+
+        def get_formatted_value(mod: ModifierInfo, arg_type: str) -> str:
+            if arg_type == "arg1":
+                if mod.identifier in (9240, 10408, 8680):
+                    return format_enum_name(Attribute(mod.arg1).name)
+                if mod.identifier in (9400, 41240):
+                    return format_enum_name(DamageType(mod.arg1).name)
+                if mod.identifier in (8520, 32896):
+                    return format_enum_name(EnemyType(mod.arg1).name)
+                            
+            return str(getattr(mod, arg_type, f"{{{arg_type}}}"))
+
+        def get_modifier_values(identifier: int) -> tuple[int, int]:
+            for iden, arg1, arg2 in self.Modifiers:
+                if iden == identifier:
+                    return arg1, arg2
+                
+            return 0, 0
+
+        def replace_indexed(match: re.Match) -> str:
+            arg_type, id_str = match.group(1), match.group(2)
+            modifier_info = get_modifier_info_by_id(int(id_str))
+            
+            if not modifier_info:
+                return f"{{{arg_type}[{id_str}]}}"
+            
+            arg1, arg2 = get_modifier_values(modifier_info.identifier)
+                        
+            if modifier_info.modifier_value_arg == ModifierValueArg.Arg1 and arg_type == "arg1":
+                return str(arg1)
+            
+            if modifier_info.modifier_value_arg == ModifierValueArg.Arg2 and arg_type == "arg2":
+                return str(arg2)    
+            
+            return get_formatted_value(modifier_info, arg_type)
+
+        def replace_simple(match: re.Match) -> str:
+            arg_type = match.group(1)
+            modifier = get_single_modifier()
+            
+            if not modifier:
+                return f"{{{arg_type}}}"
+            
+            arg1, arg2 = get_modifier_values(modifier.identifier)
+
+            if arg_type == "arg1" and modifier.modifier_value_arg == ModifierValueArg.Arg1:
+                return str(arg1)
+            
+            if arg_type == "arg2" and modifier.modifier_value_arg == ModifierValueArg.Arg2:
+                return str(arg2)
+
+            return get_formatted_value(modifier, arg_type)
+
+        
+        # Replace indexed arguments: {arg1[42]}, {arg2[12]}, etc.
+        # description = re.sub(r"\{(arg1|arg2|arg|min|max)\[(\d+)\]\}", replace_indexed, description)
+        description = re.sub(r"\{(arg1|arg2|arg|min|max)\[(\d+)\]\}", replace_indexed, description, flags=re.DOTALL)
+
+
+        # Replace simple arguments: {arg1}, {arg2}, etc.
+        # if get_single_modifier():
+        description = re.sub(r"\{(arg1|arg2|arg|min|max)\}", replace_simple, description, flags=re.DOTALL)
+
+        return description
+        
+        return description
 
 class ItemModifiersInformation:
     def __init__(self):
@@ -1657,7 +1753,7 @@ class ItemModifiersInformation:
         if is_weapon or (is_upgrade and not is_rune):            
             self.weapon_mods = WeaponModInfo.get_from_modifiers(modifier_values, item_type, model_id) or []
             self.max_weapon_mods = [mod for mod in self.weapon_mods if mod.IsMaxed]
-            self.weapon_mods_to_keep = [mod for mod in self.max_weapon_mods if settings.profile and settings.profile.weapon_mods.get(mod.WeaponMod.identifier, {}).get(item_type.name, False)]
+            self.weapon_mods_to_keep = [mod for mod in self.max_weapon_mods if settings.profile and settings.profile.weapon_mods.get(mod.WeaponMod.identifier, {}) and (item_type == ItemType.Rune_Mod or settings.profile.weapon_mods.get(mod.WeaponMod.identifier, {}).get(item_type.name, False))]
                             
         
         self.mods = self.runes + self.weapon_mods

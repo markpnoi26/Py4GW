@@ -1375,7 +1375,7 @@ class UI:
                             for mod in cached_item.weapon_mods:
                                 ImGui.text(f"{utility.Util.reformat_string(mod.WeaponMod.name)}")
                                 value = mod.Value
-                                desc = mod.WeaponMod.get_description_with_values(ServerLanguage.English)
+                                desc = mod.Description
                                 ImGui.text(f"{utility.Util.reformat_string(desc)}", 12)
                                 
                         if cached_item.max_weapon_mods:
@@ -1546,9 +1546,10 @@ class UI:
                         pass
 
                     def on_test_button_clicked(): 
-                        item = cache.Cached_Item(1113)
-                        for mod in item.weapon_mods:
-                            ConsoleLog("LootEx Test", f"Mod: {mod.WeaponMod.name} | Value: {mod.Value} | Modifiers: {mod.Modifiers}", Console.MessageType.Info)
+                        for mod in data.Weapon_Mods.values():
+                            if len(mod.modifiers) > 1:
+                                ConsoleLog("LootEx Test", f"Mod {mod.name} has multiple modifiers!", Console.MessageType.Warning)
+                                ConsoleLog("LootEx Test", f"{mod.descriptions.get(ServerLanguage.English, "")}", Console.MessageType.Warning)
                             
                         return
                     
