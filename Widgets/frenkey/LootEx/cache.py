@@ -2,6 +2,7 @@ from datetime import datetime
 from PyItem import DyeInfo, ItemModifier
 from Py4GWCoreLib import Item
 from Py4GWCoreLib.enums import Attribute, DyeColor, ItemType, ModelID, Rarity
+from Py4GWCoreLib.enums_src.GameData_enums import Profession
 from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
 from Py4GWCoreLib.py4gwcorelib_src.Console import Console, ConsoleLog
 from Widgets.frenkey.LootEx.enum import ModType, ModifierIdentifier
@@ -26,6 +27,8 @@ class Cached_Item:
             item.item_type.ToInt()) if item else ItemType.Unknown
         self.rarity: Rarity = Rarity(
             item.rarity.value) if item and item.rarity and item.rarity.value in Rarity else Rarity.White
+        self.profession : Profession = Profession(
+            item.profession) if item and item.profession in Profession else Profession._None
         
         self.data: models.Item | None = data.Items.get_item(
             self.item_type, self.model_id) if self.model_id > -1 and self.item_type in data.Items else None

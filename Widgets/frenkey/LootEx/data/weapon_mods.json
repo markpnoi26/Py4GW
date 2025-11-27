@@ -3242,7 +3242,7 @@
         "ModType": "Prefix",
         "ItemMods": {
             "Axe": "AxeHaft",
-            "Sword": "SwordPommel",
+            "Sword": "SwordHilt",
             "Daggers": "DaggerTang",
             "Scythe": "ScytheSnathe",
             "Bow": "BowString",
@@ -3291,7 +3291,7 @@
         "ModType": "Prefix",
         "ItemMods": {
             "Axe": "AxeHaft",
-            "Sword": "SwordPommel",
+            "Sword": "SwordHilt",
             "Daggers": "DaggerTang",
             "Scythe": "ScytheSnathe",
             "Bow": "BowString",
@@ -3341,7 +3341,7 @@
         "ItemMods": {
             "Axe": "AxeHaft",
             "Hammer": "HammerHaft",
-            "Sword": "SwordPommel",
+            "Sword": "SwordHilt",
             "Daggers": "DaggerTang",
             "Scythe": "ScytheSnathe",
             "Spear": "Spearhead"
@@ -3439,7 +3439,7 @@
             "Hammer": "HammerHaft",
             "Scythe": "ScytheSnathe",
             "Spear": "Spearhead",
-            "Sword": "SwordPommel"
+            "Sword": "SwordHilt"
         },
         "TargetTypes": [
             "MartialWeapon"
@@ -3484,7 +3484,7 @@
             "Hammer": "HammerHaft",
             "Scythe": "ScytheSnathe",
             "Spear": "Spearhead",
-            "Sword": "SwordPommel"
+            "Sword": "SwordHilt"
         },
         "TargetTypes": [
             "MartialWeapon"
@@ -3525,7 +3525,7 @@
         "ItemMods": {
             "Axe": "AxeHaft",
             "Hammer": "HammerHaft",
-            "Sword": "SwordPommel",
+            "Sword": "SwordHilt",
             "Daggers": "DaggerTang",
             "Scythe": "ScytheSnathe",
             "Spear": "Spearhead"
@@ -3668,7 +3668,7 @@
             "Hammer": "HammerHaft",
             "Scythe": "ScytheSnathe",
             "Spear": "Spearhead",
-            "Sword": "SwordPommel"
+            "Sword": "SwordHilt"
         },
         "TargetTypes": [
             "MartialWeapon"
@@ -3747,7 +3747,7 @@
         "ModType": "Prefix",
         "ItemMods": {
             "Axe": "AxeHaft",
-            "Sword": "SwordPommel",
+            "Sword": "SwordHilt",
             "Daggers": "DaggerTang",
             "Scythe": "ScytheSnathe",
             "Bow": "BowString",
@@ -3801,7 +3801,7 @@
             "Hammer": "HammerHaft",
             "Scythe": "ScytheSnathe",
             "Spear": "Spearhead",
-            "Sword": "SwordPommel"
+            "Sword": "SwordHilt"
         },
         "TargetTypes": [
             "MartialWeapon"
@@ -3889,7 +3889,7 @@
             "Hammer": "HammerHaft",
             "Scythe": "ScytheSnathe",
             "Spear": "Spearhead",
-            "Sword": "SwordPommel"
+            "Sword": "SwordHilt"
         },
         "TargetTypes": [
             "MartialWeapon"
@@ -4026,7 +4026,7 @@
         "ModType": "Prefix",
         "ItemMods": {
             "Axe": "AxeHaft",
-            "Sword": "SwordPommel",
+            "Sword": "SwordHilt",
             "Daggers": "DaggerTang",
             "Spear": "Spearhead"
         },
@@ -4085,7 +4085,7 @@
             "Hammer": "HammerHaft",
             "Scythe": "ScytheSnathe",
             "Spear": "Spearhead",
-            "Sword": "SwordPommel"
+            "Sword": "SwordHilt"
         },
         "TargetTypes": [
             "MartialWeapon"
@@ -4334,6 +4334,15 @@
                 "Max": 1
             },
             {
+                "Identifier": 42288,
+                "Arg1": 1,
+                "Arg2": 175,
+                "Arg": 431,
+                "ModifierValueArg": "None_",
+                "Min": 0,
+                "Max": 255
+            },
+            {
                 "Identifier": 41544,
                 "Arg1": 20,
                 "Arg2": 0,
@@ -4493,7 +4502,7 @@
             "Axe": "AxeGrip",
             "Bow": "BowGrip",
             "Hammer": "HammerGrip",
-            "Sword": "SwordHilt",
+            "Sword": "SwordPommel",
             "Staff": "StaffWrapping"
         },
         "TargetTypes": [
@@ -4514,6 +4523,15 @@
                 "ModifierValueArg": "Fixed",
                 "Min": 0,
                 "Max": 0
+            },
+            {
+                "Identifier": 42288,
+                "Arg1": 1,
+                "Arg2": 175,
+                "Arg": 431,
+                "ModifierValueArg": "None_",
+                "Min": 0,
+                "Max": 255
             },
             {
                 "Identifier": 41544,
@@ -4552,7 +4570,7 @@
             "Hammer": "HammerGrip",
             "Scythe": "ScytheGrip",
             "Spear": "SpearGrip",
-            "Sword": "SwordHilt",
+            "Sword": "SwordPommel",
             "Staff": "StaffWrapping"
         },
         "TargetTypes": [
@@ -4602,7 +4620,7 @@
             "Axe": "AxeGrip",
             "Bow": "BowGrip",
             "Hammer": "HammerGrip",
-            "Sword": "SwordHilt",
+            "Sword": "SwordPommel",
             "Staff": "StaffWrapping"
         },
         "TargetTypes": [
@@ -4623,6 +4641,15 @@
                 "ModifierValueArg": "Fixed",
                 "Min": 8,
                 "Max": 8
+            },
+            {
+                "Identifier": 42288,
+                "Arg1": 1,
+                "Arg2": 175,
+                "Arg": 431,
+                "ModifierValueArg": "None_",
+                "Min": 0,
+                "Max": 255
             },
             {
                 "Identifier": 41544,
@@ -4749,7 +4776,7 @@
             "Axe": "AxeGrip",
             "Bow": "BowGrip",
             "Hammer": "HammerGrip",
-            "Sword": "SwordHilt",
+            "Sword": "SwordPommel",
             "Staff": "StaffWrapping"
         },
         "TargetTypes": [
@@ -4770,6 +4797,15 @@
                 "ModifierValueArg": "Fixed",
                 "Min": 1,
                 "Max": 9
+            },
+            {
+                "Identifier": 42288,
+                "Arg1": 1,
+                "Arg2": 175,
+                "Arg": 431,
+                "ModifierValueArg": "None_",
+                "Min": 0,
+                "Max": 255
             },
             {
                 "Identifier": 41544,
@@ -4795,7 +4831,7 @@
             "Axe": "AxeGrip",
             "Bow": "BowGrip",
             "Hammer": "HammerGrip",
-            "Sword": "SwordHilt",
+            "Sword": "SwordPommel",
             "Staff": "StaffWrapping"
         },
         "TargetTypes": [
@@ -4816,6 +4852,15 @@
                 "ModifierValueArg": "Fixed",
                 "Min": 1,
                 "Max": 6
+            },
+            {
+                "Identifier": 42288,
+                "Arg1": 1,
+                "Arg2": 175,
+                "Arg": 431,
+                "ModifierValueArg": "None_",
+                "Min": 0,
+                "Max": 255
             },
             {
                 "Identifier": 41544,
@@ -4883,7 +4928,7 @@
             "Hammer": "HammerGrip",
             "Scythe": "ScytheGrip",
             "Spear": "SpearGrip",
-            "Sword": "SwordHilt",
+            "Sword": "SwordPommel",
             "Staff": "StaffWrapping"
         },
         "TargetTypes": [
@@ -5012,7 +5057,7 @@
             "Hammer": "HammerGrip",
             "Scythe": "ScytheGrip",
             "Spear": "SpearGrip",
-            "Sword": "SwordHilt",
+            "Sword": "SwordPommel",
             "Staff": "StaffWrapping",
             "Shield": "ShieldHandle",
             "Offhand": "FocusCore"
@@ -5056,7 +5101,7 @@
             "Axe": "AxeGrip",
             "Bow": "BowGrip",
             "Hammer": "HammerGrip",
-            "Sword": "SwordHilt",
+            "Sword": "SwordPommel",
             "Staff": "StaffWrapping"
         },
         "TargetTypes": [
@@ -5077,6 +5122,15 @@
                 "ModifierValueArg": "Fixed",
                 "Min": 1,
                 "Max": 5
+            },
+            {
+                "Identifier": 42288,
+                "Arg1": 1,
+                "Arg2": 175,
+                "Arg": 431,
+                "ModifierValueArg": "None_",
+                "Min": 0,
+                "Max": 255
             },
             {
                 "Identifier": 41544,
@@ -5355,7 +5409,7 @@
             "Axe": "AxeGrip",
             "Bow": "BowGrip",
             "Hammer": "HammerGrip",
-            "Sword": "SwordHilt",
+            "Sword": "SwordPommel",
             "Staff": "StaffWrapping"
         },
         "TargetTypes": [
@@ -5376,6 +5430,15 @@
                 "ModifierValueArg": "Fixed",
                 "Min": 1,
                 "Max": 10
+            },
+            {
+                "Identifier": 42288,
+                "Arg1": 1,
+                "Arg2": 175,
+                "Arg": 431,
+                "ModifierValueArg": "None_",
+                "Min": 0,
+                "Max": 255
             },
             {
                 "Identifier": 41544,
@@ -5440,7 +5503,7 @@
             "Axe": "AxeGrip",
             "Bow": "BowGrip",
             "Hammer": "HammerGrip",
-            "Sword": "SwordHilt",
+            "Sword": "SwordPommel",
             "Staff": "StaffWrapping"
         },
         "TargetTypes": [
@@ -5461,6 +5524,15 @@
                 "ModifierValueArg": "Fixed",
                 "Min": 1,
                 "Max": 3
+            },
+            {
+                "Identifier": 42288,
+                "Arg1": 1,
+                "Arg2": 175,
+                "Arg": 431,
+                "ModifierValueArg": "None_",
+                "Min": 0,
+                "Max": 255
             },
             {
                 "Identifier": 41544,
@@ -5616,7 +5688,7 @@
             "Hammer": "HammerGrip",
             "Scythe": "ScytheGrip",
             "Spear": "SpearGrip",
-            "Sword": "SwordHilt",
+            "Sword": "SwordPommel",
             "Staff": "StaffWrapping"
         },
         "TargetTypes": [
@@ -5650,7 +5722,7 @@
             "Axe": "AxeGrip",
             "Bow": "BowGrip",
             "Hammer": "HammerGrip",
-            "Sword": "SwordHilt",
+            "Sword": "SwordPommel",
             "Staff": "StaffWrapping"
         },
         "TargetTypes": [
@@ -5671,6 +5743,15 @@
                 "ModifierValueArg": "Fixed",
                 "Min": 1,
                 "Max": 4
+            },
+            {
+                "Identifier": 42288,
+                "Arg1": 1,
+                "Arg2": 175,
+                "Arg": 431,
+                "ModifierValueArg": "None_",
+                "Min": 0,
+                "Max": 255
             },
             {
                 "Identifier": 41544,
@@ -5920,7 +6001,7 @@
             "Axe": "AxeGrip",
             "Bow": "BowGrip",
             "Hammer": "HammerGrip",
-            "Sword": "SwordHilt",
+            "Sword": "SwordPommel",
             "Staff": "StaffWrapping"
         },
         "TargetTypes": [
@@ -5941,6 +6022,15 @@
                 "ModifierValueArg": "Fixed",
                 "Min": 1,
                 "Max": 7
+            },
+            {
+                "Identifier": 42288,
+                "Arg1": 1,
+                "Arg2": 175,
+                "Arg": 431,
+                "ModifierValueArg": "None_",
+                "Min": 0,
+                "Max": 255
             },
             {
                 "Identifier": 41544,
@@ -5966,7 +6056,7 @@
             "Axe": "AxeGrip",
             "Bow": "BowGrip",
             "Hammer": "HammerGrip",
-            "Sword": "SwordHilt",
+            "Sword": "SwordPommel",
             "Staff": "StaffWrapping"
         },
         "TargetTypes": [
@@ -5987,6 +6077,15 @@
                 "ModifierValueArg": "Fixed",
                 "Min": 1,
                 "Max": 2
+            },
+            {
+                "Identifier": 42288,
+                "Arg1": 1,
+                "Arg2": 175,
+                "Arg": 431,
+                "ModifierValueArg": "None_",
+                "Min": 0,
+                "Max": 255
             },
             {
                 "Identifier": 41544,
@@ -6068,7 +6167,7 @@
             "Hammer": "HammerGrip",
             "Scythe": "ScytheGrip",
             "Spear": "SpearGrip",
-            "Sword": "SwordHilt",
+            "Sword": "SwordPommel",
             "Staff": "StaffWrapping"
         },
         "TargetTypes": [
@@ -6144,7 +6243,7 @@
             "Hammer": "HammerGrip",
             "Scythe": "ScytheGrip",
             "Spear": "SpearGrip",
-            "Sword": "SwordHilt",
+            "Sword": "SwordPommel",
             "Wand": "WandWrapping",
             "Staff": "StaffWrapping"
         },
@@ -6193,7 +6292,7 @@
             "Hammer": "HammerGrip",
             "Scythe": "ScytheGrip",
             "Spear": "SpearGrip",
-            "Sword": "SwordHilt",
+            "Sword": "SwordPommel",
             "Wand": "WandWrapping",
             "Staff": "StaffWrapping"
         },
@@ -6232,7 +6331,7 @@
             "Hammer": "HammerGrip",
             "Scythe": "ScytheGrip",
             "Spear": "SpearGrip",
-            "Sword": "SwordHilt",
+            "Sword": "SwordPommel",
             "Wand": "WandWrapping",
             "Staff": "StaffWrapping"
         },
@@ -6281,7 +6380,7 @@
             "Hammer": "HammerGrip",
             "Scythe": "ScytheGrip",
             "Spear": "SpearGrip",
-            "Sword": "SwordHilt",
+            "Sword": "SwordPommel",
             "Wand": "WandWrapping",
             "Staff": "StaffWrapping"
         },
@@ -6330,7 +6429,7 @@
             "Hammer": "HammerGrip",
             "Scythe": "ScytheGrip",
             "Spear": "SpearGrip",
-            "Sword": "SwordHilt",
+            "Sword": "SwordPommel",
             "Wand": "WandWrapping",
             "Staff": "StaffWrapping"
         },
@@ -6379,7 +6478,7 @@
             "Hammer": "HammerGrip",
             "Scythe": "ScytheGrip",
             "Spear": "SpearGrip",
-            "Sword": "SwordHilt",
+            "Sword": "SwordPommel",
             "Wand": "WandWrapping",
             "Staff": "StaffWrapping"
         },
@@ -6428,7 +6527,7 @@
             "Hammer": "HammerGrip",
             "Scythe": "ScytheGrip",
             "Spear": "SpearGrip",
-            "Sword": "SwordHilt",
+            "Sword": "SwordPommel",
             "Wand": "WandWrapping",
             "Staff": "StaffWrapping"
         },
@@ -6477,7 +6576,7 @@
             "Hammer": "HammerGrip",
             "Scythe": "ScytheGrip",
             "Spear": "SpearGrip",
-            "Sword": "SwordHilt",
+            "Sword": "SwordPommel",
             "Wand": "WandWrapping",
             "Staff": "StaffWrapping"
         },
@@ -6526,7 +6625,7 @@
             "Hammer": "HammerGrip",
             "Scythe": "ScytheGrip",
             "Spear": "SpearGrip",
-            "Sword": "SwordHilt",
+            "Sword": "SwordPommel",
             "Wand": "WandWrapping",
             "Staff": "StaffWrapping"
         },
@@ -6575,7 +6674,7 @@
             "Hammer": "HammerGrip",
             "Scythe": "ScytheGrip",
             "Spear": "SpearGrip",
-            "Sword": "SwordHilt",
+            "Sword": "SwordPommel",
             "Wand": "WandWrapping",
             "Staff": "StaffWrapping"
         },

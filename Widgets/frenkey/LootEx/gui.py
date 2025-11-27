@@ -1375,7 +1375,7 @@ class UI:
                             for mod in cached_item.weapon_mods:
                                 ImGui.text(f"{utility.Util.reformat_string(mod.WeaponMod.name)}")
                                 value = mod.Value
-                                desc = mod.WeaponMod.get_description_with_values(ServerLanguage.English, arg1=value, arg2=value)
+                                desc = mod.WeaponMod.get_description_with_values(ServerLanguage.English)
                                 ImGui.text(f"{utility.Util.reformat_string(desc)}", 12)
                                 
                         if cached_item.max_weapon_mods:

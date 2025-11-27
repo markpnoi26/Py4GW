@@ -91,38 +91,6 @@ class Util:
         else:
             return enum.SalvageOption.None_
 
-    # TODO: Add handling for non max mods
-    @staticmethod
-    def GetMods(item_id: int, tolerance: int = -1) -> tuple[list[WeaponMod | Rune], list[Rune], list[WeaponMod]]:
-        item_type = ItemType[Item.GetItemType(item_id)[1]]
-        mods = []
-        rune_mods = []
-        weapon_mods = []
-
-        is_rune = item_type == ItemType.Rune_Mod and GLOBAL_CACHE.Item.Customization.Modifiers.GetModifierValues(
-            item_id, ModifierIdentifier.TargetItemType)[0] == 0
-
-        # ConsoleLog("LootEx", f"Item ID: {item_id} - Item Type: {item_type}")
-        modifiers = GLOBAL_CACHE.Item.Customization.Modifiers.GetModifiers(
-            item_id)
-
-        if Util.IsArmorType(item_type) or is_rune:
-            rune_mods = [
-                rune for rune in data.Runes.values() if rune.is_in_item_modifier(modifiers)]
-            mods.extend(rune_mods)
-
-        elif Util.IsWeaponType(item_type) or item_type == ItemType.Rune_Mod:
-            weapon_mods = [
-                weapon_mod for weapon_mod in data.Weapon_Mods.values() if weapon_mod.is_in_item_modifier(modifiers, item_type, tolerance)]
-            mods.extend(weapon_mods)
-
-        else:
-            return [], [], []
-
-        mods.sort(key=lambda x: x.mod_type, reverse=True)
-
-        return mods, rune_mods, weapon_mods
-    
     @staticmethod
     def GetItemRequirements(item_id: int) -> tuple[Attribute, int]:
         """
@@ -556,23 +524,6 @@ class Util:
         return data.Items.get_item_data(item_id) is None
 
     @staticmethod
-    def has_missing_mods(item_id: int) -> bool:
-        mods, _, _ = Util.GetMods(item_id)
-
-        if not mods or len(mods) == 0:
-            return False
-
-        for mod in mods:
-            if mod.names is None or len(mod.names) == 0:
-                return True
-
-            for lang in ServerLanguage:
-                if lang not in mod.names or mod.names[lang] is None or mod.names[lang] == "":
-                    return True
-
-        return False
-
-    @staticmethod
     def get_target_item_type_from_mod(item_id: int) -> Optional[ItemType]:
         """
         Get the target item type from a rune mod item.
@@ -789,110 +740,6 @@ class Util:
         data_item = data.Items.get_item_data(item_id)
 
         return data_item.name if data_item else "Unknown Item"
-
-    @staticmethod
-    def is_low_requirement_item(item_id: int) -> bool:
-        """
-        Check if the item with the given ID is a low requirement item.
-
-        Args:
-            item_id (int): The unique identifier of the item.
-
-        Returns:
-            bool: True if the item is a low requirement item, False otherwise.
-        """
-        tolerance = \
-            {
-                ItemType.Daggers: models.IntRange(1, 1),
-                ItemType.Scythe: models.IntRange(1, 1),
-                ItemType.Spear: models.IntRange(1, 1),
-                ItemType.Bow: models.IntRange(1, 1),
-                ItemType.Shield: models.IntRange(0, 0),
-            }
-
-        sc_requirements: dict[ItemType, list[int]] = \
-            {
-            ItemType.Daggers: [0, 4, 5, 6],
-            ItemType.Scythe: [0],
-            ItemType.Spear: [0],
-            ItemType.Bow: [5, 6],
-            ItemType.Shield: [5, 8],
-        }
-
-        desired_inherent_mods = {
-            ItemType.Daggers: [
-                "AQAiaAAPJQ==",  # Guided by Fate
-                "AQAieDIPJQ==",  # Strength and Honor
-                "AQAiiDIUJQ=="  # Vengeance is Mine
-            ],
-            ItemType.Bow: [
-                "AQAiaAAPJQ==",  # Guided by Fate
-                "AQAieDIPJQ==",  # Strength and Honor
-                "AQAiiDIUJQ=="  # Vengeance is Mine
-            ],
-            ItemType.Shield: [
-                "AQAhSAgKJw==",  # Armor vs Demons
-                "AQAhSAQKJw==",  # Armor vs Sekeletons
-                "AQAhSAAKJw==",  # Armor vs Undeads
-                "AQAgiAACJw==",  # -2 / when enchanted
-                "AwAjaC0AGBoM",  # +45 hp when enchanted
-                "AwAjSB4AJhoYDA==",  # +30 hp
-            ]
-        }
-
-        item_type = ItemType(Item.GetItemType(item_id)[0])
-        attribute_id, requirement = Util.GetItemRequirements(item_id)
-        max_damage = Util.GetMaxDamage(requirement, item_type)
-
-        if item_type == ItemType.Shield:
-            min_armor, max_armor = Util.GetShieldArmor(item_id) or (0, 0)
-
-            _, _, weapon_mods = Util.GetMods(item_id)
-            inscribeable = GLOBAL_CACHE.Item.Customization.IsInscribable(
-                item_id)
-
-            if (not weapon_mods or len(weapon_mods) == 0) and not inscribeable:
-                return False
-
-            good_inherent_mod = any(
-                mod.identifier in desired_inherent_mods.get(item_type, [])
-                for mod in weapon_mods if mod.mod_type == enum.ModType.Inherent
-            )
-
-            modifiers = GLOBAL_CACHE.Item.Customization.Modifiers.GetModifiers(
-                item_id)
-            
-            good_suffix_mod = any(
-                mod.identifier in desired_inherent_mods.get(item_type, [])
-                for mod in weapon_mods if mod.mod_type == enum.ModType.Suffix and mod.is_in_item_modifier(modifiers=modifiers, item_type=item_type, tolerance=5)
-            )
-
-            customizeable_shield = item_type in sc_requirements and \
-                requirement in sc_requirements[item_type] and \
-                min_armor >= max_damage.min - tolerance[item_type].min and \
-                max_armor >= max_damage.max - tolerance[item_type].max and \
-                (inscribeable or good_inherent_mod)
-
-            oldschool_shield = good_inherent_mod and good_suffix_mod
-
-            return customizeable_shield or oldschool_shield
-
-        else:
-            min_dmg, max_dmg = Util.GetItemDamage(item_id)
-
-            _, _, weapon_mods = Util.GetMods(item_id)
-            good_inherent_mod = any(
-                mod.identifier in desired_inherent_mods.get(item_type, [])
-                for mod in weapon_mods if mod.mod_type == enum.ModType.Inherent
-            )
-            inscribeable = GLOBAL_CACHE.Item.Customization.IsInscribable(
-                item_id)
-
-            return item_type in sc_requirements and \
-                requirement in sc_requirements[item_type] and \
-                min_dmg >= max_damage.min - tolerance[item_type].min and \
-                max_dmg >= max_damage.max - tolerance[item_type].max and \
-                (inscribeable or good_inherent_mod)
 
     @staticmethod
     def IsGuildHall(mapid : int):
