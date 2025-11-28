@@ -959,6 +959,7 @@ class UI:
                     self.draw_runes()
                     self.draw_rare_weapons()
                     self.draw_blacklist()
+                    self.draw_prices_tab()
                     self.draw_data_collector_tab()
                     
                     self.first_draw = False
@@ -1791,7 +1792,30 @@ class UI:
                     Console.MessageType.Info,
                 )
                 
-                price_check.PriceCheck.get_material_prices_from_trader()
+                def assign_material_price(item_id, price):
+                    if not self.settings.profile:
+                        return
+                    
+                    from Widgets.frenkey.LootEx.data import Data
+                    data = Data()
+                    
+                    item = cache.Cached_Item(item_id)
+                    if not item.material:
+                        return
+                    
+                    ConsoleLog(
+                        "LootEx",
+                        f"Assigned price {utility.Util.format_currency(price)} to material {item.material.name} (Item ID: {item_id})",
+                        Console.MessageType.Info,
+                    )
+                    item.material.vendor_value = price
+                    item.material.vendor_updated = datetime.now()
+                    
+                    data.SaveMaterials()
+                
+                item_ids = Trading.Trader.GetOfferedItems()
+                price_check_mgr = price_check.PriceCheckManager()
+                price_check_mgr.request_prices(item_ids, assign_material_price)
             
             if PyImGui.is_rect_visible(0, 20):
                 ImGui.begin_table("DataCollectorMaterialsTable", 2, PyImGui.TableFlags.ScrollY | PyImGui.TableFlags.Borders, 0, 0)
@@ -4903,8 +4927,45 @@ class UI:
                             f"Checking for expensive runes from merchant with price threshold: {self.entered_price_threshold}",
                             Console.MessageType.Info,
                         )
-                        price_check.PriceCheck.get_expensive_runes_from_merchant(
-                            self.entered_price_threshold, self.mark_to_sell_runes)
+                        
+                        item_ids = Merchant.Trading.Trader.GetOfferedItems()
+                        
+                        def assign_rune_price(item_id: int, price: int):
+                            if not self.settings.profile:
+                                return
+                            
+                            from Widgets.frenkey.LootEx.data import Data
+                            data = Data()
+                            
+                            item = cache.Cached_Item(item_id)
+                            if not item.runes or len(item.runes) == 0:
+                                return
+                            
+                            if not item.runes[0].Rune:
+                                return
+                            
+                            rune = data.Runes.get(item.runes[0].Rune.identifier)
+                            if not rune:
+                                return
+                            
+                            rune.vendor_value = price
+                            rune.vendor_updated = datetime.now()
+                            if rune.vendor_value >= self.entered_price_threshold:
+                                ConsoleLog(
+                                    "LootEx",
+                                    f"Rune {rune.full_name} has price {utility.Util.format_currency(rune.vendor_value)} which is above the threshold. Marking as valuable.",
+                                    Console.MessageType.Info,
+                                )
+                                self.settings.profile.set_rune(rune.identifier, True, self.mark_to_sell_runes)
+                                
+                            self.settings.profile.save()
+                            data.SaveRunes()
+                        
+                        
+                        
+                        self.settings.profile.runes.clear()
+                        price_check_mgr = price_check.PriceCheckManager()
+                        price_check_mgr.request_prices(item_ids, assign_rune_price)
                     else:
                         ConsoleLog(
                             "LootEx",

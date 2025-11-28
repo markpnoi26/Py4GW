@@ -57,6 +57,13 @@ RARE_MATERIALS: list[int] = [
     ModelID.Jadeite_Shard
 ]
 
+class ActionState(Enum):
+    Pending = 0
+    Running = 1
+    Completed = 2
+    Timeout = 3
+    Failed = 4
+    
 class ModsModels(IntEnum):
     AxeGrip = 905
     AxeHaft = 893

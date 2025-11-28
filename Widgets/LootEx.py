@@ -2,6 +2,7 @@ from Py4GW_widget_manager import WidgetHandler
 from Py4GWCoreLib import *
 from ctypes import windll
 
+
 MODULE_NAME = "LootEx"
  # Copy keys so we can delete from sys.modules safely
 module_names = list(sys.modules.keys())
@@ -29,12 +30,13 @@ for name in module_names:
         ConsoleLog(MODULE_NAME, f"Error unloading {name}: {e}", Console.MessageType.Error)
 
 
+from Widgets.frenkey.LootEx.price_check import PriceCheckManager
 from Widgets.frenkey.LootEx.data import Data
 from Widgets.frenkey.LootEx.settings import Settings
 from Widgets.frenkey.LootEx.loot_handling import LootHandler
 from Widgets.frenkey.LootEx.inventory_handling import InventoryHandler
 from Widgets.frenkey.LootEx.data_collection import DataCollector
-from Widgets.frenkey.LootEx import messaging, price_check
+from Widgets.frenkey.LootEx import messaging
 from Widgets.frenkey.LootEx.cache import Cached_Item
 from Widgets.frenkey.LootEx.utility import Util
 from Widgets.frenkey.LootEx.gui import UI
@@ -49,6 +51,7 @@ data.Reload()
 data_collector = DataCollector()
 inventory_handler = InventoryHandler()
 loot_handler = LootHandler()
+price_check_mgr = PriceCheckManager()
 
 ui = UI()
 
@@ -217,12 +220,9 @@ def main():
                     elif item.is_storage_item:
                         inventory_handler.WithdrawItem(item)
             
-    if not price_check.trader_queue.action_queue.is_empty():
-        price_check.PriceCheck.process_trader_queue()
-        return
-
-    
+            
+    data_collector.Run()
+    price_check_mgr.Run()    
     inventory_handler.Run()       
-    # data_collector.run()
 
 __all__ = ['main', 'configure']

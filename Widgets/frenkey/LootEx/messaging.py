@@ -31,6 +31,9 @@ def SendReloadProfiles():
     for acc in GLOBAL_CACHE.ShMem.GetAllAccountData():
         if acc.AccountEmail == GLOBAL_CACHE.Player.GetAccountEmail():
             continue
+        
+        if not acc.AccountEmail:
+            continue
     
         GLOBAL_CACHE.ShMem.SendMessage(GLOBAL_CACHE.Player.GetAccountEmail(), acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.ReloadProfiles, 0, 0))
 

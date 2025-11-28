@@ -12,34 +12,28 @@ from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.py4gwcorelib_src.Console import ConsoleLog
 
 from Widgets.frenkey.LootEx.cache import Cached_Item
-from Widgets.frenkey.LootEx.enum import ALL_BAGS, CHARACTER_INVENTORY, ModType, SalvageOption
+from Widgets.frenkey.LootEx.enum import ALL_BAGS, CHARACTER_INVENTORY, ActionState, ModType, SalvageOption
 from Widgets.frenkey.LootEx import ui_manager_extensions
 
 LOG_SALVAGING = False
-
-class SalvageActionState(Enum):
-    Pending = 0
-    Running = 1
-    Completed = 2
-    Timeout = 3
 
 class SalvageCoroutine:
     def __init__(self, generator_fn: Callable[[], Generator], timeout_seconds: float = 6.0):
         self.generator_fn = generator_fn
         self.generator = None
-        self.state = SalvageActionState.Pending
+        self.state = ActionState.Pending
         self.started_at = datetime.min
         self.timeout_seconds = timeout_seconds
 
-    def step(self) -> SalvageActionState:
-        if self.state == SalvageActionState.Pending:
+    def step(self) -> ActionState:
+        if self.state == ActionState.Pending:
             self.generator = self.generator_fn()
-            self.state = SalvageActionState.Running
+            self.state = ActionState.Running
             self.started_at = datetime.now()
 
         if (datetime.now() - self.started_at).total_seconds() > self.timeout_seconds:
             ConsoleLog("LootEx", "Salvage coroutine timed out.", Console.MessageType.Warning)
-            self.state = SalvageActionState.Timeout
+            self.state = ActionState.Timeout
             return self.state
 
         try:
@@ -48,16 +42,16 @@ class SalvageCoroutine:
                 return self.state
 
             else:
-                self.state = SalvageActionState.Completed
+                self.state = ActionState.Completed
                 return self.state
             
         except StopIteration:
-            self.state = SalvageActionState.Completed
+            self.state = ActionState.Completed
             return self.state
 
         except Exception as e:
             ConsoleLog("LootEx", f"Salvage coroutine exception: {e}", Console.MessageType.Error)
-            self.state = SalvageActionState.Timeout
+            self.state = ActionState.Timeout
             return self.state
 
 class SalvageAction:

@@ -655,7 +655,7 @@ class DataCollector:
                 entry.status = CollectionStatus.RequiresSave
                 return
     
-    def run(self):            
+    def Run(self):            
         if self.throttle.IsExpired():
             self.throttle.Reset()
             

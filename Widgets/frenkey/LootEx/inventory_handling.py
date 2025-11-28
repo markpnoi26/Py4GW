@@ -9,12 +9,12 @@ from Py4GWCoreLib.botting_src.subclases_src.MERCHANT_src import _MERCHANTS
 from Py4GWCoreLib.py4gwcorelib_src.MerchantHandler import MerchantHandler
 from Widgets.frenkey.Core.utility import string_similarity
 from Widgets.frenkey.LootEx.data_collection import DataCollector
-from Widgets.frenkey.LootEx.enum import XUNLAI_STORAGE, MaterialType, MerchantType, ModType, SalvageKitOption, SalvageOption, ItemAction
+from Widgets.frenkey.LootEx.enum import XUNLAI_STORAGE, ActionState, MaterialType, MerchantType, ModType, SalvageKitOption, SalvageOption, ItemAction
 from Py4GWCoreLib import *
 from Widgets.frenkey.LootEx import loot_handling, models, settings, utility, ui_manager_extensions, item_configuration, cache
 from Widgets.frenkey.LootEx.instance_manager import InstanceManager
-from Widgets.frenkey.LootEx.salvaging import SalvageAction, SalvageActionState
-from Widgets.frenkey.LootEx.trading import ActionType, TraderAction, TraderActionState
+from Widgets.frenkey.LootEx.salvaging import SalvageAction
+from Widgets.frenkey.LootEx.trading import ActionType, TraderAction
 
 # TODO: Collect salvage data for items, so we can make better decisions on what to salvage and what not to salvage.
 # TODO: Add sorting options for the inventory and storage.
@@ -1346,7 +1346,7 @@ class InventoryHandler:
 
                 state = action.coroutine.step()
 
-                if state in (TraderActionState.Completed, TraderActionState.Timeout):
+                if state in (ActionState.Completed, ActionState.Timeout):
                     del self.trading_queue[item_id]
 
                 return True
@@ -1385,7 +1385,7 @@ class InventoryHandler:
 
         state = self.salvage_action.coroutine.step()
 
-        if state in (SalvageActionState.Completed, SalvageActionState.Timeout):
+        if state in (ActionState.Completed, ActionState.Timeout):
             del self.salvaging_queue[self.salvage_action.item_id]
             self.salvage_action = None
 

@@ -12,13 +12,7 @@ from Py4GWCoreLib.Merchant import Trading
 from Py4GWCoreLib.py4gwcorelib_src.Console import ConsoleLog
 from Widgets.frenkey.LootEx import utility
 from Widgets.frenkey.LootEx.cache import Cached_Item
-from Widgets.frenkey.LootEx.enum import MAX_CHARACTER_GOLD, MAX_VAULT_GOLD, MerchantType
-
-class TraderActionState(Enum):
-    Pending = 0
-    Running = 1
-    Completed = 2
-    Timeout = 3
+from Widgets.frenkey.LootEx.enum import MAX_CHARACTER_GOLD, MAX_VAULT_GOLD, ActionState, MerchantType
 
 class ActionType(Enum):
     Buy = 1
@@ -28,24 +22,24 @@ class TraderCoroutine:
     def __init__(self, generator_fn: Callable[[], Generator], timeout_seconds: float = 5.0):
         self.generator_fn = generator_fn
         self.generator = None
-        self.state = TraderActionState.Pending
+        self.state = ActionState.Pending
         self.started_at = datetime.min
         # self.timeout_seconds = timeout_seconds
 
-    def step(self) -> TraderActionState:
+    def step(self) -> ActionState:
         """
         Advances the coroutine by one 'yield'.
         Returns its current state.
         """
         # Start coroutine if not running yet
-        if self.state == TraderActionState.Pending:
+        if self.state == ActionState.Pending:
             self.generator = self.generator_fn()
-            self.state = TraderActionState.Running
+            self.state = ActionState.Running
             self.started_at = datetime.now()
 
         # # Timeout?
         # if (datetime.now() - self.started_at).total_seconds() > self.timeout_seconds:
-        #     self.state = TraderActionState.Timeout
+        #     self.state = ActionState.Timeout
         #     return self.state
 
         # Advance generator one step
@@ -55,16 +49,16 @@ class TraderCoroutine:
                 return self.state  # still Running
             
             else:
-                self.state = TraderActionState.Completed
+                self.state = ActionState.Completed
                 return self.state
 
         except StopIteration:
-            self.state = TraderActionState.Completed
+            self.state = ActionState.Completed
             return self.state
 
         except Exception as e:
             ConsoleLog("LootEx", f"Coroutine error: {e}", Console.MessageType.Error)
-            self.state = TraderActionState.Timeout
+            self.state = ActionState.Timeout
             return self.state
             
 class TraderAction:
