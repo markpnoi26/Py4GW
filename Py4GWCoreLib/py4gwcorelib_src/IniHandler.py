@@ -1,7 +1,8 @@
 import os
 import configparser
 
-#region IniHandler
+
+# region IniHandler
 class IniHandler:
     def __init__(self, filename: str):
         """
@@ -15,10 +16,10 @@ class IniHandler:
     # ----------------------------
     # Core Methods
     # ----------------------------
-    
+
     def reload(self) -> configparser.ConfigParser:
         """Reload the INI file only if it has changed.
-        
+
         If the file doesn't exist, create an empty file.
         """
         if not os.path.exists(self.filename):
@@ -161,4 +162,5 @@ class IniHandler:
                 config.set(target_section, key, value)
             self.save(config)
 
-#endregion
+
+# endregion
