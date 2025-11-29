@@ -3,6 +3,7 @@ accounts.json
 accounts - Copy.json
 Py4GW_Launcher.exe
 
+*.local.ini
 imgui.ini
 Inject.au3
 AlcoholProc.ini
