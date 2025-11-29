@@ -577,7 +577,7 @@ class AccountJSONStore:
         return data
 
     def save_bag(self, char_name=None, storage_name=None, bag_name=None, bag_items={}):
-        data = self._read()
+        data = self.load()
         changed = False
 
         if char_name:
