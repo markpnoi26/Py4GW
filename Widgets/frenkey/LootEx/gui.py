@@ -1547,6 +1547,17 @@ class UI:
                         pass
 
                     def on_test_button_clicked(): 
+                        path = "C:\\Users\\lasse\\OneDrive\\Programmieren\\Frenkey\\Guild Wars\\Py4GW\\Textures\\Skill_Icons"
+                        
+                        for file_name in os.listdir(path):
+                            # is present in SkillTextureMap
+                            if not any(skill == file_name for skill in SkillTextureMap.values()):
+                                full_path = os.path.join(path, file_name)
+                                os.remove(full_path)
+                                ConsoleLog("LootEx Test", f"Removed unused skill texture: {file_name}", Console.MessageType.Info)
+                        
+                        return
+                    
                         for mod in data.Weapon_Mods.values():
                             if len(mod.modifiers) > 1:
                                 ConsoleLog("LootEx Test", f"Mod {mod.name} has multiple modifiers!", Console.MessageType.Warning)

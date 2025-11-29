@@ -68,8 +68,9 @@ class SalvageAction:
                 
         self.available_mods : dict[ModType, bool] = {}
 
-        rarity_requires_confirmation = item.rarity >= Rarity.Blue
-        mods_require_confirmation = item.has_mods and self.item.salvage_option is not SalvageOption.LesserCraftingMaterials
+        rarity_requires_confirmation = item.rarity > Rarity.Blue
+        has_salvageable_mods = any(mod.Mod.mod_type is ModType.Prefix or mod.Mod.mod_type is ModType.Suffix or (mod.Mod.mod_type is ModType.Inherent and item.is_inscribable) for mod in item.mods) if item.mods else False
+        mods_require_confirmation = has_salvageable_mods and self.item.salvage_option is not SalvageOption.LesserCraftingMaterials
         item.salvage_requires_confirmation = rarity_requires_confirmation or mods_require_confirmation
         
         self._update()

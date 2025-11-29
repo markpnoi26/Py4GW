@@ -614,15 +614,22 @@ class DataCollector:
         
         if server_language == ServerLanguage.Unknown:
             return
+    
+        invalid_model_ids = [4390988]
+        highest_valid_model_id = 50000 #38057
         
         if item_id not in self.collected_items:            
             entry = CollectionEntry(item_id, self.modified_items)
-            self.collected_items[item_id] = entry
             
-            invalid_model_ids = [4390988]
-            if entry.model_id in invalid_model_ids:
+            if entry.model_id in invalid_model_ids or entry.model_id > highest_valid_model_id:
                 entry.status = CollectionStatus.DataCollected
                 return
+            
+            if entry.model_id in invalid_model_ids or entry.model_id > highest_valid_model_id:
+                entry.status = CollectionStatus.DataCollected
+                return
+            
+            self.collected_items[item_id] = entry
             
             if not entry.has_name(server_language):
                 entry.request_name()
@@ -644,7 +651,7 @@ class DataCollector:
                     
                     ConsoleLog("LootEx DataCollector", f"Collected name for item ID: {item_id} | {entry.model_id} | {entry.item_type}: {name}", Console.MessageType.Debug)
                     
-                    if not name or name == "No Item":
+                    if not name or name == "No Item" or name == "Unknown":
                         entry.request_name()
                         return
                     
