@@ -1922,7 +1922,6 @@ def draw_skip_cutscene_overlay():
         frame_exists = UIManager.FrameExists(skip_cutscene_id)
         if frame_exists:          
             frame = UIManager.GetFrameCoords(skip_cutscene_id)
-            ConsoleLog("HeroAI", f"Skip Cutscene button coords: {frame}", Py4GW.Console.MessageType.Debug)
             
             if ImGui.is_mouse_in_rect((frame[0], frame[1], frame[2] - frame[0], frame[3] - frame[1]), mouse):                            
                 if is_left_mouse_clicked() and pyimgui_io.key_ctrl:
@@ -1931,7 +1930,7 @@ def draw_skip_cutscene_overlay():
                     if current_account:                
                         for account in GLOBAL_CACHE.ShMem.GetAllAccountData():
                             if account.AccountEmail != current_account:
-                                ConsoleLog("HeroAI", f"Sending SkipCutscene command to account: {account.AccountEmail}", Py4GW.Console.MessageType.Info)
+                                ConsoleLog("HeroAI", f"Sending SkipCutscene command to account: {account.AccountEmail}", Py4GW.Console.MessageType.Info, False)
                                 
                                 GLOBAL_CACHE.ShMem.SendMessage(
                                     current_account,
