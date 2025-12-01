@@ -8,7 +8,8 @@ import types
 import sys
 
 module_name = "Widget Manager"
-ini_file_location = "Py4GW.ini"
+project_path = Py4GW.Console.get_projects_path()
+ini_file_location = os.path.join(project_path, "Py4GW.ini")
 ini_handler = IniHandler(ini_file_location)
 
 class Widget:
