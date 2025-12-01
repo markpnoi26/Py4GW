@@ -13,6 +13,10 @@ class IniHandlerV2:
         self.local_config = configparser.ConfigParser()
         self.config = configparser.ConfigParser()
 
+        # Ensure base.ini exists
+        if not os.path.exists(self.base_filename):
+            raise FileNotFoundError(f"Base INI file not found: {self.base_filename}")
+
         # NEW: force rebuild local.ini if requested
         if generate_new and os.path.exists(self.local_filename):
             os.remove(self.local_filename)
@@ -23,19 +27,25 @@ class IniHandlerV2:
     # Helper: attempt to infer type to validate local.ini values
     # -------------------------------------------------------------------
     def _typed(self, base_value: str, local_value: str):
-        """Force local_value to match base_value’s type, or return base_value."""
+        """Force local_value to match base_value's type, or return base_value."""
         try:
+            base_eval = ast.literal_eval(base_value)
+
             # Try int
-            if isinstance(ast.literal_eval(base_value), int):
+            if isinstance(base_eval, int):
                 return str(int(local_value))
-        except Exception:
+        except (ValueError, SyntaxError):
             pass
+
         try:
+            base_eval = ast.literal_eval(base_value)
+
             # Try float
-            if isinstance(ast.literal_eval(base_value), float):
+            if isinstance(base_eval, float):
                 return str(float(local_value))
-        except Exception:
+        except (ValueError, SyntaxError):
             pass
+
         try:
             # Try bool
             if base_value.lower() in ["true", "false"]:
@@ -44,89 +54,108 @@ class IniHandlerV2:
                     return "true"
                 if lv in ["false", "0", "no"]:
                     return "false"
-        except Exception:
+        except (ValueError, AttributeError):
             pass
 
-        # Fallback: return local_value if it’s a valid string
-        return local_value
+        # Fallback: return local_value if it's a valid string
+        return local_value if isinstance(local_value, str) else str(local_value)
 
     # -------------------------------------------------------------------
     # Core: reload + auto-repair local.ini to match schema of base.ini
     # -------------------------------------------------------------------
     def reload(self) -> configparser.ConfigParser:
-        # Read files
-        self.base_config.read(self.base_filename)
-        self.local_config.read(self.local_filename)
+        try:
+            # Read base config
+            self.base_config = configparser.ConfigParser()
+            self.base_config.read(self.base_filename)
 
-        # If local.ini missing → copy base.ini
-        if not os.path.exists(self.local_filename):
-            with open(self.local_filename, "w") as f:
-                self.base_config.write(f)
+            if len(self.base_config.sections()) == 0:
+                raise ValueError(f"Base INI has no sections: {self.base_filename}")
+
+            # Read local config
+            self.local_config = configparser.ConfigParser()
             self.local_config.read(self.local_filename)
 
-        # If local.ini has 0 sections → treat as empty/corrupt
-        if len(self.local_config.sections()) == 0:
+            # If local.ini missing → copy base.ini
+            if not os.path.exists(self.local_filename):
+                with open(self.local_filename, "w") as f:
+                    self.base_config.write(f)
+                self.local_config = configparser.ConfigParser()
+                self.local_config.read(self.local_filename)
+
+            # If local.ini has 0 sections → treat as empty/corrupt
+            if len(self.local_config.sections()) == 0:
+                with open(self.local_filename, "w") as f:
+                    self.base_config.write(f)
+                self.local_config = configparser.ConfigParser()
+                self.local_config.read(self.local_filename)
+
+            # -------------------------------------------------------------------
+            # STEP 1 — Remove sections not in base.ini
+            # -------------------------------------------------------------------
+            for section in list(self.local_config.sections()):
+                if not self.base_config.has_section(section):
+                    self.local_config.remove_section(section)
+
+            # -------------------------------------------------------------------
+            # STEP 2 — Fix keys inside each section
+            # -------------------------------------------------------------------
+            for section in self.base_config.sections():
+
+                # Ensure section exists
+                if not self.local_config.has_section(section):
+                    self.local_config.add_section(section)
+
+                # Remove extra keys in local.ini
+                for key in list(self.local_config[section].keys()):
+                    if not self.base_config.has_option(section, key):
+                        self.local_config.remove_option(section, key)
+
+                # Add or validate keys
+                for key, base_value in self.base_config.items(section):
+
+                    # If key missing → add from base
+                    if not self.local_config.has_option(section, key):
+                        self.local_config.set(section, key, base_value)
+                        continue
+
+                    # Validate type (skip 'optional' key)
+                    if key != 'optional':
+                        local_value = self.local_config.get(section, key)
+                        try:
+                            fixed_value = self._typed(base_value, local_value)
+                        except Exception:
+                            # If type checking fails, use base value
+                            fixed_value = base_value
+
+                        # If type mismatch or invalid → restore base value
+                        if fixed_value != local_value:
+                            self.local_config.set(section, key, base_value)
+
+            # Save repaired local.ini
             with open(self.local_filename, "w") as f:
-                self.base_config.write(f)
-            self.local_config.read(self.local_filename)
+                self.local_config.write(f)
 
-        # -------------------------------------------------------------------
-        # STEP 1 — Remove sections not in base.ini
-        # -------------------------------------------------------------------
-        for section in list(self.local_config.sections()):
-            if not self.base_config.has_section(section):
-                self.local_config.remove_section(section)
+            # -------------------------------------------------------------------
+            # Build final merged config (base + local override)
+            # -------------------------------------------------------------------
+            merged = configparser.ConfigParser()
 
-        # -------------------------------------------------------------------
-        # STEP 2 — Fix keys inside each section
-        # -------------------------------------------------------------------
-        for section in self.base_config.sections():
+            for section in self.base_config.sections():
+                merged.add_section(section)
+                for k, v in self.base_config.items(section):
+                    merged.set(section, k, v)
 
-            # Ensure section exists
-            if not self.local_config.has_section(section):
-                self.local_config.add_section(section)
+            for section in self.local_config.sections():
+                for k, v in self.local_config.items(section):
+                    merged.set(section, k, v)
 
-            # Remove extra keys in local.ini
-            for key in list(self.local_config[section].keys()):
-                if not self.base_config.has_option(section, key):
-                    self.local_config.remove_option(section, key)
+            self.config = merged
+            return self.config
 
-            # Add or validate keys
-            for key, base_value in self.base_config.items(section):
-
-                # If key missing → add from base
-                if not self.local_config.has_option(section, key):
-                    self.local_config.set(section, key, base_value)
-                    continue
-
-                # Validate type
-                local_value = self.local_config.get(section, key)
-                fixed_value = self._typed(base_value, local_value)
-
-                # If type mismatch or invalid → restore base value
-                if fixed_value != local_value:
-                    self.local_config.set(section, key, base_value)
-
-        # Save repaired local.ini
-        with open(self.local_filename, "w") as f:
-            self.local_config.write(f)
-
-        # -------------------------------------------------------------------
-        # Build final merged config (base + local override)
-        # -------------------------------------------------------------------
-        merged = configparser.ConfigParser()
-
-        for section in self.base_config.sections():
-            merged.add_section(section)
-            for k, v in self.base_config.items(section):
-                merged.set(section, k, v)
-
-        for section in self.local_config.sections():
-            for k, v in self.local_config.items(section):
-                merged.set(section, k, v)
-
-        self.config = merged
-        return self.config
+        except Exception as e:
+            print(f"Error during IniHandlerV2.reload(): {e}")
+            raise
 
     def save(self, config: configparser.ConfigParser):
         if not config:
@@ -136,18 +165,32 @@ class IniHandlerV2:
 
     # -------------------------------------------------------------------
     def write_key(self, section: str, key: str, value) -> None:
-        """Always write to local.ini, then reload to enforce type/schema rules."""
-        self.local_config.read(self.local_filename)
-
+        """Write to local.ini, validate type, and persist without full reload."""
         if not self.local_config.has_section(section):
             self.local_config.add_section(section)
 
-        self.local_config.set(section, key, str(value))
+        # Convert value to string
+        str_value = str(value)
 
+        # Only validate if base schema exists for this key
+        if self.base_config.has_option(section, key):
+            base_value = self.base_config.get(section, key)
+            try:
+                str_value = self._typed(base_value, str_value)
+            except Exception:
+                # If validation fails, use base value
+                str_value = base_value
+
+        self.local_config.set(section, key, str_value)
+
+        # Write directly to file
         with open(self.local_filename, "w") as f:
             self.local_config.write(f)
 
-        self.reload()
+        # Update merged config without full reload/repair
+        if not self.config.has_section(section):
+            self.config.add_section(section)
+        self.config.set(section, key, str_value)
 
     # ---------------------------------------------------------------
     # Read Helpers
@@ -214,3 +257,6 @@ class IniHandlerV2:
             for key, value in config.items(source_section):
                 config.set(target_section, key, value)
             self.save(config)
+
+
+# endregion

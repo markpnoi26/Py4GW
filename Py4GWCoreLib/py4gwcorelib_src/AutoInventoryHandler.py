@@ -1,7 +1,7 @@
 # region AutoInventory
 from typing import Optional, Callable
 from .Console import ConsoleLog, Console
-from .IniHandlerV2 import IniHandlerV2
+from .IniHandler import IniHandler
 from .Timer import ThrottledTimer
 from .ActionQueue import ActionQueueManager
 from .Lootconfig_src import LootConfig
@@ -25,7 +25,7 @@ class AutoInventoryHandler:
 
         project_path = Console.get_projects_path()
         ini_file_location = os.path.join(project_path, "AutoLoot.ini")
-        ini_handler = IniHandlerV2(ini_file_location)
+        ini_handler = IniHandler(ini_file_location)
 
         self.ini = ini_handler
         self.initialized = False
