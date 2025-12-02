@@ -139,7 +139,8 @@ def draw_health_bar(width: float, height: float, max_health: float, current_heal
     pips = Utils.calculate_health_pips(max_health, regen)
 
     if not draw_textures:
-        style.PlotHistogram.push_color((204, 0, 0, 255))
+        color = state.value
+        style.PlotHistogram.push_color(color.rgb_tuple)
         style.FrameRounding.push_style_var(0)
         ImGui.progress_bar(current_health, width, height)
         style.FrameRounding.pop_style_var()
@@ -202,48 +203,47 @@ def draw_health_bar(width: float, height: float, max_health: float, current_heal
                 cursor_rect[2:],
             )
 
-        if deep_wound:
-            deep_wound_rect = (
-                item_rect[0] + (width * 0.8), item_rect[1] + 1, (width * 0.2) + 1, height - 2)
-            
-            ThemeTextures.HealthBarDeepWound.value.get_texture().draw_in_drawlist(
-                deep_wound_rect[:2],
-                deep_wound_rect[2:],
-            )
-            
-            ThemeTextures.HealthBarDeepWoundCursor.value.get_texture().draw_in_drawlist(
-                deep_wound_rect[:2],
-                (2, deep_wound_rect[3]),
-            )
-            pass
+    if deep_wound:
+        deep_wound_rect = (
+            item_rect[0] + (width * 0.8), item_rect[1] + 1, (width * 0.2) + 1, height - 2)
         
-        indicators = (enchanted, conditioned, hexed, has_weaponspell)
-        if any(indicators):
-            #weapon_spell, hexed, conditioned, enchanted
-            x_offset = height + 2
-            
-            for i, indicator in enumerate(indicators):
-                if indicator:
-                    indicator_texture = None
-                    match i:
-                        case 0:
-                            indicator_texture = ThemeTextures.HealthIdenticator_Enchanted
-                        case 1:
-                            indicator_texture = ThemeTextures.HealthIdenticator_Conditioned
-                        case 2:
-                            indicator_texture = ThemeTextures.HealthIdenticator_Hexed
-                        case 3:
-                            indicator_texture = ThemeTextures.HealthIdenticator_WeaponSpell
-                            
-                    if indicator_texture:
-                        ConsoleLog("HERO AI", f"Drawing indicator {i} at offset {x_offset}")
-                        indicator_texture.value.get_texture().draw_in_drawlist(
-                            (item_rect[0] + item_rect[2] - x_offset, item_rect[1]),
-                            (height, height),
-                        )
+        ThemeTextures.HealthBarDeepWound.value.get_texture().draw_in_drawlist(
+            deep_wound_rect[:2],
+            deep_wound_rect[2:],
+        )
+        
+        ThemeTextures.HealthBarDeepWoundCursor.value.get_texture().draw_in_drawlist(
+            deep_wound_rect[:2],
+            (2, deep_wound_rect[3]),
+        )
+        pass
+    
+    indicators = (enchanted, conditioned, hexed, has_weaponspell)
+    if any(indicators):
+        #weapon_spell, hexed, conditioned, enchanted
+        x_offset = height + 2
+        
+        for i, indicator in enumerate(indicators):
+            if indicator:
+                indicator_texture = None
+                match i:
+                    case 0:
+                        indicator_texture = ThemeTextures.HealthIdenticator_Enchanted
+                    case 1:
+                        indicator_texture = ThemeTextures.HealthIdenticator_Conditioned
+                    case 2:
+                        indicator_texture = ThemeTextures.HealthIdenticator_Hexed
+                    case 3:
+                        indicator_texture = ThemeTextures.HealthIdenticator_WeaponSpell
                         
-                    x_offset += height + 2
-            
+                if indicator_texture:
+                    indicator_texture.value.get_texture().draw_in_drawlist(
+                        (item_rect[0] + item_rect[2] - x_offset, item_rect[1]),
+                        (height, height),
+                    )
+                    
+                x_offset += height + 2
+        
         
     display_label = str(int(current_health * max_health))
     textsize = PyImGui.calc_text_size(display_label)

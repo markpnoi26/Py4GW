@@ -1781,6 +1781,7 @@ SkillTextureMap = {
     #	1943 : "[1943] - Charr Siege Attack What Must Be Done.jpg",
     #	1944 : "[1944] - Charr Siege Attack Against the Charr.jpg",
     1945 : "[1945] - Birthday Cupcake skill.jpg",
+    1946 : "Factions_Blessing.jpg",
     1947 : "Factions_Blessing.jpg",
     1948 : "[1948] - Shadow Sanctuary.jpg",
     1949 : "[1949] - Ether Nightmare.jpg",
