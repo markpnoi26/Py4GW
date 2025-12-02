@@ -236,8 +236,8 @@ class HeroAICommands:
                 GLOBAL_CACHE.ShMem.SendMessage(sender_email, account.AccountEmail, SharedCommandType.SendDialog, (dialog_option, 0, 0, 0))
 
     def open_consumables_commands(self, accounts: list[AccountData]):
-        from HeroAI import ui, windows
-        ui.configure_consumables_window_open = not ui.configure_consumables_window_open
+        from HeroAI import ui
+        ui.show_configure_consumables_window()
 
     def flag_heroes_command(self, accounts: list[AccountData]):
         from HeroAI import ui, windows

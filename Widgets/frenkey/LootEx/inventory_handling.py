@@ -243,6 +243,21 @@ class LootEx_Merchant_Handler(MerchantHandler):
                 ConsoleLog("LootEx_Merchant_Handler", f"Restocking {identification_kits[1]} Identification Kits.", Console.MessageType.Debug, self.LOG_LOOTEX_MERCHANT_HANDLER)
                 yield
             
+            else:
+                # Fallback to normal identification kits if superior kits are not available
+                model_id = ModelID.Identification_Kit.value
+                item_id = next((
+                    item for item in merchant_item_list if GLOBAL_CACHE.Item.GetModelID(item) == model_id and GLOBAL_CACHE.Item.GetItemType(item)[0] == item_type.value), None)
+                if item_id is not None:
+                    value = GLOBAL_CACHE.Item.Properties.GetValue(item_id) * 2
+                    if gold_on_character <= value:
+                        ConsoleLog("LootEx_Merchant_Handler", "Cannot afford identification kits to restock.", Console.MessageType.Debug, self.LOG_LOOTEX_MERCHANT_HANDLER)
+                        return
+                    
+                    ConsoleLog("LootEx_Merchant_Handler", f"Restocking {identification_kits[1]} Identification Kits.", Console.MessageType.Debug, self.LOG_LOOTEX_MERCHANT_HANDLER)
+                    yield
+                
+            
     @override
     def restock_salvage_kits(self, config) -> Generator[Any, Any, None]:
         if not self.inventory_handler or not self.inventory_handler.IsActive:
@@ -1034,6 +1049,11 @@ class InventoryHandler:
             item_id = next((
                 item for item in merchant_item_list if GLOBAL_CACHE.Item.GetModelID(item) == model_id and GLOBAL_CACHE.Item.GetItemType(item)[0] == item_type.value), None)
 
+            if item_id is None:
+                if model_id == ModelID.Superior_Identification_Kit:
+                    item_id = next((
+                        item for item in merchant_item_list if GLOBAL_CACHE.Item.GetModelID(item) == ModelID.Identification_Kit and GLOBAL_CACHE.Item.GetItemType(item)[0] == item_type.value), None)
+            
             if item_id is None:
                 continue
 

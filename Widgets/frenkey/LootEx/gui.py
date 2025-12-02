@@ -1547,6 +1547,29 @@ class UI:
                         pass
 
                     def on_test_button_clicked(): 
+                        clean = {}
+                        
+                        for skillid, texture in SkillTextureMap.items():
+                            if not skillid in clean.keys():
+                                clean[skillid] = texture
+                            else:
+                                ConsoleLog("LootEx Test", f"Duplicate skill texture found for Skill ID {skillid}: {texture} (Already have: {clean[skillid]})", Console.MessageType.Warning)
+                        
+                        sorted_clean = dict(sorted(clean.items()))
+                        
+                        path = "C:\\Users\\lasse\\OneDrive\\Programmieren\\Frenkey\\Guild Wars\\Py4GW\\Textures\\Skill_Icons"
+                        #write to clipboard
+                        clipboard_text = ""
+                        for skillid, texture in sorted_clean.items():
+                            full_path = os.path.join(path, texture)
+                            prefix = "" if os.path.exists(full_path) else "#"
+                            clipboard_text += f'{prefix}\t{skillid} : "{texture}",\n'
+                        
+                        PyImGui.set_clipboard_text(clipboard_text)
+                        
+                        
+                        return
+                        
                         path = "C:\\Users\\lasse\\OneDrive\\Programmieren\\Frenkey\\Guild Wars\\Py4GW\\Textures\\Skill_Icons"
                         
                         for file_name in os.listdir(path):

@@ -84,6 +84,7 @@ class Settings:
         
         self.save_requested = False
         
+        self.Anonymous_PanelNames = False
         self.ShowCommandPanel = True
         self.ShowCommandPanelOnlyOnLeaderAccount = True
         
@@ -166,6 +167,7 @@ class Settings:
         
         self.ini_handler.write_key("General", "ShowCommandPanel", str(self.ShowCommandPanel))
         self.ini_handler.write_key("General", "ShowCommandPanelOnlyOnLeaderAccount", str(self.ShowCommandPanelOnlyOnLeaderAccount))
+        self.ini_handler.write_key("General", "Anonymous_PanelNames", str(self.Anonymous_PanelNames))
         
         self.ini_handler.write_key("General", "ShowPanelOnlyOnLeaderAccount", str(self.ShowPanelOnlyOnLeaderAccount))
         self.ini_handler.write_key("General", "DisableAutomationOnLeaderAccount", str(self.DisableAutomationOnLeaderAccount))
@@ -199,6 +201,7 @@ class Settings:
         ConsoleLog("HeroAI", "Loading HeroAI settings...")      
         self.ShowCommandPanel = self.ini_handler.read_bool("General", "ShowCommandPanel", True)
         self.ShowCommandPanelOnlyOnLeaderAccount = self.ini_handler.read_bool("General", "ShowCommandPanelOnlyOnLeaderAccount", True)
+        self.Anonymous_PanelNames = self.ini_handler.read_bool("General", "Anonymous_PanelNames", False)
         
         self.ShowPanelOnlyOnLeaderAccount = self.ini_handler.read_bool("General", "ShowPanelOnlyOnLeaderAccount", False)
         self.DisableAutomationOnLeaderAccount = self.ini_handler.read_bool("General", "DisableAutomationOnLeaderAccount", False)

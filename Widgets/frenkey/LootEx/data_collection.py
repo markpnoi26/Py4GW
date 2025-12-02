@@ -352,6 +352,8 @@ class CollectionEntry(Item):
                         continue
 
 class DataCollector:
+    LOG_DATA_COLLECTION = True
+    
     _instance = None
     _initialized = False
     
@@ -610,6 +612,7 @@ class DataCollector:
             return
         
         if not self.settings.collect_items:
+            ConsoleLog("LootEx DataCollector", f"Data collection is disabled in settings. Skipping item ID: {item_id}.", Console.MessageType.Debug, self.LOG_DATA_COLLECTION)
             return
         
         if server_language == ServerLanguage.Unknown:
@@ -620,10 +623,6 @@ class DataCollector:
         
         if item_id not in self.collected_items:            
             entry = CollectionEntry(item_id, self.modified_items)
-            
-            if entry.model_id in invalid_model_ids or entry.model_id > highest_valid_model_id:
-                entry.status = CollectionStatus.DataCollected
-                return
             
             if entry.model_id in invalid_model_ids or entry.model_id > highest_valid_model_id:
                 entry.status = CollectionStatus.DataCollected
@@ -649,7 +648,7 @@ class DataCollector:
                 if GLOBAL_CACHE.Item.IsNameReady(item_id):
                     name = GLOBAL_CACHE.Item.GetName(item_id)
                     
-                    ConsoleLog("LootEx DataCollector", f"Collected name for item ID: {item_id} | {entry.model_id} | {entry.item_type}: {name}", Console.MessageType.Debug)
+                    ConsoleLog("LootEx DataCollector", f"Collected name for item ID: {item_id} | {entry.model_id} | {entry.item_type}: {name}", Console.MessageType.Debug, self.LOG_DATA_COLLECTION)
                     
                     if not name or name == "No Item" or name == "Unknown":
                         entry.request_name()

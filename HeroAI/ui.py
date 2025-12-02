@@ -1,5 +1,6 @@
 from collections.abc import Callable
 import ctypes
+from enum import Enum, IntEnum
 import math
 import os
 import random
@@ -84,6 +85,17 @@ dialog_throttle = ThrottledTimer(500)
 
 commands = HeroAICommands()
 gray_color = Color(150, 150, 150, 255)
+
+class HealthState(Enum):
+    Normal = Color(204, 0, 0, 255)
+    Poisoned = Color(116, 116, 48, 255)
+    Bleeding = Color(224, 119, 119, 255)
+    DegenHexed = Color(196, 56, 150, 255)
+    Disconnected = Color(54, 54, 54, 255)
+
+def show_configure_consumables_window():
+    global configure_consumables_window_open
+    configure_consumables_window_open = True
           
 def get_frame_texture_for_effect(skill_id: int) -> tuple[(GameTexture), TextureState, int]:
     is_elite = GLOBAL_CACHE.Skill.Flags.IsElite(skill_id)
@@ -121,7 +133,7 @@ def get_frame_texture_for_effect(skill_id: int) -> tuple[(GameTexture), TextureS
 
     return frame_texture, texture_state, progress_color
 
-def draw_health_bar(width: float, height: float, max_health: float, current_health: float, regen: float) -> bool:
+def draw_health_bar(width: float, height: float, max_health: float, current_health: float, regen: float, state: HealthState = HealthState.Normal, deep_wound : bool = False, enchanted: bool = False, conditioned: bool = False, hexed: bool = False, has_weaponspell: bool = False) -> bool:
     style = ImGui.get_style()
     draw_textures = style.Theme in ImGui.Textured_Themes
     pips = Utils.calculate_health_pips(max_health, regen)
@@ -152,22 +164,87 @@ def draw_health_bar(width: float, height: float, max_health: float, current_heal
                    2) if fraction > 0 else (item_rect[0] + (width - 2) * fraction, item_rect[1] + 1, 4, height - 2)
 
     if draw_textures:
-        ThemeTextures.HealthBarEmpty.value.get_texture().draw_in_drawlist(
+        match state:
+            case HealthState.Poisoned:
+                health_bar_empty_texture = ThemeTextures.HealthBarPoisonedEmpty
+                health_bar_fill_texture = ThemeTextures.HealthBarPoisonedFill
+                health_bar_cursor_texture = ThemeTextures.HealthBarPoisonedCursor
+            case HealthState.Bleeding:
+                health_bar_empty_texture = ThemeTextures.HealthBarBleedingEmpty
+                health_bar_fill_texture = ThemeTextures.HealthBarBleedingFill
+                health_bar_cursor_texture = ThemeTextures.HealthBarBleedingCursor
+            case HealthState.DegenHexed:        
+                health_bar_empty_texture = ThemeTextures.HealthBarHexedEmpty
+                health_bar_fill_texture = ThemeTextures.HealthBarHexedFill
+                health_bar_cursor_texture = ThemeTextures.HealthBarHexedCursor
+            case HealthState.Disconnected:
+                health_bar_empty_texture = ThemeTextures.HealthBarDisconnectedEmpty
+                health_bar_fill_texture = ThemeTextures.HealthBarDisconnectedFill
+                health_bar_cursor_texture = ThemeTextures.HealthBarDisconnectedCursor
+            case _:                
+                health_bar_empty_texture = ThemeTextures.HealthBarEmpty
+                health_bar_fill_texture = ThemeTextures.HealthBarFill
+                health_bar_cursor_texture = ThemeTextures.HealthBarCursor
+        
+        health_bar_empty_texture.value.get_texture().draw_in_drawlist(
             background_rect[:2],
             background_rect[2:],
         )
 
-        ThemeTextures.HealthBarFill.value.get_texture().draw_in_drawlist(
+        health_bar_fill_texture.value.get_texture().draw_in_drawlist(
             progress_rect[:2],
             progress_rect[2:],
         )
 
         if current_health * max_health != max_health:
-            ThemeTextures.HealthBarCursor.value.get_texture().draw_in_drawlist(
+            health_bar_cursor_texture.value.get_texture().draw_in_drawlist(
                 cursor_rect[:2],
                 cursor_rect[2:],
             )
 
+        if deep_wound:
+            deep_wound_rect = (
+                item_rect[0] + (width * 0.8), item_rect[1] + 1, (width * 0.2) + 1, height - 2)
+            
+            ThemeTextures.HealthBarDeepWound.value.get_texture().draw_in_drawlist(
+                deep_wound_rect[:2],
+                deep_wound_rect[2:],
+            )
+            
+            ThemeTextures.HealthBarDeepWoundCursor.value.get_texture().draw_in_drawlist(
+                deep_wound_rect[:2],
+                (2, deep_wound_rect[3]),
+            )
+            pass
+        
+        indicators = (enchanted, conditioned, hexed, has_weaponspell)
+        if any(indicators):
+            #weapon_spell, hexed, conditioned, enchanted
+            x_offset = height + 2
+            
+            for i, indicator in enumerate(indicators):
+                if indicator:
+                    indicator_texture = None
+                    match i:
+                        case 0:
+                            indicator_texture = ThemeTextures.HealthIdenticator_Enchanted
+                        case 1:
+                            indicator_texture = ThemeTextures.HealthIdenticator_Conditioned
+                        case 2:
+                            indicator_texture = ThemeTextures.HealthIdenticator_Hexed
+                        case 3:
+                            indicator_texture = ThemeTextures.HealthIdenticator_WeaponSpell
+                            
+                    if indicator_texture:
+                        ConsoleLog("HERO AI", f"Drawing indicator {i} at offset {x_offset}")
+                        indicator_texture.value.get_texture().draw_in_drawlist(
+                            (item_rect[0] + item_rect[2] - x_offset, item_rect[1]),
+                            (height, height),
+                        )
+                        
+                    x_offset += height + 2
+            
+        
     display_label = str(int(current_health * max_health))
     textsize = PyImGui.calc_text_size(display_label)
     text_rect = (item_rect[0] + ((width - textsize[0]) / 2), item_rect[1] +
@@ -512,43 +589,7 @@ def draw_skill_bar(height: float, account_data: AccountData, cached_data: CacheD
             0.0625, 0.0625) if draw_textures else (0, 0), uv1=(0.9375, 0.9375) if draw_textures else (1, 1))
 
         if PyImGui.is_item_hovered():
-            PyImGui.set_next_window_size((300, 0), PyImGui.ImGuiCond.Always)
-            if ImGui.begin_tooltip():
-                ImGui.push_font("Regular", 14)
-                ImGui.text_colored(
-                    f"{skill.name} (ID: {skill.skill_id})",
-                    Color(227, 211, 165, 255).color_tuple                    
-                )
-                ImGui.pop_font()
-
-                ImGui.separator()
-                if skill.description:
-                    ImGui.text_wrapped(skill.description)
-                
-                PyImGui.spacing()
-                
-                gray_color = Color(150, 150, 150, 255)
-                
-                ImGui.push_font("Regular", 12)
-                ImGui.text_colored(
-                    "Click to use on current target",
-                    gray_color.color_tuple                  
-                )
-                PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() - 2)
-                
-                ImGui.text_colored(
-                    "Ctrl + Click to use on self",
-                    gray_color.color_tuple                
-                )
-                PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() - 2)
-                
-                ImGui.text_colored(
-                    "Shift + Click to toggle active/inactive",
-                    gray_color.color_tuple              
-                )
-                ImGui.pop_font()
-
-                ImGui.end_tooltip()
+            show_skill_tooltip(skill)
 
         item_rect_min = PyImGui.get_item_rect_min()
         casting_skill = account_data.PlayerCastingSkillID
@@ -662,7 +703,47 @@ def draw_skill_bar(height: float, account_data: AccountData, cached_data: CacheD
 
         PyImGui.same_line(0, 0)
 
-    pass  # Implementation of skill bar drawing logic goes here
+    pass 
+
+def show_skill_tooltip(skill, show_usage=True):
+    PyImGui.set_next_window_size((300, 0), PyImGui.ImGuiCond.Always)
+    if ImGui.begin_tooltip():
+        ImGui.push_font("Regular", 14)
+        ImGui.text_colored(
+                    f"{skill.name} (ID: {skill.skill_id})",
+                    Color(227, 211, 165, 255).color_tuple                    
+                )
+        ImGui.pop_font()
+
+        ImGui.separator()
+        if skill.description:
+            ImGui.text_wrapped(skill.description)
+        
+        if show_usage:
+            PyImGui.spacing()
+                    
+            gray_color = Color(150, 150, 150, 255)
+                    
+            ImGui.push_font("Regular", 12)
+            ImGui.text_colored(
+                        "Click to use on current target",
+                        gray_color.color_tuple                  
+                    )
+            PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() - 2)
+                    
+            ImGui.text_colored(
+                        "Ctrl + Click to use on self",
+                        gray_color.color_tuple                
+                    )
+            PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() - 2)
+                    
+            ImGui.text_colored(
+                        "Shift + Click to toggle active/inactive",
+                        gray_color.color_tuple              
+                    )
+            ImGui.pop_font()
+
+        ImGui.end_tooltip() # Implementation of skill bar drawing logic goes here
 
 def draw_buffs_bar(account_data: AccountData, win_pos: tuple, win_size: tuple, message_queue: list[tuple[int, SharedMessage]], skill_size: float = 28):
     if not settings.ShowHeroEffects and not settings.ShowHeroUpkeeps:
@@ -779,8 +860,9 @@ def draw_buffs_and_upkeeps(account_data: AccountData, skill_size: float = 28):
                     remaining_text
                 )
 
-        PyImGui.show_tooltip(
-            f"Effect ID: {effect.skill_id}\nName: {effect.name}")
+
+        if PyImGui.is_item_hovered():
+            show_skill_tooltip(effect, show_usage=False)
     
     def draw_morale(morale : int, skill_size: float = skill_size):
         morale_display = f"{("+" if morale > 100 else "-")}{abs(100 - morale)}%"
@@ -1009,7 +1091,9 @@ def draw_buttons(account_data: AccountData, cached_data: CacheData, message_queu
             icon
         )
         ImGui.pop_font()
-        ImGui.show_tooltip(tooltip)
+        
+        if hovered:
+            ImGui.show_tooltip(tooltip)
         
         if not new_line:
             PyImGui.same_line(0, 0 if draw_textures else 1)
@@ -1162,7 +1246,7 @@ def draw_buttons(account_data: AccountData, cached_data: CacheData, message_queu
 title_names: dict[str, str] = {}
 
 def get_display_name(account_data: AccountData) -> str:    
-    name = account_data.CharacterName
+    name = account_data.CharacterName        
     titles = [
         "the Brave",
         "the Mighty",
@@ -1187,10 +1271,36 @@ def get_display_name(account_data: AccountData) -> str:
     ]
     
     if not name in title_names:
-        title_names[name] = "Frenkey " + random.choice(titles)
+        title_names[name] = "Robin " + random.choice(titles)
         
     name = title_names[name]
-    return account_data.CharacterName
+    return name if settings.Anonymous_PanelNames else account_data.CharacterName
+
+def get_conditioned(account_data: AccountData) -> tuple[HealthState, bool, bool, bool, bool, bool]:
+    buff_ids = [buff.SkillId for buff in account_data.PlayerBuffs]
+    same_map = GLOBAL_CACHE.Map.GetMapID() == account_data.MapID and GLOBAL_CACHE.Map.GetRegion()[0] == account_data.MapRegion and GLOBAL_CACHE.Map.GetDistrict() == account_data.MapDistrict
+    
+    deep_wounded = 482 in buff_ids
+    poisoned = 484 in buff_ids or 483 in buff_ids
+    
+    enchanted = GLOBAL_CACHE.Agent.IsEnchanted(account_data.PlayerID) if same_map else False
+    conditioned = GLOBAL_CACHE.Agent.IsConditioned(account_data.PlayerID) if same_map else False
+    hexed = GLOBAL_CACHE.Agent.IsHexed(account_data.PlayerID) if same_map else False
+    has_weaponspell = GLOBAL_CACHE.Agent.IsWeaponSpelled(account_data.PlayerID) if same_map else False
+        
+    if poisoned:
+        return HealthState.Poisoned, deep_wounded, enchanted, conditioned, hexed, has_weaponspell
+    
+    bleeding = 478 in buff_ids
+    if bleeding:
+        return HealthState.Bleeding, deep_wounded, enchanted, conditioned, hexed, has_weaponspell
+    
+    degen_hexed = GLOBAL_CACHE.Agent.IsDegenHexed(account_data.PlayerID) if same_map else False
+    if degen_hexed:
+        return HealthState.DegenHexed, deep_wounded, enchanted, conditioned, hexed, has_weaponspell
+    
+    return HealthState.Normal, deep_wounded, enchanted, conditioned, hexed, has_weaponspell
+
 
 def draw_combined_hero_panel(account_data: AccountData, cached_data: CacheData, messages: list[tuple[int, SharedMessage]], open: bool = True):
     name = get_display_name(account_data)
@@ -1227,8 +1337,10 @@ def draw_combined_hero_panel(account_data: AccountData, cached_data: CacheData, 
         if ImGui.begin_child("##bars" + account_data.AccountEmail, (225, height)):
             curr_avail = PyImGui.get_content_region_avail()
             if settings.ShowHeroBars:
+                health_state, deep_wounded, enchanted, conditioned, hexed, has_weaponspell = get_conditioned(account_data)
+                
                 health_clicked = draw_health_bar(curr_avail[0], 13, account_data.PlayerMaxHP,
-                                account_data.PlayerHP, account_data.PlayerHealthRegen)   
+                                account_data.PlayerHP, account_data.PlayerHealthRegen, health_state, deep_wounded, enchanted, conditioned, hexed, has_weaponspell)   
                                      
                 PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() - 4)
                 
@@ -1315,8 +1427,10 @@ def draw_hero_panel(window: WindowModule, account_data: AccountData, cached_data
             if ImGui.begin_child("##bars" + account_data.AccountEmail, (225, height)):
                 curr_avail = PyImGui.get_content_region_avail()
                 if settings.ShowHeroBars:
+                    health_state, deep_wounded, enchanted, conditioned, hexed, has_weaponspell  = get_conditioned(account_data)
+                    
                     health_clicked = draw_health_bar(curr_avail[0], 13, account_data.PlayerMaxHP,
-                                    account_data.PlayerHP, account_data.PlayerHealthRegen)
+                                    account_data.PlayerHP, account_data.PlayerHealthRegen, health_state, deep_wounded, enchanted, conditioned, hexed, has_weaponspell )
                     PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() - 4)
                     energy_clicked = draw_energy_bar(curr_avail[0], 13, account_data.PlayerMaxEnergy,
                                                        account_data.PlayerEnergy, account_data.PlayerEnergyRegen)
@@ -1962,6 +2076,7 @@ def draw_configure_window():
                     if show_party_panel_ui != settings.ShowPartyPanelUI:
                         settings.ShowPartyPanelUI = show_party_panel_ui
                         settings.save_settings()
+                        
                     show_floating_targets = ImGui.checkbox("Show Floating Target Buttons", settings.ShowFloatingTargets)
                     if show_floating_targets != settings.ShowFloatingTargets:
                         settings.ShowFloatingTargets = show_floating_targets
@@ -2001,6 +2116,11 @@ def draw_configure_window():
                     combine_panels = ImGui.checkbox("Combine Hero Panels", settings.CombinePanels)
                     if combine_panels != settings.CombinePanels:
                         settings.CombinePanels = combine_panels
+                        settings.save_settings()
+                        
+                    anonymous_panel_names = ImGui.checkbox("Anonymous Panel Names", settings.Anonymous_PanelNames)
+                    if anonymous_panel_names != settings.Anonymous_PanelNames:
+                        settings.Anonymous_PanelNames = anonymous_panel_names
                         settings.save_settings()
                         
                     show_hero_buttons = ImGui.checkbox("Show Hero Buttons", settings.ShowHeroButtons)

@@ -60,7 +60,7 @@ def render_event_history():
                 PyImGui.separator()
             PyImGui.end_table()
 
-        PyImGui.end_child()
+    PyImGui.end_child()
 
 
 def render_subscribers():
@@ -143,4 +143,4 @@ def render_subscribers():
 
             PyImGui.end_table()
 
-        PyImGui.end_child()
+    PyImGui.end_child()

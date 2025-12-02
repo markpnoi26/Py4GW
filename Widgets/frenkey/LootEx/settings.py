@@ -135,6 +135,7 @@ class Settings:
             "window_collapsed": self.window_collapsed,
             "manual_window_visible": self.manual_window_visible,
             "collect_items": self.collect_items,
+            "max_xunlai_storage": self.max_xunlai_storage.value,
             "last_xunlai_check": self.last_xunlai_check.isoformat(),
         }
         # ConsoleLog(
@@ -188,12 +189,15 @@ class Settings:
                     "window_collapsed", False)
                 self.manual_window_visible = settings_dict.get(
                     "manual_window_visible", False)
-                self.collect_items = settings_dict.get("collect_items", False)
+                self.max_xunlai_storage = Bag_enum(
+                    settings_dict.get("max_xunlai_storage", Bag_enum.Storage_4.value))
                 last_xunlai_check_str = settings_dict.get("last_xunlai_check", None)
                 if last_xunlai_check_str:
                     self.last_xunlai_check = datetime.datetime.fromisoformat(
                         last_xunlai_check_str)
 
+                self.collect_items = True # settings_dict.get("collect_items", False)
+        
         except FileNotFoundError:
             ConsoleLog(
                 "LootEx",

@@ -81,8 +81,12 @@ def MergeWhenCollectionPaused():
             continue
         
         GLOBAL_CACHE.ShMem.SendMessage(account_email, acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.ReloadData, 0, 0))
-        GLOBAL_CACHE.ShMem.SendMessage(account_email, acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.ResumeDataCollection, 0, 0))
-            
+        GLOBAL_CACHE.ShMem.SendMessage(account_email, acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.StartDataCollection, 0, 0))
+    
+    from Widgets.frenkey.LootEx import settings
+    settings = settings.Settings()
+    settings.collect_items = True
+    
     return True
 
 def SendStart(exclude_self: bool = False):    
