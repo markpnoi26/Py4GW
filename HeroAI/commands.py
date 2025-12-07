@@ -222,8 +222,7 @@ class HeroAICommands:
             GLOBAL_CACHE.ShMem.SendMessage(sender_email, account.AccountEmail, SharedCommandType.TakeDialogWithTarget, (target_id, 1, 0, 0))
 
     def send_dialog(self, accounts: list[AccountData], dialog_option: int):
-        sender_email = GLOBAL_CACHE.Player.GetAccountEmail()        
-        target_id = GLOBAL_CACHE.Player.GetTargetID()
+        sender_email = GLOBAL_CACHE.Player.GetAccountEmail()
         own_map_id = GLOBAL_CACHE.Map.GetMapID()
         own_region = GLOBAL_CACHE.Map.GetRegion()[0]
         own_district = GLOBAL_CACHE.Map.GetDistrict()

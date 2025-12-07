@@ -1557,7 +1557,41 @@ class UI:
                                         ConsoleLog("LootEx", f"Moved texture for Item {item.name}", Console.MessageType.Info)
                         pass
 
-                    def on_test_button_clicked(): 
+                    def on_test_button_clicked():                             
+                        if ui_manager_extensions.UIManagerExtensions.IsConfirmMaterialsWindowOpen():
+                            ConsoleLog("LootEx", "Confirming Lesser Salvage...", Console.MessageType.Info)
+                            # ui_manager_extensions.UIManagerExtensions.ConfirmLesserSalvage()
+                                
+                        if ui_manager_extensions.UIManagerExtensions.ConfirmModMaterialSalvageVisible():
+                            ConsoleLog("LootEx", "Confirming Mod Material Salvage...", Console.MessageType.Info)
+                            ui_manager_extensions.UIManagerExtensions.ConfirmModMaterialSalvage() 
+                            
+                        return
+                        handler = inventory_handling.InventoryHandler()
+                        item_actions = handler.GetActions(start_bag=Bag.Backpack, end_bag=Bag.Bag_2)
+                        
+                        handler.identification_kits = item_actions.identification_kits
+            
+                        for _, item in item_actions.actions.items():
+                            if item.action != ItemAction.Identify:
+                                continue
+                            
+                            if item.is_identified:
+                                item.action = ItemAction.NONE
+                                continue
+                            
+                            ConsoleLog("LootEx", f"Found unidenfitied item: '{item.name} [{item.model_id}]' ({item.id})", Console.MessageType.Info)
+                            identificationKit = handler.GetIdentificationKit()
+
+                            if identificationKit is None or identificationKit.uses <= 0:
+                                continue
+
+                            ConsoleLog(
+                                "LootEx", f"Identifying item: '{item.name} [{item.model_id}]' ({item.id}) with kit {identificationKit.name} ({identificationKit.id})", Console.MessageType.Info)
+                            # Inventory.IdentifyItem(item.id, identificationKit.id)
+                            identificationKit.uses -= 1
+                            
+                        return
                         m = self.MouseTest
                         threshold = 10
                         self.MouseTest.lparam += 1

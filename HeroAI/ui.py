@@ -2009,9 +2009,11 @@ def draw_dialog_overlay(accounts: list[AccountData], cached_data: CacheData, mes
     pyimgui_io = PyImGui.get_io()
     mouse_pos = (pyimgui_io.mouse_pos_x, pyimgui_io.mouse_pos_y)
     
-    if Console.is_window_active():        
-        for i, (frame_id, frame) in enumerate(frame_coords):                
-            if ImGui.is_mouse_in_rect((frame[0], frame[1], frame[2] - frame[0], frame[3] - frame[1]), mouse_pos):                
+    if Console.is_window_active(): 
+        sorted_frames = sorted(frame_coords, key=lambda x: (x[1][1], x[1][0]))  # Sort by Y, then X
+               
+        for i, (frame_id, frame) in enumerate(sorted_frames):                
+            if ImGui.is_mouse_in_rect((frame[0], frame[1], frame[2] - frame[0], frame[3] - frame[1]), mouse_pos):                                
                 if is_left_mouse_clicked() and pyimgui_io.key_ctrl:
                     accounts = [acc for acc in accounts if acc.AccountEmail != cached_data.account_email]
                     commands.send_dialog(accounts, i + 1)

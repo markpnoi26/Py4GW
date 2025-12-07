@@ -651,7 +651,7 @@ class UIManager:
         ]
         sorted_ids = [fid for fid, _ in UIManager.SortFramesByVerticalPosition(valid)]
         if debug:
-            ConsoleLog("DialogHelper", f"BFS IDs → {sorted_ids}", Console.MessageType.Info)
+            ConsoleLog("DialogHelper", f"BFS IDs -> {sorted_ids}", Console.MessageType.Info)
         return sorted_ids
     
     @staticmethod
@@ -670,7 +670,7 @@ class UIManager:
         if debug:
             ConsoleLog(
                 "DialogHelper",
-                f"Clicking dialog choice #{choice} → frame {target}",
+                f"Clicking dialog choice #{choice} -> frame {target}",
                 Console.MessageType.Info
             )
         UIManager.FrameClick(target)
