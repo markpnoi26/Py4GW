@@ -556,7 +556,7 @@ def draw_skill_bar(height: float, account_data: AccountData, cached_data: CacheD
     draw_textures = style.Theme in ImGui.Textured_Themes
     texture_theme = style.Theme if draw_textures else StyleTheme.Guild_Wars
 
-    for slot, skill_info in enumerate(account_data.PlayerSkills):
+    for slot, skill_info in enumerate(account_data.PlayerData.SkillbarData.Skills):
         
         if skill_info.Id not in skill_cache:
             skill_cache[skill_info.Id] = CachedSkillInfo(skill_info.Id)
@@ -592,7 +592,7 @@ def draw_skill_bar(height: float, account_data: AccountData, cached_data: CacheD
             show_skill_tooltip(skill)
 
         item_rect_min = PyImGui.get_item_rect_min()
-        casting_skill = account_data.PlayerCastingSkillID
+        casting_skill = account_data.PlayerData.SkillbarData.CastingSkillID
         
         if skill_recharge > 0:
                 DrawSquareCooldownEx(

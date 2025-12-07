@@ -793,7 +793,7 @@ class UI:
         self.settings.window_visible = False
     
     def draw_disclaimer(self, active_inventory_widgets):
-        if not UIManager.IsWindowVisible(WindowID.WindowID_InventoryBags):
+        if not self.InventoryBagsVisible():
             if self.inventory_coords is not None:
                 self.inventory_coords = None
             return
@@ -984,8 +984,11 @@ class UI:
             self.settings.window_visible = self.module_window.open
             self.settings.manual_window_visible = self.module_window.open
             self.settings.save()
-            
-  
+    
+    def InventoryBagsVisible(self) -> bool:
+        # return UIManager.IsWindowVisible(WindowID.WindowID_InventoryBags) 
+        return UIManagerExtensions.IsElementVisible(UIManager.GetFrameIDByHash(291586130))  # "Inventory Bags" frame hash
+    
     def draw_vault_controls(self):    
         if not GLOBAL_CACHE.Inventory.IsStorageOpen():
             return
@@ -1036,7 +1039,7 @@ class UI:
             PyImGui.end()
 
     def draw_inventory_controls(self):    
-        if not UIManager.IsWindowVisible(WindowID.WindowID_InventoryBags):
+        if not self.InventoryBagsVisible():
             if self.inventory_coords is not None:
                 self.inventory_coords = None
             return
