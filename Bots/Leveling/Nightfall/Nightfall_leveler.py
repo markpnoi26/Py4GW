@@ -28,12 +28,12 @@ def create_bot_routine(bot: Botting) -> None:
     ExtendInventorySpace(bot)                  # Buy bags to extend inventory
     CompleteHeroCommandQuest(bot)              # Hero command quest
     CompleteArmoredTransportQuest(bot)         # Armored transport quest
-    #CompleteIdentityTheftQuest(bot)           # Identity theft quest (not working yet)
     TakeInitialQuests(bot)                     # Take initial quest set
     FarmQuestRequirements(bot)                 # Farm materials/items for quests
     CompleteSunspearGreatHallQuests(bot)       # SSGH (Sunspear Great Hall) quests
     CompleteMissingShipmentQuest(bot)          # Level 5+ Missing Shipment quest
     ContinueQuestProgression(bot)              # Continue with quest chain
+    CompleteIdentityTheftQuest(bot)           # Identity theft quest (not working yet)
     
     # === PHASE 3: PROFESSION AND CHARACTER DEVELOPMENT ===
     UnlockSecondProfession(bot)                # Unlock second profession
@@ -524,6 +524,42 @@ def ConfigureFirstBattle(bot: Botting):
     Equip_Weapon()
     bot.Dialogs.AtXY(3433, -5900, 0x82C707, step_name="Accept")
 
+    
+def ConfigureFirstBattle_yield(bot: Botting):
+    bot.States.AddHeader("Preparation: First Battle Setup")
+    PrepareForBattle(bot, Hero_List=[6], Henchman_List=[1,2])
+    def Equip_Weapon():
+        global bot
+        profession, _ = GLOBAL_CACHE.Agent.GetProfessionNames(GLOBAL_CACHE.Player.GetAgentID())
+        if profession == "Dervish":
+            bot.Items.Equip(15591)  # starter scythe
+        elif profession == "Paragon":
+            bot.Items.Equip(15593) #Starter Spear
+            bot.Items.Equip(6514) #Bonus Shield
+        elif profession == "Elementalist":
+            bot.Items.Equip(6508) #Luminescent Scepter
+            bot.Wait.ForTime(1000)
+            bot.Items.Equip(6514)
+        elif profession == "Mesmer":
+            bot.Items.Equip(6508) #Luminescent Scepter
+            bot.Wait.ForTime(1000)
+            bot.Items.Equip(6514)
+        elif profession == "Necromancer":
+            bot.Items.Equip(6515) #Soul Shrieker   
+        elif profession == "Ranger":
+            bot.Items.Equip(5831) #Nevermore Flatbow 
+        elif profession == "Warrior":
+            bot.Items.Equip(3) #Starter Sword  
+            bot.Items.Equip(6514) #Bonus Shield  
+        elif profession == "Monk":
+            bot.Items.Equip(6508) #Luminescent Scepter 
+            bot.Wait.ForTime(1000)
+            bot.Items.Equip(6514)   
+        yield
+    bot.States.AddCustomState(Equip_Weapon, "Equip Starter Weapon")
+    Equip_Weapon()
+    bot.Dialogs.AtXY(3433, -5900, 0x82C707, step_name="Accept")
+
 def EnterChahbekMission(bot: Botting):
     bot.States.AddHeader("Mission: Chahbek Village")
     bot.Dialogs.AtXY(3485, -5246, 0x81)
@@ -648,7 +684,7 @@ def CompleteArmoredTransportQuest(bot):
     bot.Map.Travel(target_map_id=449) # Kamadan
     bot.Move.XYAndDialog(-11202, 9346,0x825F07)
 
-def IdentityTheft(bot):
+def CompleteIdentityTheftQuest(bot):
     bot.States.AddHeader("Quest: Identity Theft")
     bot.Map.Travel(target_map_id=449) # Kamadan
     bot.Move.XYAndDialog(-10461, 15229, 0x827201) #take quest
@@ -657,9 +693,11 @@ def IdentityTheft(bot):
     PrepareForBattle(bot, Hero_List=[], Henchman_List=[1,6,7])
     bot.Move.XYAndExitMap(22483, 6115, target_map_id=432) #Cliffs of Dohjok
     bot.Move.XYAndDialog(20215, 5285, 0x85) #Blessing 
+    bot.Items.AddModelToLootWhitelist(15850)
     bot.Move.XY(14429, 10337) #kill boss
-    bot.Interact.WithModel(15850)#not working so comment out this quest for now
-    bot.Wait.ForTime(4000)
+    bot.Wait.UntilOutOfCombat()
+    bot.Items.LootItems()
+    bot.Wait.ForTime(1000)
     bot.Map.Travel(target_map_id=449) # Kamadan
     bot.Move.XYAndDialog(-10461, 15229, 0x827207) # +500xp
 
@@ -669,7 +707,7 @@ def CompleteHeroCommandQuest(bot):
     bot.Move.XYAndDialog(-7874, 9799, 0x82C801)
     PrepareForBattle(bot, Hero_List=[6], Henchman_List=[3,4])
     bot.Move.XY(-4383, -2078)
-    bot.Move.XYAndDialog(-7525, 6288, 0x81, step_name="Churrhir Fields")
+    bot.Move.XYAndDialog(-7525, 6288, 0x81, step_name="Churrhir Fields") 
     bot.Dialogs.AtXY(-7525, 6288, 0x84, step_name="We are ready")
     bot.Wait.ForMapToChange(target_map_id=456)
     bot.Move.XYAndDialog(-2000, -2825,0x8B) #Command Training

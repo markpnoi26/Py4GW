@@ -1,26 +1,32 @@
 import Py4GW
+import PyPlayer
+import PyQuest
+from PyParty import HeroPartyMember
 from PyEffects import BuffType, EffectType
-from PyParty import Hero
+from PyPlayer import LoginCharacterInfo
+from typing import Tuple, List
 from Py4GWCoreLib import ConsoleLog, Map, Party, Player, Agent, Effects, SharedCommandType, Skill, ThrottledTimer
+from Py4GWCoreLib.enums import FactionType
 from ctypes import Array, Structure, addressof, c_int, c_uint, c_float, c_bool, c_wchar, memmove
 from multiprocessing import shared_memory
 import ctypes
 from ctypes import sizeof
 from datetime import datetime, timezone
-import time
 
 from Py4GWCoreLib.Skillbar import SkillBar
 from Py4GWCoreLib.enums_src.GameData_enums import Attribute
-from Py4GWCoreLib.py4gwcorelib_src.Console import Console
+from Py4GWCoreLib.py4gwcorelib_src import Utils
+from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
 
+SHMEM_MAX_NUM_PLAYERS = 64
 SHMEM_MAX_EMAIL_LEN = 64
 SHMEM_MAX_CHAR_LEN = 30
+SHMEM_MAX_AVAILABLE_CHARS = 20
 SHMEM_MAX_NUMBER_OF_BUFFS = 240
-SHMEM_MAX_NUM_PLAYERS = 64
 SMM_MODULE_NAME = "Py4GW - Shared Memory"
 SHMEM_SHARED_MEMORY_FILE_NAME = "Py4GW_Shared_Mem"
 SHMEM_ZERO_EPOCH = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0).timestamp()
-SHMEM_SUBSCRIBE_TIMEOUT_MILISECONDS = 5000 # milliseconds
+SHMEM_SUBSCRIBE_TIMEOUT_MILLISECONDS = 500 # milliseconds
 
 SHMEM_NUMBER_OF_SKILLS = 8
 SHMEM_NUMBER_OF_ATTRIBUTES = len(Attribute) #5 primary + 3 secondary + 1 from of Profession Mod
@@ -31,6 +37,120 @@ UINT32_MAX = 2**32 - 1
 FLOAT32_MAX = 3.4028235e+38
 FLOAT32_MIN = 1.17549435e-38
 
+MISSION_FLAG_ENTRIES = 25 #each entry is a bitmap of a mission flags (32 bits each)
+SKILL_FLAG_ENTRIES = 108 #each entry is a bitmap of a skill flags (32 bits each)
+
+#region Structures
+#region Rank
+class RankStruct(Structure):
+    _pack_ = 1
+    _fields_ = [
+        ("Rank", c_uint),
+        ("Rating", c_uint),
+        ("QualifierPoints", c_uint),
+        ("Wins", c_uint),
+        ("Losses", c_uint),
+        ("TournamentRewardPoints", c_uint),
+    ]
+    
+    # Type hints for IntelliSense
+    Rank: int
+    Rating: int
+    QualifierPoints: int
+    Wins: int
+    Losses: int
+    TournamentRewardPoints: int
+   
+#region Factions 
+class FactionStruct(Structure):
+    _pack_ = 1
+    _fields_ = [
+        ("FactionType", c_uint),
+        ("Current", c_uint),
+        ("TotalEarned", c_uint),
+        ("Max", c_uint),
+    ]
+    
+    # Type hints for IntelliSense
+    FactionType: int
+    Current: int
+    TotalEarned: int
+    Max: int
+    
+class FactionsStruct(Structure):
+    _pack_ = 1
+    _fields_ = [
+        ("Factions", FactionStruct * 4),  # 4 factions
+    ]
+    
+    # Type hints for IntelliSense
+    Factions: list[FactionStruct]
+  
+#region Titles  
+class TitleStruct(Structure):
+    _pack_ = 1
+    _fields_ = [
+        ("TitleID", c_uint),
+        ("CurrentPoints", c_uint),
+    ]
+    
+    # Type hints for IntelliSense
+    TitleID: int
+    CurrentPoints: int
+
+class TitlesStruct(Structure):
+    _pack_ = 1
+    _fields_ = [
+        ("ActiveTitleID", c_uint),
+        ("Titles", TitleStruct * 48),  # 48 titles
+    ]
+    
+    # Type hints for IntelliSense
+    ActiveTitleID: int
+    Titles: list[TitleStruct]
+  
+#region Quests  
+class QuestStruct(Structure):
+    _pack_ = 1
+    _fields_ = [
+        ("QuestID", c_uint),
+        ("IsCompleted", c_bool),
+    ]
+    
+    # Type hints for IntelliSense
+    QuestID: int
+    IsCompleted: bool
+    
+class QuestsStruct(Structure):
+    _pack_ = 1
+    _fields_ = [
+        ("ActiveQuestID", c_uint),
+        ("Quests", QuestStruct * 100),  # 100 quests
+    ]
+    
+    # Type hints for IntelliSense
+    ActiveQuestID: int
+    Quests: list[QuestStruct]
+  
+#region Experience  
+class ExperienceStruct(Structure):
+    _pack_ = 1
+    _fields_ = [
+        ("Level", c_uint),
+        ("Experience", c_uint),
+        ("ProgressPct", c_float),
+        ("CurrentSkillPoints", c_uint),
+        ("TotalEarnedSkillPoints", c_uint),
+    ]
+    
+    # Type hints for IntelliSense
+    Level: int
+    Experience: int
+    ProgressPct: float
+    CurrentSkillPoints: int
+    TotalEarnedSkillPoints: int
+ 
+#region SkillStruct   
 class SkillStruct(Structure):
     _pack_ = 1
     _fields_ = [
@@ -44,6 +164,19 @@ class SkillStruct(Structure):
     Recharge: float
     Adrenaline: float
     
+class SkillbarStruct(Structure):
+    _pack_ = 1
+    _fields_ = [
+        ("CastingSkillID", c_uint),
+        ("Skills", SkillStruct * SHMEM_NUMBER_OF_SKILLS),
+        
+    ]
+    
+    # Type hints for IntelliSense
+    CastingSkillID: int
+    Skills : list[SkillStruct]
+ 
+#region Attributes   
 class AttributeStruct(Structure):
     _pack_ = 1
     _fields_ = [
@@ -56,7 +189,8 @@ class AttributeStruct(Structure):
     Id: int
     Value: int
     BaseValue: int
-    
+  
+#region BuffStruct  
 class BuffStruct(Structure):
     _pack_ = 1
     _fields_ = [
@@ -73,6 +207,182 @@ class BuffStruct(Structure):
     Remaining: float
     TargetAgentID: int
     Type: int
+
+#region MissionData
+class MissionDataStruct(Structure):
+    _pack_ = 1
+    _fields_ = [
+        ("NormalModeCompleted", c_uint * MISSION_FLAG_ENTRIES),
+        ("NormalModeBonus", c_uint * MISSION_FLAG_ENTRIES),
+        ("HardModeCompleted", c_uint * MISSION_FLAG_ENTRIES),
+        ("HardModeBonus", c_uint * MISSION_FLAG_ENTRIES),
+    ]
+    
+    # Type hints for IntelliSense
+    NormalModeCompleted: list[int]
+    NormalModeBonus: list[int]
+    HardModeCompleted: list[int]
+    HardModeBonus: list[int]
+
+#region AgentData
+class AgentDataStruct(Structure):
+    _pack_ = 1
+    _fields_ = [
+        ("UUID", c_uint * 4),  # 128-bit UUID
+        ("AgentID", c_uint),
+        ("OwnerID", c_uint),
+        ("TargetID", c_uint),
+        ("ObservingID", c_uint),
+        ("PlayerNumber", c_uint),
+        ("Profession", c_uint * 2),  # Primary and Secondary Profession
+        ("Level", c_uint),
+        ("Energy", c_float),
+        ("MaxEnergy", c_float),
+        ("EnergyPips", c_int),
+        ("Health", c_float),
+        ("MaxHealth", c_float),
+        ("HealthPips", c_int),
+        ("LoginNumber", c_uint),
+        ("DaggerStatus", c_uint),
+        ("WeaponType", c_uint),
+        ("WeaponItemType", c_uint),
+        ("OffhandItemType", c_uint),
+        ("Overcast", c_float),
+        ("WeaponAttackSpeed", c_float),
+        ("AttackSpeedModifier", c_float),
+        ("EffectsMask", c_uint),  #mask of active effects
+        ("VisualEffectsMask", c_uint),  #mask of active visual effects
+        ("ModelState", c_uint),
+        ("AnimationSpeed", c_float),
+        ("AnimationCode", c_uint),
+        ("AnimationID", c_uint),
+        ("XYZ", c_float * 3),
+        ("ZPlane", c_int),
+        ("RotationAngle", c_float),
+        ("VelocityVector", c_float * 2),
+        ("Is_Bleeding", c_bool),
+        ("Is_Conditioned", c_bool),
+        ("Is_Crippled", c_bool),
+        ("Is_Dead", c_bool),
+        ("Is_DeepWounded", c_bool),
+        ("Is_Poisoned", c_bool),
+        ("Is_Enchanted", c_bool),
+        ("Is_DegenHexed", c_bool),
+        ("Is_Hexed", c_bool),
+        ("Is_WeaponSpelled", c_bool),
+        ("Is_InCombatStance", c_bool),
+        ('Is_Moving', c_bool),
+        ("Is_Attacking", c_bool),
+        ("Is_Casting", c_bool),
+        ("Is_Idle", c_bool),
+        ("Is_Alive", c_bool),
+        
+    ]
+    
+    # Type hints for IntelliSense
+    UUID: list[int]
+    AgentID: int
+    OwnerID: int
+    TargetID: int
+    ObservingID: int
+    PlayerNumber: int
+    Profession: list[int]
+    Level: int
+    Energy: float
+    MaxEnergy: float
+    EnergyPips: int
+    Health: float
+    MaxHealth: float
+    HealthPips: int
+    LoginNumber: int
+    DaggerStatus: int
+    WeaponType: int
+    WeaponItemType: int
+    OffhandItemType: int
+    Overcast: float
+    WeaponAttackSpeed: float
+    AttackSpeedModifier: float
+    VisualEffectsMask: int
+    ModelState: int
+    AnimationSpeed: float
+    AnimationCode: int
+    AnimationID: int
+    XYZ: list[float]
+    ZPlane: int
+    RotationAngle: float
+    VelocityVector: list[float]
+    Is_Bleeding: bool
+    Is_Conditioned: bool
+    Is_Crippled: bool
+    Is_Dead: bool
+    Is_DeepWounded: bool
+    Is_Poisoned: bool
+    Is_Enchanted: bool
+    Is_DegenHexed: bool
+    Is_Hexed: bool
+    Is_WeaponSpelled: bool
+    Is_InCombatStance: bool
+    Is_Moving: bool
+    Is_Attacking: bool
+    Is_Casting: bool
+    Is_Idle: bool
+    Is_Alive: bool
+    
+class AvailableCharacterStruct(Structure):
+    _pack_ = 1
+    _fields_ = [
+        ("Name", c_wchar * SHMEM_MAX_CHAR_LEN),
+        ("Level", c_uint),
+        ("IsPvP", c_bool),
+        ("MapID", c_uint),
+        ("Professions", c_uint * 2),  # Primary and Secondary Profession
+        ("CampaignID", c_uint),  
+    ]
+    
+    # Type hints for IntelliSense
+    Name: str
+    Level: int
+    IsPvP: bool
+    MapID: int
+    Professions: tuple[int, int]
+    CampaignID: int
+    
+    
+#region Player  
+class PlayerStruct(Structure):
+    _pack_ = 1
+    _fields_ = [
+        ("RankData", RankStruct),
+        ("FactionsData", FactionsStruct),
+        ("TitlesData", TitlesStruct),
+        ("QuestsData", QuestsStruct),
+        ("ExperienceData", ExperienceStruct),
+        ("SkillbarData", SkillbarStruct),
+        ("AttributesData",  AttributeStruct * SHMEM_NUMBER_OF_ATTRIBUTES),
+        ("BuffData", BuffStruct * SHMEM_MAX_NUMBER_OF_BUFFS),
+        ("MissionData", MissionDataStruct),
+        ("UnlockedSkills", c_uint * SKILL_FLAG_ENTRIES),  # Bitmap of unlocked skills\
+        ("AgentData", AgentDataStruct),
+        ("AvailableCharacters", AvailableCharacterStruct * SHMEM_MAX_AVAILABLE_CHARS),
+        
+    ]
+    
+    # Type hints for IntelliSense
+    RankData: RankStruct
+    FactionsData: FactionsStruct
+    TitlesData: TitlesStruct
+    QuestsData: QuestsStruct
+    ExperienceData: ExperienceStruct
+    SkillbarData: SkillbarStruct
+    AttributesData: list[AttributeStruct]
+    BuffData: list[BuffStruct]
+    UnlockedSkills: list[int]
+    MissionData: MissionDataStruct
+    AgentData: AgentDataStruct
+    AvailableCharacters: list[AvailableCharacterStruct]
+
+
+#region old structures
 
 class AccountData(Structure):
     _pack_ = 1
@@ -111,16 +421,13 @@ class AccountData(Structure):
         ("PlayerIsTicked", c_bool),
         ("PartyID", c_uint),
         ("PartyPosition", c_uint),
-        ("PlayerIsPartyLeader", c_bool),
-        ("PlayerBuffs", BuffStruct * SHMEM_MAX_NUMBER_OF_BUFFS),  # Buff IDs
-        
-        # Skills
-        ("PlayerCastingSkillID", c_uint),
-        ("PlayerSkills", SkillStruct * SHMEM_NUMBER_OF_SKILLS),        
-        
-        # Attributes
-        ("PlayerAttributes", AttributeStruct * SHMEM_NUMBER_OF_ATTRIBUTES),        
+        ("PlayerIsPartyLeader", c_bool),   
+        ("PlayerBuffs", BuffStruct * SHMEM_MAX_NUMBER_OF_BUFFS),  # Buff IDs 
+              
         ("LastUpdated", c_uint),
+        
+        #Restructure Structures
+        ("PlayerData", PlayerStruct),
     ]
     
     # Type hints for IntelliSense
@@ -161,12 +468,10 @@ class AccountData(Structure):
     PlayerIsPartyLeader: bool
     
     PlayerBuffs: list[BuffStruct]    
-    PlayerAttributes: list[AttributeStruct]
-    
-    PlayerCastingSkillID: int
-    PlayerSkills: list[SkillStruct]
     
     LastUpdated: int
+    
+    PlayerData: PlayerStruct
         
     def clone(self) -> "AccountData":
         """Return a deep copy of this AccountData as a real ctypes structure."""
@@ -238,9 +543,7 @@ class AllAccounts(Structure):
     HeroAIOptions: list[HeroAIOptionStruct]
     
     
-    
-    
-        
+#region SharedMemoryManager    
 class Py4GWSharedMemoryManager:
     _instance = None  # Singleton instance
     def __new__(cls, name=SHMEM_SHARED_MEMORY_FILE_NAME, num_players=SHMEM_MAX_NUM_PLAYERS):
@@ -257,6 +560,11 @@ class Py4GWSharedMemoryManager:
             self.map_instance = Map.map_instance()
             self.party_instance = None #Party.party_instance()
             self.player_instance = None #Player.player_instance()
+            self.agent_instance = None #Agent.agent_instance()
+            self.effects_instance = None
+            self._title_instances: dict[int, PyPlayer.PyTitle] = {}
+            self.quest_instance = None
+            self._quest_instances: dict[int, PyQuest.PyQuest] = {}
             self.throttle_timer_150 = ThrottledTimer(150)
             self.throttle_timer_63 = ThrottledTimer(63) # 4 frames at 15 FPS
         
@@ -281,10 +589,10 @@ class Py4GWSharedMemoryManager:
         
     def GetBaseTimestamp(self):
         # Return milliseconds since ZERO_EPOCH
-        return int((time.time() - SHMEM_ZERO_EPOCH) * 1000)
-    
-    
-    
+        #return int((time.time() - SHMEM_ZERO_EPOCH) * 1000)
+        return Utils.GetBaseTimestamp()
+        
+
     def _str_to_c_wchar_array(self,value: str, maxlen: int) -> ctypes.Array:
         import ctypes as ct
         """Convert Python string to c_wchar array with maxlen (including terminator)."""
@@ -307,7 +615,7 @@ class Py4GWSharedMemoryManager:
             out.append(self._str_to_c_wchar_array(str(val), maxlen))
         return tuple(out)
 
-
+    #region Reset
         
     def ResetAllData(self):
         """Reset all player data in shared memory."""
@@ -317,22 +625,172 @@ class Py4GWSharedMemoryManager:
         
     def ResetPlayerData(self, index):
         """Reset data for a specific player."""
-        if 0 <= index < self.max_num_players:
+        def _reset_rank_data(index):
+            rank_data: RankStruct = self.GetStruct().AccountData[index].PlayerData.RankData
+            rank_data.Rank = 0
+            rank_data.Rating = 0
+            rank_data.QualifierPoints = 0
+            rank_data.Wins = 0
+            rank_data.Losses = 0
+            rank_data.TournamentRewardPoints = 0
+            
+        def _reset_factions_data(index):
+            factions_data: FactionsStruct = self.GetStruct().AccountData[index].PlayerData.FactionsData
+            for index, faction in enumerate(factions_data.Factions):
+                faction.FactionType = index
+                faction.Current = 0
+                faction.TotalEarned = 0
+                faction.Max = 0
+                
+        def _reset_titles_data(index):
+            titles_data: TitlesStruct = self.GetStruct().AccountData[index].PlayerData.TitlesData
+            titles_data.ActiveTitleID = 0
+            for index, title in enumerate(titles_data.Titles):
+                title.TitleID = index
+                title.CurrentPoints = 0
+                
+        def _reset_quests_data(index):
+            quests_data: QuestsStruct = self.GetStruct().AccountData[index].PlayerData.QuestsData
+            quests_data.ActiveQuestID = 0
+            for index, quest in enumerate(quests_data.Quests):
+                quest.QuestID = 0
+                quest.IsCompleted = False
+                
+        def _reset_experience_data(index):
+            experience_data: ExperienceStruct = self.GetStruct().AccountData[index].PlayerData.ExperienceData
+            experience_data.Level = 0
+            experience_data.Experience = 0
+            experience_data.ProgressPct = 0.0
+            experience_data.CurrentSkillPoints = 0
+            experience_data.TotalEarnedSkillPoints = 0
+        
+        def _reset_buff_data(index):
             player : AccountData = self.GetStruct().AccountData[index]
-            player.IsSlotActive = False
+            for j in range(SHMEM_MAX_NUMBER_OF_BUFFS):
+                player.PlayerData.BuffData[j].SkillId = 0
+                player.PlayerData.BuffData[j].Type = 0
+                player.PlayerData.BuffData[j].Duration = 0.0
+                player.PlayerData.BuffData[j].TargetAgentID = 0
+                player.PlayerData.BuffData[j].Remaining = 0.0
+                
+                player.PlayerBuffs[j].SkillId = 0
+                player.PlayerBuffs[j].Type = 0
+                player.PlayerBuffs[j].Duration = 0.0
+                player.PlayerBuffs[j].TargetAgentID = 0
+                player.PlayerBuffs[j].Remaining = 0.0
+                
+        def _reset_skill_data(index):
+            player : AccountData = self.GetStruct().AccountData[index]
+            player.PlayerData.SkillbarData.CastingSkillID = 0
+            for slot in range(SHMEM_NUMBER_OF_SKILLS):
+                player.PlayerData.SkillbarData.Skills[slot].Id = 0
+                player.PlayerData.SkillbarData.Skills[slot].Recharge = 0.0
+                player.PlayerData.SkillbarData.Skills[slot].Adrenaline = 0.0
+                
+        def _reset_attribute_data(index):
+            player : AccountData = self.GetStruct().AccountData[index]
+            for j in range(SHMEM_NUMBER_OF_ATTRIBUTES):
+                player.PlayerData.AttributesData[j].Id = 0
+                player.PlayerData.AttributesData[j].Value = 0
+                player.PlayerData.AttributesData[j].BaseValue = 0
+                
+        def _reset_agent_data(index):
+            player : AccountData = self.GetStruct().AccountData[index]
+            agent_data : AgentDataStruct = player.PlayerData.AgentData
+            for i in range(4):
+                agent_data.UUID[i] = 0
+            agent_data.AgentID = 0
+            agent_data.OwnerID = 0
+            agent_data.TargetID = 0
+            agent_data.ObservingID = 0
+            agent_data.PlayerNumber = 0
+            agent_data.Profession[0] = 0
+            agent_data.Profession[1] = 0
+            agent_data.Level = 0
+            agent_data.Energy = 0.0
+            agent_data.MaxEnergy = 0.0
+            agent_data.EnergyPips = 0
+            agent_data.Health = 0.0
+            agent_data.MaxHealth = 0.0
+            agent_data.HealthPips = 0
+            agent_data.LoginNumber = 0
+            agent_data.DaggerStatus = 0
+            agent_data.WeaponType = 0
+            agent_data.WeaponItemType = 0
+            agent_data.OffhandItemType = 0
+            agent_data.Overcast = 0.0
+            agent_data.WeaponAttackSpeed = 0.0
+            agent_data.AttackSpeedModifier = 0.0
+            agent_data.VisualEffectsMask = 0
+            agent_data.ModelState = 0
+            agent_data.AnimationSpeed = 0.0
+            agent_data.AnimationCode = 0
+            agent_data.AnimationID = 0
+            for i in range(3):
+                agent_data.XYZ[i] = 0.0
+            agent_data.ZPlane = 0
+            agent_data.RotationAngle = 0.0
+            for i in range(2):
+                agent_data.VelocityVector[i] = 0.0
+                
+            agent_data.Is_Bleeding = False
+            agent_data.Is_Conditioned = False
+            agent_data.Is_Crippled = False
+            agent_data.Is_Dead = False
+            agent_data.Is_DeepWounded = False
+            agent_data.Is_Poisoned = False
+            agent_data.Is_Enchanted = False
+            agent_data.Is_DegenHexed = False
+            agent_data.Is_Hexed = False
+            agent_data.Is_WeaponSpelled = False
+            agent_data.Is_InCombatStance = False
+            agent_data.Is_Moving = False
+            agent_data.Is_Attacking = False
+            agent_data.Is_Casting = False
+            agent_data.Is_Idle = False
+            agent_data.Is_Alive = False
+                
+        def _reset_available_characters_data(index):
+            player : AccountData = self.GetStruct().AccountData[index]
+            for j in range(SHMEM_MAX_AVAILABLE_CHARS):
+                char_data : AvailableCharacterStruct = player.PlayerData.AvailableCharacters[j]
+                char_data.Name = ""
+                char_data.Level = 0
+                char_data.IsPvP = False
+                char_data.MapID = 0 
+                char_data.Professions = (0, 0)
+                char_data.CampaignID = 0
+                
+        def _reset_account_data(index):
+            player : AccountData = self.GetStruct().AccountData[index]
             player.AccountEmail = ""
             player.AccountName = ""
             player.CharacterName = ""
-            player.IsAccount = False
+            player.IsAccount = False    
+            
+        def _reset_hero_data(index):
+            player : AccountData = self.GetStruct().AccountData[index]
             player.IsHero = False
-            player.IsPet = False
-            player.IsNPC = False
-            player.OwnerPlayerID = 0
             player.HeroID = 0
+            player.OwnerPlayerID = 0
+            
+        def _reset_pet_data(index):
+            player : AccountData = self.GetStruct().AccountData[index]
+            player.IsPet = False
+            
+        def _reset_npc_data(index):
+            player : AccountData = self.GetStruct().AccountData[index]
+            player.IsNPC = False
+        
+        def _reset_map_data(index):
+            player : AccountData = self.GetStruct().AccountData[index]
             player.MapID = 0
             player.MapRegion = 0
             player.MapDistrict = 0
             player.MapLanguage = 0
+            
+        def _reset_player_data(index):
+            player : AccountData = self.GetStruct().AccountData[index]
             player.PlayerID = 0
             player.PlayerLevel = 0
             player.PlayerProfession = (0, 0)
@@ -354,25 +812,44 @@ class Py4GWSharedMemoryManager:
             player.PartyPosition = 0
             player.PlayerIsPartyLeader = False
             
-            for j in range(SHMEM_MAX_NUMBER_OF_BUFFS):
-                player.PlayerBuffs[j].SkillId = 0
-                player.PlayerBuffs[j].Type = 0
-                player.PlayerBuffs[j].Duration = 0.0
-                player.PlayerBuffs[j].Remaining = 0.0
-
-            player.PlayerCastingSkillID = 0            
-            for slot in range(SHMEM_NUMBER_OF_SKILLS):
-                player.PlayerSkills[slot].SkillID = 0
-                player.PlayerSkills[slot].Recharge = 0.0
-                player.PlayerSkills[slot].Adrenaline = 0.0  
+            for j in range(SKILL_FLAG_ENTRIES):
+                player.PlayerData.UnlockedSkills[j] = 0
                 
-            for j in range(SHMEM_NUMBER_OF_ATTRIBUTES):
-                player.PlayerAttributes[j].Id = 0
-                player.PlayerAttributes[j].Value = 0
-                player.PlayerAttributes[j].BaseValue = 0
+            
+            #mission data
+            for j in range(MISSION_FLAG_ENTRIES):
+                player.PlayerData.MissionData.NormalModeCompleted[j] = 0
+                player.PlayerData.MissionData.NormalModeBonus[j] = 0
+                player.PlayerData.MissionData.HardModeCompleted[j] = 0
+                player.PlayerData.MissionData.HardModeBonus[j] = 0
+            
+            
+            
+        
+        if 0 <= index < self.max_num_players:
+            player : AccountData = self.GetStruct().AccountData[index]
+            player.IsSlotActive = False
+            _reset_account_data(index)
+            _reset_hero_data(index)
+            _reset_pet_data(index)
+            _reset_npc_data(index)
+            _reset_map_data(index)
+            _reset_player_data(index)
+            
+            _reset_buff_data(index)
+            _reset_skill_data(index)
+            _reset_attribute_data(index)
+            _reset_rank_data(index)
+            _reset_factions_data(index)
+            _reset_titles_data(index)
+            _reset_quests_data(index)
+            _reset_experience_data(index)
+            _reset_agent_data(index)
+            _reset_available_characters_data(index)
                 
             player.LastUpdated = self.GetBaseTimestamp()
-            
+           
+    #region ResetHeroAIData 
     def ResetHeroAIData(self, index): 
             option = self.GetStruct().HeroAIOptions[index]
             option.Following = True
@@ -386,13 +863,24 @@ class Py4GWSharedMemoryManager:
             option.FlagPosX = 0.0
             option.FlagPosY = 0.0
             option.FlagFacingAngle = 0.0
-               
+       
+    def _is_slot_active(self, index: int) -> bool:
+        """Check if the slot at the given index is active."""
+        slot_active = self.GetStruct().AccountData[index].IsSlotActive    
+        last_updated = self.GetStruct().AccountData[index].LastUpdated
+        
+        base_timestamp = self.GetBaseTimestamp()
+        if slot_active and (base_timestamp - last_updated) < SHMEM_SUBSCRIBE_TIMEOUT_MILLISECONDS:
+            return True
+        return False
 
+    #region Find and Get Slot Methods
     def FindAccount(self, account_email: str) -> int:
         """Find the index of the account with the given email."""
         for i in range(self.max_num_players):
             player = self.GetStruct().AccountData[i]
-            if not player.IsSlotActive:
+            #if not player.IsSlotActive:
+            if not self._is_slot_active(i):
                 continue
             if self.GetStruct().AccountData[i].AccountEmail == account_email and player.IsAccount:
                 return i
@@ -402,7 +890,8 @@ class Py4GWSharedMemoryManager:
         """Find the index of the hero with the given ID."""
         for i in range(self.max_num_players):
             player = self.GetStruct().AccountData[i]
-            if not player.IsSlotActive:
+            #if not player.IsSlotActive:
+            if not self._is_slot_active(i):
                 continue
             if player.IsHero and player.HeroID == hero_data.hero_id.GetID() and player.OwnerPlayerID == Party.Players.GetAgentIDByLoginNumber(hero_data.owner_player_id):
                 return i
@@ -412,7 +901,8 @@ class Py4GWSharedMemoryManager:
         """Find the index of the pet with the given ID."""
         for i in range(self.max_num_players):
             player = self.GetStruct().AccountData[i]
-            if not player.IsSlotActive:
+            #if not player.IsSlotActive:
+            if not self._is_slot_active(i):
                 continue
             if player.IsPet and player.PlayerID == pet_data.agent_id and player.OwnerPlayerID == pet_data.owner_agent_id:
                 return i
@@ -421,12 +911,19 @@ class Py4GWSharedMemoryManager:
     def FindEmptySlot(self) -> int:
         """Find the first empty slot in shared memory."""
         for i in range(self.max_num_players):
-            if not self.GetStruct().AccountData[i].IsSlotActive:
+            slot_active = self.GetStruct().AccountData[i].IsSlotActive    
+            last_updated = self.GetStruct().AccountData[i].LastUpdated
+            
+            base_timestamp = self.GetBaseTimestamp()
+            if ( not self.GetStruct().AccountData[i].IsSlotActive or 
+                (slot_active and (base_timestamp - last_updated) > SHMEM_SUBSCRIBE_TIMEOUT_MILLISECONDS)):
                 return i
         return -1
     
     def GetAccountSlot(self, account_email: str) -> int:
         """Get the slot index for the account with the given email."""
+        if not account_email:
+            return -1
         index = self.FindAccount(account_email)
         if index == -1:
             index = self.FindEmptySlot()
@@ -462,6 +959,7 @@ class Py4GWSharedMemoryManager:
             pet.LastUpdated = self.GetBaseTimestamp()
         return index
     
+    #region Update Cache
     def _updatechache(self):
         """Update the shared memory cache."""
         self.map_instance.GetContext()
@@ -471,22 +969,55 @@ class Py4GWSharedMemoryManager:
                 self.party_instance.GetContext()
             if self.player_instance is not None:
                 self.player_instance.GetContext()
+                
+            self.agent_instance = None
+            self.effects_instance = None
             
             return
+
             
         if self.party_instance is None:
             self.party_instance = Party.party_instance()
         if self.player_instance is None:
             self.player_instance = Player.player_instance()
             
+        if ((self.agent_instance is not None) and 
+            (self.agent_instance.living_agent.agent_id != self.player_instance.id)):
+                self.agent_instance = None
+            
+      
+        if self.agent_instance is None:
+            self.agent_instance = Agent.agent_instance(self.player_instance.id)
+            
+        
+        self.effects_instance = Effects.get_instance(self.player_instance.id)
+            
+        if self.quest_instance is None and self.player_instance is not None:
+            self.quest_instance = PyQuest.PyQuest()
+            
         if self.throttle_timer_150.IsExpired():   
             self.throttle_timer_150.Reset()
             self.party_instance.GetContext()
             self.player_instance.GetContext()
+
+            
+            title_array = self.player_instance.GetTitleArray()
+            for title_id in title_array:
+                if title_id in self._title_instances:
+                    self._title_instances[title_id].GetContext()
+                    continue
+                title = PyPlayer.PyTitle(title_id)
+                if title:
+                    self._title_instances[title_id] = title
+                    
+                    
         
         if self.throttle_timer_63.IsExpired():
             self.throttle_timer_63.Reset()
-            self.player_instance.agent.GetContext()
+            if self.agent_instance is not None:
+                self.agent_instance.GetContext()
+
+            
         
      
     def GetLoginNumber(self):
@@ -508,9 +1039,300 @@ class Py4GWSharedMemoryManager:
                 return index
 
         return -1
-        
+       
+    #region Set Player Data 
     def SetPlayerData(self, account_email: str):
-        """Set player data for the account with the given email."""      
+        """Set player data for the account with the given email."""  
+        def _set_buff_data(index):
+            player : AccountData = self.GetStruct().AccountData[index]
+            if self.effects_instance is None:
+                return
+            buffs = self.effects_instance.GetEffects() + self.effects_instance.GetBuffs()
+            for j in range(SHMEM_MAX_NUMBER_OF_BUFFS):
+                buff = buffs[j] if j < len(buffs) else None
+                effect = buff if isinstance(buff, EffectType) else None
+                upkeep = buff if isinstance(buff, BuffType) else None
+                
+                player.PlayerData.BuffData[j].SkillId = buff.skill_id if buff else 0
+                player.PlayerData.BuffData[j].Type = 2 if effect else (1 if upkeep else 0)
+                player.PlayerData.BuffData[j].Duration = effect.duration if effect else 0.0
+                player.PlayerData.BuffData[j].TargetAgentID = upkeep.target_agent_id if upkeep else 0
+                player.PlayerData.BuffData[j].Remaining = effect.time_remaining if effect else 0.0
+                
+                player.PlayerBuffs[j].SkillId = buff.skill_id if buff else 0
+                player.PlayerBuffs[j].Type = 2 if effect else (1 if upkeep else 0)
+                player.PlayerBuffs[j].Duration = effect.duration if effect else 0.0
+                player.PlayerBuffs[j].TargetAgentID = upkeep.target_agent_id if upkeep else 0
+                player.PlayerBuffs[j].Remaining = effect.time_remaining if effect else 0.0
+                
+                
+        
+        def _set_attribute_data(index):
+            player : AccountData = self.GetStruct().AccountData[index]
+            if self.agent_instance is None:
+                return
+            #attributes = Agent.GetAttributes(self.agent_instance.id)
+            attributes = self.agent_instance.attributes
+            for attribute_id in range(SHMEM_NUMBER_OF_ATTRIBUTES):
+                attribute = next((attr for attr in attributes if int(attr.attribute_id) == attribute_id), None)
+                player.PlayerData.AttributesData[attribute_id].Id = attribute_id if attribute else 0
+                player.PlayerData.AttributesData[attribute_id].Value = attribute.level if attribute else 0
+                player.PlayerData.AttributesData[attribute_id].BaseValue = attribute.level_base if attribute else 0
+                
+        def _set_skill_data(index):
+            # Skills            
+            for slot in range(SHMEM_NUMBER_OF_SKILLS):        
+                skill = SkillBar.GetSkillData(slot + 1)
+                
+                if skill is None:
+                    player.PlayerData.SkillbarData.Skills[slot].Id = 0
+                    player.PlayerData.SkillbarData.Skills[slot].Recharge = 0.0
+                    player.PlayerData.SkillbarData.Skills[slot].Adrenaline = 0.0
+                    continue
+                            
+                player.PlayerData.SkillbarData.Skills[slot].Id = skill.id.id
+                player.PlayerData.SkillbarData.Skills[slot].Recharge = skill.get_recharge if skill.id.id != 0 else 0.0
+                player.PlayerData.SkillbarData.Skills[slot].Adrenaline = skill.adrenaline_a if skill.id.id != 0 else 0.0  
+                        
+            #casting_skill = Agent.GetCastingSkill(agent_id)
+            casting_skill = self.agent_instance.living_agent.casting_skill_id if self.agent_instance and not self.agent_instance.living_agent.is_casting else 0
+            player.PlayerData.SkillbarData.CastingSkillID = casting_skill if casting_skill in [skill.Id for skill in player.PlayerData.SkillbarData.Skills] else 0
+        
+        def _set_rank_data(index):
+            rank_data: RankStruct = self.GetStruct().AccountData[index].PlayerData.RankData
+            if rank_data is None:
+                return
+            if self.player_instance is None:
+                return
+            rank_data.Rank = self.player_instance.rank
+            rank_data.Rating = self.player_instance.rating
+            rank_data.QualifierPoints = self.player_instance.qualifier_points
+            rank_data.Wins = self.player_instance.wins
+            rank_data.Losses = self.player_instance.losses
+            rank_data.TournamentRewardPoints = self.player_instance.tournament_reward_points
+            
+        def _set_factions_data(index):
+            factions_data: FactionsStruct = self.GetStruct().AccountData[index].PlayerData.FactionsData
+            if factions_data is None:
+                return
+            if self.player_instance is None:
+                return
+            
+            factions_data.Factions[FactionType.Kurzick.value].FactionType = FactionType.Kurzick.value
+            factions_data.Factions[FactionType.Kurzick.value].Current = self.player_instance.current_kurzick
+            factions_data.Factions[FactionType.Kurzick.value].TotalEarned = self.player_instance.total_earned_kurzick
+            factions_data.Factions[FactionType.Kurzick.value].Max = self.player_instance.max_kurzick
+            
+            factions_data.Factions[FactionType.Luxon.value].FactionType = FactionType.Luxon.value
+            factions_data.Factions[FactionType.Luxon.value].Current = self.player_instance.current_luxon
+            factions_data.Factions[FactionType.Luxon.value].TotalEarned = self.player_instance.total_earned_luxon
+            factions_data.Factions[FactionType.Luxon.value].Max = self.player_instance.max_luxon
+            
+            factions_data.Factions[FactionType.Imperial.value].FactionType = FactionType.Imperial.value
+            factions_data.Factions[FactionType.Imperial.value].Current = self.player_instance.current_imperial
+            factions_data.Factions[FactionType.Imperial.value].TotalEarned = self.player_instance.total_earned_imperial
+            factions_data.Factions[FactionType.Imperial.value].Max = self.player_instance.max_imperial
+            
+            factions_data.Factions[FactionType.Balthazar.value].FactionType = FactionType.Balthazar.value
+            factions_data.Factions[FactionType.Balthazar.value].Current = self.player_instance.current_balth
+            factions_data.Factions[FactionType.Balthazar.value].TotalEarned = self.player_instance.total_earned_balth
+            factions_data.Factions[FactionType.Balthazar.value].Max = self.player_instance.max_balth
+            
+        def _set_titles_data(index):
+            titles_data: TitlesStruct = self.GetStruct().AccountData[index].PlayerData.TitlesData
+            if titles_data is None:
+                return
+            if self.player_instance is None:
+                return
+            
+            for title_id, title_instance in self._title_instances.items():
+                if title_id < 0 or title_id >= 48:
+                    continue
+                titles_data.Titles[title_id].TitleID = title_id
+                titles_data.Titles[title_id].CurrentPoints = title_instance.current_points
+
+        def _set_quests_data(index):
+            quests_data: QuestsStruct = self.GetStruct().AccountData[index].PlayerData.QuestsData
+            if quests_data is None:
+                return
+            if self.player_instance is None:
+                return
+            
+            active_quest = self.quest_instance.get_active_quest_id() if self.quest_instance else 0
+            quests_data.ActiveQuestID = active_quest
+            
+            quest_log = self.quest_instance.get_quest_log_ids() if self.quest_instance else []
+            for i, quest_id in enumerate(quest_log):
+                quests_data.Quests[i].QuestID = quest_id
+                quests_data.Quests[i].IsCompleted = self.quest_instance.is_quest_completed(quest_id) if self.quest_instance else False
+
+        def _set_experience_data(index):
+            experience_data: ExperienceStruct = self.GetStruct().AccountData[index].PlayerData.ExperienceData
+            if experience_data is None:
+                return
+            if self.player_instance is None:
+                return
+            
+            experience_data.Level = self.player_instance.level
+            experience_data.Experience = self.player_instance.experience
+            experience_data.ProgressPct = Utils.GetExperienceProgression(self.player_instance.experience)
+            experience_data.CurrentSkillPoints = self.player_instance.current_skill_points
+            experience_data.TotalEarnedSkillPoints = self.player_instance.total_earned_skill_points
+            
+        def _set_agent_data(index):
+            agent_data : AgentDataStruct = self.GetStruct().AccountData[index].PlayerData.AgentData
+            if self.agent_instance is None:
+                return
+            
+            uuid = self.player_instance.player_uuid if self.player_instance else (0,0,0,0)
+            for i in range(4):
+                agent_data.UUID[i] = uuid[i]
+            agent_data.AgentID = self.agent_instance.id
+            agent_data.OwnerID = self.agent_instance.living_agent.owner_id
+            agent_data.TargetID = self.player_instance.target_id if self.player_instance else 0
+            agent_data.ObservingID = self.player_instance.observing_id if self.player_instance else 0
+            agent_data.PlayerNumber = self.agent_instance.living_agent.player_number
+            agent_data.Profession[0] = self.agent_instance.living_agent.profession.ToInt()
+            agent_data.Profession[1] = self.agent_instance.living_agent.secondary_profession.ToInt()
+            agent_data.Level = self.agent_instance.living_agent.level
+            agent_data.Energy = self.agent_instance.living_agent.energy
+            max_energy = self.agent_instance.living_agent.max_energy
+            agent_data.MaxEnergy = max_energy
+            energy_regen = self.agent_instance.living_agent.energy_regen
+            agent_data.EnergyPips = Utils.calculate_energy_pips(max_energy, energy_regen)
+            health = self.agent_instance.living_agent.hp
+            max_health = self.agent_instance.living_agent.max_hp
+            agent_data.Health = health
+            agent_data.MaxHealth = max_health
+            health_regen = self.agent_instance.living_agent.hp_regen
+            agent_data.HealthPips = Utils.calculate_health_pips(max_health, health_regen)
+            agent_data.LoginNumber = self.agent_instance.living_agent.login_number
+            agent_data.DaggerStatus = self.agent_instance.living_agent.dagger_status
+            agent_data.WeaponType = self.agent_instance.living_agent.weapon_type.ToInt()
+            agent_data.WeaponItemType = self.agent_instance.living_agent.weapon_item_type
+            agent_data.OffhandItemType = self.agent_instance.living_agent.offhand_item_type
+            agent_data.Overcast = self.agent_instance.living_agent.overcast
+            agent_data.WeaponAttackSpeed = self.agent_instance.living_agent.weapon_attack_speed
+            agent_data.AttackSpeedModifier = self.agent_instance.living_agent.attack_speed_modifier
+            agent_data.VisualEffectsMask = self.agent_instance.living_agent.effects
+            agent_data.ModelState = self.agent_instance.living_agent.model_state
+            agent_data.AnimationSpeed = self.agent_instance.living_agent.animation_speed
+            agent_data.AnimationCode = self.agent_instance.living_agent.animation_code
+            agent_data.AnimationID = self.agent_instance.living_agent.animation_id
+            agent_data.XYZ[0] = self.agent_instance.x
+            agent_data.XYZ[1] = self.agent_instance.y
+            agent_data.XYZ[2] = self.agent_instance.z
+            agent_data.ZPlane = self.agent_instance.zplane
+            agent_data.RotationAngle = self.agent_instance.rotation_angle
+            agent_data.VelocityVector[0] = self.agent_instance.velocity_x
+            agent_data.VelocityVector[1] = self.agent_instance.velocity_y
+            agent_data.Is_Bleeding = self.agent_instance.living_agent.is_bleeding
+            agent_data.Is_Conditioned = self.agent_instance.living_agent.is_conditioned
+            agent_data.Is_Crippled = self.agent_instance.living_agent.is_crippled
+            agent_data.Is_Dead = self.agent_instance.living_agent.is_dead
+            agent_data.Is_DeepWounded = self.agent_instance.living_agent.is_deep_wounded
+            agent_data.Is_Poisoned = self.agent_instance.living_agent.is_poisoned
+            agent_data.Is_Enchanted = self.agent_instance.living_agent.is_enchanted
+            agent_data.Is_DegenHexed = self.agent_instance.living_agent.is_degen_hexed
+            agent_data.Is_Hexed = self.agent_instance.living_agent.is_hexed
+            agent_data.Is_WeaponSpelled = self.agent_instance.living_agent.is_weapon_spelled
+            agent_data.Is_InCombatStance = self.agent_instance.living_agent.in_combat_stance
+            agent_data.Is_Moving = self.agent_instance.living_agent.is_moving
+            agent_data.Is_Attacking = self.agent_instance.living_agent.is_attacking
+            agent_data.Is_Casting = self.agent_instance.living_agent.is_casting
+            agent_data.Is_Idle = self.agent_instance.living_agent.is_idle
+            agent_data.Is_Alive = self.agent_instance.living_agent.is_alive
+            
+        def _set_available_characters_data(index):
+            player : AccountData = self.GetStruct().AccountData[index]
+            if self.player_instance is None:
+                return
+            available_characters: list [LoginCharacterInfo]= self.player_instance.GetAvailableCharacters()
+            for j in range(SHMEM_MAX_AVAILABLE_CHARS):
+                char = available_characters[j] if j < len(available_characters) else None
+                if char:
+                    player.PlayerData.AvailableCharacters[j].Name = char.player_name
+                    player.PlayerData.AvailableCharacters[j].Level = char.level
+                    player.PlayerData.AvailableCharacters[j].IsPvP = char.is_pvp
+                    player.PlayerData.AvailableCharacters[j].MapID = char.map_id
+                    player.PlayerData.AvailableCharacters[j].Professions = (char.primary, char.secondary)
+                    player.PlayerData.AvailableCharacters[j].CampaignID = char.campaign
+                else:
+                    player.PlayerData.AvailableCharacters[j].Name = ""
+                    player.PlayerData.AvailableCharacters[j].Level = 0
+                    player.PlayerData.AvailableCharacters[j].IsPvP = False
+                    player.PlayerData.AvailableCharacters[j].MapID = 0 
+                    player.PlayerData.AvailableCharacters[j].Professions = (0, 0)
+                    player.PlayerData.AvailableCharacters[j].CampaignID = 0
+            
+        def _set_account_data(index):
+            player : AccountData = self.GetStruct().AccountData[index]
+            player.AccountName = self.player_instance.account_name if self.player_instance else ""
+            player.CharacterName =self.party_instance.GetPlayerNameByLoginNumber(self.GetLoginNumber()) if self.party_instance else ""
+            player.IsHero = False
+            player.IsPet = False
+            player.IsNPC = False
+            player.OwnerPlayerID = 0
+            player.HeroID = 0
+            
+        def _set_map_data(index):
+            player : AccountData = self.GetStruct().AccountData[index]
+            player.MapID = self.map_instance.map_id.ToInt()
+            player.MapRegion = self.map_instance.server_region.ToInt()
+            player.MapDistrict = self.map_instance.district
+            player.MapLanguage = self.map_instance.language.ToInt()
+            
+        def _set_player_data(index):
+            player : AccountData = self.GetStruct().AccountData[index]
+            if not self.player_instance:
+                return
+
+            if not self.party_instance:
+                return
+            
+            login_number = self.GetLoginNumber()
+            party_number = self.GetPartyNumber()
+            playerx, playery, playerz = self.player_instance.agent.x, self.player_instance.agent.y, self.player_instance.agent.z
+
+            player.PlayerID = self.player_instance.id
+            
+            player.PlayerLevel = self.player_instance.agent.living_agent.level
+            player.PlayerProfession = (self.player_instance.agent.living_agent.profession.Get(), self.player_instance.agent.living_agent.secondary_profession.Get())
+            player.PlayerMorale = self.player_instance.morale
+            player.PlayerHP = self.player_instance.agent.living_agent.hp
+            player.PlayerMaxHP = self.player_instance.agent.living_agent.max_hp
+            player.PlayerHealthRegen = self.player_instance.agent.living_agent.hp_regen
+            player.PlayerEnergy = self.player_instance.agent.living_agent.energy
+            player.PlayerMaxEnergy = self.player_instance.agent.living_agent.max_energy
+            player.PlayerEnergyRegen = self.player_instance.agent.living_agent.energy_regen
+            player.PlayerPosX = playerx
+            player.PlayerPosY = playery
+            player.PlayerPosZ = playerz
+            player.PlayerFacingAngle = self.player_instance.agent.rotation_angle
+            player.PlayerTargetID = self.player_instance.target_id
+            player.PlayerLoginNumber = login_number
+            player.PlayerIsTicked = self.party_instance.GetIsPlayerTicked(party_number)
+            player.PartyID = self.party_instance.party_id
+            player.PartyPosition = party_number
+            player.PlayerIsPartyLeader = self.party_instance.is_party_leader
+            
+            for j in range(SKILL_FLAG_ENTRIES):
+                unlocked_character_skills = self.player_instance.unlocked_character_skills
+                player.PlayerData.UnlockedSkills[j] = unlocked_character_skills[j] if j < len(unlocked_character_skills) else 0
+                
+            missions_completed = self.player_instance.missions_completed
+            missions_bonus = self.player_instance.missions_bonus
+            missions_completed_hm = self.player_instance.missions_completed_hm
+            missions_bonus_hm = self.player_instance.missions_bonus_hm
+            
+            for entry in range(MISSION_FLAG_ENTRIES):
+                player.PlayerData.MissionData.NormalModeCompleted[entry] = missions_completed[entry] if entry < len(missions_completed) else 0
+                player.PlayerData.MissionData.NormalModeBonus[entry] = missions_bonus[entry] if entry < len(missions_bonus) else 0
+                player.PlayerData.MissionData.HardModeCompleted[entry] = missions_completed_hm[entry] if entry < len(missions_completed_hm) else 0
+                player.PlayerData.MissionData.HardModeBonus[entry] = missions_bonus_hm[entry] if entry < len(missions_bonus_hm) else 0
+
+        if not account_email:
+            return    
         index = self.GetAccountSlot(account_email)
         if index != -1:
             self._updatechache()
@@ -535,89 +1357,91 @@ class Py4GWSharedMemoryManager:
             if self.map_instance.is_in_cinematic:
                 return
             
-             
-            agent_id = self.player_instance.id
-            login_number = self.GetLoginNumber()
-            party_number = self.GetPartyNumber()
-            playerx, playery, playerz = self.player_instance.agent.x, self.player_instance.agent.y, self.player_instance.agent.z
-
-            player.AccountName =self.player_instance.account_name
-            player.CharacterName =self.party_instance.GetPlayerNameByLoginNumber(login_number)
-            
-            player.IsHero = False
-            player.IsPet = False
-            player.IsNPC = False
-            player.OwnerPlayerID = 0
-            player.HeroID = 0
-            player.MapID = self.map_instance.map_id.ToInt()
-            player.MapRegion = self.map_instance.server_region.ToInt()
-            player.MapDistrict = self.map_instance.district
-            player.MapLanguage = self.map_instance.language.ToInt()
-            player.PlayerID = agent_id
-            player.PlayerLevel = self.player_instance.agent.living_agent.level
-            player.PlayerProfession = (self.player_instance.agent.living_agent.profession.Get(), self.player_instance.agent.living_agent.secondary_profession.Get())
-            player.PlayerMorale = self.player_instance.morale
-            player.PlayerHP = self.player_instance.agent.living_agent.hp
-            player.PlayerMaxHP = self.player_instance.agent.living_agent.max_hp
-            player.PlayerHealthRegen = self.player_instance.agent.living_agent.hp_regen
-            player.PlayerEnergy = self.player_instance.agent.living_agent.energy
-            player.PlayerMaxEnergy = self.player_instance.agent.living_agent.max_energy
-            player.PlayerEnergyRegen = self.player_instance.agent.living_agent.energy_regen
-            player.PlayerPosX = playerx
-            player.PlayerPosY = playery
-            player.PlayerPosZ = playerz
-            player.PlayerFacingAngle = self.player_instance.agent.rotation_angle
-            player.PlayerTargetID = self.player_instance.target_id
-            player.PlayerLoginNumber = login_number
-            player.PlayerIsTicked = self.party_instance.GetIsPlayerTicked(party_number)
-            player.PartyID = self.party_instance.party_id
-            player.PartyPosition = party_number
-            player.PlayerIsPartyLeader = self.party_instance.is_party_leader
-            effects_instance = Effects.get_instance(self.player_instance.id)
-            
-            buffs = effects_instance.GetEffects() + effects_instance.GetBuffs()
-            for j in range(SHMEM_MAX_NUMBER_OF_BUFFS):
-                buff = buffs[j] if j < len(buffs) else None
-                effect = buff if isinstance(buff, EffectType) else None
-                upkeep = buff if isinstance(buff, BuffType) else None
-                
-                player.PlayerBuffs[j].SkillId = buff.skill_id if buff else 0
-                player.PlayerBuffs[j].Type = 2 if effect else (1 if upkeep else 0)
-                player.PlayerBuffs[j].Duration = effect.duration if effect else 0.0
-                player.PlayerBuffs[j].TargetAgentID = upkeep.target_agent_id if upkeep else 0
-                player.PlayerBuffs[j].Remaining = effect.time_remaining if effect else 0.0
-                
-            # Attributes
-            attributes = Agent.GetAttributes(agent_id)
-            for attribute_id in range(SHMEM_NUMBER_OF_ATTRIBUTES):
-                attribute = next((attr for attr in attributes if int(attr.attribute_id) == attribute_id), None)
-                player.PlayerAttributes[attribute_id].Id = attribute_id if attribute else 0
-                player.PlayerAttributes[attribute_id].Value = attribute.level if attribute else 0
-                player.PlayerAttributes[attribute_id].BaseValue = attribute.level_base if attribute else 0
-                
-            # Skills            
-            for slot in range(SHMEM_NUMBER_OF_SKILLS):        
-                skill = SkillBar.GetSkillData(slot + 1)
-                
-                if skill is None:
-                    player.PlayerSkills[slot].Id = 0
-                    player.PlayerSkills[slot].Recharge = 0.0
-                    player.PlayerSkills[slot].Adrenaline = 0.0
-                    continue
-                            
-                player.PlayerSkills[slot].Id = skill.id.id
-                player.PlayerSkills[slot].Recharge = skill.get_recharge if skill.id.id != 0 else 0.0
-                player.PlayerSkills[slot].Adrenaline = skill.adrenaline_a if skill.id.id != 0 else 0.0  
-                        
-            casting_skill = Agent.GetCastingSkill(agent_id)
-            player.PlayerCastingSkillID = casting_skill if casting_skill in [skill.Id for skill in player.PlayerSkills] else 0
+            _set_account_data(index)
+            _set_player_data(index)
+            _set_map_data(index)
+            _set_buff_data(index)  
+            _set_attribute_data(index)   
+            _set_skill_data(index)
+            _set_rank_data(index)
+            _set_factions_data(index)
+            _set_titles_data(index)
+            _set_quests_data(index)
+            _set_experience_data(index)
+            _set_agent_data(index)
+            _set_available_characters_data(index)
             
 
         else:
             ConsoleLog(SMM_MODULE_NAME, "No empty slot available for new player data.", Py4GW.Console.MessageType.Error)
             
-    def SetHeroData(self,hero_data):
-        """Set player data for the account with the given email."""      
+    #region Set Hero Data
+    def SetHeroData(self,hero_data:HeroPartyMember):
+        """Set player data for the account with the given email."""     
+        def _set_agent_data(index):
+            agent_data : AgentDataStruct = self.GetStruct().AccountData[index].PlayerData.AgentData
+            if self.agent_instance is None:
+                return
+            
+            uuid = self.player_instance.player_uuid if self.player_instance else (0,0,0,0)
+            for i in range(4):
+                agent_data.UUID[i] = uuid[i]
+            agent_data.AgentID = self.agent_instance.id
+            agent_data.OwnerID = self.agent_instance.living_agent.owner_id
+            agent_data.TargetID = 0
+            agent_data.ObservingID = 0
+            agent_data.PlayerNumber = self.agent_instance.living_agent.player_number
+            agent_data.Profession[0] = self.agent_instance.living_agent.profession.ToInt()
+            agent_data.Profession[1] = self.agent_instance.living_agent.secondary_profession.ToInt()
+            agent_data.Level = self.agent_instance.living_agent.level
+            agent_data.Energy = self.agent_instance.living_agent.energy
+            max_energy = self.agent_instance.living_agent.max_energy
+            agent_data.MaxEnergy = max_energy
+            energy_regen = self.agent_instance.living_agent.energy_regen
+            agent_data.EnergyPips = Utils.calculate_energy_pips(max_energy, energy_regen)
+            health = self.agent_instance.living_agent.hp
+            max_health = self.agent_instance.living_agent.max_hp
+            agent_data.Health = health
+            agent_data.MaxHealth = max_health
+            health_regen = self.agent_instance.living_agent.hp_regen
+            agent_data.HealthPips = Utils.calculate_health_pips(max_health, health_regen)
+            agent_data.LoginNumber = self.agent_instance.living_agent.login_number
+            agent_data.DaggerStatus = self.agent_instance.living_agent.dagger_status
+            agent_data.WeaponType = self.agent_instance.living_agent.weapon_type.ToInt()
+            agent_data.WeaponItemType = self.agent_instance.living_agent.weapon_item_type
+            agent_data.OffhandItemType = self.agent_instance.living_agent.offhand_item_type
+            agent_data.Overcast = self.agent_instance.living_agent.overcast
+            agent_data.WeaponAttackSpeed = self.agent_instance.living_agent.weapon_attack_speed
+            agent_data.AttackSpeedModifier = self.agent_instance.living_agent.attack_speed_modifier
+            agent_data.VisualEffectsMask = self.agent_instance.living_agent.effects
+            agent_data.ModelState = self.agent_instance.living_agent.model_state
+            agent_data.AnimationSpeed = self.agent_instance.living_agent.animation_speed
+            agent_data.AnimationCode = self.agent_instance.living_agent.animation_code
+            agent_data.AnimationID = self.agent_instance.living_agent.animation_id
+            agent_data.XYZ[0] = self.agent_instance.x
+            agent_data.XYZ[1] = self.agent_instance.y
+            agent_data.XYZ[2] = self.agent_instance.z
+            agent_data.ZPlane = self.agent_instance.zplane
+            agent_data.RotationAngle = self.agent_instance.rotation_angle
+            agent_data.VelocityVector[0] = self.agent_instance.velocity_x
+            agent_data.VelocityVector[1] = self.agent_instance.velocity_y
+            agent_data.Is_Bleeding = self.agent_instance.living_agent.is_bleeding
+            agent_data.Is_Conditioned = self.agent_instance.living_agent.is_conditioned
+            agent_data.Is_Crippled = self.agent_instance.living_agent.is_crippled
+            agent_data.Is_Dead = self.agent_instance.living_agent.is_dead
+            agent_data.Is_DeepWounded = self.agent_instance.living_agent.is_deep_wounded
+            agent_data.Is_Poisoned = self.agent_instance.living_agent.is_poisoned
+            agent_data.Is_Enchanted = self.agent_instance.living_agent.is_enchanted
+            agent_data.Is_DegenHexed = self.agent_instance.living_agent.is_degen_hexed
+            agent_data.Is_Hexed = self.agent_instance.living_agent.is_hexed
+            agent_data.Is_WeaponSpelled = self.agent_instance.living_agent.is_weapon_spelled
+            agent_data.Is_InCombatStance = self.agent_instance.living_agent.in_combat_stance
+            agent_data.Is_Moving = self.agent_instance.living_agent.is_moving
+            agent_data.Is_Attacking = self.agent_instance.living_agent.is_attacking
+            agent_data.Is_Casting = self.agent_instance.living_agent.is_casting
+            agent_data.Is_Idle = self.agent_instance.living_agent.is_idle
+            agent_data.Is_Alive = self.agent_instance.living_agent.is_alive
+                
         index = self.GetHeroSlot(hero_data)
         if index != -1:
             hero = self.GetStruct().AccountData[index]
@@ -690,6 +1514,12 @@ class Py4GWSharedMemoryManager:
                 effect = buff if isinstance(buff, EffectType) else None
                 upkeep = buff if isinstance(buff, BuffType) else None
                 
+                hero.PlayerData.BuffData[j].SkillId = buff.skill_id if buff else 0
+                hero.PlayerData.BuffData[j].Type = 2 if effect else (1 if upkeep else 0)
+                hero.PlayerData.BuffData[j].Duration = effect.duration if effect else 0.0
+                hero.PlayerData.BuffData[j].TargetAgentID = upkeep.target_agent_id if upkeep else 0
+                hero.PlayerData.BuffData[j].Remaining = effect.time_remaining if effect else 0.0
+                
                 hero.PlayerBuffs[j].SkillId = buff.skill_id if buff else 0
                 hero.PlayerBuffs[j].Type = 2 if effect else (1 if upkeep else 0)
                 hero.PlayerBuffs[j].Duration = effect.duration if effect else 0.0
@@ -700,9 +1530,9 @@ class Py4GWSharedMemoryManager:
             attributes = Agent.GetAttributes(agent_id)
             for attribute_id in range(SHMEM_NUMBER_OF_ATTRIBUTES):
                 attribute = next((attr for attr in attributes if int(attr.attribute_id) == attribute_id), None)
-                hero.PlayerAttributes[attribute_id].Id = attribute_id if attribute else 0
-                hero.PlayerAttributes[attribute_id].Value = attribute.level if attribute else 0
-                hero.PlayerAttributes[attribute_id].BaseValue = attribute.level_base if attribute else 0
+                hero.PlayerData.AttributesData[attribute_id].Id = attribute_id if attribute else 0
+                hero.PlayerData.AttributesData[attribute_id].Value = attribute.level if attribute else 0
+                hero.PlayerData.AttributesData[attribute_id].BaseValue = attribute.level_base if attribute else 0
                 
             # Skills                   
             skills = SkillBar.GetHeroSkillbar(hero.SlotNumber)       
@@ -710,22 +1540,91 @@ class Py4GWSharedMemoryManager:
                 skill = skills[slot] if len(skills) > slot else None
                 
                 if skill is None:
-                    hero.PlayerSkills[slot].Id = 0
-                    hero.PlayerSkills[slot].Recharge = 0.0
-                    hero.PlayerSkills[slot].Adrenaline = 0.0
+                    hero.PlayerData.SkillbarData.Skills[slot].Id = 0
+                    hero.PlayerData.SkillbarData.Skills[slot].Recharge = 0.0
+                    hero.PlayerData.SkillbarData.Skills[slot].Adrenaline = 0.0
                     continue
                             
-                hero.PlayerSkills[slot].Id = skill.id.id
-                hero.PlayerSkills[slot].Recharge = skill.get_recharge if skill.id.id != 0 else 0.0
-                hero.PlayerSkills[slot].Adrenaline = skill.adrenaline_a if skill.id.id != 0 else 0.0  
+                hero.PlayerData.SkillbarData.Skills[slot].Id = skill.id.id
+                hero.PlayerData.SkillbarData.Skills[slot].Recharge = skill.get_recharge if skill.id.id != 0 else 0.0
+                hero.PlayerData.SkillbarData.Skills[slot].Adrenaline = skill.adrenaline_a if skill.id.id != 0 else 0.0  
                         
             casting_skill = Agent.GetCastingSkill(agent_id)
-            hero.PlayerCastingSkillID = casting_skill if casting_skill in [skill.Id for skill in hero.PlayerSkills] else 0
+            hero.PlayerData.SkillbarData.CastingSkillID = casting_skill if casting_skill in [skill.Id for skill in hero.PlayerData.SkillbarData.Skills] else 0
+            
+            _set_agent_data(index)
+            
                      
         else:
             ConsoleLog(SMM_MODULE_NAME, "No empty slot available for new hero data.", Py4GW.Console.MessageType.Error)
-            
+      
+    #region Set Pet Data      
     def SetPetData(self):
+        def _set_agent_data(index):
+            agent_data : AgentDataStruct = self.GetStruct().AccountData[index].PlayerData.AgentData
+            if self.agent_instance is None:
+                return
+            
+            uuid = self.player_instance.player_uuid if self.player_instance else (0,0,0,0)
+            for i in range(4):
+                agent_data.UUID[i] = uuid[i]
+            agent_data.AgentID = self.agent_instance.id
+            agent_data.OwnerID = self.agent_instance.living_agent.owner_id
+            agent_data.TargetID = 0
+            agent_data.ObservingID = 0
+            agent_data.PlayerNumber = self.agent_instance.living_agent.player_number
+            agent_data.Profession[0] = self.agent_instance.living_agent.profession.ToInt()
+            agent_data.Profession[1] = self.agent_instance.living_agent.secondary_profession.ToInt()
+            agent_data.Level = self.agent_instance.living_agent.level
+            agent_data.Energy = self.agent_instance.living_agent.energy
+            max_energy = self.agent_instance.living_agent.max_energy
+            agent_data.MaxEnergy = max_energy
+            energy_regen = self.agent_instance.living_agent.energy_regen
+            agent_data.EnergyPips = Utils.calculate_energy_pips(max_energy, energy_regen)
+            health = self.agent_instance.living_agent.hp
+            max_health = self.agent_instance.living_agent.max_hp
+            agent_data.Health = health
+            agent_data.MaxHealth = max_health
+            health_regen = self.agent_instance.living_agent.hp_regen
+            agent_data.HealthPips = Utils.calculate_health_pips(max_health, health_regen)
+            agent_data.LoginNumber = self.agent_instance.living_agent.login_number
+            agent_data.DaggerStatus = self.agent_instance.living_agent.dagger_status
+            agent_data.WeaponType = self.agent_instance.living_agent.weapon_type.ToInt()
+            agent_data.WeaponItemType = self.agent_instance.living_agent.weapon_item_type
+            agent_data.OffhandItemType = self.agent_instance.living_agent.offhand_item_type
+            agent_data.Overcast = self.agent_instance.living_agent.overcast
+            agent_data.WeaponAttackSpeed = self.agent_instance.living_agent.weapon_attack_speed
+            agent_data.AttackSpeedModifier = self.agent_instance.living_agent.attack_speed_modifier
+            agent_data.VisualEffectsMask = self.agent_instance.living_agent.effects
+            agent_data.ModelState = self.agent_instance.living_agent.model_state
+            agent_data.AnimationSpeed = self.agent_instance.living_agent.animation_speed
+            agent_data.AnimationCode = self.agent_instance.living_agent.animation_code
+            agent_data.AnimationID = self.agent_instance.living_agent.animation_id
+            agent_data.XYZ[0] = self.agent_instance.x
+            agent_data.XYZ[1] = self.agent_instance.y
+            agent_data.XYZ[2] = self.agent_instance.z
+            agent_data.ZPlane = self.agent_instance.zplane
+            agent_data.RotationAngle = self.agent_instance.rotation_angle
+            agent_data.VelocityVector[0] = self.agent_instance.velocity_x
+            agent_data.VelocityVector[1] = self.agent_instance.velocity_y
+            agent_data.Is_Bleeding = self.agent_instance.living_agent.is_bleeding
+            agent_data.Is_Conditioned = self.agent_instance.living_agent.is_conditioned
+            agent_data.Is_Crippled = self.agent_instance.living_agent.is_crippled
+            agent_data.Is_Dead = self.agent_instance.living_agent.is_dead
+            agent_data.Is_DeepWounded = self.agent_instance.living_agent.is_deep_wounded
+            agent_data.Is_Poisoned = self.agent_instance.living_agent.is_poisoned
+            agent_data.Is_Enchanted = self.agent_instance.living_agent.is_enchanted
+            agent_data.Is_DegenHexed = self.agent_instance.living_agent.is_degen_hexed
+            agent_data.Is_Hexed = self.agent_instance.living_agent.is_hexed
+            agent_data.Is_WeaponSpelled = self.agent_instance.living_agent.is_weapon_spelled
+            agent_data.Is_InCombatStance = self.agent_instance.living_agent.in_combat_stance
+            agent_data.Is_Moving = self.agent_instance.living_agent.is_moving
+            agent_data.Is_Attacking = self.agent_instance.living_agent.is_attacking
+            agent_data.Is_Casting = self.agent_instance.living_agent.is_casting
+            agent_data.Is_Idle = self.agent_instance.living_agent.is_idle
+            agent_data.Is_Alive = self.agent_instance.living_agent.is_alive
+                
+                
         owner_agent_id = self.player_instance.id if self.player_instance else 0
         
         pet_info = self.party_instance.GetPetInfo(owner_agent_id) if self.party_instance else None
@@ -800,6 +1699,12 @@ class Py4GWSharedMemoryManager:
                 effect = buff if isinstance(buff, EffectType) else None
                 upkeep = buff if isinstance(buff, BuffType) else None
                 
+                pet.PlayerData.BuffData[j].SkillId = buff.skill_id if buff else 0
+                pet.PlayerData.BuffData[j].Type = 2 if effect else (1 if upkeep else 0)
+                pet.PlayerData.BuffData[j].Duration = effect.duration if effect else 0.0
+                pet.PlayerData.BuffData[j].TargetAgentID = upkeep.target_agent_id if upkeep else 0
+                pet.PlayerData.BuffData[j].Remaining = effect.time_remaining if effect else 0.0
+                
                 pet.PlayerBuffs[j].SkillId = buff.skill_id if buff else 0
                 pet.PlayerBuffs[j].Type = 2 if effect else (1 if upkeep else 0)
                 pet.PlayerBuffs[j].Duration = effect.duration if effect else 0.0
@@ -810,17 +1715,19 @@ class Py4GWSharedMemoryManager:
             attributes = Agent.GetAttributes(agent_id)
             for attribute_id in range(SHMEM_NUMBER_OF_ATTRIBUTES):
                 attribute = next((attr for attr in attributes if int(attr.attribute_id) == attribute_id), None)
-                pet.PlayerAttributes[attribute_id].Id = attribute_id if attribute else 0
-                pet.PlayerAttributes[attribute_id].Value = attribute.level if attribute else 0
-                pet.PlayerAttributes[attribute_id].BaseValue = attribute.level_base if attribute else 0
+                pet.PlayerData.AttributesData[attribute_id].Id = attribute_id if attribute else 0
+                pet.PlayerData.AttributesData[attribute_id].Value = attribute.level if attribute else 0
+                pet.PlayerData.AttributesData[attribute_id].BaseValue = attribute.level_base if attribute else 0
                 
-            # Skills                
-            pet.PlayerCastingSkillID = 0
+            # Skills   
+            pet.PlayerData.SkillbarData.CastingSkillID = 0             
             
             for slot in range(SHMEM_NUMBER_OF_SKILLS):
-                pet.PlayerSkills[slot].Id = 0
-                pet.PlayerSkills[slot].Recharge = 0.0
-                pet.PlayerSkills[slot].Adrenaline = 0.0   
+                pet.PlayerData.SkillbarData.Skills[slot].Id = 0
+                pet.PlayerData.SkillbarData.Skills[slot].Recharge = 0.0
+                pet.PlayerData.SkillbarData.Skills[slot].Adrenaline = 0.0   
+                
+            _set_agent_data(index)
                 
         else:
             ConsoleLog(SMM_MODULE_NAME, "No empty slot available for new Pet data.", Py4GW.Console.MessageType.Error)
@@ -834,22 +1741,40 @@ class Py4GWSharedMemoryManager:
             if agent_from_login != owner_id:
                 continue
             self.SetHeroData(hero_data)
-            
+         
+    #region GetAllActivePlayers   
     def GetAllActivePlayers(self) -> list[AccountData]:
         """Get all active players in shared memory."""
         players = []
         for i in range(self.max_num_players):
             player = self.GetStruct().AccountData[i]
-            if player.IsSlotActive:
+            if self._is_slot_active(i) and player.IsAccount:
                 players.append(player)
         return players
+    
+    def GetNumActivePlayers(self) -> int:
+        """Get the number of active players in shared memory."""
+        count = 0
+        for i in range(self.max_num_players):
+            player = self.GetStruct().AccountData[i]
+            if self._is_slot_active(i) and player.IsAccount:
+                count += 1
+        return count
+    
+    def GetNumActiveSlots(self) -> int:
+        """Get the number of active slots in shared memory."""
+        count = 0
+        for i in range(self.max_num_players):
+            if self._is_slot_active(i):
+                count += 1
+        return count
         
     def GetAllAccountData(self) -> list[AccountData]:
         """Get all player data, ordered by PartyID, PartyPosition, PlayerLoginNumber, CharacterName."""
         players = []
         for i in range(self.max_num_players):
             player = self.GetStruct().AccountData[i]
-            if player.IsSlotActive and player.IsAccount:
+            if self._is_slot_active(i) and player.IsAccount:
                 players.append(player)
 
         # Sort by PartyID, then PartyPosition, then PlayerLoginNumber, then CharacterName
@@ -868,6 +1793,8 @@ class Py4GWSharedMemoryManager:
     
     def GetAccountDataFromEmail(self, account_email: str) -> AccountData | None:
         """Get player data for the account with the given email."""
+        if not account_email:
+            return None
         index = self.FindAccount(account_email)
         if index != -1:
             return self.GetStruct().AccountData[index]
@@ -879,7 +1806,7 @@ class Py4GWSharedMemoryManager:
         """Get player data for the account with the given party number."""
         for i in range(self.max_num_players):
             player = self.GetStruct().AccountData[i]
-            if player.IsSlotActive and player.PartyPosition == party_number:
+            if self._is_slot_active(i) and player.PartyPosition == party_number:
                 return player
         ConsoleLog(SMM_MODULE_NAME, f"Party number {party_number} not found.", Py4GW.Console.MessageType.Error)
         return None
@@ -891,8 +1818,8 @@ class Py4GWSharedMemoryManager:
         
         player = self.GetAccountDataFromEmail(account_email)
         if player:
-            for buff in player.PlayerBuffs:
-                if buff == effect_id:
+            for buff in player.PlayerData.BuffData:
+                if buff.SkillId == effect_id:
                     return True
         return False
     
@@ -901,12 +1828,14 @@ class Py4GWSharedMemoryManager:
         options = []
         for i in range(self.max_num_players):
             player = self.GetStruct().AccountData[i]
-            if player.IsSlotActive and player.IsAccount:
+            if self._is_slot_active(i) and player.IsAccount:
                 options.append(self.GetStruct().HeroAIOptions[i])
         return options
         
     def GetHeroAIOptions(self, account_email: str) -> HeroAIOptionStruct | None:
         """Get HeroAI options for the account with the given email."""
+        if not account_email:
+            return None
         index = self.FindAccount(account_email)
         if index != -1:
             return self.GetStruct().HeroAIOptions[index]
@@ -918,13 +1847,15 @@ class Py4GWSharedMemoryManager:
         """Get HeroAI options for the account with the given party number."""
         for i in range(self.max_num_players):
             player = self.GetStruct().AccountData[i]
-            if player.IsSlotActive and player.PartyPosition == party_number:
+            if self._is_slot_active(i) and player.PartyPosition == party_number:
                 return self.GetStruct().HeroAIOptions[i]
         return None    
         
         
     def SetHeroAIOptions(self, account_email: str, options: HeroAIOptionStruct):
         """Set HeroAI options for the account with the given email."""
+        if not account_email:
+            return
         index = self.FindAccount(account_email)
         if index != -1:
             self.GetStruct().HeroAIOptions[index] = options
@@ -933,6 +1864,8 @@ class Py4GWSharedMemoryManager:
     
     def SetHeroAIProperty(self, account_email: str, property_name: str, value):
         """Set a specific HeroAI property for the account with the given email."""
+        if not account_email:
+            return
         index = self.FindAccount(account_email)
         if index != -1:
             options = self.GetStruct().HeroAIOptions[index]
@@ -957,7 +1890,7 @@ class Py4GWSharedMemoryManager:
         maps = set()
         for i in range(self.max_num_players):
             player = self.GetStruct().AccountData[i]
-            if player.IsSlotActive and player.IsAccount:
+            if self._is_slot_active(i) and player.IsAccount:
                 maps.add((player.MapID, player.MapRegion, player.MapDistrict, player.MapLanguage))
         return list(maps)
     
@@ -968,7 +1901,7 @@ class Py4GWSharedMemoryManager:
         parties = set()
         for i in range(self.max_num_players):
             player = self.GetStruct().AccountData[i]
-            if (player.IsSlotActive and player.IsAccount and
+            if (self._is_slot_active(i) and player.IsAccount and
                 player.MapID == map_id and
                 player.MapRegion == map_region and
                 player.MapDistrict == map_district and
@@ -982,7 +1915,7 @@ class Py4GWSharedMemoryManager:
         players = []
         for i in range(self.max_num_players):
             player = self.GetStruct().AccountData[i]
-            if (player.IsSlotActive and player.IsAccount and
+            if (self._is_slot_active(i) and player.IsAccount and
                 player.MapID == map_id and
                 player.MapRegion == map_region and
                 player.MapDistrict == map_district and
@@ -996,22 +1929,31 @@ class Py4GWSharedMemoryManager:
         heroes = []
         for i in range(self.max_num_players):
             player = self.GetStruct().AccountData[i]
-            if (player.IsSlotActive and player.IsHero and
+            if (self._is_slot_active(i) and player.IsHero and
                 player.OwnerPlayerID == owner_player_id):
                 heroes.append(player)
         return heroes
+    
+    def GetNumHeroesFromPlayers(self, owner_player_id: int) -> int:
+        """Get the number of heroes owned by the specified player."""
+        return self.GetHeroesFromPlayers(owner_player_id).__len__()
     
     def GetPetsFromPlayers(self, owner_agent_id: int):
         """Get a list of pets owned by the specified player."""
         pets = []
         for i in range(self.max_num_players):
             player = self.GetStruct().AccountData[i]
-            if (player.IsSlotActive and player.IsPet and
+            if (self._is_slot_active(i) and player.IsPet and
                 player.OwnerPlayerID == owner_agent_id):
                 pets.append(player)
         return pets
     
+    def GetNumPetsFromPlayers(self, owner_agent_id: int) -> int:
+        """Get the number of pets owned by the specified player."""
+        return self.GetPetsFromPlayers(owner_agent_id).__len__()
+    
     def UpdateTimeouts(self):
+        return
         current_time = self.GetBaseTimestamp()
 
         for index in range(self.max_num_players):
@@ -1019,7 +1961,7 @@ class Py4GWSharedMemoryManager:
 
             if player.IsSlotActive:
                 delta = current_time - player.LastUpdated
-                if delta > SHMEM_SUBSCRIBE_TIMEOUT_MILISECONDS:
+                if delta > SHMEM_SUBSCRIBE_TIMEOUT_MILLISECONDS:
                     #ConsoleLog(SMM_MODULE_NAME, f"Player {player.AccountEmail} has timed out after {delta} ms.", Py4GW.Console.MessageType.Warning)
                     self.ResetPlayerData(index)
 
