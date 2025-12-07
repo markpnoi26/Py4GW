@@ -4,6 +4,7 @@ from Py4GW import Console
 import PyImGui
 from Py4GWCoreLib import ImGui, Overlay
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
+from Py4GWCoreLib.GlobalCache.SharedMemory import AccountData
 from Py4GWCoreLib.ImGui_src.Style import Style
 from Py4GWCoreLib.ImGui_src.IconsFontAwesome5 import IconsFontAwesome5
 from Py4GWCoreLib.enums_src.GameData_enums import Profession, ProfessionShort
@@ -688,7 +689,7 @@ class GUI:
             border_thickness = 3
             PyImGui.draw_list_add_rect(drawing_area_screen_pos[0] - (border_thickness / 2), drawing_area_screen_pos[1] - (border_thickness / 2), drawing_area_screen_pos[0] + drawing_area_size[0] + (border_thickness / 2), drawing_area_screen_pos[1] + drawing_area_size[1] + (border_thickness / 2), border.color_int, 0, 0, border_thickness)
 
-    def draw_account_button(self, style : Style, account, size : tuple[float, float] = (0, 0), is_current_account: bool = False, index: int = 0) -> bool:
+    def draw_account_button(self, style : Style, account : AccountData, size : tuple[float, float] = (0, 0), is_current_account: bool = False, index: int = 0) -> bool:
         profession_colors ={
             Profession.Warrior: ColorPalette.GetColor("gw_warrior"),
             Profession.Ranger: ColorPalette.GetColor("gw_ranger"),
@@ -701,10 +702,10 @@ class GUI:
             Profession.Paragon: ColorPalette.GetColor("gw_paragon"),
             Profession.Dervish: ColorPalette.GetColor("gw_dervish"),
         }
-
+        
         cursor_pos = PyImGui.get_cursor_screen_pos()
-        profession = Profession(account.PlayerProfession) if account.PlayerProfession else Profession._None
-        secondary_profession = Profession(account.PlayerSecondaryProfession) if account.PlayerSecondaryProfession else Profession._None
+        profession = Profession(account.PlayerProfession[0]) if account.PlayerProfession else Profession._None
+        secondary_profession = Profession(account.PlayerProfession[1]) if account.PlayerProfession else Profession._None
         
         profession_color = profession_colors.get(profession, ColorPalette.GetColor("gw_disabled"))
         is_hovered = ImGui.is_mouse_in_rect((cursor_pos[0], cursor_pos[1], size[0], size[1]))
