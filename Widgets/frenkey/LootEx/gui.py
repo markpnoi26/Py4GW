@@ -12,7 +12,7 @@ from Widgets.frenkey.Core import ex_style, texture_map
 from Widgets.frenkey.LootEx import skin_rule, loot_handling, settings, price_check, utility, cache, ui_manager_extensions, inventory_handling, models, messaging
 from Widgets.frenkey.LootEx.data import Data
 from Widgets.frenkey.LootEx.data_collection import DataCollector
-from Widgets.frenkey.LootEx.enum import CHARACTER_INVENTORY, XUNLAI_STORAGE, ActionModsType, ItemAction, ItemCategory, ItemSubCategory, ModType
+from Widgets.frenkey.LootEx.enum import CHARACTER_INVENTORY, XUNLAI_STORAGE, ActionModsType, ItemAction, ItemCategory, ItemSubCategory, ModType, SalvageOption
 from Widgets.frenkey.LootEx.item_configuration import ConfigurationCondition
 from Widgets.frenkey.LootEx.filter import Filter
 from Widgets.frenkey.LootEx.profile import Profile
@@ -101,6 +101,13 @@ class RuleFilter:
         
         return self.lambda_function(rule)
 
+class MouseTest:
+    def __init__(self, frame_id: int, current_state: int, wparam_value: int, lparam: int):
+        self.frame_id: int = frame_id
+        self.current_state: int = current_state
+        self.wparam_value: int = wparam_value
+        self.lparam: int = lparam
+
 class UI:
     _instance = None
     _initialized = False
@@ -177,6 +184,7 @@ class UI:
             return
         
         self._initialized = True
+        self.MouseTest = MouseTest(0, 8, 0, 0)
                            
         from Widgets.frenkey.LootEx.settings import Settings
         self.settings = Settings()
@@ -1550,169 +1558,32 @@ class UI:
                         pass
 
                     def on_test_button_clicked(): 
-                        clean = {}
+                        m = self.MouseTest
+                        threshold = 10
+                        self.MouseTest.lparam += 1
+                        increase_wparam = self.MouseTest.lparam > threshold
                         
-                        for skillid, texture in SkillTextureMap.items():
-                            if not skillid in clean.keys():
-                                clean[skillid] = texture
-                            else:
-                                ConsoleLog("LootEx Test", f"Duplicate skill texture found for Skill ID {skillid}: {texture} (Already have: {clean[skillid]})", Console.MessageType.Warning)
-                        
-                        sorted_clean = dict(sorted(clean.items()))
-                        
-                        path = "C:\\Users\\lasse\\OneDrive\\Programmieren\\Frenkey\\Guild Wars\\Py4GW\\Textures\\Skill_Icons"
-                        #write to clipboard
-                        clipboard_text = ""
-                        for skillid, texture in sorted_clean.items():
-                            full_path = os.path.join(path, texture)
-                            prefix = "" if os.path.exists(full_path) else "#"
-                            clipboard_text += f'{prefix}\t{skillid} : "{texture}",\n'
-                        
-                        PyImGui.set_clipboard_text(clipboard_text)
-                        
-                        
-                        return
-                        
-                        path = "C:\\Users\\lasse\\OneDrive\\Programmieren\\Frenkey\\Guild Wars\\Py4GW\\Textures\\Skill_Icons"
-                        
-                        for file_name in os.listdir(path):
-                            # is present in SkillTextureMap
-                            if not any(skill == file_name for skill in SkillTextureMap.values()):
-                                full_path = os.path.join(path, file_name)
-                                os.remove(full_path)
-                                ConsoleLog("LootEx Test", f"Removed unused skill texture: {file_name}", Console.MessageType.Info)
-                        
-                        return
-                    
-                        for mod in data.Weapon_Mods.values():
-                            if len(mod.modifiers) > 1:
-                                ConsoleLog("LootEx Test", f"Mod {mod.name} has multiple modifiers!", Console.MessageType.Warning)
-                                ConsoleLog("LootEx Test", f"{mod.descriptions.get(ServerLanguage.English, "")}", Console.MessageType.Warning)
+                        if increase_wparam:
+                            self.MouseTest.lparam = 0                            
                             
-                        return
-                    
-                        from Widgets.frenkey.LootEx.data import Data
-                        cdata = Data()
+                        self.MouseTest.wparam_value += (1 if increase_wparam else 0)
+                        increase_state = self.MouseTest.wparam_value > threshold
                         
-                        # for item in cdata.Items.All:
-                        #    if utility.Util.IsWeaponType(item.item_type):
-                        #        continue
-                           
-                        #    item.attributes = []
-                        
-                        cdata.SaveItems(True)                        
-                        return
-                        
-                        cdata = Data()
-                        cdata.SaveWeaponMods(True)
-                        cdata.SaveItems(True)
-                        return
-                    
-                        if False:
-                            cdata = Data()
+                        if increase_state:
+                            self.MouseTest.wparam_value = 0
                             
-                            for m in cdata.Weapon_Mods.values():
-                                if m.mod_type != ModType.Inherent:
-                                    m.item_mods = {}
-                                    item_types = [cdata.ItemType_MetaTypes.get(target_type, []) for target_type in m.target_types]
-                                    # Flatten the list
-                                    item_types = [item for sublist in item_types for item in sublist]
-                                    
-                                    #Add all item types from m.target_types which have no defined metatype
-                                    for target_type in m.target_types:
-                                        if target_type not in cdata.ItemType_MetaTypes:
-                                            item_types.append(target_type)
-                                    
-                                    for type in item_types:
-                                        model_id = cdata.get_mod_model(type, m.mod_type)
-                                        
-                                        if model_id:
-                                            m.item_mods[type] = model_id
-                                        else:
-                                            ConsoleLog("LootEx Test", f"Missing Mod Model for {m.mod_type.name} on {type.name}", Console.MessageType.Warning)
-                                else:
-                                    m.item_mods = {}
-                                    model_id = None
-                                        
-                                    # Inscription_MartialWeapon = 15540
-                                    # Inscription_Offhand = 19123
-                                    # Inscription_OffhandOrShield = 15541
-                                    # Inscription_SpellcastingWeapon = 19122
-                                    # Inscription_Weapon = 15542
-                                    
-                                    
-                                    if m.target_types and len(m.target_types) > 1:
-                                        ConsoleLog("LootEx Test", f"Inherent Mod {m.mod_type.name} has multiple target types!", Console.MessageType.Warning)
-                                        continue
-                                    
-                                    elif m.target_types and len(m.target_types) == 1:
-                                        match_type = m.target_types[0]
-                                        match(match_type):
-                                            case ItemType.MartialWeapon:
-                                                model_id = enum.ModsModels.Inscription_MartialWeapon
-                                            case ItemType.Offhand:
-                                                model_id = enum.ModsModels.Inscription_Offhand
-                                            case ItemType.OffhandOrShield:
-                                                model_id = enum.ModsModels.Inscription_OffhandOrShield
-                                            case ItemType.SpellcastingWeapon:
-                                                model_id = enum.ModsModels.Inscription_SpellcastingWeapon
-                                            case ItemType.Weapon:
-                                                model_id = enum.ModsModels.Inscription_Weapon
-                                                
-                                        if model_id and match_type:
-                                            m.item_mods[match_type] = model_id
-
-                            cdata.SaveWeaponMods(True)
-                            return
-
-                        from Widgets.frenkey.LootEx.cache import Cached_Item
-                                                        
-                        model_id = 17566
-                        weapons = []
+                        self.MouseTest.current_state += (1 if increase_state else 0)
                         
-                        slot_definitions = {
-                            "None" : 0,
-                            "Prefix" : 1,
-                            "Inherent" : 2,
-                            "Suffix" : 3,
-                            "Combined" : 4
-                        }
+                        salvage_options = ui_manager_extensions.UIManagerExtensions.GetSalvageOptions()    
+                        frame_id = salvage_options.get(SalvageOption.Suffix)      
                         
-                        item_ids = GLOBAL_CACHE.ItemArray.GetItemArray([Bag.Backpack])
-                        for item_id in item_ids:                            
-                            cached_item = Cached_Item(item_id)
-                                                        
-                            if cached_item.slot in slot_definitions.values():
-                                weapons.append(cached_item)                       
-                                                
-                        def get_modifier_tuples(staff):
-                            mods = []
-                            for mod in staff.modifiers:
-                                identifier = mod.GetIdentifier()
-                                arg1 = mod.GetArg1()
-                                arg2 = mod.GetArg2()
+                        if frame_id is not None:
+                            ConsoleLog("LootEx", f"Testing mouse action current_state: {m.current_state}, wparam_value: {m.wparam_value}, lparam: {m.lparam} on Salvage Options frame.", Console.MessageType.Info)
+                            PyUIManager.UIManager.test_mouse_action(frame_id, m.current_state, m.wparam_value, m.lparam)    
+                        else:
+                            ConsoleLog("LootEx", "Salvage Options frame not found.", Console.MessageType.Error)
                                 
-                                tuple_id = (identifier, arg1, arg2)                                
-                                mods.append(tuple_id)                        
-                            return mods
-
-
-                        no_assigned_modifiers_staff = next((s for s in weapons if len(s.weapon_mods) == 0), None)
-                        if no_assigned_modifiers_staff:
-                            shared_mods = get_modifier_tuples(no_assigned_modifiers_staff)       
-                            # ConsoleLog("LootEx Test", f"Shared Mods || {shared_mods}", Console.MessageType.Info)     
-                                            
-                            for type_name, slot in slot_definitions.items():                                                                    
-                                staff = next((s for s in weapons if s.slot == slot), None)
-                                if staff and slot > 0:
-                                    mods = get_modifier_tuples(staff)
-                                    # Find all mods that are unique to the aptitude staff
-                                    unique_mods = [mod for mod in mods if mod not in shared_mods]
-                                    # ConsoleLog("LootEx Test", f"{type_name} || {mods}", Console.MessageType.Info)
-                                    ConsoleLog("LootEx Test", f"{type_name} || {unique_mods}", Console.MessageType.Info)
-                                
-                            
-                                
+                        ui_manager_extensions.UIManagerExtensions.SelectSalvageOption(SalvageOption.Inherent)
                         pass
 
                     if self.settings.development_mode and ImGui.button("Test 123", 160, 30):

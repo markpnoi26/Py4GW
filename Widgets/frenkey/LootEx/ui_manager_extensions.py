@@ -120,6 +120,29 @@ class UIManagerExtensions:
                     ConsoleLog("LootEx", f"Element with ID: {id} at ({i}, {j}) is not visible or does not exist.")
         
     @staticmethod
+    def SelectSalvageOption(option: enum.SalvageOption) -> bool:
+        """
+        Select a salvage option in the salvage window.
+
+        Args:
+            option (enum.SalvageOption): The salvage option to select.
+
+        Returns:
+            bool: True if the option was successfully selected, False otherwise.
+        """
+        options = UIManagerExtensions.GetSalvageOptions()
+
+        if option in options:
+            ConsoleLog("LootEx", f"Selecting salvage option: {option.name}")           
+                                
+            # UIManager.FrameClick(options[option])
+            PyUIManager.UIManager.test_mouse_action(options[option], 8, 0, 0)
+            
+            return True
+
+        return False
+    
+    @staticmethod
     def SelectSalvageOptionAndSalvage(option: enum.SalvageOption) -> bool:
         """
         Select a salvage option in the salvage window.
@@ -136,7 +159,7 @@ class UIManagerExtensions:
             ConsoleLog("LootEx", f"Selecting salvage option: {option.name}")           
                                 
             # UIManager.FrameClick(options[option])
-            PyUIManager.UIManager.test_mouse_action(options[option], 7, 0, 0)              
+            PyUIManager.UIManager.test_mouse_action(options[option], 8, 0, 0)              
             UIManagerExtensions.ConfirmSalvageOption()
             
             return True
