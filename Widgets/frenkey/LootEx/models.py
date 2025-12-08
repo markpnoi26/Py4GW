@@ -534,7 +534,7 @@ class Item():
         
         self.item_type = item.item_type
         self.name = item.name
-        self.model_file_id = item.model_file_id
+        self.model_file_id = item.model_file_id if self.model_file_id == -1 else self.model_file_id
         
         for lang, name in item.names.items():
             if lang not in self.names or not self.names[lang]:
@@ -543,8 +543,9 @@ class Item():
         if item.acquisition:            
             self.acquisition = item.acquisition
         
-        self.attributes = item.attributes
-        self.profession = item.profession
+        ##Merge attributes but avoid duplicates, sorted alphabetically
+        self.attributes = sorted(set(self.attributes) | set(item.attributes), key=lambda x: x.name)
+        self.profession = item.profession if item.profession else self.profession
                     
         if item.wiki_url and not self.wiki_url:
             self.wiki_url = item.wiki_url
@@ -576,7 +577,9 @@ class Item():
             "ItemType": self.item_type.name,
             "Acquisition": self.acquisition,
             "Description": self.description,
-            "Attributes": [attribute.name for attribute in self.attributes] if self.attributes else [],
+            # Attributes as list of names sorted alphabetically
+            # [attribute.name for attribute in self.attributes] if self.attributes else [],
+            "Attributes": [attr.name for attr in sorted(self.attributes, key=lambda x: x.name)],
             "CommonSalvage": (self.common_salvage or SalvageInfoCollection()).to_dict(),
             "RareSalvage": (self.rare_salvage or SalvageInfoCollection()).to_dict(),
             "WikiURL": self.wiki_url or get_wiki_url(),
