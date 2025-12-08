@@ -270,13 +270,6 @@ def Follow(cached_data: CacheData):
     hero_grid_pos = party_number + GLOBAL_CACHE.Party.GetHeroCount() + GLOBAL_CACHE.Party.GetHenchmanCount()
     angle_on_hero_grid = follow_angle + Utils.DegToRad(hero_formation[hero_grid_pos])
 
-    if following_flag:
-        xx = follow_x
-        yy = follow_y
-    else:
-        xx = Range.Touch.value * math.cos(angle_on_hero_grid) + follow_x
-        yy = Range.Touch.value * math.sin(angle_on_hero_grid) + follow_y
-
     def is_position_on_map(x, y) -> bool:
         player_pos = GLOBAL_CACHE.Agent.GetXYZ(GLOBAL_CACHE.Player.GetAgentID())
         
@@ -296,11 +289,18 @@ def Follow(cached_data: CacheData):
                 return True
             
         return False
-            
-    if not is_position_on_map(xx, yy):
-        ConsoleLog("HEROAI", f"Follow: Adjusted follow position to be within pathing. Original: ({xx}, {yy})")
+    
+    if following_flag:
         xx = follow_x
         yy = follow_y
+    else:
+        xx = Range.Touch.value * math.cos(angle_on_hero_grid) + follow_x
+        yy = Range.Touch.value * math.sin(angle_on_hero_grid) + follow_y
+            
+        if not is_position_on_map(xx, yy):
+            ConsoleLog("HEROAI", f"Follow: Adjusted follow position to be within pathing. Original: ({xx}, {yy})")
+            xx = follow_x
+            yy = follow_y
     
     cached_data.data.angle_changed = False
     ActionQueueManager().ResetQueue("ACTION")
