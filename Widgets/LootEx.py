@@ -1,3 +1,4 @@
+from PyTrading import PyTrading
 from Py4GW_widget_manager import WidgetHandler
 from Py4GWCoreLib import *
 from ctypes import windll
@@ -57,7 +58,7 @@ ui = UI()
 
 # Load settings
     
-
+key_handler_gen = None
 inventory_frame_hash = 291586130
 current_account : str = ""
 current_character : str = ""
@@ -107,9 +108,56 @@ VK_LBUTTON = 0x01  # Virtual-Key code for left mouse button
 def is_left_mouse_down():
     return (windll.user32.GetAsyncKeyState(VK_LBUTTON) & 0x8000) != 0
 
+def handle_keys():
+    if not is_left_mouse_down() or not Console.is_window_active() or PyImGui.is_any_item_hovered() or ui.py_io.want_capture_mouse:
+        return
+    
+    hovered_item = GLOBAL_CACHE.Inventory.GetHoveredItemID()
+    
+    while is_left_mouse_down():
+        yield
+    
+    new_hovered_item = GLOBAL_CACHE.Inventory.GetHoveredItemID()
+    
+    if not new_hovered_item and not hovered_item:
+        return
+    
+    item = Cached_Item(hovered_item)  
+    if ui.py_io.key_ctrl:        
+        if new_hovered_item == hovered_item:            
+            ## Deposit/Withdraw item
+            if hotkey_timer.IsExpired():
+                hotkey_timer.Reset()
+                
+                trade_window_id = UIManager.GetFrameIDByHash(3198579276)
+                if UIManager.FrameExists(trade_window_id):
+                    ConsoleLog(MODULE_NAME, f"Offering item '{item.name}' in trade window.", Console.MessageType.Info)
+                    PyTrading.OfferItem(item_id=item.id, quantity=item.quantity)
+                    return
+                
+                
+                if GLOBAL_CACHE.Map.IsExplorable():
+                    if item.is_inventory_item:
+                        ConsoleLog(MODULE_NAME, f"Dropping item '{item.name}' to floor.", Console.MessageType.Info)
+                        inventory_handler.DropItem(item)
+                        
+                elif item.is_inventory_item:
+                    inventory_handler.DepositItem(item, False)
+                    
+                elif item.is_storage_item:
+                    inventory_handler.WithdrawItem(item)
+                    
+               
+    elif not ui.py_io.key_ctrl and not ui.py_io.key_shift:     
+        if not new_hovered_item and hovered_item > -1:
+            yield
+                        
+            ## Confirm max amount dialog
+            UIManager.ConfirmMaxAmountDialog()
+
 
 def main():
-    global inventory_frame_hash, current_account, current_character, current_character_requested, map_changed_reported
+    global inventory_frame_hash, current_account, current_character, current_character_requested, map_changed_reported, key_handler_gen
     
     if not Routines.Checks.Map.IsMapReady():
         data_collector.reset()
@@ -200,26 +248,16 @@ def main():
     
     
     ui.py_io = PyImGui.get_io()
+
+    try:
+        if key_handler_gen is None:
+            key_handler_gen = handle_keys()
             
-    hovered_item = GLOBAL_CACHE.Inventory.GetHoveredItemID()
-    if hovered_item > -1:
-        py_io = PyImGui.get_io()
-        if py_io.key_ctrl:                
-            if is_left_mouse_down():
-                item = Cached_Item(hovered_item)  
-                    
-                if hotkey_timer.IsExpired():
-                    hotkey_timer.Reset()
-                    if py_io.key_shift:
-                        if item.is_inventory_item:
-                            inventory_handler.DropItem(item)
-                            
-                    elif item.is_inventory_item:
-                        inventory_handler.DepositItem(item, False)
-                        
-                    elif item.is_storage_item:
-                        inventory_handler.WithdrawItem(item)
-            
+        next(key_handler_gen)
+        
+    except StopIteration:
+        key_handler_gen = handle_keys()
+                
             
     data_collector.Run()
     price_check_mgr.Run()    

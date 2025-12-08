@@ -836,3 +836,14 @@ class UIManager:
         result.sort(key=lambda x: x[1][0])
 
         return result
+    
+    @staticmethod
+    def ConfirmMaxAmountDialog():
+        max_amount = UIManager.GetFrameIDByHash(4008686776)
+        drop_offer_confirm = UIManager.GetFrameIDByHash(4014954629)
+        
+        if UIManager.FrameExists(max_amount):
+            UIManager.FrameClick(max_amount)
+            
+        if UIManager.FrameExists(drop_offer_confirm):
+            UIManager.FrameClick(drop_offer_confirm)

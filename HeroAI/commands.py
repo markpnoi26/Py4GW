@@ -213,8 +213,29 @@ class HeroAICommands:
         sender_email = GLOBAL_CACHE.Player.GetAccountEmail()        
         target_id = GLOBAL_CACHE.Player.GetTargetID()
         
-        for account in accounts:
-            GLOBAL_CACHE.ShMem.SendMessage(sender_email, account.AccountEmail, SharedCommandType.OpenChest, (target_id, 0, 0, 0))
+        account_data = GLOBAL_CACHE.ShMem.GetAccountDataFromEmail(sender_email) 
+        if account_data is None:
+            return 
+        
+        party_id = account_data.PartyID
+        map_id = account_data.MapID
+        map_region = account_data.MapRegion
+        map_district = account_data.MapDistrict
+        map_language = account_data.MapLanguage
+
+        def on_same_map_and_party(account : AccountData) -> bool:                    
+            return (account.PartyID == party_id and
+                    account.MapID == map_id and
+                    account.MapRegion == map_region and
+                    account.MapDistrict == map_district and
+                    account.MapLanguage == map_language)
+            
+        all_accounts = [account for account in GLOBAL_CACHE.ShMem.GetAllAccountData() if on_same_map_and_party(account)]
+        lowest_party_index_account = min(all_accounts, key=lambda account: account.PartyPosition, default=None)
+        if lowest_party_index_account is None:
+            return
+        
+        GLOBAL_CACHE.ShMem.SendMessage(sender_email, lowest_party_index_account.AccountEmail, SharedCommandType.OpenChest, (target_id, 1, 0, 0))
             
     def interact_with_target_command(self, accounts: list[AccountData]):
         sender_email = GLOBAL_CACHE.Player.GetAccountEmail()        

@@ -44,7 +44,7 @@ def SendMergingMessage():
     account_email = GLOBAL_CACHE.Player.GetAccountEmail()
     
     if not account_email:
-        ConsoleLog("LootEx", "No current account set, cannot send merging message.")
+        ConsoleLog("LootEx", "No current account set, cannot send merging message.", False)
         return
     
     for acc in GLOBAL_CACHE.ShMem.GetAllAccountData():
@@ -179,7 +179,7 @@ def HandleReceivedMessages():
     account_email = GLOBAL_CACHE.Player.GetAccountEmail()
     
     if not account_email:
-        ConsoleLog("LootEx", "No current account set, cannot handle messages.")
+        ConsoleLog("LootEx", "No current account set, cannot handle messages.", False)
         return
     
     messages = GLOBAL_CACHE.ShMem.GetAllMessages()
