@@ -36,38 +36,6 @@ class Util:
         base_path = file_path.partition(marker)[0] + marker if marker in file_path else file_path
 
         return base_path
-
-    # TODO: Add handling for non max mods
-    @staticmethod
-    def GetMods(item_id: int, tolerance: int = -1) -> tuple[list[WeaponMod | Rune], list[Rune], list[WeaponMod]]:
-        item_type = ItemType[Item.GetItemType(item_id)[1]]
-        mods = []
-        rune_mods = []
-        weapon_mods = []
-
-        is_rune = item_type == ItemType.Rune_Mod and GLOBAL_CACHE.Item.Customization.Modifiers.GetModifierValues(
-            item_id, ModifierIdentifier.TargetItemType)[0] == 0
-
-        # ConsoleLog("LootEx", f"Item ID: {item_id} - Item Type: {item_type}")
-        modifiers = GLOBAL_CACHE.Item.Customization.Modifiers.GetModifiers(
-            item_id)
-
-        if Util.IsArmorType(item_type) or is_rune:
-            rune_mods = [
-                rune for rune in data.Runes.values() if rune.is_in_item_modifier(modifiers)]
-            mods.extend(rune_mods)
-
-        elif Util.IsWeaponType(item_type) or item_type == ItemType.Rune_Mod:
-            weapon_mods = [
-                weapon_mod for weapon_mod in data.Weapon_Mods.values() if weapon_mod.is_in_item_modifier(modifiers, item_type, tolerance)]
-            mods.extend(weapon_mods)
-
-        else:
-            return [], [], []
-
-        mods.sort(key=lambda x: x.mod_type, reverse=True)
-
-        return mods, rune_mods, weapon_mods
     
     @staticmethod
     def get_mod_mask(identifier: int, arg1: int, arg2: int) -> str:

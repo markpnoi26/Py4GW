@@ -29,10 +29,16 @@ try:
     # This will require you to download and add to your file `Core` and `LootEx`
     from Widgets.frenkey.LootEx.data import Data  # type: ignore
     from Widgets.frenkey.LootEx.utility import Util  # type: ignore
+    from Widgets.frenkey.LootEx.cache import Cached_Item  # type: ignore
+    from Widgets.frenkey.LootEx.models import WeaponModInfo
+    from Widgets.frenkey.LootEx.models import RuneModInfo
 
     LOOTEX_AVAILABLE = True
 
 except Exception:
+    WeaponModInfo = None
+    RuneModInfo = None
+    Cached_Item = None
     Util = None
     Data = None
 
@@ -958,7 +964,7 @@ def get_armor_name_from_modifiers(item):
 
 
 def get_weapon_name_from_modifiers(item):
-    if not LOOTEX_AVAILABLE or not Util:
+    if not LOOTEX_AVAILABLE or not Util or not WeaponModInfo:
         try:
             base_name = ModelID(item.model_id).name.replace("_", " ")
         except ValueError:
