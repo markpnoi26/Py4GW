@@ -2115,6 +2115,11 @@ def draw_configure_window():
                         settings.ShowPanelOnlyOnLeaderAccount = show_on_leader
                         settings.save_settings()
                     
+                    show_leader_panel = ImGui.checkbox("Show Leader's Panel", settings.ShowLeaderPanel)
+                    if show_leader_panel != settings.ShowLeaderPanel:
+                        settings.ShowLeaderPanel = show_leader_panel
+                        settings.save_settings()
+                    
                     combine_panels = ImGui.checkbox("Combine Hero Panels", settings.CombinePanels)
                     if combine_panels != settings.CombinePanels:
                         settings.CombinePanels = combine_panels

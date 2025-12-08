@@ -94,6 +94,7 @@ class Settings:
         self.ShowDialogOverlay = True
         
         self.CombinePanels = False
+        self.ShowLeaderPanel = False
         self.ShowHeroPanels = True
         self.ShowHeroEffects = True
         self.ShowEffectDurations = False
@@ -175,6 +176,7 @@ class Settings:
         
         self.ini_handler.write_key("General", "CombinePanels", str(self.CombinePanels))
         self.ini_handler.write_key("General", "ShowHeroPanels", str(self.ShowHeroPanels))
+        self.ini_handler.write_key("General", "ShowLeaderPanel", str(self.ShowLeaderPanel))
         
         
         self.ini_handler.write_key("General", "ShowHeroEffects", str(self.ShowHeroEffects))
@@ -209,6 +211,7 @@ class Settings:
         
         self.CombinePanels = self.ini_handler.read_bool("General", "CombinePanels", False)
         self.ShowHeroPanels = self.ini_handler.read_bool("General", "ShowHeroPanels", True)
+        self.ShowLeaderPanel = self.ini_handler.read_bool("General", "ShowLeaderPanel", False)
         
         self.ShowHeroEffects = self.ini_handler.read_bool("General", "ShowHeroEffects", True)
         self.ShowEffectDurations = self.ini_handler.read_bool("General", "ShowEffectDurations", True)
