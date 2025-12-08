@@ -2,8 +2,10 @@ import math
 import sys
 import traceback
 import Py4GW
+import PyPathing
 
 from Py4GWCoreLib.Map import Map
+from Py4GWCoreLib.Pathing import AutoPathing
 from Py4GWCoreLib.enums_src.Texture_enums import SkillTextureMap
 
 MODULE_NAME = "HeroAI"
@@ -276,11 +278,21 @@ def Follow(cached_data: CacheData):
         yy = Range.Touch.value * math.sin(angle_on_hero_grid) + follow_y
 
     def is_position_on_map(x, y) -> bool:
+        player_pos = GLOBAL_CACHE.Agent.GetXYZ(GLOBAL_CACHE.Player.GetAgentID())
+        
         if not settings.ConfirmFollowPoint:
             return True
         
         for quad in map_quads:    
-            if Map.Pathing._point_in_quad(x, y, quad):
+            if Map.Pathing._point_in_quad(x, y, quad):                        
+                # path_planner = PyPathing.PathPlanner()
+                # path_planner.reset()
+                # path_planner.plan(
+                #     start_x=player_pos[0], start_y=player_pos[1], start_z=player_pos[2],
+                #     goal_x=follow_x, goal_y=follow_y, goal_z=player_pos[2]
+                # )
+                # path = path_planner.get_path()
+                # return path is not None and len(path) > 0 
                 return True
             
         return False
