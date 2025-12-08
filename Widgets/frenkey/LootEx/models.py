@@ -1114,6 +1114,32 @@ class Rune(ItemMod):
                 modified_name = re.sub(pattern, '', name).strip()
 
         return modified_name.strip()
+    
+    def is_in_item_modifier(self, modifiers : list["ItemModifier"]) -> bool:
+        for mod in self.modifiers:
+            matched = False
+
+            for modifier in [m for m in modifiers if m.GetIdentifier() == mod.identifier]:
+                if modifier:
+                    arg1 = modifier.GetArg1()
+                    arg2 = modifier.GetArg2()
+
+                    if mod.modifier_value_arg == ModifierValueArg.Arg1:
+                        if arg1 >= mod.min and arg1 <= mod.max and arg2 == mod.arg2:
+                            matched = True
+                    
+                    elif mod.modifier_value_arg == ModifierValueArg.Arg2:
+                        if arg2 >= mod.min and arg2 <= mod.max and arg1 == mod.arg1:
+                            matched = True
+
+                    elif mod.modifier_value_arg == ModifierValueArg.Fixed:
+                        if arg1 == mod.arg1 and arg2 == mod.arg2:
+                            matched = True
+            
+            if not matched:
+                return False
+        
+        return True
 
     def matches_modifiers(self, modifiers : list[tuple[int, int, int]]) -> tuple[bool, bool]:
         """
@@ -1238,6 +1264,117 @@ class WeaponMod(ItemMod):
         
         ItemMod.__post_init__(self)
         self.is_inscription : bool = self.names.get(ServerLanguage.English, "").startswith("\"") if self.names else False
+    
+    def is_in_item_modifier(self, modifiers : list["ItemModifier"], item_type : ItemType, tolerance : int = -1) -> bool:
+        is_tolerance_set = tolerance if tolerance >= 0 else 0
+                
+        for mod in self.modifiers:            
+            if not is_tolerance_set:
+                tolerance = mod.arg1 if mod.modifier_value_arg == ModifierValueArg.Arg1 else mod.arg2 if mod.modifier_value_arg == ModifierValueArg.Arg2 else 0
+                
+            matched = False
+            for modifier in [m for m in modifiers if m.GetIdentifier() == mod.identifier]:                
+                arg1 = modifier.GetArg1()
+                arg2 = modifier.GetArg2()
+
+                if mod.modifier_value_arg == ModifierValueArg.Arg1:
+                    if arg1 >= mod.min and arg1 <= mod.max and arg2 == mod.arg2:
+                        matched = arg1 >= mod.max - tolerance
+                
+                elif mod.modifier_value_arg == ModifierValueArg.Arg2:
+                    if arg2 >= mod.min and arg2 <= mod.max and arg1 == mod.arg1:
+                        matched = arg2 >= mod.max - tolerance
+
+                elif mod.modifier_value_arg == ModifierValueArg.Fixed:
+                    if arg1 == mod.arg1 and arg2 == mod.arg2:
+                        matched = True
+                        
+                elif mod.modifier_value_arg == ModifierValueArg.None_:
+                    matched = True
+                        
+            if not matched:       
+                return False
+            
+            
+        from Widgets.frenkey.LootEx import utility
+        if item_type == ItemType.Rune_Mod:
+            applied_to_item_type_mod = next((modifier for modifier in modifiers if modifier.GetIdentifier() == ModifierIdentifier.TargetItemType), None)
+            if not applied_to_item_type_mod:
+                return False
+            
+            applied_to_item_type_id = applied_to_item_type_mod.GetArg1()
+            applied_to_item_type = ItemType(applied_to_item_type_id)
+            
+            return any(utility.Util.IsMatchingItemType(applied_to_item_type, target_item_type) for target_item_type in self.target_types)
+            
+        else:
+            return any(utility.Util.IsMatchingItemType(item_type, target_item_type) for target_item_type in self.target_types)
+
+    def get_matching_modifiers(self, modifiers : list[tuple[int, int, int]], item_type : ItemType, model_id: int) -> list[tuple[int, int, int]]:
+        """
+        Check if the rune matches the given modifiers.
+        
+        Args:
+            modifiers (list[tuple[int, int, int]]): A list of tuples containing identifier, arg1, and arg2.
+        
+        Returns:
+            tuple[bool, bool]: A tuple where the first element indicates if it matches any modifier,
+                                and the second element indicates if it matches the maximum value.
+        """
+        results : list[tuple[int, int, int]] = []
+        
+        if item_type in self.item_type_specific:
+            item_type_specific = self.item_type_specific[item_type]
+            
+            matches = any(identifier == item_type_specific.identifier and arg1 == item_type_specific.arg1 and arg2 == item_type_specific.arg2 for identifier, arg1, arg2 in modifiers)
+            if not matches:
+                return []
+        
+        for mod in self.modifiers: #The modifiers stored in the Item Mod json   
+            matched = False
+                    
+            for identifier, arg1, arg2 in modifiers: # The modifiers from the item in game
+                if mod.identifier != identifier:
+                    continue
+                
+                if mod.modifier_value_arg == ModifierValueArg.Arg1:
+                    if arg1 >= mod.min and arg1 <= mod.max and arg2 == mod.arg2:
+                        matched = True
+                        results.append((identifier, arg1, arg2))
+                
+                elif mod.modifier_value_arg == ModifierValueArg.Arg2:
+                    if arg2 >= mod.min and arg2 <= mod.max and arg1 == mod.arg1:
+                        matched = True
+                        results.append((identifier, arg1, arg2))
+
+                elif mod.modifier_value_arg == ModifierValueArg.Fixed:
+                    if arg1 == mod.arg1 and arg2 == mod.arg2:
+                        matched = True
+                        results.append((identifier, arg1, arg2))
+                
+                elif mod.modifier_value_arg == ModifierValueArg.None_:
+                    matched = True
+                    results.append((identifier, arg1, arg2))
+        
+            if not matched:
+                return []
+                    
+        if not results:
+            return []
+        
+        
+        from Widgets.frenkey.LootEx import utility
+        if item_type == ItemType.Rune_Mod:
+            applied_to_item_type_mod = next((identifier, arg1, arg2) for identifier, arg1, arg2 in modifiers if identifier == ModifierIdentifier.TargetItemType)
+            applied_to_item_type = ItemType(applied_to_item_type_mod[1])
+
+            mod_model_id = self.item_mods.get(applied_to_item_type, None) or 0
+            
+            return results if mod_model_id == model_id else []
+
+        else:
+            matches_item_type = any(utility.Util.IsMatchingItemType(item_type, target_item_type) for target_item_type in self.item_mods.keys())
+            return results if matches_item_type else []
         
     def has_item_type(self, item_type: ItemType) -> bool:
         if not self.target_types:
