@@ -1,11 +1,20 @@
 {
     "6532": {
         "ModelID": 6532,
+<<<<<<< HEAD
         "Names": {
             "English": "Amber Chunk",
             "German": "Bernstein-Klumpen",
             "French": "Morceau d'ambre",
             "Korean": "호박석 덩어리",
+=======
+        "ModelFileID": -1,
+        "Names": {
+            "German": "Bernstein-Klumpen",
+            "English": "Amber Chunk",
+            "Korean": "호박석 덩어리",
+            "French": "Morceau d'ambre",
+>>>>>>> frenkey/apo_source
             "Italian": "Pezzo di Ambra",
             "Spanish": "Trozo de ámbar",
             "TraditionalChinese": "琥珀",
@@ -15,7 +24,12 @@
             "BorkBorkBork": "Aember Choonk"
         },
         "ItemType": "Materials_Zcoins",
+<<<<<<< HEAD
         "DropInfo": "Rare Material",
+=======
+        "Acquisition": "",
+        "Description": "",
+>>>>>>> frenkey/apo_source
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
@@ -27,18 +41,32 @@
         "Category": null,
         "SubCategory": null,
         "WikiScraped": false,
+<<<<<<< HEAD
         "VendorValue": 370,
         "VendorUpdated": "2025-06-04T21:51:38.389639",
+=======
+        "VendorValue": 1200,
+        "VendorUpdated": "2025-11-28T21:14:09.396291",
+>>>>>>> frenkey/apo_source
         "MaterialType": "Rare",
         "MaterialStorageSlot": 36
     },
     "925": {
         "ModelID": 925,
+<<<<<<< HEAD
         "Names": {
             "English": "Bolt of Cloth",
             "German": "Tuchballen",
             "French": "Rouleau de tissu",
             "Korean": "모직물",
+=======
+        "ModelFileID": -1,
+        "Names": {
+            "German": "Tuchballen",
+            "English": "Bolt of Cloth",
+            "Korean": "모직물",
+            "French": "Rouleau de tissu",
+>>>>>>> frenkey/apo_source
             "Italian": "Rotolo di Tessuto Grezzo",
             "Spanish": "Rollo de tela",
             "TraditionalChinese": "布料",
@@ -48,7 +76,12 @@
             "BorkBorkBork": "Bult ooff Clut"
         },
         "ItemType": "Materials_Zcoins",
+<<<<<<< HEAD
         "DropInfo": "Common Material",
+=======
+        "Acquisition": "",
+        "Description": "",
+>>>>>>> frenkey/apo_source
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
@@ -60,18 +93,32 @@
         "Category": null,
         "SubCategory": null,
         "WikiScraped": false,
+<<<<<<< HEAD
         "VendorValue": 10,
         "VendorUpdated": "2025-06-04T21:50:33.649504",
+=======
+        "VendorValue": 100,
+        "VendorUpdated": "2025-11-28T21:13:57.923189",
+>>>>>>> frenkey/apo_source
         "MaterialType": "Common",
         "MaterialStorageSlot": 5
     },
     "927": {
         "ModelID": 927,
+<<<<<<< HEAD
         "Names": {
             "English": "Bolt of Damask",
             "German": "Damastballen",
             "French": "Rouleau de Damas",
             "Korean": "다마스크",
+=======
+        "ModelFileID": -1,
+        "Names": {
+            "German": "Damastballen",
+            "English": "Bolt of Damask",
+            "Korean": "다마스크",
+            "French": "Rouleau de Damas",
+>>>>>>> frenkey/apo_source
             "Italian": "Rotolo di Damasco",
             "Spanish": "Rollo de tela de damasco",
             "TraditionalChinese": "緞布",
@@ -81,7 +128,12 @@
             "BorkBorkBork": "Bult ooff Daemaesk"
         },
         "ItemType": "Materials_Zcoins",
+<<<<<<< HEAD
         "DropInfo": "Rare Material",
+=======
+        "Acquisition": "",
+        "Description": "",
+>>>>>>> frenkey/apo_source
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
@@ -93,18 +145,32 @@
         "Category": null,
         "SubCategory": null,
         "WikiScraped": false,
+<<<<<<< HEAD
         "VendorValue": 700,
         "VendorUpdated": "2025-06-04T21:51:34.457212",
+=======
+        "VendorValue": 950,
+        "VendorUpdated": "2025-11-28T21:14:08.108359",
+>>>>>>> frenkey/apo_source
         "MaterialType": "Rare",
         "MaterialStorageSlot": 14
     },
     "926": {
         "ModelID": 926,
+<<<<<<< HEAD
         "Names": {
             "English": "Bolt of Linen",
             "German": "Leinentuchballen",
             "French": "Rouleau de lin",
             "Korean": "리넨",
+=======
+        "ModelFileID": -1,
+        "Names": {
+            "German": "Leinentuchballen",
+            "English": "Bolt of Linen",
+            "Korean": "리넨",
+            "French": "Rouleau de lin",
+>>>>>>> frenkey/apo_source
             "Italian": "Rotolo di Lino",
             "Spanish": "Rollo de lino",
             "TraditionalChinese": "亞麻布",
@@ -114,7 +180,12 @@
             "BorkBorkBork": "Bult ooff Leenee"
         },
         "ItemType": "Materials_Zcoins",
+<<<<<<< HEAD
         "DropInfo": "Rare Material",
+=======
+        "Acquisition": "",
+        "Description": "",
+>>>>>>> frenkey/apo_source
         "Attributes": [],
         "CommonSalvage": {
             "Plant Fiber": {
@@ -134,18 +205,32 @@
         "Category": null,
         "SubCategory": null,
         "WikiScraped": false,
+<<<<<<< HEAD
         "VendorValue": 220,
         "VendorUpdated": "2025-06-04T21:51:34.272608",
+=======
+        "VendorValue": 360,
+        "VendorUpdated": "2025-11-28T21:14:08.047307",
+>>>>>>> frenkey/apo_source
         "MaterialType": "Rare",
         "MaterialStorageSlot": 13
     },
     "928": {
         "ModelID": 928,
+<<<<<<< HEAD
         "Names": {
             "English": "Bolt of Silk",
             "German": "Seidentuchballen",
             "French": "Rouleau de soie",
             "Korean": "비단",
+=======
+        "ModelFileID": -1,
+        "Names": {
+            "German": "Seidentuchballen",
+            "English": "Bolt of Silk",
+            "Korean": "비단",
+            "French": "Rouleau de soie",
+>>>>>>> frenkey/apo_source
             "Italian": "Rotolo di Seta",
             "Spanish": "Rollo de seda",
             "TraditionalChinese": "絲綢",
@@ -155,7 +240,12 @@
             "BorkBorkBork": "Bult ooff Seelk"
         },
         "ItemType": "Materials_Zcoins",
+<<<<<<< HEAD
         "DropInfo": "Rare Material",
+=======
+        "Acquisition": "",
+        "Description": "",
+>>>>>>> frenkey/apo_source
         "Attributes": [],
         "CommonSalvage": {
             "Bolt of Cloth": {
@@ -182,18 +272,32 @@
         "Category": null,
         "SubCategory": null,
         "WikiScraped": false,
+<<<<<<< HEAD
         "VendorValue": 100,
         "VendorUpdated": "2025-06-04T21:51:34.645415",
+=======
+        "VendorValue": 220,
+        "VendorUpdated": "2025-11-28T21:14:08.170441",
+>>>>>>> frenkey/apo_source
         "MaterialType": "Rare",
         "MaterialStorageSlot": 15
     },
     "921": {
         "ModelID": 921,
+<<<<<<< HEAD
         "Names": {
             "English": "Bone",
             "German": "Knochen",
             "French": "Ossement",
             "Korean": "뼈조각",
+=======
+        "ModelFileID": -1,
+        "Names": {
+            "German": "Knochen",
+            "English": "Bone",
+            "Korean": "뼈조각",
+            "French": "Ossement",
+>>>>>>> frenkey/apo_source
             "Italian": "Osso",
             "Spanish": "Hueso",
             "TraditionalChinese": "骨頭",
@@ -203,7 +307,12 @@
             "BorkBorkBork": "Bune-a"
         },
         "ItemType": "Materials_Zcoins",
+<<<<<<< HEAD
         "DropInfo": "Common Material",
+=======
+        "Acquisition": "",
+        "Description": "",
+>>>>>>> frenkey/apo_source
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
@@ -215,18 +324,32 @@
         "Category": null,
         "SubCategory": null,
         "WikiScraped": false,
+<<<<<<< HEAD
         "VendorValue": 19,
         "VendorUpdated": "2025-06-04T21:50:32.732591",
+=======
+        "VendorValue": 480,
+        "VendorUpdated": "2025-11-28T21:13:57.622090",
+>>>>>>> frenkey/apo_source
         "MaterialType": "Common",
         "MaterialStorageSlot": 0
     },
     "954": {
         "ModelID": 954,
+<<<<<<< HEAD
         "Names": {
             "English": "Chitin Fragment",
             "German": "Chitin-Fragment",
             "French": "Fragment de chitine",
             "Korean": "각질 파편",
+=======
+        "ModelFileID": -1,
+        "Names": {
+            "German": "Chitin-Fragment",
+            "English": "Chitin Fragment",
+            "Korean": "각질 파편",
+            "French": "Fragment de chitine",
+>>>>>>> frenkey/apo_source
             "Italian": "Frammento di Chitina",
             "Spanish": "Fragmento de quitina",
             "TraditionalChinese": "外殼",
@@ -236,7 +359,12 @@
             "BorkBorkBork": "Cheeteen Fraegment"
         },
         "ItemType": "Materials_Zcoins",
+<<<<<<< HEAD
         "DropInfo": "Common Material",
+=======
+        "Acquisition": "",
+        "Description": "",
+>>>>>>> frenkey/apo_source
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
@@ -248,18 +376,32 @@
         "Category": null,
         "SubCategory": null,
         "WikiScraped": false,
+<<<<<<< HEAD
         "VendorValue": 10,
         "VendorUpdated": "2025-06-04T21:50:33.465726",
+=======
+        "VendorValue": 100,
+        "VendorUpdated": "2025-11-28T21:13:57.862149",
+>>>>>>> frenkey/apo_source
         "MaterialType": "Common",
         "MaterialStorageSlot": 4
     },
     "950": {
         "ModelID": 950,
+<<<<<<< HEAD
         "Names": {
             "English": "Deldrimor Steel Ingot",
             "German": "Deldrimor-Stahlbarren",
             "French": "Lingot d'acier de Deldrimor",
             "Korean": "델트리모 광석",
+=======
+        "ModelFileID": -1,
+        "Names": {
+            "German": "Deldrimor-Stahlbarren",
+            "English": "Deldrimor Steel Ingot",
+            "Korean": "델트리모 광석",
+            "French": "Lingot d'acier de Deldrimor",
+>>>>>>> frenkey/apo_source
             "Italian": "Lingotto d'Acciaio di Deldrimor",
             "Spanish": "Lingote de acero de Deldrimor",
             "TraditionalChinese": "戴爾狄摩鋼鐵礦石",
@@ -269,7 +411,12 @@
             "BorkBorkBork": "Deldreemur Steel Ingut"
         },
         "ItemType": "Materials_Zcoins",
+<<<<<<< HEAD
         "DropInfo": "Rare Material",
+=======
+        "Acquisition": "",
+        "Description": "",
+>>>>>>> frenkey/apo_source
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {
@@ -290,17 +437,30 @@
         "SubCategory": null,
         "WikiScraped": false,
         "VendorValue": 1100,
+<<<<<<< HEAD
         "VendorUpdated": "2025-06-04T21:51:35.208444",
+=======
+        "VendorUpdated": "2025-11-28T21:14:08.367741",
+>>>>>>> frenkey/apo_source
         "MaterialType": "Rare",
         "MaterialStorageSlot": 18
     },
     "935": {
         "ModelID": 935,
+<<<<<<< HEAD
         "Names": {
             "English": "Diamond",
             "German": "Diamant",
             "French": "Diamant",
             "Korean": "다이아몬드",
+=======
+        "ModelFileID": -1,
+        "Names": {
+            "German": "Diamant",
+            "English": "Diamond",
+            "Korean": "다이아몬드",
+            "French": "Diamant",
+>>>>>>> frenkey/apo_source
             "Italian": "Diamante",
             "Spanish": "Diamante",
             "TraditionalChinese": "金剛石",
@@ -310,7 +470,12 @@
             "BorkBorkBork": "Deeaemund"
         },
         "ItemType": "Materials_Zcoins",
+<<<<<<< HEAD
         "DropInfo": "Rare Material",
+=======
+        "Acquisition": "",
+        "Description": "",
+>>>>>>> frenkey/apo_source
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
@@ -322,18 +487,32 @@
         "Category": null,
         "SubCategory": null,
         "WikiScraped": false,
+<<<<<<< HEAD
         "VendorValue": 500,
         "VendorUpdated": "2025-06-04T21:51:36.333815",
+=======
+        "VendorValue": 700,
+        "VendorUpdated": "2025-11-28T21:14:08.748430",
+>>>>>>> frenkey/apo_source
         "MaterialType": "Rare",
         "MaterialStorageSlot": 24
     },
     "943": {
         "ModelID": 943,
+<<<<<<< HEAD
         "Names": {
             "English": "Elonian Leather Square",
             "German": "Elona-Lederquadrat",
             "French": "Carré de cuir élonien",
             "Korean": "엘로나 가죽 조각",
+=======
+        "ModelFileID": -1,
+        "Names": {
+            "German": "Elona-Lederquadrat",
+            "English": "Elonian Leather Square",
+            "Korean": "엘로나 가죽 조각",
+            "French": "Carré de cuir élonien",
+>>>>>>> frenkey/apo_source
             "Italian": "Scampolo di Pelle di Elona",
             "Spanish": "Trozo de cuero de Elona",
             "TraditionalChinese": "伊洛那皮革",
@@ -343,7 +522,12 @@
             "BorkBorkBork": "Iluneeun Leaezeer Sqooaere-a"
         },
         "ItemType": "Materials_Zcoins",
+<<<<<<< HEAD
         "DropInfo": "Rare Material",
+=======
+        "Acquisition": "",
+        "Description": "",
+>>>>>>> frenkey/apo_source
         "Attributes": [],
         "CommonSalvage": {
             "Pile of Glittering Dust": {
@@ -377,11 +561,20 @@
     },
     "933": {
         "ModelID": 933,
+<<<<<<< HEAD
         "Names": {
             "English": "Feather",
             "German": "Feder",
             "French": "Plume",
             "Korean": "깃털",
+=======
+        "ModelFileID": -1,
+        "Names": {
+            "German": "Feder",
+            "English": "Feather",
+            "Korean": "깃털",
+            "French": "Plume",
+>>>>>>> frenkey/apo_source
             "Italian": "Piuma",
             "Spanish": "Pluma",
             "TraditionalChinese": "羽毛",
@@ -391,7 +584,12 @@
             "BorkBorkBork": "Feaezeer"
         },
         "ItemType": "Materials_Zcoins",
+<<<<<<< HEAD
         "DropInfo": "Common Material",
+=======
+        "Acquisition": "",
+        "Description": "",
+>>>>>>> frenkey/apo_source
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
@@ -403,18 +601,32 @@
         "Category": null,
         "SubCategory": null,
         "WikiScraped": false,
+<<<<<<< HEAD
         "VendorValue": 32,
         "VendorUpdated": "2025-06-04T21:50:34.565941",
+=======
+        "VendorValue": 370,
+        "VendorUpdated": "2025-11-28T21:13:58.233149",
+>>>>>>> frenkey/apo_source
         "MaterialType": "Common",
         "MaterialStorageSlot": 11
     },
     "941": {
         "ModelID": 941,
+<<<<<<< HEAD
         "Names": {
             "English": "Fur Square",
             "German": "Pelzquadrat",
             "French": "Morceau de fourrure",
             "Korean": "모피 조각",
+=======
+        "ModelFileID": -1,
+        "Names": {
+            "German": "Pelzquadrat",
+            "English": "Fur Square",
+            "Korean": "모피 조각",
+            "French": "Morceau de fourrure",
+>>>>>>> frenkey/apo_source
             "Italian": "Scampolo di Pelliccia",
             "Spanish": "Forro",
             "TraditionalChinese": "毛皮",
@@ -424,7 +636,12 @@
             "BorkBorkBork": "Foor Sqooaere-a"
         },
         "ItemType": "Materials_Zcoins",
+<<<<<<< HEAD
         "DropInfo": "Rare Material",
+=======
+        "Acquisition": "",
+        "Description": "",
+>>>>>>> frenkey/apo_source
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
@@ -436,18 +653,32 @@
         "Category": null,
         "SubCategory": null,
         "WikiScraped": false,
+<<<<<<< HEAD
         "VendorValue": 230,
         "VendorUpdated": "2025-06-04T21:51:34.082907",
+=======
+        "VendorValue": 390,
+        "VendorUpdated": "2025-11-28T21:14:07.985050",
+>>>>>>> frenkey/apo_source
         "MaterialType": "Rare",
         "MaterialStorageSlot": 12
     },
     "930": {
         "ModelID": 930,
+<<<<<<< HEAD
         "Names": {
             "English": "Glob of Ectoplasm",
             "German": "Ektoplasmakugel",
             "French": "Boule d'ectoplasme",
             "Korean": "심령의 구슬",
+=======
+        "ModelFileID": -1,
+        "Names": {
+            "German": "Ektoplasmakugel",
+            "English": "Glob of Ectoplasm",
+            "Korean": "심령의 구슬",
+            "French": "Boule d'ectoplasme",
+>>>>>>> frenkey/apo_source
             "Italian": "Globo di Ectoplasma",
             "Spanish": "Pegote de ectoplasma",
             "TraditionalChinese": "心靈之玉",
@@ -457,7 +688,12 @@
             "BorkBorkBork": "Glub ooff Ictuplaesm"
         },
         "ItemType": "Materials_Zcoins",
+<<<<<<< HEAD
         "DropInfo": "Rare Material",
+=======
+        "Acquisition": "",
+        "Description": "",
+>>>>>>> frenkey/apo_source
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
@@ -469,18 +705,32 @@
         "Category": null,
         "SubCategory": null,
         "WikiScraped": false,
+<<<<<<< HEAD
         "VendorValue": 4400,
         "VendorUpdated": "2025-06-04T21:51:34.833558",
+=======
+        "VendorValue": 9500,
+        "VendorUpdated": "2025-11-28T21:14:08.234168",
+>>>>>>> frenkey/apo_source
         "MaterialType": "Rare",
         "MaterialStorageSlot": 16
     },
     "955": {
         "ModelID": 955,
+<<<<<<< HEAD
         "Names": {
             "English": "Granite Slab",
             "German": "Granitplatte",
             "French": "Bloc de granite",
             "Korean": "화강암 조각",
+=======
+        "ModelFileID": -1,
+        "Names": {
+            "German": "Granitplatte",
+            "English": "Granite Slab",
+            "Korean": "화강암 조각",
+            "French": "Bloc de granite",
+>>>>>>> frenkey/apo_source
             "Italian": "Lastra di Granito",
             "Spanish": "Losa de granito",
             "TraditionalChinese": "花崗岩石板",
@@ -490,7 +740,12 @@
             "BorkBorkBork": "Gruneete-a Slaeb"
         },
         "ItemType": "Materials_Zcoins",
+<<<<<<< HEAD
         "DropInfo": "Common Material",
+=======
+        "Acquisition": "",
+        "Description": "",
+>>>>>>> frenkey/apo_source
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
@@ -502,18 +757,32 @@
         "Category": null,
         "SubCategory": null,
         "WikiScraped": false,
+<<<<<<< HEAD
         "VendorValue": 10,
         "VendorUpdated": "2025-06-04T21:50:34.017270",
+=======
+        "VendorValue": 100,
+        "VendorUpdated": "2025-11-28T21:13:58.044378",
+>>>>>>> frenkey/apo_source
         "MaterialType": "Common",
         "MaterialStorageSlot": 8
     },
     "948": {
         "ModelID": 948,
+<<<<<<< HEAD
         "Names": {
             "English": "Iron Ingot",
             "German": "Eisenbarren",
             "French": "Lingot de fer",
             "Korean": "철광석",
+=======
+        "ModelFileID": -1,
+        "Names": {
+            "German": "Eisenbarren",
+            "English": "Iron Ingot",
+            "Korean": "철광석",
+            "French": "Lingot de fer",
+>>>>>>> frenkey/apo_source
             "Italian": "Lingotto di Ferro",
             "Spanish": "Lingote de hierro",
             "TraditionalChinese": "鐵礦石",
@@ -523,7 +792,12 @@
             "BorkBorkBork": "Irun Ingut"
         },
         "ItemType": "Materials_Zcoins",
+<<<<<<< HEAD
         "DropInfo": "Common Material",
+=======
+        "Acquisition": "",
+        "Description": "",
+>>>>>>> frenkey/apo_source
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
@@ -535,18 +809,32 @@
         "Category": null,
         "SubCategory": null,
         "WikiScraped": false,
+<<<<<<< HEAD
         "VendorValue": 21,
         "VendorUpdated": "2025-06-04T21:50:32.915484",
+=======
+        "VendorValue": 170,
+        "VendorUpdated": "2025-11-28T21:13:57.681706",
+>>>>>>> frenkey/apo_source
         "MaterialType": "Common",
         "MaterialStorageSlot": 1
     },
     "6533": {
         "ModelID": 6533,
+<<<<<<< HEAD
         "Names": {
             "English": "Jadeite Shard",
             "German": "Jadeit-Scherbe",
             "French": "Eclat de Jadéite",
             "Korean": "비취 원석 조각",
+=======
+        "ModelFileID": -1,
+        "Names": {
+            "German": "Jadeit-Scherbe",
+            "English": "Jadeite Shard",
+            "Korean": "비취 원석 조각",
+            "French": "Eclat de Jadéite",
+>>>>>>> frenkey/apo_source
             "Italian": "Frammento di Giadeite",
             "Spanish": "Trozo de jadeíta",
             "TraditionalChinese": "硬玉",
@@ -556,7 +844,12 @@
             "BorkBorkBork": "Jaedeeete-a Shaerd"
         },
         "ItemType": "Materials_Zcoins",
+<<<<<<< HEAD
         "DropInfo": "Rare Material",
+=======
+        "Acquisition": "",
+        "Description": "",
+>>>>>>> frenkey/apo_source
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
@@ -568,18 +861,32 @@
         "Category": null,
         "SubCategory": null,
         "WikiScraped": false,
+<<<<<<< HEAD
         "VendorValue": 470,
         "VendorUpdated": "2025-06-04T21:51:38.575950",
+=======
+        "VendorValue": 900,
+        "VendorUpdated": "2025-11-28T21:14:09.456722",
+>>>>>>> frenkey/apo_source
         "MaterialType": "Rare",
         "MaterialStorageSlot": 37
     },
     "942": {
         "ModelID": 942,
+<<<<<<< HEAD
         "Names": {
             "English": "Leather Square",
             "German": "Lederquadrat",
             "French": "Carré de cuir",
             "Korean": "재단된 가죽",
+=======
+        "ModelFileID": -1,
+        "Names": {
+            "German": "Lederquadrat",
+            "English": "Leather Square",
+            "Korean": "재단된 가죽",
+            "French": "Carré de cuir",
+>>>>>>> frenkey/apo_source
             "Italian": "Scampolo di Pelle",
             "Spanish": "Trozo de cuero",
             "TraditionalChinese": "皮革",
@@ -589,7 +896,12 @@
             "BorkBorkBork": "Leaezeer Sqooaere-a"
         },
         "ItemType": "Materials_Zcoins",
+<<<<<<< HEAD
         "DropInfo": "Rare Material",
+=======
+        "Acquisition": "",
+        "Description": "",
+>>>>>>> frenkey/apo_source
         "Attributes": [],
         "CommonSalvage": {
             "Tanned Hide Square": {
@@ -609,18 +921,32 @@
         "Category": null,
         "SubCategory": null,
         "WikiScraped": false,
+<<<<<<< HEAD
         "VendorValue": 200,
         "VendorUpdated": "2025-06-04T21:51:37.272380",
+=======
+        "VendorValue": 210,
+        "VendorUpdated": "2025-11-28T21:14:09.078949",
+>>>>>>> frenkey/apo_source
         "MaterialType": "Rare",
         "MaterialStorageSlot": 30
     },
     "922": {
         "ModelID": 922,
+<<<<<<< HEAD
         "Names": {
             "English": "Lump of Charcoal",
             "German": "Holzkohleklumpen",
             "French": "Morceau de charbon",
             "Korean": "목탄 덩어리",
+=======
+        "ModelFileID": -1,
+        "Names": {
+            "German": "Holzkohleklumpen",
+            "English": "Lump of Charcoal",
+            "Korean": "목탄 덩어리",
+            "French": "Morceau de charbon",
+>>>>>>> frenkey/apo_source
             "Italian": "Pezzo di Carbone",
             "Spanish": "Trozo de carbón",
             "TraditionalChinese": "結塊的木炭",
@@ -630,7 +956,12 @@
             "BorkBorkBork": "Loomp ooff Chaercuael"
         },
         "ItemType": "Materials_Zcoins",
+<<<<<<< HEAD
         "DropInfo": "Rare Material",
+=======
+        "Acquisition": "",
+        "Description": "",
+>>>>>>> frenkey/apo_source
         "Attributes": [],
         "CommonSalvage": {
             "Wood Plank": {
@@ -650,18 +981,32 @@
         "Category": null,
         "SubCategory": null,
         "WikiScraped": false,
+<<<<<<< HEAD
         "VendorValue": 290,
         "VendorUpdated": "2025-06-04T21:51:36.706100",
+=======
+        "VendorValue": 400,
+        "VendorUpdated": "2025-11-28T21:14:08.891429",
+>>>>>>> frenkey/apo_source
         "MaterialType": "Rare",
         "MaterialStorageSlot": 26
     },
     "923": {
         "ModelID": 923,
+<<<<<<< HEAD
         "Names": {
             "English": "Monstrous Claw",
             "German": "Monsterklaue",
             "French": "Griffe monstrueuse",
             "Korean": "괴수의 발톱",
+=======
+        "ModelFileID": -1,
+        "Names": {
+            "German": "Monsterklaue",
+            "English": "Monstrous Claw",
+            "Korean": "괴수의 발톱",
+            "French": "Griffe monstrueuse",
+>>>>>>> frenkey/apo_source
             "Italian": "Artiglio Mostruoso",
             "Spanish": "Garra de monstruo",
             "TraditionalChinese": "巨大的爪",
@@ -671,7 +1016,12 @@
             "BorkBorkBork": "Munstruoos Claev"
         },
         "ItemType": "Materials_Zcoins",
+<<<<<<< HEAD
         "DropInfo": "Rare Material",
+=======
+        "Acquisition": "",
+        "Description": "",
+>>>>>>> frenkey/apo_source
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
@@ -683,18 +1033,32 @@
         "Category": null,
         "SubCategory": null,
         "WikiScraped": false,
+<<<<<<< HEAD
         "VendorValue": 1200,
         "VendorUpdated": "2025-06-04T21:51:35.398617",
+=======
+        "VendorValue": 3700,
+        "VendorUpdated": "2025-11-28T21:14:08.428602",
+>>>>>>> frenkey/apo_source
         "MaterialType": "Rare",
         "MaterialStorageSlot": 19
     },
     "931": {
         "ModelID": 931,
+<<<<<<< HEAD
         "Names": {
             "English": "Monstrous Eye",
             "German": "Monsterauge",
             "French": "Oeil monstrueux",
             "Korean": "괴수의 눈",
+=======
+        "ModelFileID": -1,
+        "Names": {
+            "German": "Monsterauge",
+            "English": "Monstrous Eye",
+            "Korean": "괴수의 눈",
+            "French": "Oeil monstrueux",
+>>>>>>> frenkey/apo_source
             "Italian": "Occhio Mostruoso",
             "Spanish": "Ojo de monstruo",
             "TraditionalChinese": "巨大的眼",
@@ -704,7 +1068,12 @@
             "BorkBorkBork": "Munstruoos Iye-a"
         },
         "ItemType": "Materials_Zcoins",
+<<<<<<< HEAD
         "DropInfo": "Rare Material",
+=======
+        "Acquisition": "",
+        "Description": "",
+>>>>>>> frenkey/apo_source
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
@@ -716,18 +1085,32 @@
         "Category": null,
         "SubCategory": null,
         "WikiScraped": false,
+<<<<<<< HEAD
         "VendorValue": 650,
         "VendorUpdated": "2025-06-04T21:51:35.584796",
+=======
+        "VendorValue": 600,
+        "VendorUpdated": "2025-11-28T21:14:08.489407",
+>>>>>>> frenkey/apo_source
         "MaterialType": "Rare",
         "MaterialStorageSlot": 20
     },
     "932": {
         "ModelID": 932,
+<<<<<<< HEAD
         "Names": {
             "English": "Monstrous Fang",
             "German": "Monsterfangzahn",
             "French": "Croc monstrueux",
             "Korean": "괴수의 송곳니",
+=======
+        "ModelFileID": -1,
+        "Names": {
+            "German": "Monsterfangzahn",
+            "English": "Monstrous Fang",
+            "Korean": "괴수의 송곳니",
+            "French": "Croc monstrueux",
+>>>>>>> frenkey/apo_source
             "Italian": "Zanna Mostruosa",
             "Spanish": "Colmillo de monstruo",
             "TraditionalChinese": "巨大尖牙",
@@ -737,7 +1120,12 @@
             "BorkBorkBork": "Munstruoos Fung"
         },
         "ItemType": "Materials_Zcoins",
+<<<<<<< HEAD
         "DropInfo": "Rare Material",
+=======
+        "Acquisition": "",
+        "Description": "",
+>>>>>>> frenkey/apo_source
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
@@ -749,18 +1137,32 @@
         "Category": null,
         "SubCategory": null,
         "WikiScraped": false,
+<<<<<<< HEAD
         "VendorValue": 420,
         "VendorUpdated": "2025-06-04T21:51:35.772488",
+=======
+        "VendorValue": 3400,
+        "VendorUpdated": "2025-11-28T21:14:08.551340",
+>>>>>>> frenkey/apo_source
         "MaterialType": "Rare",
         "MaterialStorageSlot": 21
     },
     "945": {
         "ModelID": 945,
+<<<<<<< HEAD
         "Names": {
             "English": "Obsidian Shard",
             "German": "Obsidian-Scherbe",
             "French": "Fragment d'obsidienne",
             "Korean": "흑요석 파편",
+=======
+        "ModelFileID": -1,
+        "Names": {
+            "German": "Obsidian-Scherbe",
+            "English": "Obsidian Shard",
+            "Korean": "흑요석 파편",
+            "French": "Fragment d'obsidienne",
+>>>>>>> frenkey/apo_source
             "Italian": "Frammento di Ossidiana",
             "Spanish": "Trozo de obsidiana",
             "TraditionalChinese": "黑曜石碎片",
@@ -770,7 +1172,12 @@
             "BorkBorkBork": "Oobseedeeun Shaerd"
         },
         "ItemType": "Materials_Zcoins",
+<<<<<<< HEAD
         "DropInfo": "Rare Material",
+=======
+        "Acquisition": "",
+        "Description": "",
+>>>>>>> frenkey/apo_source
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
@@ -782,18 +1189,32 @@
         "Category": null,
         "SubCategory": null,
         "WikiScraped": false,
+<<<<<<< HEAD
         "VendorValue": 3100,
         "VendorUpdated": "2025-06-04T21:51:36.891573",
+=======
+        "VendorValue": 5500,
+        "VendorUpdated": "2025-11-28T21:14:08.954399",
+>>>>>>> frenkey/apo_source
         "MaterialType": "Rare",
         "MaterialStorageSlot": 27
     },
     "936": {
         "ModelID": 936,
+<<<<<<< HEAD
         "Names": {
             "English": "Onyx Gemstone",
             "German": "Onyx",
             "French": "Gemme d'onyx",
             "Korean": "오닉스 원석",
+=======
+        "ModelFileID": -1,
+        "Names": {
+            "German": "Onyx",
+            "English": "Onyx Gemstone",
+            "Korean": "오닉스 원석",
+            "French": "Gemme d'onyx",
+>>>>>>> frenkey/apo_source
             "Italian": "Pietra d'Onice",
             "Spanish": "Piedra ónice",
             "TraditionalChinese": "瑪瑙寶石",
@@ -803,7 +1224,12 @@
             "BorkBorkBork": "Oonyx Gemstune-a"
         },
         "ItemType": "Materials_Zcoins",
+<<<<<<< HEAD
         "DropInfo": "Rare Material",
+=======
+        "Acquisition": "",
+        "Description": "",
+>>>>>>> frenkey/apo_source
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
@@ -815,18 +1241,32 @@
         "Category": null,
         "SubCategory": null,
         "WikiScraped": false,
+<<<<<<< HEAD
         "VendorValue": 500,
         "VendorUpdated": "2025-06-04T21:51:36.518380",
+=======
+        "VendorValue": 600,
+        "VendorUpdated": "2025-11-28T21:14:08.827399",
+>>>>>>> frenkey/apo_source
         "MaterialType": "Rare",
         "MaterialStorageSlot": 25
     },
     "929": {
         "ModelID": 929,
+<<<<<<< HEAD
         "Names": {
             "English": "Pile of Glittering Dust",
             "German": "Glitzerstaubhaufen",
             "French": "Tas de Poussière scintillante",
             "Korean": "빛나는 먼지 덩어리",
+=======
+        "ModelFileID": -1,
+        "Names": {
+            "German": "Glitzerstaubhaufen",
+            "English": "Pile of Glittering Dust",
+            "Korean": "빛나는 먼지 덩어리",
+            "French": "Tas de Poussière scintillante",
+>>>>>>> frenkey/apo_source
             "Italian": "Mucchio di Polvere Brillante",
             "Spanish": "Pila de polvo brillante",
             "TraditionalChinese": "閃爍之土",
@@ -836,7 +1276,12 @@
             "BorkBorkBork": "Peele-a ooff Gleettereeng Doost"
         },
         "ItemType": "Materials_Zcoins",
+<<<<<<< HEAD
         "DropInfo": "Common Material",
+=======
+        "Acquisition": "",
+        "Description": "",
+>>>>>>> frenkey/apo_source
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
@@ -848,18 +1293,32 @@
         "Category": null,
         "SubCategory": null,
         "WikiScraped": false,
+<<<<<<< HEAD
         "VendorValue": 26,
         "VendorUpdated": "2025-06-04T21:50:34.200080",
+=======
+        "VendorValue": 410,
+        "VendorUpdated": "2025-11-28T21:13:58.104041",
+>>>>>>> frenkey/apo_source
         "MaterialType": "Common",
         "MaterialStorageSlot": 9
     },
     "934": {
         "ModelID": 934,
+<<<<<<< HEAD
         "Names": {
             "English": "Plant Fiber",
             "German": "Pflanzenfaser",
             "French": "Fibre végétale",
             "Korean": "실뭉치",
+=======
+        "ModelFileID": -1,
+        "Names": {
+            "German": "Pflanzenfaser",
+            "English": "Plant Fiber",
+            "Korean": "실뭉치",
+            "French": "Fibre végétale",
+>>>>>>> frenkey/apo_source
             "Italian": "Fibra di Pianta",
             "Spanish": "Maraña de fibras",
             "TraditionalChinese": "植物纖維",
@@ -869,7 +1328,12 @@
             "BorkBorkBork": "Plunt Feeber"
         },
         "ItemType": "Materials_Zcoins",
+<<<<<<< HEAD
         "DropInfo": "Common Material",
+=======
+        "Acquisition": "",
+        "Description": "",
+>>>>>>> frenkey/apo_source
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
@@ -881,18 +1345,32 @@
         "Category": null,
         "SubCategory": null,
         "WikiScraped": false,
+<<<<<<< HEAD
         "VendorValue": 42,
         "VendorUpdated": "2025-06-04T21:50:34.383625",
+=======
+        "VendorValue": 360,
+        "VendorUpdated": "2025-11-28T21:13:58.172994",
+>>>>>>> frenkey/apo_source
         "MaterialType": "Common",
         "MaterialStorageSlot": 10
     },
     "951": {
         "ModelID": 951,
+<<<<<<< HEAD
         "Names": {
             "English": "Roll of Parchment",
             "German": "Pergamentrolle",
             "French": "Rouleau de parchemin",
             "Korean": "양피 두루마리",
+=======
+        "ModelFileID": -1,
+        "Names": {
+            "German": "Pergamentrolle",
+            "English": "Roll of Parchment",
+            "Korean": "양피 두루마리",
+            "French": "Rouleau de parchemin",
+>>>>>>> frenkey/apo_source
             "Italian": "Rotolo di Cartapecora",
             "Spanish": "Rollo de pergamino",
             "TraditionalChinese": "羊皮紙卷",
@@ -902,7 +1380,12 @@
             "BorkBorkBork": "Rull ooff Paerchment"
         },
         "ItemType": "Materials_Zcoins",
+<<<<<<< HEAD
         "DropInfo": "Rare Material",
+=======
+        "Acquisition": "",
+        "Description": "",
+>>>>>>> frenkey/apo_source
         "Attributes": [],
         "CommonSalvage": {
             "Wood Plank": {
@@ -922,18 +1405,32 @@
         "Category": null,
         "SubCategory": null,
         "WikiScraped": false,
+<<<<<<< HEAD
         "VendorValue": 170,
         "VendorUpdated": "2025-06-04T21:51:37.833460",
+=======
+        "VendorValue": 220,
+        "VendorUpdated": "2025-11-28T21:14:09.201810",
+>>>>>>> frenkey/apo_source
         "MaterialType": "Rare",
         "MaterialStorageSlot": 33
     },
     "952": {
         "ModelID": 952,
+<<<<<<< HEAD
         "Names": {
             "English": "Roll of Vellum",
             "German": "Vellinrolle",
             "French": "Rouleau de vélin",
             "Korean": "송아지 피지 두루마리",
+=======
+        "ModelFileID": -1,
+        "Names": {
+            "German": "Vellinrolle",
+            "English": "Roll of Vellum",
+            "Korean": "송아지 피지 두루마리",
+            "French": "Rouleau de vélin",
+>>>>>>> frenkey/apo_source
             "Italian": "Rotolo di Pergamena",
             "Spanish": "Rollo de vitela",
             "TraditionalChinese": "牛皮紙卷",
@@ -943,7 +1440,12 @@
             "BorkBorkBork": "Rull ooff Felloom"
         },
         "ItemType": "Materials_Zcoins",
+<<<<<<< HEAD
         "DropInfo": "Rare Material",
+=======
+        "Acquisition": "",
+        "Description": "",
+>>>>>>> frenkey/apo_source
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
@@ -955,18 +1457,32 @@
         "Category": null,
         "SubCategory": null,
         "WikiScraped": false,
+<<<<<<< HEAD
         "VendorValue": 350,
         "VendorUpdated": "2025-06-04T21:51:38.018605",
+=======
+        "VendorValue": 400,
+        "VendorUpdated": "2025-11-28T21:14:09.270513",
+>>>>>>> frenkey/apo_source
         "MaterialType": "Rare",
         "MaterialStorageSlot": 34
     },
     "937": {
         "ModelID": 937,
+<<<<<<< HEAD
         "Names": {
             "English": "Ruby",
             "German": "Rubin",
             "French": "Rubis",
             "Korean": "루비",
+=======
+        "ModelFileID": -1,
+        "Names": {
+            "German": "Rubin",
+            "English": "Ruby",
+            "Korean": "루비",
+            "French": "Rubis",
+>>>>>>> frenkey/apo_source
             "Italian": "Rubino",
             "Spanish": "Rubí",
             "TraditionalChinese": "紅寶石",
@@ -976,7 +1492,12 @@
             "BorkBorkBork": "Rooby"
         },
         "ItemType": "Materials_Zcoins",
+<<<<<<< HEAD
         "DropInfo": "Rare Material",
+=======
+        "Acquisition": "",
+        "Description": "",
+>>>>>>> frenkey/apo_source
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
@@ -988,18 +1509,32 @@
         "Category": null,
         "SubCategory": null,
         "WikiScraped": false,
+<<<<<<< HEAD
         "VendorValue": 2300,
         "VendorUpdated": "2025-06-04T21:51:35.960118",
+=======
+        "VendorValue": 9000,
+        "VendorUpdated": "2025-11-28T21:14:08.613167",
+>>>>>>> frenkey/apo_source
         "MaterialType": "Rare",
         "MaterialStorageSlot": 22
     },
     "938": {
         "ModelID": 938,
+<<<<<<< HEAD
         "Names": {
             "English": "Sapphire",
             "German": "Saphir",
             "French": "Saphir",
             "Korean": "사파이어",
+=======
+        "ModelFileID": -1,
+        "Names": {
+            "German": "Saphir",
+            "English": "Sapphire",
+            "Korean": "사파이어",
+            "French": "Saphir",
+>>>>>>> frenkey/apo_source
             "Italian": "Zaffiro",
             "Spanish": "Zafiro",
             "TraditionalChinese": "藍寶石",
@@ -1009,7 +1544,12 @@
             "BorkBorkBork": "Saepphure-a"
         },
         "ItemType": "Materials_Zcoins",
+<<<<<<< HEAD
         "DropInfo": "Rare Material",
+=======
+        "Acquisition": "",
+        "Description": "",
+>>>>>>> frenkey/apo_source
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
@@ -1021,18 +1561,32 @@
         "Category": null,
         "SubCategory": null,
         "WikiScraped": false,
+<<<<<<< HEAD
         "VendorValue": 3500,
         "VendorUpdated": "2025-06-04T21:51:36.148652",
+=======
+        "VendorValue": 9000,
+        "VendorUpdated": "2025-11-28T21:14:08.673865",
+>>>>>>> frenkey/apo_source
         "MaterialType": "Rare",
         "MaterialStorageSlot": 23
     },
     "953": {
         "ModelID": 953,
+<<<<<<< HEAD
         "Names": {
             "English": "Scale",
             "German": "Schuppe",
             "French": "Ecaille",
             "Korean": "비늘",
+=======
+        "ModelFileID": -1,
+        "Names": {
+            "German": "Schuppe",
+            "English": "Scale",
+            "Korean": "비늘",
+            "French": "Ecaille",
+>>>>>>> frenkey/apo_source
             "Italian": "Scaglia",
             "Spanish": "Escama",
             "TraditionalChinese": "鱗片",
@@ -1042,7 +1596,12 @@
             "BorkBorkBork": "Scaele-a"
         },
         "ItemType": "Materials_Zcoins",
+<<<<<<< HEAD
         "DropInfo": "Common Material",
+=======
+        "Acquisition": "",
+        "Description": "",
+>>>>>>> frenkey/apo_source
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
@@ -1054,18 +1613,32 @@
         "Category": null,
         "SubCategory": null,
         "WikiScraped": false,
+<<<<<<< HEAD
         "VendorValue": 28,
         "VendorUpdated": "2025-06-04T21:50:33.283488",
+=======
+        "VendorValue": 650,
+        "VendorUpdated": "2025-11-28T21:13:57.802059",
+>>>>>>> frenkey/apo_source
         "MaterialType": "Common",
         "MaterialStorageSlot": 3
     },
     "956": {
         "ModelID": 956,
+<<<<<<< HEAD
         "Names": {
             "English": "Spiritwood Plank",
             "German": "Geisterholzbrett",
             "French": "Planche de Boispirite",
             "Korean": "심령의 판자",
+=======
+        "ModelFileID": -1,
+        "Names": {
+            "German": "Geisterholzbrett",
+            "English": "Spiritwood Plank",
+            "Korean": "심령의 판자",
+            "French": "Planche de Boispirite",
+>>>>>>> frenkey/apo_source
             "Italian": "Tavola di Legno degli Spiriti",
             "Spanish": "Tabla de madera espiritual",
             "TraditionalChinese": "心靈之板",
@@ -1075,7 +1648,12 @@
             "BorkBorkBork": "Spureetvuud Plunk"
         },
         "ItemType": "Materials_Zcoins",
+<<<<<<< HEAD
         "DropInfo": "Rare Material",
+=======
+        "Acquisition": "",
+        "Description": "",
+>>>>>>> frenkey/apo_source
         "Attributes": [],
         "CommonSalvage": {
             "Pile of Glittering Dust": {
@@ -1103,17 +1681,30 @@
         "SubCategory": null,
         "WikiScraped": false,
         "VendorValue": 100,
+<<<<<<< HEAD
         "VendorUpdated": "2025-06-04T21:51:38.205090",
+=======
+        "VendorUpdated": "2025-11-28T21:14:09.332772",
+>>>>>>> frenkey/apo_source
         "MaterialType": "Rare",
         "MaterialStorageSlot": 35
     },
     "949": {
         "ModelID": 949,
+<<<<<<< HEAD
         "Names": {
             "English": "Steel Ingot",
             "German": "Stahlbarren",
             "French": "Lingot d'acier",
             "Korean": "강철 광석",
+=======
+        "ModelFileID": -1,
+        "Names": {
+            "German": "Stahlbarren",
+            "English": "Steel Ingot",
+            "Korean": "강철 광석",
+            "French": "Lingot d'acier",
+>>>>>>> frenkey/apo_source
             "Italian": "Lingotto d'Acciaio",
             "Spanish": "Lingote de acero",
             "TraditionalChinese": "鋼鐵礦石",
@@ -1123,7 +1714,12 @@
             "BorkBorkBork": "Steel Ingut"
         },
         "ItemType": "Materials_Zcoins",
+<<<<<<< HEAD
         "DropInfo": "Rare Material",
+=======
+        "Acquisition": "",
+        "Description": "",
+>>>>>>> frenkey/apo_source
         "Attributes": [],
         "CommonSalvage": {
             "Iron Ingot": {
@@ -1151,18 +1747,32 @@
         "Category": null,
         "SubCategory": null,
         "WikiScraped": false,
+<<<<<<< HEAD
         "VendorValue": 160,
         "VendorUpdated": "2025-06-04T21:51:35.018876",
+=======
+        "VendorValue": 220,
+        "VendorUpdated": "2025-11-28T21:14:08.304991",
+>>>>>>> frenkey/apo_source
         "MaterialType": "Rare",
         "MaterialStorageSlot": 17
     },
     "940": {
         "ModelID": 940,
+<<<<<<< HEAD
         "Names": {
             "English": "Tanned Hide Square",
             "German": "Gerbfellquadrat",
             "French": "Peau tannée",
             "Korean": "무두질한 가죽 조각",
+=======
+        "ModelFileID": -1,
+        "Names": {
+            "German": "Gerbfellquadrat",
+            "English": "Tanned Hide Square",
+            "Korean": "무두질한 가죽 조각",
+            "French": "Peau tannée",
+>>>>>>> frenkey/apo_source
             "Italian": "Scampolo di Pellame Pregiato",
             "Spanish": "Trozo de piel curtido",
             "TraditionalChinese": "褐色獸皮",
@@ -1172,7 +1782,12 @@
             "BorkBorkBork": "Tunned Heede-a Sqooaere-a"
         },
         "ItemType": "Materials_Zcoins",
+<<<<<<< HEAD
         "DropInfo": "Common Material",
+=======
+        "Acquisition": "",
+        "Description": "",
+>>>>>>> frenkey/apo_source
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
@@ -1184,18 +1799,32 @@
         "Category": null,
         "SubCategory": null,
         "WikiScraped": false,
+<<<<<<< HEAD
         "VendorValue": 10,
         "VendorUpdated": "2025-06-04T21:50:33.099058",
+=======
+        "VendorValue": 100,
+        "VendorUpdated": "2025-11-28T21:13:57.742186",
+>>>>>>> frenkey/apo_source
         "MaterialType": "Common",
         "MaterialStorageSlot": 2
     },
     "939": {
         "ModelID": 939,
+<<<<<<< HEAD
         "Names": {
             "English": "Tempered Glass Vial",
             "German": "Vergütetes Glasfläschchen",
             "French": "Fiole de verre trempé",
             "Korean": "강화 유리 약병",
+=======
+        "ModelFileID": -1,
+        "Names": {
+            "German": "Vergütetes Glasfläschchen",
+            "English": "Tempered Glass Vial",
+            "Korean": "강화 유리 약병",
+            "French": "Fiole de verre trempé",
+>>>>>>> frenkey/apo_source
             "Italian": "Fiala di Vetro Temprato",
             "Spanish": "Frasco de vidrio templado",
             "TraditionalChinese": "調合後的玻璃瓶",
@@ -1205,7 +1834,12 @@
             "BorkBorkBork": "Tempered Glaess Feeael"
         },
         "ItemType": "Materials_Zcoins",
+<<<<<<< HEAD
         "DropInfo": "Rare Material",
+=======
+        "Acquisition": "",
+        "Description": "",
+>>>>>>> frenkey/apo_source
         "Attributes": [],
         "CommonSalvage": {
             "Pile of Glittering Dust": {
@@ -1225,18 +1859,32 @@
         "Category": null,
         "SubCategory": null,
         "WikiScraped": false,
+<<<<<<< HEAD
         "VendorValue": 230,
         "VendorUpdated": "2025-06-04T21:51:37.088505",
+=======
+        "VendorValue": 370,
+        "VendorUpdated": "2025-11-28T21:14:09.017815",
+>>>>>>> frenkey/apo_source
         "MaterialType": "Rare",
         "MaterialStorageSlot": 29
     },
     "944": {
         "ModelID": 944,
+<<<<<<< HEAD
         "Names": {
             "English": "Vial of Ink",
             "German": "Tintenfläschchen",
             "French": "Fiole d'encre",
             "Korean": "잉크병",
+=======
+        "ModelFileID": -1,
+        "Names": {
+            "German": "Tintenfläschchen",
+            "English": "Vial of Ink",
+            "Korean": "잉크병",
+            "French": "Fiole d'encre",
+>>>>>>> frenkey/apo_source
             "Italian": "Fiala di Inchiostro",
             "Spanish": "Frasco de tinta",
             "TraditionalChinese": "小瓶墨水",
@@ -1246,7 +1894,12 @@
             "BorkBorkBork": "Feeael ooff Ink"
         },
         "ItemType": "Materials_Zcoins",
+<<<<<<< HEAD
         "DropInfo": "Rare Material",
+=======
+        "Acquisition": "",
+        "Description": "",
+>>>>>>> frenkey/apo_source
         "Attributes": [],
         "CommonSalvage": {
             "Plant Fiber": {
@@ -1274,18 +1927,32 @@
         "Category": null,
         "SubCategory": null,
         "WikiScraped": false,
+<<<<<<< HEAD
         "VendorValue": 550,
         "VendorUpdated": "2025-06-04T21:51:37.647243",
+=======
+        "VendorValue": 700,
+        "VendorUpdated": "2025-11-28T21:14:09.139676",
+>>>>>>> frenkey/apo_source
         "MaterialType": "Rare",
         "MaterialStorageSlot": 32
     },
     "946": {
         "ModelID": 946,
+<<<<<<< HEAD
         "Names": {
             "English": "Wood Plank",
             "German": "Holzbrett",
             "French": "Planche de bois",
             "Korean": "목재",
+=======
+        "ModelFileID": -1,
+        "Names": {
+            "German": "Holzbrett",
+            "English": "Wood Plank",
+            "Korean": "목재",
+            "French": "Planche de bois",
+>>>>>>> frenkey/apo_source
             "Italian": "Tavola di Legno",
             "Spanish": "Tabla de madera",
             "TraditionalChinese": "木材",
@@ -1295,7 +1962,12 @@
             "BorkBorkBork": "Vuud Plunk"
         },
         "ItemType": "Materials_Zcoins",
+<<<<<<< HEAD
         "DropInfo": "Common Material",
+=======
+        "Acquisition": "",
+        "Description": "",
+>>>>>>> frenkey/apo_source
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
@@ -1307,8 +1979,13 @@
         "Category": null,
         "SubCategory": null,
         "WikiScraped": false,
+<<<<<<< HEAD
         "VendorValue": 10,
         "VendorUpdated": "2025-06-04T21:50:33.833491",
+=======
+        "VendorValue": 100,
+        "VendorUpdated": "2025-11-28T21:13:57.984457",
+>>>>>>> frenkey/apo_source
         "MaterialType": "Common",
         "MaterialStorageSlot": 6
     }

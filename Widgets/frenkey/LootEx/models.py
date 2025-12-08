@@ -985,14 +985,14 @@ class ItemMod():
             valid_arg2_min = min(modifier.max, max(modifier.min, arg2_min)) if arg2_min is not None else modifier.min
             valid_arg2_max = max(modifier.min, min(modifier.max, arg2_max)) if arg2_max is not None else modifier.max
 
-            if modifier.modifier_value_arg == ModifierValueArg.Arg1 and arg_type == "arg1" and arg1_min is not None and arg1_max is not None:
-                if valid_arg1_min != valid_arg1_max:
+            if arg_type == "arg1" and valid_arg1_min is not None:
+                if valid_arg1_max is not None and valid_arg1_min != valid_arg1_max:
                     return f"{valid_arg1_min}...{valid_arg1_max}"
                 else:
                     return str(valid_arg1_min)
             
-            if modifier.modifier_value_arg == ModifierValueArg.Arg2 and arg_type == "arg2" and arg2_min is not None and arg2_max is not None:
-                if valid_arg2_min != valid_arg2_max:    
+            if arg_type == "arg2" and valid_arg2_min is not None:
+                if valid_arg2_max is not None and valid_arg2_min != valid_arg2_max:    
                     return f"{valid_arg2_min}...{valid_arg2_max}"
                 else:
                     return str(valid_arg2_min)
@@ -1006,8 +1006,40 @@ class ItemMod():
 
 
         # Replace simple arguments: {arg1}, {arg2}, etc.
-        if get_single_modifier():
-            description = re.sub(r"\{(arg1|arg2|arg|min|max)\}", replace_simple, description, flags=re.DOTALL)
+        # if get_single_modifier():
+        description = re.sub(r"\{(arg1|arg2|arg|min|max)\}", replace_simple, description, flags=re.DOTALL)
+
+        return description
+
+    def get_description_with_values(self, language: Optional[ServerLanguage] = None, arg1: Optional[int] = None, arg2: Optional[int] = None) -> str:
+        if language is None:
+            language = get_server_language()
+
+        description = self.descriptions.get(
+            language, self.descriptions.get(ServerLanguage.English, "")
+        )
+
+        if not description:
+            return ""
+
+        def replace(match: re.Match) -> str:
+            arg_type = match.group(1)
+            # get the modifier with a modifier value arg not equal to None_ or Fixed
+            modifier = next((mod for mod in self.modifiers if mod.modifier_value_arg != ModifierValueArg.None_ and mod.modifier_value_arg != ModifierValueArg.Fixed), None)
+            if not modifier:
+                modifier = self.modifiers[0] if self.modifiers else None            
+
+            if not modifier:
+                return f"{{{arg_type}}}"
+
+            if arg_type == "arg1" and arg1 is not None:
+                return str(arg1)
+            elif arg_type == "arg2" and arg2 is not None:
+                return str(arg2)
+            else:
+                return str(getattr(modifier, arg_type, f"{{{arg_type}}}"))
+
+        description = re.sub(r"\{(arg1|arg2|arg|min|max)\}", replace, description)
 
         return description
 
@@ -1030,8 +1062,7 @@ class Rune(ItemMod):
     
     def __post_init__(self):
         super().__post_init__()
-        self.texture_file = os.path.join(item_textures_path, f"{self.inventory_icon}") if self.inventory_icon and os.path.exists(os.path.join(item_textures_path, f"{self.inventory_icon}")) else missing_texture_path
-        
+        self.texture_file = os.path.join(item_textures_path, f"{self.inventory_icon}") if self.inventory_icon and os.path.exists(os.path.join(item_textures_path, f"{self.inventory_icon}")) else missing_texture_path       
         
     def get_applied_name(self, language: Optional[ServerLanguage] = None) -> str:
         if language is None:
@@ -1084,32 +1115,6 @@ class Rune(ItemMod):
 
         return modified_name.strip()
 
-    def is_in_item_modifier(self, modifiers : list["ItemModifier"]) -> bool:
-        for mod in self.modifiers:
-            matched = False
-
-            for modifier in [m for m in modifiers if m.GetIdentifier() == mod.identifier]:
-                if modifier:
-                    arg1 = modifier.GetArg1()
-                    arg2 = modifier.GetArg2()
-
-                    if mod.modifier_value_arg == ModifierValueArg.Arg1:
-                        if arg1 >= mod.min and arg1 <= mod.max and arg2 == mod.arg2:
-                            matched = True
-                    
-                    elif mod.modifier_value_arg == ModifierValueArg.Arg2:
-                        if arg2 >= mod.min and arg2 <= mod.max and arg1 == mod.arg1:
-                            matched = True
-
-                    elif mod.modifier_value_arg == ModifierValueArg.Fixed:
-                        if arg1 == mod.arg1 and arg2 == mod.arg2:
-                            matched = True
-            
-            if not matched:
-                return False
-        
-        return True
-    
     def matches_modifiers(self, modifiers : list[tuple[int, int, int]]) -> tuple[bool, bool]:
         """
         Check if the rune matches the given modifiers.
@@ -1160,7 +1165,6 @@ class Rune(ItemMod):
             return False, False
         
         return all(result[0] for result in results), all(result[1] for result in results)        
-        
         
     def to_json(self) -> dict:
         return {
@@ -1235,118 +1239,6 @@ class WeaponMod(ItemMod):
         ItemMod.__post_init__(self)
         self.is_inscription : bool = self.names.get(ServerLanguage.English, "").startswith("\"") if self.names else False
         
-
-    def is_in_item_modifier(self, modifiers : list["ItemModifier"], item_type : ItemType, tolerance : int = -1) -> bool:
-        is_tolerance_set = tolerance if tolerance >= 0 else 0
-                
-        for mod in self.modifiers:            
-            if not is_tolerance_set:
-                tolerance = mod.arg1 if mod.modifier_value_arg == ModifierValueArg.Arg1 else mod.arg2 if mod.modifier_value_arg == ModifierValueArg.Arg2 else 0
-                
-            matched = False
-            for modifier in [m for m in modifiers if m.GetIdentifier() == mod.identifier]:                
-                arg1 = modifier.GetArg1()
-                arg2 = modifier.GetArg2()
-
-                if mod.modifier_value_arg == ModifierValueArg.Arg1:
-                    if arg1 >= mod.min and arg1 <= mod.max and arg2 == mod.arg2:
-                        matched = arg1 >= mod.max - tolerance
-                
-                elif mod.modifier_value_arg == ModifierValueArg.Arg2:
-                    if arg2 >= mod.min and arg2 <= mod.max and arg1 == mod.arg1:
-                        matched = arg2 >= mod.max - tolerance
-
-                elif mod.modifier_value_arg == ModifierValueArg.Fixed:
-                    if arg1 == mod.arg1 and arg2 == mod.arg2:
-                        matched = True
-                        
-                elif mod.modifier_value_arg == ModifierValueArg.None_:
-                    matched = True
-                        
-            if not matched:       
-                return False
-            
-            
-        from Widgets.frenkey.LootEx import utility
-        if item_type == ItemType.Rune_Mod:
-            applied_to_item_type_mod = next((modifier for modifier in modifiers if modifier.GetIdentifier() == ModifierIdentifier.TargetItemType), None)
-            if not applied_to_item_type_mod:
-                return False
-            
-            applied_to_item_type_id = applied_to_item_type_mod.GetArg1()
-            applied_to_item_type = ItemType(applied_to_item_type_id)
-            
-            return any(utility.Util.IsMatchingItemType(applied_to_item_type, target_item_type) for target_item_type in self.target_types)
-            
-        else:
-            return any(utility.Util.IsMatchingItemType(item_type, target_item_type) for target_item_type in self.target_types)
-
-    def get_matching_modifiers(self, modifiers : list[tuple[int, int, int]], item_type : ItemType, model_id: int) -> list[tuple[int, int, int]]:
-        """
-        Check if the rune matches the given modifiers.
-        
-        Args:
-            modifiers (list[tuple[int, int, int]]): A list of tuples containing identifier, arg1, and arg2.
-        
-        Returns:
-            tuple[bool, bool]: A tuple where the first element indicates if it matches any modifier,
-                                and the second element indicates if it matches the maximum value.
-        """
-        results : list[tuple[int, int, int]] = []
-        
-        if item_type in self.item_type_specific:
-            item_type_specific = self.item_type_specific[item_type]
-            
-            matches = any(identifier == item_type_specific.identifier and arg1 == item_type_specific.arg1 and arg2 == item_type_specific.arg2 for identifier, arg1, arg2 in modifiers)
-            if not matches:
-                return []
-        
-        for mod in self.modifiers: #The modifiers stored in the Item Mod json   
-            matched = False
-                    
-            for identifier, arg1, arg2 in modifiers: # The modifiers from the item in game
-                if mod.identifier != identifier:
-                    continue
-                
-                if mod.modifier_value_arg == ModifierValueArg.Arg1:
-                    if arg1 >= mod.min and arg1 <= mod.max and arg2 == mod.arg2:
-                        matched = True
-                        results.append((identifier, arg1, arg2))
-                
-                elif mod.modifier_value_arg == ModifierValueArg.Arg2:
-                    if arg2 >= mod.min and arg2 <= mod.max and arg1 == mod.arg1:
-                        matched = True
-                        results.append((identifier, arg1, arg2))
-
-                elif mod.modifier_value_arg == ModifierValueArg.Fixed:
-                    if arg1 == mod.arg1 and arg2 == mod.arg2:
-                        matched = True
-                        results.append((identifier, arg1, arg2))
-                
-                elif mod.modifier_value_arg == ModifierValueArg.None_:
-                    matched = True
-                    results.append((identifier, arg1, arg2))
-        
-            if not matched:
-                return []
-                    
-        if not results:
-            return []
-        
-        
-        from Widgets.frenkey.LootEx import utility
-        if item_type == ItemType.Rune_Mod:
-            applied_to_item_type_mod = next((identifier, arg1, arg2) for identifier, arg1, arg2 in modifiers if identifier == ModifierIdentifier.TargetItemType)
-            applied_to_item_type = ItemType(applied_to_item_type_mod[1])
-
-            mod_model_id = self.item_mods.get(applied_to_item_type, None) or 0
-            
-            return results if mod_model_id == model_id else []
-
-        else:
-            matches_item_type = any(utility.Util.IsMatchingItemType(item_type, target_item_type) for target_item_type in self.item_mods.keys())
-            return results if matches_item_type else []
-    
     def has_item_type(self, item_type: ItemType) -> bool:
         if not self.target_types:
             return True
@@ -1461,6 +1353,10 @@ class BaseModInfo():
         self.Modifiers : list[tuple[int, int, int]] = []
         self.IsMaxed : bool = False
         self.Value : int = 0
+        self.Arg1 : int = 0
+        self.Arg2 : int = 0
+        
+        self.Description : str = ""
         
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, BaseModInfo):
@@ -1476,7 +1372,6 @@ class BaseModInfo():
         if not isinstance(other, BaseModInfo):
             return NotImplemented
         return (self.Value, len(self.Modifiers)) < (other.Value, len(other.Modifiers))
-
     
 class RuneModInfo(BaseModInfo):
     @property
@@ -1520,17 +1415,97 @@ class WeaponModInfo(BaseModInfo):
         data = Data()
         
         mod_infos : list["WeaponModInfo"] = []
+    
         
-        for weapon_mod in data.Weapon_Mods.values():
-            matching_modifiers = weapon_mod.get_matching_modifiers(modifiers, item_type, model_id)
+        identifiers = [identifier for identifier, _, _ in modifiers]                   
+        potential_weapon_mods = [weapon_mod for weapon_mod in data.Weapon_Mods.values() if any(mod.identifier in identifiers for mod in weapon_mod.modifiers)] 
+        
+        for weapon_mod in potential_weapon_mods:
+            found = False
             
-            if not matching_modifiers:
-                continue
+            # Find all indexes of our first weapon_mod.modifiers identifiers in the modifiers list
+            matching_indexes = [index for index, (identifier, _, _) in enumerate(modifiers) if any(mod.identifier == identifier for mod in weapon_mod.modifiers)]
+            
+            # Check if we have any match for a sequential match of all weapon_mod.modifiers in modifiers
+            match_found = False
+            matched_Modifiers = []
+            
+            for start_index in matching_indexes:
+                match_found = True
+                for offset, mod in enumerate(weapon_mod.modifiers):
+                    current_index = start_index + offset
+                    if current_index >= len(modifiers):
+                        match_found = False
+                        matched_Modifiers = []
+                        break
                     
-            weapon_mod_info = WeaponModInfo()
-            weapon_mod_info.Mod = weapon_mod
-            weapon_mod_info.Modifiers = matching_modifiers
+                    identifier, arg1, arg2 = modifiers[current_index]
+                    if mod.identifier != identifier:
+                        match_found = False
+                        matched_Modifiers = []
+                        break
+                    
+                    match(mod.modifier_value_arg):
+                        case ModifierValueArg.Arg1:
+                            if not (arg1 >= mod.min and arg1 <= mod.max and arg2 == mod.arg2):
+                                match_found = False
+                                matched_Modifiers = []
+                                break
+                            
+                        case ModifierValueArg.Arg2:
+                            if not (arg2 >= mod.min and arg2 <= mod.max and arg1 == mod.arg1):
+                                match_found = False
+                                matched_Modifiers = []
+                                break
+                            
+                        case ModifierValueArg.Fixed:
+                            if not (arg1 == mod.arg1 and arg2 == mod.arg2):
+                                match_found = False
+                                matched_Modifiers = []
+                                break
+                            
+                        case ModifierValueArg.None_:
+                            pass
+                
+                    
+                    if item_type in weapon_mod.item_type_specific:
+                        item_type_specific = weapon_mod.item_type_specific[item_type]
+                        item_type_index = current_index - 1
+                        
+                        if item_type_index < 0 or item_type_index >= len(modifiers):
+                            match_found = False
+                            matched_Modifiers = []
+                            break
+                        
+                        identifier_it, arg1_it, arg2_it = modifiers[item_type_index]
+                        if not (identifier_it == item_type_specific.identifier and arg1_it == item_type_specific.arg1 and arg2_it == item_type_specific.arg2):
+                            match_found = False
+                            matched_Modifiers = []
+                            break
+                
+                if match_found:
+                    matched_Modifiers = modifiers[start_index:start_index + len(weapon_mod.modifiers)]
+                    break
             
+            if not match_found:
+                continue
+            
+            from Widgets.frenkey.LootEx import utility
+            
+            if item_type == ItemType.Rune_Mod:
+                applied_to_item_type_mod = next((identifier, arg1, arg2) for identifier, arg1, arg2 in modifiers if identifier == ModifierIdentifier.TargetItemType)
+                applied_to_item_type = ItemType(applied_to_item_type_mod[1])
+
+                mod_model_id = weapon_mod.item_mods.get(applied_to_item_type, None) or 0
+                                
+                if not mod_model_id == model_id:
+                    continue
+
+            else:
+                matches_item_type = any(utility.Util.IsMatchingItemType(item_type, target_item_type) for target_item_type in weapon_mod.item_mods.keys())
+                if not matches_item_type:
+                    continue
+                            
             def get_variable_mod_info() -> Optional[ModifierInfo]:
                 if len(weapon_mod.modifiers) == 1:
                     return weapon_mod.modifiers[0]
@@ -1547,38 +1522,142 @@ class WeaponModInfo(BaseModInfo):
                     return mod
                     
                 return None
+        
+            def get_mod_value(mod_info: ModifierInfo) -> int:                
+                if not mod_info:
+                    return 0
+                
+                for identifier, arg1, arg2 in matched_Modifiers:
+                    if mod_info.identifier != identifier:
+                        continue
+                    
+                    if mod_info.modifier_value_arg == ModifierValueArg.Arg1:
+                        return arg1
+                    
+                    elif mod_info.modifier_value_arg == ModifierValueArg.Arg2:
+                        return arg2
+                    
+                    elif mod_info.modifier_value_arg == ModifierValueArg.Fixed:
+                        return 0
+                    
+                    elif mod_info.modifier_value_arg == ModifierValueArg.None_:
+                        return 0
+                
+                return 0
             
             mod_info = get_variable_mod_info()
             
-            if mod_info:
-                matching_modifier = next((m for m in matching_modifiers if m[0] == mod_info.identifier), None)
-                
-                if matching_modifier:
-                    _, arg1, arg2 = matching_modifier if matching_modifier else (0, 0, 0)
-                    
-                    if mod_info.modifier_value_arg == ModifierValueArg.Arg1:
-                        # ConsoleLog("LootEx", f"Weapon Mod {weapon_mod.names.get(ServerLanguage.English, '')} Arg1 Value: {arg1}", Console.MessageType.Debug)
-                        weapon_mod_info.Value = arg1
-                        weapon_mod_info.IsMaxed = weapon_mod_info.Value >= mod_info.max                        
-                    
-                    elif mod_info.modifier_value_arg == ModifierValueArg.Arg2:
-                        # ConsoleLog("LootEx", f"Weapon Mod {weapon_mod.names.get(ServerLanguage.English, '')} Arg2 Value: {arg2}", Console.MessageType.Debug)
-                        weapon_mod_info.Value = arg2
-                        weapon_mod_info.IsMaxed = weapon_mod_info.Value >= mod_info.max
-                    
-                    elif mod_info.modifier_value_arg == ModifierValueArg.Fixed:
-                        # ConsoleLog("LootEx", f"Weapon Mod {weapon_mod.names.get(ServerLanguage.English, '')} Fixed Value", Console.MessageType.Debug)
-                        weapon_mod_info.Value = 0
-                        weapon_mod_info.IsMaxed = True
-                    
-                    elif mod_info.modifier_value_arg == ModifierValueArg.None_:
-                        # ConsoleLog("LootEx", f"Weapon Mod {weapon_mod.names.get(ServerLanguage.English, '')} No Value", Console.MessageType.Debug)
-                        weapon_mod_info.Value = 0
-                        weapon_mod_info.IsMaxed = True
+            if not mod_info:
+                continue
             
-                mod_infos.append(weapon_mod_info)
+            weapon_mod_info = WeaponModInfo()
+            weapon_mod_info.Mod = weapon_mod
+            weapon_mod_info.Value = get_mod_value(mod_info)
+            weapon_mod_info.Modifiers = matched_Modifiers
+            weapon_mod_info.Arg1 = mod_info.arg1
+            weapon_mod_info.Arg2 = mod_info.arg2
+            weapon_mod_info.IsMaxed = weapon_mod_info.Value >= mod_info.max 
+            weapon_mod_info.Description = weapon_mod_info.get_description()
+                            
+            mod_infos.append(weapon_mod_info)
             
         return mod_infos
+    
+    def get_description(self, language: Optional[ServerLanguage] = None) -> str:
+        if language is None:
+            language = get_server_language()
+
+        description = self.Mod.descriptions.get(
+            language, self.Mod.descriptions.get(ServerLanguage.English, "")
+        )
+
+        if not description:
+            return ""
+                
+        def get_modifier_info_by_id(identifier: int) -> Optional[ModifierInfo]:
+            for mod in self.Mod.modifiers:
+                if mod.identifier == identifier:
+                    return mod
+                
+            return None
+
+        def get_single_modifier() -> Optional[ModifierInfo]:
+            return self.Mod.modifiers[0] if len(self.Mod.modifiers) == 1 else None
+
+        def format_enum_name(name: str) -> str:
+            parts = []
+            for char in name:
+                if char.isupper() and parts:
+                    parts.append(' ')
+                parts.append(char)
+            name = ''.join(parts)
+            return name.replace("_", " ")
+
+        def get_formatted_value(mod: ModifierInfo, arg_type: str) -> str:
+            if arg_type == "arg1":
+                if mod.identifier in (9240, 10408, 8680):
+                    return format_enum_name(Attribute(mod.arg1).name)
+                if mod.identifier in (9400, 41240):
+                    return format_enum_name(DamageType(mod.arg1).name)
+                if mod.identifier in (8520, 32896):
+                    return format_enum_name(EnemyType(mod.arg1).name)
+                            
+            return str(getattr(mod, arg_type, f"{{{arg_type}}}"))
+
+        def get_modifier_values(identifier: int) -> tuple[int, int]:
+            for iden, arg1, arg2 in self.Modifiers:
+                if iden == identifier:
+                    return arg1, arg2
+                
+            return 0, 0
+
+        def replace_indexed(match: re.Match) -> str:
+            arg_type, id_str = match.group(1), match.group(2)
+            modifier_info = get_modifier_info_by_id(int(id_str))
+            
+            if not modifier_info:
+                return f"{{{arg_type}[{id_str}]}}"
+            
+            arg1, arg2 = get_modifier_values(modifier_info.identifier)
+                        
+            if modifier_info.modifier_value_arg == ModifierValueArg.Arg1 and arg_type == "arg1":
+                return str(arg1)
+            
+            if modifier_info.modifier_value_arg == ModifierValueArg.Arg2 and arg_type == "arg2":
+                return str(arg2)    
+            
+            return get_formatted_value(modifier_info, arg_type)
+
+        def replace_simple(match: re.Match) -> str:
+            arg_type = match.group(1)
+            modifier = get_single_modifier()
+            
+            if not modifier:
+                return f"{{{arg_type}}}"
+            
+            arg1, arg2 = get_modifier_values(modifier.identifier)
+
+            if arg_type == "arg1" and modifier.modifier_value_arg == ModifierValueArg.Arg1:
+                return str(arg1)
+            
+            if arg_type == "arg2" and modifier.modifier_value_arg == ModifierValueArg.Arg2:
+                return str(arg2)
+
+            return get_formatted_value(modifier, arg_type)
+
+        
+        # Replace indexed arguments: {arg1[42]}, {arg2[12]}, etc.
+        # description = re.sub(r"\{(arg1|arg2|arg|min|max)\[(\d+)\]\}", replace_indexed, description)
+        description = re.sub(r"\{(arg1|arg2|arg|min|max)\[(\d+)\]\}", replace_indexed, description, flags=re.DOTALL)
+
+
+        # Replace simple arguments: {arg1}, {arg2}, etc.
+        # if get_single_modifier():
+        description = re.sub(r"\{(arg1|arg2|arg|min|max)\}", replace_simple, description, flags=re.DOTALL)
+
+        return description
+        
+        return description
 
 class ItemModifiersInformation:
     def __init__(self):
@@ -1673,8 +1752,8 @@ class ItemModifiersInformation:
 
         if is_weapon or (is_upgrade and not is_rune):            
             self.weapon_mods = WeaponModInfo.get_from_modifiers(modifier_values, item_type, model_id) or []
-            self.max_weapon_mods = [mod for mod in self.weapon_mods if mod.IsMaxed and (mod.WeaponMod.mod_type != ModType.Inherent or (is_inscribable or is_upgrade))]
-            self.weapon_mods_to_keep = [mod for mod in self.max_weapon_mods if settings.profile and settings.profile.weapon_mods.get(mod.WeaponMod.identifier, {}).get(item_type.name, False)]
+            self.max_weapon_mods = [mod for mod in self.weapon_mods if mod.IsMaxed]
+            self.weapon_mods_to_keep = [mod for mod in self.max_weapon_mods if settings.profile and settings.profile.weapon_mods.get(mod.WeaponMod.identifier, {}) and (item_type == ItemType.Rune_Mod or settings.profile.weapon_mods.get(mod.WeaponMod.identifier, {}).get(item_type.name, False))]
                             
         
         self.mods = self.runes + self.weapon_mods

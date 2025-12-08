@@ -12,7 +12,7 @@ from Widgets.frenkey.Core import ex_style, texture_map
 from Widgets.frenkey.LootEx import skin_rule, loot_handling, settings, price_check, utility, cache, ui_manager_extensions, inventory_handling, models, messaging
 from Widgets.frenkey.LootEx.data import Data
 from Widgets.frenkey.LootEx.data_collection import DataCollector
-from Widgets.frenkey.LootEx.enum import CHARACTER_INVENTORY, XUNLAI_STORAGE, ActionModsType, ItemAction, ItemCategory, ItemSubCategory, ModType
+from Widgets.frenkey.LootEx.enum import CHARACTER_INVENTORY, XUNLAI_STORAGE, ActionModsType, ItemAction, ItemCategory, ItemSubCategory, ModType, SalvageOption
 from Widgets.frenkey.LootEx.item_configuration import ConfigurationCondition
 from Widgets.frenkey.LootEx.filter import Filter
 from Widgets.frenkey.LootEx.profile import Profile
@@ -101,6 +101,13 @@ class RuleFilter:
         
         return self.lambda_function(rule)
 
+class MouseTest:
+    def __init__(self, frame_id: int, current_state: int, wparam_value: int, lparam: int):
+        self.frame_id: int = frame_id
+        self.current_state: int = current_state
+        self.wparam_value: int = wparam_value
+        self.lparam: int = lparam
+
 class UI:
     _instance = None
     _initialized = False
@@ -177,6 +184,7 @@ class UI:
             return
         
         self._initialized = True
+        self.MouseTest = MouseTest(0, 8, 0, 0)
                            
         from Widgets.frenkey.LootEx.settings import Settings
         self.settings = Settings()
@@ -793,7 +801,7 @@ class UI:
         self.settings.window_visible = False
     
     def draw_disclaimer(self, active_inventory_widgets):
-        if not UIManager.IsWindowVisible(WindowID.WindowID_InventoryBags):
+        if not self.InventoryBagsVisible():
             if self.inventory_coords is not None:
                 self.inventory_coords = None
             return
@@ -959,6 +967,7 @@ class UI:
                     self.draw_runes()
                     self.draw_rare_weapons()
                     self.draw_blacklist()
+                    self.draw_prices_tab()
                     self.draw_data_collector_tab()
                     
                     self.first_draw = False
@@ -983,8 +992,11 @@ class UI:
             self.settings.window_visible = self.module_window.open
             self.settings.manual_window_visible = self.module_window.open
             self.settings.save()
-            
-  
+    
+    def InventoryBagsVisible(self) -> bool:
+        # return UIManager.IsWindowVisible(WindowID.WindowID_InventoryBags) 
+        return UIManagerExtensions.IsElementVisible(UIManager.GetFrameIDByHash(291586130))  # "Inventory Bags" frame hash
+    
     def draw_vault_controls(self):    
         if not GLOBAL_CACHE.Inventory.IsStorageOpen():
             return
@@ -1035,7 +1047,7 @@ class UI:
             PyImGui.end()
 
     def draw_inventory_controls(self):    
-        if not UIManager.IsWindowVisible(WindowID.WindowID_InventoryBags):
+        if not self.InventoryBagsVisible():
             if self.inventory_coords is not None:
                 self.inventory_coords = None
             return
@@ -1094,7 +1106,14 @@ class UI:
                     inventory_handling.InventoryHandler().Stop()
                 else:
                     inventory_handling.InventoryHandler().Start()  
-                         
+                     
+        ImGui.show_tooltip(
+            ("Disable" if self.settings.automatic_inventory_handling else "Enable") +
+            " Inventory Handling" +
+            "\nHold Ctrl to send message to all accounts" +
+            "\nHold Shift to send message to all accounts excluding yourself"
+        )
+            
         if UI.transparent_button(IconsFontAwesome5.ICON_COINS, self.settings.enable_loot_filters, width, width):
             imgui_io = self.py_io
 
@@ -1110,15 +1129,15 @@ class UI:
                 else:
                     loot_handling.LootHandler().Start()                    
 
-        # ImGui.show_tooltip(
-        #     ("Disable" if self.settings.automatic_inventory_handling else "Enable") +
-        #     " Inventory Handling" +
-        #     "\nHold Ctrl to send message to all accounts" +
-        #     "\nHold Shift to send message to all accounts excluding yourself"
-        # )
+        ImGui.show_tooltip(
+            ("Disable" if self.settings.enable_loot_filters else "Enable") +
+            " Loot Filters" +
+            "\nHold Ctrl to send message to all accounts" +
+            "\nHold Shift to send message to all accounts excluding yourself"
+        )
 
     def _draw_sort_inventory_button(self, width):
-        if UI.transparent_button(IconsFontAwesome5.ICON_SORT_ALPHA_DOWN, self.settings.automatic_inventory_handling, width, width):
+        if UI.transparent_button(IconsFontAwesome5.ICON_SORT_ALPHA_DOWN, True, width, width):
             inventory_handling.InventoryHandler().CompactInventory()      
         
         ImGui.show_tooltip(
@@ -1262,7 +1281,7 @@ class UI:
                         
                     ImGui.text_scaled(str(cached_item.id) if cached_item.id > 0 else "", (1,1,1,0.75), 0.7)
                     ImGui.text_scaled(str(cached_item.model_id) if cached_item.model_id > 0 else "", (1,1,1,1), 0.8)
-                    ImGui.text_wrapped(cached_item.data.name if cached_item.data else "Unknown Item")
+                    ImGui.text_wrapped(cached_item.name if cached_item.name else "Unknown Item")
                     # ImGui.text_scaled(f"x{cached_item.quantity}" if cached_item.quantity > 1 else "", (1,1,1,1), 0.8)
                     
                     ImGui.end_table()
@@ -1291,7 +1310,7 @@ class UI:
                 
             if cached_item:
                 if PyImGui.is_item_hovered():
-                    PyImGui.set_next_window_size(400, 0)
+                    PyImGui.set_next_window_size(500, 0)
                     
                     ImGui.begin_tooltip()
                     if cached_item.data:
@@ -1366,7 +1385,10 @@ class UI:
                             
                             PyImGui.table_next_column()
                             for mod in cached_item.weapon_mods:
-                                ImGui.text(utility.Util.reformat_string(mod.WeaponMod.name))
+                                ImGui.text(f"{utility.Util.reformat_string(mod.WeaponMod.name)}")
+                                value = mod.Value
+                                desc = mod.Description
+                                ImGui.text(f"{utility.Util.reformat_string(desc)}", 12)
                                 
                         if cached_item.max_weapon_mods:
                             PyImGui.table_next_column()
@@ -1374,6 +1396,14 @@ class UI:
                             
                             PyImGui.table_next_column()
                             for mod in cached_item.max_weapon_mods:
+                                ImGui.text(utility.Util.reformat_string(mod.WeaponMod.name))
+                        
+                        if cached_item.weapon_mods_to_keep:
+                            PyImGui.table_next_column()
+                            ImGui.text("Desired Mods")
+                            
+                            PyImGui.table_next_column()
+                            for mod in cached_item.weapon_mods_to_keep:
                                 ImGui.text(utility.Util.reformat_string(mod.WeaponMod.name))
                         
                         if cached_item.is_rare_weapon:
@@ -1527,135 +1557,67 @@ class UI:
                                         ConsoleLog("LootEx", f"Moved texture for Item {item.name}", Console.MessageType.Info)
                         pass
 
-                    def on_test_button_clicked(): 
-                        item = cache.Cached_Item(1113)
-                        for mod in item.weapon_mods:
-                            ConsoleLog("LootEx Test", f"Mod: {mod.WeaponMod.name} | Value: {mod.Value} | Modifiers: {mod.Modifiers}", Console.MessageType.Info)
+                    def on_test_button_clicked():                             
+                        if ui_manager_extensions.UIManagerExtensions.IsConfirmMaterialsWindowOpen():
+                            ConsoleLog("LootEx", "Confirming Lesser Salvage...", Console.MessageType.Info)
+                            # ui_manager_extensions.UIManagerExtensions.ConfirmLesserSalvage()
+                                
+                        if ui_manager_extensions.UIManagerExtensions.ConfirmModMaterialSalvageVisible():
+                            ConsoleLog("LootEx", "Confirming Mod Material Salvage...", Console.MessageType.Info)
+                            ui_manager_extensions.UIManagerExtensions.ConfirmModMaterialSalvage() 
                             
                         return
-                    
-                        from Widgets.frenkey.LootEx.data import Data
-                        cdata = Data()
+                        handler = inventory_handling.InventoryHandler()
+                        item_actions = handler.GetActions(start_bag=Bag.Backpack, end_bag=Bag.Bag_2)
                         
-                        # for item in cdata.Items.All:
-                        #    if utility.Util.IsWeaponType(item.item_type):
-                        #        continue
-                           
-                        #    item.attributes = []
-                        
-                        cdata.SaveItems(True)                        
-                        return
-                        
-                        cdata = Data()
-                        cdata.SaveWeaponMods(True)
-                        cdata.SaveItems(True)
-                        return
-                    
-                        if False:
-                            cdata = Data()
+                        handler.identification_kits = item_actions.identification_kits
+            
+                        for _, item in item_actions.actions.items():
+                            if item.action != ItemAction.Identify:
+                                continue
                             
-                            for m in cdata.Weapon_Mods.values():
-                                if m.mod_type != ModType.Inherent:
-                                    m.item_mods = {}
-                                    item_types = [cdata.ItemType_MetaTypes.get(target_type, []) for target_type in m.target_types]
-                                    # Flatten the list
-                                    item_types = [item for sublist in item_types for item in sublist]
-                                    
-                                    #Add all item types from m.target_types which have no defined metatype
-                                    for target_type in m.target_types:
-                                        if target_type not in cdata.ItemType_MetaTypes:
-                                            item_types.append(target_type)
-                                    
-                                    for type in item_types:
-                                        model_id = cdata.get_mod_model(type, m.mod_type)
-                                        
-                                        if model_id:
-                                            m.item_mods[type] = model_id
-                                        else:
-                                            ConsoleLog("LootEx Test", f"Missing Mod Model for {m.mod_type.name} on {type.name}", Console.MessageType.Warning)
-                                else:
-                                    m.item_mods = {}
-                                    model_id = None
-                                        
-                                    # Inscription_MartialWeapon = 15540
-                                    # Inscription_Offhand = 19123
-                                    # Inscription_OffhandOrShield = 15541
-                                    # Inscription_SpellcastingWeapon = 19122
-                                    # Inscription_Weapon = 15542
-                                    
-                                    
-                                    if m.target_types and len(m.target_types) > 1:
-                                        ConsoleLog("LootEx Test", f"Inherent Mod {m.mod_type.name} has multiple target types!", Console.MessageType.Warning)
-                                        continue
-                                    
-                                    elif m.target_types and len(m.target_types) == 1:
-                                        match_type = m.target_types[0]
-                                        match(match_type):
-                                            case ItemType.MartialWeapon:
-                                                model_id = enum.ModsModels.Inscription_MartialWeapon
-                                            case ItemType.Offhand:
-                                                model_id = enum.ModsModels.Inscription_Offhand
-                                            case ItemType.OffhandOrShield:
-                                                model_id = enum.ModsModels.Inscription_OffhandOrShield
-                                            case ItemType.SpellcastingWeapon:
-                                                model_id = enum.ModsModels.Inscription_SpellcastingWeapon
-                                            case ItemType.Weapon:
-                                                model_id = enum.ModsModels.Inscription_Weapon
-                                                
-                                        if model_id and match_type:
-                                            m.item_mods[match_type] = model_id
-
-                            cdata.SaveWeaponMods(True)
-                            return
-
-                        from Widgets.frenkey.LootEx.cache import Cached_Item
-                                                        
-                        model_id = 17566
-                        weapons = []
-                        
-                        slot_definitions = {
-                            "None" : 0,
-                            "Prefix" : 1,
-                            "Inherent" : 2,
-                            "Suffix" : 3,
-                            "Combined" : 4
-                        }
-                        
-                        item_ids = GLOBAL_CACHE.ItemArray.GetItemArray([Bag.Backpack])
-                        for item_id in item_ids:                            
-                            cached_item = Cached_Item(item_id)
-                                                        
-                            if cached_item.slot in slot_definitions.values():
-                                weapons.append(cached_item)                       
-                                                
-                        def get_modifier_tuples(staff):
-                            mods = []
-                            for mod in staff.modifiers:
-                                identifier = mod.GetIdentifier()
-                                arg1 = mod.GetArg1()
-                                arg2 = mod.GetArg2()
-                                
-                                tuple_id = (identifier, arg1, arg2)                                
-                                mods.append(tuple_id)                        
-                            return mods
-
-
-                        no_assigned_modifiers_staff = next((s for s in weapons if len(s.weapon_mods) == 0), None)
-                        if no_assigned_modifiers_staff:
-                            shared_mods = get_modifier_tuples(no_assigned_modifiers_staff)       
-                            # ConsoleLog("LootEx Test", f"Shared Mods || {shared_mods}", Console.MessageType.Info)     
-                                            
-                            for type_name, slot in slot_definitions.items():                                                                    
-                                staff = next((s for s in weapons if s.slot == slot), None)
-                                if staff and slot > 0:
-                                    mods = get_modifier_tuples(staff)
-                                    # Find all mods that are unique to the aptitude staff
-                                    unique_mods = [mod for mod in mods if mod not in shared_mods]
-                                    # ConsoleLog("LootEx Test", f"{type_name} || {mods}", Console.MessageType.Info)
-                                    ConsoleLog("LootEx Test", f"{type_name} || {unique_mods}", Console.MessageType.Info)
-                                
+                            if item.is_identified:
+                                item.action = ItemAction.NONE
+                                continue
                             
+                            ConsoleLog("LootEx", f"Found unidenfitied item: '{item.name} [{item.model_id}]' ({item.id})", Console.MessageType.Info)
+                            identificationKit = handler.GetIdentificationKit()
+
+                            if identificationKit is None or identificationKit.uses <= 0:
+                                continue
+
+                            ConsoleLog(
+                                "LootEx", f"Identifying item: '{item.name} [{item.model_id}]' ({item.id}) with kit {identificationKit.name} ({identificationKit.id})", Console.MessageType.Info)
+                            # Inventory.IdentifyItem(item.id, identificationKit.id)
+                            identificationKit.uses -= 1
+                            
+                        return
+                        m = self.MouseTest
+                        threshold = 10
+                        self.MouseTest.lparam += 1
+                        increase_wparam = self.MouseTest.lparam > threshold
+                        
+                        if increase_wparam:
+                            self.MouseTest.lparam = 0                            
+                            
+                        self.MouseTest.wparam_value += (1 if increase_wparam else 0)
+                        increase_state = self.MouseTest.wparam_value > threshold
+                        
+                        if increase_state:
+                            self.MouseTest.wparam_value = 0
+                            
+                        self.MouseTest.current_state += (1 if increase_state else 0)
+                        
+                        salvage_options = ui_manager_extensions.UIManagerExtensions.GetSalvageOptions()    
+                        frame_id = salvage_options.get(SalvageOption.Suffix)      
+                        
+                        if frame_id is not None:
+                            ConsoleLog("LootEx", f"Testing mouse action current_state: {m.current_state}, wparam_value: {m.wparam_value}, lparam: {m.lparam} on Salvage Options frame.", Console.MessageType.Info)
+                            PyUIManager.UIManager.test_mouse_action(frame_id, m.current_state, m.wparam_value, m.lparam)    
+                        else:
+                            ConsoleLog("LootEx", "Salvage Options frame not found.", Console.MessageType.Error)
                                 
+                        ui_manager_extensions.UIManagerExtensions.SelectSalvageOption(SalvageOption.Inherent)
                         pass
 
                     if self.settings.development_mode and ImGui.button("Test 123", 160, 30):
@@ -1772,7 +1734,30 @@ class UI:
                     Console.MessageType.Info,
                 )
                 
-                price_check.PriceCheck.get_material_prices_from_trader()
+                def assign_material_price(item_id, price):
+                    if not self.settings.profile:
+                        return
+                    
+                    from Widgets.frenkey.LootEx.data import Data
+                    data = Data()
+                    
+                    item = cache.Cached_Item(item_id)
+                    if not item.material:
+                        return
+                    
+                    ConsoleLog(
+                        "LootEx",
+                        f"Assigned price {utility.Util.format_currency(price)} to material {item.material.name} (Item ID: {item_id})",
+                        Console.MessageType.Info,
+                    )
+                    item.material.vendor_value = price
+                    item.material.vendor_updated = datetime.now()
+                    
+                    data.SaveMaterials()
+                
+                item_ids = Trading.Trader.GetOfferedItems()
+                price_check_mgr = price_check.PriceCheckManager()
+                price_check_mgr.request_prices(item_ids, assign_material_price)
             
             if PyImGui.is_rect_visible(0, 20):
                 ImGui.begin_table("DataCollectorMaterialsTable", 2, PyImGui.TableFlags.ScrollY | PyImGui.TableFlags.Borders, 0, 0)
@@ -4884,8 +4869,45 @@ class UI:
                             f"Checking for expensive runes from merchant with price threshold: {self.entered_price_threshold}",
                             Console.MessageType.Info,
                         )
-                        price_check.PriceCheck.get_expensive_runes_from_merchant(
-                            self.entered_price_threshold, self.mark_to_sell_runes)
+                        
+                        item_ids = Merchant.Trading.Trader.GetOfferedItems()
+                        
+                        def assign_rune_price(item_id: int, price: int):
+                            if not self.settings.profile:
+                                return
+                            
+                            from Widgets.frenkey.LootEx.data import Data
+                            data = Data()
+                            
+                            item = cache.Cached_Item(item_id)
+                            if not item.runes or len(item.runes) == 0:
+                                return
+                            
+                            if not item.runes[0].Rune:
+                                return
+                            
+                            rune = data.Runes.get(item.runes[0].Rune.identifier)
+                            if not rune:
+                                return
+                            
+                            rune.vendor_value = price
+                            rune.vendor_updated = datetime.now()
+                            if rune.vendor_value >= self.entered_price_threshold:
+                                ConsoleLog(
+                                    "LootEx",
+                                    f"Rune {rune.full_name} has price {utility.Util.format_currency(rune.vendor_value)} which is above the threshold. Marking as valuable.",
+                                    Console.MessageType.Info,
+                                )
+                                self.settings.profile.set_rune(rune.identifier, True, self.mark_to_sell_runes)
+                                
+                            self.settings.profile.save()
+                            data.SaveRunes()
+                        
+                        
+                        
+                        self.settings.profile.runes.clear()
+                        price_check_mgr = price_check.PriceCheckManager()
+                        price_check_mgr.request_prices(item_ids, assign_rune_price)
                     else:
                         ConsoleLog(
                             "LootEx",
@@ -5103,21 +5125,28 @@ class UI:
             
             if ImGui.begin_child("Rare Weapons#1", (0, 0), True, PyImGui.WindowFlags.NoFlag):
                 style.WindowPadding.push_style_var(5, 5)
-                for weapon_name in data.Rare_Weapon_Names:
+                for (weapon_name, weapon_type), model_ids in data.Rare_Weapon_ModelIds.items():
                     if ImGui.begin_child(f"RareWeaponSelectable{weapon_name}", (0, 34), True, PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
-                        # find the weapon info in data.Items.All
-                        weapon_info = next((weapon for weapon in data.Items.All if weapon.name == weapon_name and weapon.model_file_id > 0), None)
-                        weapon_texture = weapon_info.texture_file if weapon_info and weapon_info.texture_file else None
+                        items = data.Items.get(weapon_type, {})
+                        
+                        #get an item which has toe correct model id
+                        weapon_info = next((item for item in items.values() if item.model_id in model_ids), None)                            
+                        if weapon_info is None:
+                            # get an item with the correct name as fallback
+                            weapon_info = next((item for item in items.values() if item.name == weapon_name), None)
+                            
+                        weapon_texture = weapon_info.texture_file if weapon_info and weapon_info.texture_file else os.path.join(Py4GW.Console.get_projects_path(), "Textures", "missing_texture.png")
                         if weapon_texture:
                             ImGui.image(weapon_texture, (24, 24))
                         else:
                             PyImGui.dummy(24, 24)
                             
                         PyImGui.same_line(0, 5)
-                        included = self.settings.profile.rare_weapons.get(weapon_name, False)
-                        checked = ImGui.checkbox(weapon_name, included)
+                        name = weapon_name
+                        included = self.settings.profile.rare_weapons.get(name, False)
+                        checked = ImGui.checkbox(name, included)
                         if checked != included:
-                            self.settings.profile.rare_weapons[weapon_name] = checked
+                            self.settings.profile.rare_weapons[name] = checked
                             self.settings.profile.save()
                         
                     ImGui.end_child()

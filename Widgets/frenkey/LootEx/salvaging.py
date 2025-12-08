@@ -12,38 +12,28 @@ from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.py4gwcorelib_src.Console import ConsoleLog
 
 from Widgets.frenkey.LootEx.cache import Cached_Item
-from Widgets.frenkey.LootEx.enum import ALL_BAGS, CHARACTER_INVENTORY, ModType, SalvageOption
+from Widgets.frenkey.LootEx.enum import ALL_BAGS, CHARACTER_INVENTORY, ActionState, ModType, SalvageOption
 from Widgets.frenkey.LootEx import ui_manager_extensions
 
 LOG_SALVAGING = False
-
-# -----------------------------------------------------
-# GENERIC COROUTINE WRAPPER (same as TraderCoroutine)
-# -----------------------------------------------------
-
-class SalvageActionState(Enum):
-    Pending = 0
-    Running = 1
-    Completed = 2
-    Timeout = 3
 
 class SalvageCoroutine:
     def __init__(self, generator_fn: Callable[[], Generator], timeout_seconds: float = 6.0):
         self.generator_fn = generator_fn
         self.generator = None
-        self.state = SalvageActionState.Pending
+        self.state = ActionState.Pending
         self.started_at = datetime.min
         self.timeout_seconds = timeout_seconds
 
-    def step(self) -> SalvageActionState:
-        if self.state == SalvageActionState.Pending:
+    def step(self) -> ActionState:
+        if self.state == ActionState.Pending:
             self.generator = self.generator_fn()
-            self.state = SalvageActionState.Running
+            self.state = ActionState.Running
             self.started_at = datetime.now()
 
         if (datetime.now() - self.started_at).total_seconds() > self.timeout_seconds:
             ConsoleLog("LootEx", "Salvage coroutine timed out.", Console.MessageType.Warning)
-            self.state = SalvageActionState.Timeout
+            self.state = ActionState.Timeout
             return self.state
 
         try:
@@ -52,22 +42,17 @@ class SalvageCoroutine:
                 return self.state
 
             else:
-                self.state = SalvageActionState.Completed
+                self.state = ActionState.Completed
                 return self.state
             
         except StopIteration:
-            self.state = SalvageActionState.Completed
+            self.state = ActionState.Completed
             return self.state
 
         except Exception as e:
             ConsoleLog("LootEx", f"Salvage coroutine exception: {e}", Console.MessageType.Error)
-            self.state = SalvageActionState.Timeout
+            self.state = ActionState.Timeout
             return self.state
-
-
-# -----------------------------------------------------
-# SALVAGE ACTION — FULL PIPELINE
-# -----------------------------------------------------
 
 class SalvageAction:
     def __init__(self, item: Cached_Item, desired_quantity: int = -1):
@@ -83,8 +68,9 @@ class SalvageAction:
                 
         self.available_mods : dict[ModType, bool] = {}
 
-        rarity_requires_confirmation = item.rarity >= Rarity.Blue
-        mods_require_confirmation = item.has_mods and self.item.salvage_option is not SalvageOption.LesserCraftingMaterials
+        rarity_requires_confirmation = item.rarity > Rarity.Blue
+        has_salvageable_mods = any(mod.Mod.mod_type is ModType.Prefix or mod.Mod.mod_type is ModType.Suffix or (mod.Mod.mod_type is ModType.Inherent and item.is_inscribable) for mod in item.mods) if item.mods else False
+        mods_require_confirmation = has_salvageable_mods and self.item.salvage_option is not SalvageOption.LesserCraftingMaterials
         item.salvage_requires_confirmation = rarity_requires_confirmation or mods_require_confirmation
         
         self._update()
@@ -93,10 +79,7 @@ class SalvageAction:
     def run(self) -> SalvageCoroutine:
         return SalvageCoroutine(self._gen_main)
 
-    # -----------------------------------------------------
-    # MAIN LOOP
-    # -----------------------------------------------------
-
+    # Main generator function
     def _gen_main(self) -> Generator:
         ConsoleLog(
             "LootEx",
@@ -117,9 +100,7 @@ class SalvageAction:
             LOG_SALVAGING
         )
 
-    # -----------------------------------------------------
-    # EXIT CONDITION
-    # -----------------------------------------------------
+    # Condition to stop the salvaging action
     def _is_done(self) -> bool:
         self._update()
         
@@ -163,9 +144,7 @@ class SalvageAction:
 
         return False
         
-    # -----------------------------------------------------
-    # STEP 1 — SALVAGE
-    # -----------------------------------------------------
+    # Start the salvage by using Inventory.SalvageItem
     def _salvage(self) -> Generator:
         if self._is_done():
             return
@@ -180,10 +159,7 @@ class SalvageAction:
     
         yield
 
-    # -----------------------------------------------------
-    # STEP 2 — WAIT UNTIL CONFIRMATION WINDOW APPEARS
-    # -----------------------------------------------------
-
+    # Confirm salvage windows if needed
     def _confirm_salvage_windows(self) -> Generator:
         start_wait = datetime.now()
 
@@ -235,9 +211,7 @@ class SalvageAction:
                     
         pass
 
-    # ---------------------------------------------------
-    # UPDATE ITEM
-    # ---------------------------------------------------
+    # Update item state
     def _update(self) -> None:
         self.item.Update()
         
@@ -280,9 +254,13 @@ class SalvageAction:
         
         return
 
+<<<<<<< HEAD
     # -----------------------------------------------------
     # STEP 4 — WAIT FOR SALVAGE COMPLETION
     # -----------------------------------------------------
+=======
+    # Wait for the salvage action to complete
+>>>>>>> frenkey/apo_source
     def _wait_for_completion(self) -> Generator:
         start = datetime.now()
 

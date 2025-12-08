@@ -1,13 +1,20 @@
 from datetime import date, datetime, timedelta
-from typing import Generator
+from typing import Any, Callable, Generator, override
+from Py4GWCoreLib.Builds.SF_Ass_vaettir import SF_Ass_vaettir
 from Py4GWCoreLib.GlobalCache.ItemCache import Bag_enum
+from Py4GWCoreLib.botting_src.helpers import BottingHelpers
+from Py4GWCoreLib.botting_src.helpers_src.Merchant import _Merchant
+from Py4GWCoreLib.botting_src.helpers_src.decorators import yield_step
+from Py4GWCoreLib.botting_src.subclases_src.MERCHANT_src import _MERCHANTS
+from Py4GWCoreLib.py4gwcorelib_src.MerchantHandler import MerchantHandler
 from Widgets.frenkey.Core.utility import string_similarity
 from Widgets.frenkey.LootEx.data_collection import DataCollector
-from Widgets.frenkey.LootEx.enum import XUNLAI_STORAGE, MaterialType, MerchantType, ModType, SalvageKitOption, SalvageOption, ItemAction
+from Widgets.frenkey.LootEx.enum import XUNLAI_STORAGE, ActionState, MaterialType, MerchantType, ModType, SalvageKitOption, SalvageOption, ItemAction
 from Py4GWCoreLib import *
 from Widgets.frenkey.LootEx import loot_handling, models, settings, utility, ui_manager_extensions, item_configuration, cache
-from Widgets.frenkey.LootEx.salvaging import SalvageAction, SalvageActionState
-from Widgets.frenkey.LootEx.trading import ActionType, TraderAction, TraderActionState
+from Widgets.frenkey.LootEx.instance_manager import InstanceManager
+from Widgets.frenkey.LootEx.salvaging import SalvageAction
+from Widgets.frenkey.LootEx.trading import ActionType, TraderAction
 
 # TODO: Collect salvage data for items, so we can make better decisions on what to salvage and what not to salvage.
 # TODO: Add sorting options for the inventory and storage.
@@ -22,6 +29,302 @@ merhcant_time_results = []
 actiontime_results = []
 time_results = []
 
+class LootExAutoInventoryHandler(AutoInventoryHandler):
+    LOG_LOOTEX_AUTO_INVENTORY_HANDLER = True
+    _lootex_instance = None
+
+    def __new__(cls, inventory_handler: 'InventoryHandler|None' = None):
+        # create only once
+        if cls._lootex_instance is None:
+            # force creation of subclass instance — bypass parent __new__
+            ConsoleLog("LootExAutoInventoryHandler", "Creating new LootExAutoInventoryHandler instance.", Console.MessageType.Debug, cls.LOG_LOOTEX_AUTO_INVENTORY_HANDLER)
+            obj = object.__new__(cls)
+            obj._initialized = False
+
+            cls._lootex_instance = obj
+
+        return cls._lootex_instance
+
+    def __init__(self, inventory_handler: 'InventoryHandler|None' = None):
+        if self._initialized:
+            return
+        
+        ConsoleLog("LootExAutoInventoryHandler", "Initializing LootExAutoInventoryHandler instance.", Console.MessageType.Debug, self.LOG_LOOTEX_AUTO_INVENTORY_HANDLER)
+        super().__init__()        
+
+        self.inventory_handler = inventory_handler
+        self._initialized = True
+        
+        
+    @override
+    def AutoID(self, item_id):
+        # Let LootEx handle identification
+        ConsoleLog("LootExAutoInventoryHandler", f"AutoID called for item_id: {item_id}. Let LootEx handle identification.", Console.MessageType.Debug, self.LOG_LOOTEX_AUTO_INVENTORY_HANDLER)
+        pass       
+    
+    @override
+    def AutoSalvage(self, item_id):
+        # Let LootEx handle salvaging
+        ConsoleLog("LootExAutoInventoryHandler", f"AutoSalvage called for item_id: {item_id}. Let LootEx handle salvaging.", Console.MessageType.Debug, self.LOG_LOOTEX_AUTO_INVENTORY_HANDLER)
+        pass
+    
+    @override
+    def IdentifyItems(self, progress_callback: Optional[Callable[[float], None]] = None, log: bool = False):
+        if not self.inventory_handler or not self.inventory_handler.IsActive:
+            ConsoleLog("LootExAutoInventoryHandler", "IdentifyItems called but inventory handler is not active.", Console.MessageType.Debug, self.LOG_LOOTEX_AUTO_INVENTORY_HANDLER)
+            return
+        
+        if not self.inventory_handler.identification_kits:
+            ConsoleLog("LootExAutoInventoryHandler", "IdentifyItems called but no identification kits available.", Console.MessageType.Debug, self.LOG_LOOTEX_AUTO_INVENTORY_HANDLER)
+            return
+        
+        while True:
+            items_to_identify = [item for item in self.inventory_handler.actions.values() if item.action == ItemAction.Identify and not item.is_identified]
+            
+            if not items_to_identify:
+                ConsoleLog("LootExAutoInventoryHandler", "No items left to identify.", Console.MessageType.Debug, self.LOG_LOOTEX_AUTO_INVENTORY_HANDLER)
+                return
+            
+            ConsoleLog("LootExAutoInventoryHandler", f"Identifying {len(items_to_identify)} items.", Console.MessageType.Debug, self.LOG_LOOTEX_AUTO_INVENTORY_HANDLER)
+            
+            for item in items_to_identify:
+                ConsoleLog("LootExAutoInventoryHandler", f"Item to identify: {item.data.name if item.data else item.name}.", Console.MessageType.Debug, self.LOG_LOOTEX_AUTO_INVENTORY_HANDLER)
+                
+            yield from Routines.Yield.wait(250)
+                
+    @override
+    def SalvageItems(self, progress_callback: Optional[Callable[[float], None]] = None, log: bool = False):
+        if not self.inventory_handler or not self.inventory_handler.IsActive:
+            ConsoleLog("LootExAutoInventoryHandler", "SalvageItems called but inventory handler is not active.", Console.MessageType.Debug, self.LOG_LOOTEX_AUTO_INVENTORY_HANDLER)
+            return
+        
+        while True:            
+            salvage_queue = self.inventory_handler.salvaging_queue
+            
+            if not salvage_queue:
+                ConsoleLog("LootExAutoInventoryHandler", "No items left to salvage.", Console.MessageType.Debug, self.LOG_LOOTEX_AUTO_INVENTORY_HANDLER)
+                return
+            
+            salvages_with_expert_kit = [salvage for salvage in salvage_queue.values() if salvage.item.salvage_option in [SalvageOption.RareCraftingMaterials, SalvageOption.Prefix, SalvageOption.Suffix, SalvageOption.Inherent]]
+            salvages_with_lesser_kit = [salvage for salvage in salvage_queue.values() if salvage.item.salvage_option in [SalvageOption.LesserCraftingMaterials]]
+            salvages_with_any_kit = [salvage for salvage in salvage_queue.values() if salvage.item.salvage_option in [SalvageOption.CraftingMaterials]]
+            
+            can_salvage = bool(salvages_with_expert_kit and self.inventory_handler.expert_salvage_kits)
+            can_salvage |= bool(salvages_with_lesser_kit and self.inventory_handler.lesser_salvage_kits)
+            can_salvage |= bool(salvages_with_any_kit and (self.inventory_handler.lesser_salvage_kits or self.inventory_handler.expert_salvage_kits))
+            
+            if not can_salvage:
+                ConsoleLog("LootExAutoInventoryHandler", "No salvage kits available for the items left to salvage.", Console.MessageType.Debug, self.LOG_LOOTEX_AUTO_INVENTORY_HANDLER)
+                return
+            
+            ConsoleLog("LootExAutoInventoryHandler", f"Salvaging {len(salvage_queue)} items.", Console.MessageType.Debug, self.LOG_LOOTEX_AUTO_INVENTORY_HANDLER)            
+            
+            yield from Routines.Yield.wait(250)
+        
+    @override
+    def DepositItemsAuto(self):
+        if not self.inventory_handler or not self.inventory_handler.IsActive:
+            ConsoleLog("LootExAutoInventoryHandler", "DepositItemsAuto called but inventory handler is not active.", Console.MessageType.Debug, self.LOG_LOOTEX_AUTO_INVENTORY_HANDLER)
+            return
+        
+        if not self.inventory_handler.identification_kits:
+            ConsoleLog("LootExAutoInventoryHandler", "DepositItemsAuto called but no identification kits available.", Console.MessageType.Debug, self.LOG_LOOTEX_AUTO_INVENTORY_HANDLER)
+            return
+        
+        from Widgets.frenkey.LootEx.settings import Settings
+        settings = Settings()
+        
+        while True:
+            items_to_stash = [item for item in self.inventory_handler.actions.values() if item.action == ItemAction.Deposit_Material or item.action == ItemAction.Stash]
+            
+            if not items_to_stash:
+                ConsoleLog("LootExAutoInventoryHandler", "No items left to deposit.", Console.MessageType.Debug, self.LOG_LOOTEX_AUTO_INVENTORY_HANDLER)
+                return
+            
+            
+            storage, _ = utility.Util.GetZeroFilledBags(
+                Bag.Storage_1, Bag(settings.max_xunlai_storage.value))
+            
+            free_slot = any(id == 0 for id in storage)
+            if not free_slot:
+                ConsoleLog("LootExAutoInventoryHandler", "No free slots in storage to deposit items.", Console.MessageType.Debug, self.LOG_LOOTEX_AUTO_INVENTORY_HANDLER)
+                return
+            
+            ConsoleLog("LootExAutoInventoryHandler", f"Depositing {len(items_to_stash)} items.", Console.MessageType.Debug, self.LOG_LOOTEX_AUTO_INVENTORY_HANDLER)
+            
+            yield from Routines.Yield.wait(250)
+    
+    @override
+    def IDAndSalvageItems(self, progress_callback: Optional[Callable[[float], None]] = None):
+        ConsoleLog("LootExAutoInventoryHandler", "IDAndSalvageItems called.", Console.MessageType.Debug, self.LOG_LOOTEX_AUTO_INVENTORY_HANDLER)
+        
+        yield from self.IdentifyItems(progress_callback)
+        yield from self.SalvageItems(progress_callback)
+    
+    @override
+    def IDSalvageDepositItems(self):
+        ConsoleLog("LootExAutoInventoryHandler", "IDSalvageDepositItems called.", Console.MessageType.Debug, self.LOG_LOOTEX_AUTO_INVENTORY_HANDLER)
+        
+        yield from self.IdentifyItems()
+        yield from self.SalvageItems()
+        yield from self.DepositItemsAuto()    
+
+class LootEx_Merchant_Handler(MerchantHandler):
+    _lootex_instance = None
+    _initialized = False
+    
+    LOG_LOOTEX_MERCHANT_HANDLER = True
+    
+    def __new__(cls, inventory_handler : 'InventoryHandler|None' = None):
+        if cls._lootex_instance is None:
+            # force creation of subclass instance — bypass parent __new__
+            obj = object.__new__(cls)
+            obj._initialized = False
+            ConsoleLog("LootEx_Merchant_Handler", "Creating new LootEx_Merchant_Handler instance.", Console.MessageType.Debug, cls.LOG_LOOTEX_MERCHANT_HANDLER)
+            
+            cls._lootex_instance = obj
+        return cls._lootex_instance
+    
+    def __init__(self, inventory_handler : 'InventoryHandler|None' = None) -> None:
+        if self._initialized:
+            return
+        
+        ConsoleLog("LootEx_Merchant_Handler", "Initializing LootEx_Merchant_Handler instance.", Console.MessageType.Debug, self.LOG_LOOTEX_MERCHANT_HANDLER)
+        super().__init__()
+
+        self.inventory_handler = inventory_handler
+        self._initialized = True
+        
+        LootEx_Merchant_Handler._initialized = True
+
+    @override
+    def sell_materials_to_merchant(self, _events) -> Generator[Any, Any, None]:
+        if not self.inventory_handler or not self.inventory_handler.IsActive:
+            ConsoleLog("LootEx_Merchant_Handler", "Sell materials to merchant called but inventory handler is not active.", Console.MessageType.Debug, self.LOG_LOOTEX_MERCHANT_HANDLER)
+            return
+        
+        while True:
+            items_to_sell = [item for item in self.inventory_handler.actions.values() if item.action == ItemAction.Sell_To_Merchant and item.item_type == ItemType.Materials_Zcoins]
+            
+            if not items_to_sell:
+                ConsoleLog("LootEx_Merchant_Handler", "No materials to sell to merchant.", Console.MessageType.Debug, self.LOG_LOOTEX_MERCHANT_HANDLER)
+                return
+            
+            yield
+    
+    @override
+    def restock_identification_kits(self, config) -> Generator[Any, Any, None]:
+        if not self.inventory_handler or not self.inventory_handler.IsActive:
+            ConsoleLog("LootEx_Merchant_Handler", "Restock identification kits called but inventory handler is not active.", Console.MessageType.Debug, self.LOG_LOOTEX_MERCHANT_HANDLER)
+            return
+        
+        while True:            
+            items_to_buy = self.inventory_handler.GetMissingItems()
+            identification_kits = items_to_buy.get(ModelID.Superior_Identification_Kit, None)
+            
+            if identification_kits is None or identification_kits[1] <= 0:
+                ConsoleLog("LootEx_Merchant_Handler", "No identification kits to restock.", Console.MessageType.Debug, self.LOG_LOOTEX_MERCHANT_HANDLER)
+                return
+            
+            
+            merchant_item_list = Trading.Merchant.GetOfferedItems()
+            gold_on_character = Inventory.GetGoldOnCharacter()
+            model_id = ModelID.Superior_Identification_Kit.value
+            item_type = ItemType.Kit
+            item_id = next((
+                item for item in merchant_item_list if GLOBAL_CACHE.Item.GetModelID(item) == model_id and GLOBAL_CACHE.Item.GetItemType(item)[0] == item_type.value), None)
+            
+            if item_id is not None:
+                value = GLOBAL_CACHE.Item.Properties.GetValue(item_id) * 2
+                if gold_on_character <= value:
+                    ConsoleLog("LootEx_Merchant_Handler", "Cannot afford identification kits to restock.", Console.MessageType.Debug, self.LOG_LOOTEX_MERCHANT_HANDLER)
+                    return
+                
+                ConsoleLog("LootEx_Merchant_Handler", f"Restocking {identification_kits[1]} Identification Kits.", Console.MessageType.Debug, self.LOG_LOOTEX_MERCHANT_HANDLER)
+                yield
+            
+            else:
+                # Fallback to normal identification kits if superior kits are not available
+                model_id = ModelID.Identification_Kit.value
+                item_id = next((
+                    item for item in merchant_item_list if GLOBAL_CACHE.Item.GetModelID(item) == model_id and GLOBAL_CACHE.Item.GetItemType(item)[0] == item_type.value), None)
+                if item_id is not None:
+                    value = GLOBAL_CACHE.Item.Properties.GetValue(item_id) * 2
+                    if gold_on_character <= value:
+                        ConsoleLog("LootEx_Merchant_Handler", "Cannot afford identification kits to restock.", Console.MessageType.Debug, self.LOG_LOOTEX_MERCHANT_HANDLER)
+                        return
+                    
+                    ConsoleLog("LootEx_Merchant_Handler", f"Restocking {identification_kits[1]} Identification Kits.", Console.MessageType.Debug, self.LOG_LOOTEX_MERCHANT_HANDLER)
+                    yield
+                
+            
+    @override
+    def restock_salvage_kits(self, config) -> Generator[Any, Any, None]:
+        if not self.inventory_handler or not self.inventory_handler.IsActive:
+            ConsoleLog("LootEx_Merchant_Handler", "Restock salvage kits called but inventory handler is not active.", Console.MessageType.Debug, self.LOG_LOOTEX_MERCHANT_HANDLER)
+            return
+        
+        while True:
+            items_to_buy = self.inventory_handler.GetMissingItems()
+            salvage_kits = items_to_buy.get(ModelID.Salvage_Kit, None)
+            expert_salvage_kits = items_to_buy.get(ModelID.Expert_Salvage_Kit, None)
+            
+            if (salvage_kits is None or salvage_kits[1] <= 0) and (expert_salvage_kits is None or expert_salvage_kits[1] <= 0):
+                ConsoleLog("LootEx_Merchant_Handler", "No salvage kits to restock.", Console.MessageType.Debug, self.LOG_LOOTEX_MERCHANT_HANDLER)
+                return
+                
+            merchant_item_list = Trading.Merchant.GetOfferedItems()
+            gold_on_character = Inventory.GetGoldOnCharacter()
+            can_afford = False
+            
+            if salvage_kits is not None and salvage_kits[1] > 0:
+                model_id = ModelID.Salvage_Kit.value
+                item_type = ItemType.Kit
+
+                item_id = next((
+                item for item in merchant_item_list if GLOBAL_CACHE.Item.GetModelID(item) == model_id and GLOBAL_CACHE.Item.GetItemType(item)[0] == item_type.value), None)
+                if item_id is not None:
+                    value = GLOBAL_CACHE.Item.Properties.GetValue(item_id) * 2
+                    if gold_on_character >= value:
+                        can_afford = True
+                        ConsoleLog("LootEx_Merchant_Handler", f"Restocking {salvage_kits[1]} Salvage Kits.", Console.MessageType.Debug, self.LOG_LOOTEX_MERCHANT_HANDLER)
+                        yield
+                        
+            if expert_salvage_kits is not None and expert_salvage_kits[1] > 0:
+                model_id = ModelID.Expert_Salvage_Kit.value
+                item_type = ItemType.Kit
+
+                item_id = next((
+                item for item in merchant_item_list if GLOBAL_CACHE.Item.GetModelID(item) == model_id and GLOBAL_CACHE.Item.GetItemType(item)[0] == item_type.value), None)
+                if item_id is not None:
+                    value = GLOBAL_CACHE.Item.Properties.GetValue(item_id) * 2
+                    if gold_on_character >= value:
+                        can_afford = True
+                        ConsoleLog("LootEx_Merchant_Handler", f"Restocking {expert_salvage_kits[1]} Expert Salvage Kits.", Console.MessageType.Debug, self.LOG_LOOTEX_MERCHANT_HANDLER)
+                        yield
+            
+            if not can_afford:
+                ConsoleLog("LootEx_Merchant_Handler", "Cannot afford any salvage kits to restock.", Console.MessageType.Debug, self.LOG_LOOTEX_MERCHANT_HANDLER)
+                return
+
+
+
+def DefensiveActions(self):
+    player_agent_id = GLOBAL_CACHE.Player.GetAgentID()
+    has_deadly_paradox = Routines.Checks.Effects.HasBuff(player_agent_id, self.deadly_paradox)
+    has_shroud_of_distress = Routines.Checks.Effects.HasBuff(player_agent_id, self.shroud_of_distress)
+    
+    if (yield from Routines.Yield.Skills.IsSkillIDUsable(self.shadow_form)):
+        if (yield from self._CastSkillID(self.deadly_paradox,extra_condition=(not has_deadly_paradox), log=False, aftercast_delay=100)):
+            ConsoleLog(self.build_name, "Casting Deadly Paradox.", Py4GW.Console.MessageType.Info, log=False)
+            
+        if (yield from self._CastSkillID(self.shadow_form, log=False, aftercast_delay=1750)):
+            ConsoleLog(self.build_name, "Casting Shadow Form.", Py4GW.Console.MessageType.Info, log=False)
+            
+        if (yield from self._CastSkillID(self.shroud_of_distress,extra_condition=(not has_shroud_of_distress), log=False, aftercast_delay=1750)):
+            ConsoleLog(self.build_name, "Casting Shroud of Distress.", Py4GW.Console.MessageType.Info, log=False)
+            
+SF_Ass_vaettir.DefensiveActions = DefensiveActions
 
 class InventoryHandler:
     instance = None
@@ -35,11 +338,12 @@ class InventoryHandler:
     def __init__(self, reset: bool = False):
         if self._initialized and not reset:
             return
-
+    
         from Widgets.frenkey.LootEx.data import Data
         self.data = Data()
-
-        self.auto_inventory_handler = AutoInventoryHandler()
+            
+        self.instance_manager = InstanceManager(self)
+        
         self._initialized = True
         self.run_once = False
 
@@ -95,7 +399,8 @@ class InventoryHandler:
         self.is_confirm_materials_window_open: bool = False
         self.is_salvage_window_open: bool = False
         self.upgrade_open: bool | None = False
-
+    
+    
     def soft_reset(self):
         self.empty_slots: int = -1
         self.merchant_open = None
@@ -745,6 +1050,11 @@ class InventoryHandler:
                 item for item in merchant_item_list if GLOBAL_CACHE.Item.GetModelID(item) == model_id and GLOBAL_CACHE.Item.GetItemType(item)[0] == item_type.value), None)
 
             if item_id is None:
+                if model_id == ModelID.Superior_Identification_Kit:
+                    item_id = next((
+                        item for item in merchant_item_list if GLOBAL_CACHE.Item.GetModelID(item) == ModelID.Identification_Kit and GLOBAL_CACHE.Item.GetItemType(item)[0] == item_type.value), None)
+            
+            if item_id is None:
                 continue
 
             value = GLOBAL_CACHE.Item.Properties.GetValue(item_id) * 2
@@ -1056,7 +1366,7 @@ class InventoryHandler:
 
                 state = action.coroutine.step()
 
-                if state in (TraderActionState.Completed, TraderActionState.Timeout):
+                if state in (ActionState.Completed, ActionState.Timeout):
                     del self.trading_queue[item_id]
 
                 return True
@@ -1095,7 +1405,7 @@ class InventoryHandler:
 
         state = self.salvage_action.coroutine.step()
 
-        if state in (SalvageActionState.Completed, SalvageActionState.Timeout):
+        if state in (ActionState.Completed, ActionState.Timeout):
             del self.salvaging_queue[self.salvage_action.item_id]
             self.salvage_action = None
 
@@ -1465,12 +1775,18 @@ class InventoryHandler:
                 
                 elif item.is_weapon:
                     if item.weapon_mods_to_keep and len(item.weapon_mods_to_keep) == 1:
+                        if not item.weapon_mods_to_keep[0].WeaponMod.upgrade_exists:
+                            item.action = settings.profile.weapon_mod_action if settings.profile else ItemAction.Hold
+                            continue
+                        
                         item.action = ItemAction.Salvage_Mods
                         item.salvage_option = utility.Util.GetSalvageOptionFromModType(
                             item.weapon_mods_to_keep[0].WeaponMod.mod_type)
                         item.salvage_requires_confirmation = True
+                        
                         if not item in result.salvage_queue:
                             result.salvage_queue[item.id] = item
+                            
                     elif item.weapon_mods_to_keep and len(item.weapon_mods_to_keep) > 1:
                         item.action = settings.profile.weapon_mod_action if settings.profile else ItemAction.Hold
 
@@ -1567,12 +1883,16 @@ class InventoryHandler:
 
         return claimed
                     
-    def Run(self):
+    @property
+    def IsActive(self) -> bool:
         from Widgets.frenkey.LootEx.settings import Settings
         settings = Settings()
         
-        ## Disable auto inventory handler while manual inventory handler is active
-        self.auto_inventory_handler.module_active = False
+        return settings.automatic_inventory_handling and settings.profile is not None
+    
+    def Run(self):
+        from Widgets.frenkey.LootEx.settings import Settings
+        settings = Settings()
         
         global time_results, actiontime_results
         self.run_once = False
@@ -1750,26 +2070,38 @@ class InventoryHandler:
         from Widgets.frenkey.LootEx.settings import Settings
         settings = Settings()
         
-        ConsoleLog("LootEx", "Stopping loot handling",
+        ConsoleLog("LootEx", "Stopping inventory handling",
                    Console.MessageType.Info)
 
         # self.reset()
         settings.automatic_inventory_handling = False
         settings.save()
 
+        MerchantHandler._instance = self.instance_manager.merchant_handler
+        ConsoleLog("LootEx", f"Restored MerchantHandler instance to {MerchantHandler._instance.__class__.__name__}", Console.MessageType.Info)
+        
+        AutoInventoryHandler._instance = self.instance_manager.auto_inventory_handler
+        ConsoleLog("LootEx", f"Restored AutoInventoryHandler instance to {AutoInventoryHandler._instance.__class__.__name__}", Console.MessageType.Info)
+        
         return True
 
     def Start(self) -> bool:
         from Widgets.frenkey.LootEx.settings import Settings
         settings = Settings()
         
-        ConsoleLog("LootEx", "Starting loot handling",
+        ConsoleLog("LootEx", "Starting inventory handling",
                    Console.MessageType.Info)
 
         self.reset()
         settings.automatic_inventory_handling = True
         settings.save()
 
+        MerchantHandler._instance = self.instance_manager.lootex_merchant_handler
+        ConsoleLog("LootEx", f"Hijacked MerchantHandler instance to {MerchantHandler._instance.__class__.__name__}", Console.MessageType.Info)
+
+        AutoInventoryHandler._instance = self.instance_manager.lootex_auto_inventory_handler
+        ConsoleLog("LootEx", f"Hijacked AutoInventoryHandler instance to {AutoInventoryHandler._instance.__class__.__name__}", Console.MessageType.Info)
+        
         return True
 
 # endregion

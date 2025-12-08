@@ -2,7 +2,11 @@
     "\"Aptitude not Attitude\"": {
         "Identifier": "\"Aptitude not Attitude\"",
         "Descriptions": {
+<<<<<<< HEAD
             "English": "Halves casting time on spells of item's attribute (Chance: {arg1}%)"
+=======
+            "English": "Halves casting time on spells of item's attribute (Chance: {arg1[10248]}%)"
+>>>>>>> frenkey/apo_source
         },
         "Names": {
             "German": "\"Gut gewirkt ist halb gewonnen\"",
@@ -105,6 +109,7 @@
         "ItemTypeSpecific": {},
         "Modifiers": [
             {
+<<<<<<< HEAD
                 "Identifier": 8376,
                 "Arg1": 0,
                 "Arg2": 5,
@@ -114,6 +119,8 @@
                 "Max": 5
             },
             {
+=======
+>>>>>>> frenkey/apo_source
                 "Identifier": 8760,
                 "Arg1": 0,
                 "Arg2": 15,
@@ -121,6 +128,27 @@
                 "ModifierValueArg": "Arg2",
                 "Min": 10,
                 "Max": 15
+<<<<<<< HEAD
+=======
+            },
+            {
+                "Identifier": 9522,
+                "Arg1": 2,
+                "Arg2": 210,
+                "Arg": 722,
+                "ModifierValueArg": "None_",
+                "Min": 0,
+                "Max": 255
+            },
+            {
+                "Identifier": 8376,
+                "Arg1": 0,
+                "Arg2": 5,
+                "Arg": 5,
+                "ModifierValueArg": "Fixed",
+                "Min": 5,
+                "Max": 5
+>>>>>>> frenkey/apo_source
             }
         ]
     },
@@ -782,6 +810,18 @@
                 "Max": 5
             },
             {
+<<<<<<< HEAD
+=======
+                "Identifier": 9522,
+                "Arg1": 3,
+                "Arg2": 108,
+                "Arg": 876,
+                "ModifierValueArg": "None_",
+                "Min": 0,
+                "Max": 255
+            },
+            {
+>>>>>>> frenkey/apo_source
                 "Identifier": 8376,
                 "Arg1": 0,
                 "Arg2": 5,
@@ -1948,6 +1988,18 @@
                 "Max": 15
             },
             {
+<<<<<<< HEAD
+=======
+                "Identifier": 9522,
+                "Arg1": 2,
+                "Arg2": 212,
+                "Arg": 724,
+                "ModifierValueArg": "None_",
+                "Min": 0,
+                "Max": 255
+            },
+            {
+>>>>>>> frenkey/apo_source
                 "Identifier": 8216,
                 "Arg1": 0,
                 "Arg2": 10,
@@ -3242,7 +3294,11 @@
         "ModType": "Prefix",
         "ItemMods": {
             "Axe": "AxeHaft",
+<<<<<<< HEAD
             "Sword": "SwordPommel",
+=======
+            "Sword": "SwordHilt",
+>>>>>>> frenkey/apo_source
             "Daggers": "DaggerTang",
             "Scythe": "ScytheSnathe",
             "Bow": "BowString",
@@ -3291,7 +3347,11 @@
         "ModType": "Prefix",
         "ItemMods": {
             "Axe": "AxeHaft",
+<<<<<<< HEAD
             "Sword": "SwordPommel",
+=======
+            "Sword": "SwordHilt",
+>>>>>>> frenkey/apo_source
             "Daggers": "DaggerTang",
             "Scythe": "ScytheSnathe",
             "Bow": "BowString",
@@ -3341,7 +3401,11 @@
         "ItemMods": {
             "Axe": "AxeHaft",
             "Hammer": "HammerHaft",
+<<<<<<< HEAD
             "Sword": "SwordPommel",
+=======
+            "Sword": "SwordHilt",
+>>>>>>> frenkey/apo_source
             "Daggers": "DaggerTang",
             "Scythe": "ScytheSnathe",
             "Spear": "Spearhead"
@@ -3439,7 +3503,11 @@
             "Hammer": "HammerHaft",
             "Scythe": "ScytheSnathe",
             "Spear": "Spearhead",
+<<<<<<< HEAD
             "Sword": "SwordPommel"
+=======
+            "Sword": "SwordHilt"
+>>>>>>> frenkey/apo_source
         },
         "TargetTypes": [
             "MartialWeapon"
@@ -3484,7 +3552,11 @@
             "Hammer": "HammerHaft",
             "Scythe": "ScytheSnathe",
             "Spear": "Spearhead",
+<<<<<<< HEAD
             "Sword": "SwordPommel"
+=======
+            "Sword": "SwordHilt"
+>>>>>>> frenkey/apo_source
         },
         "TargetTypes": [
             "MartialWeapon"
@@ -3525,7 +3597,11 @@
         "ItemMods": {
             "Axe": "AxeHaft",
             "Hammer": "HammerHaft",
+<<<<<<< HEAD
             "Sword": "SwordPommel",
+=======
+            "Sword": "SwordHilt",
+>>>>>>> frenkey/apo_source
             "Daggers": "DaggerTang",
             "Scythe": "ScytheSnathe",
             "Spear": "Spearhead"
@@ -3668,7 +3744,11 @@
             "Hammer": "HammerHaft",
             "Scythe": "ScytheSnathe",
             "Spear": "Spearhead",
+<<<<<<< HEAD
             "Sword": "SwordPommel"
+=======
+            "Sword": "SwordHilt"
+>>>>>>> frenkey/apo_source
         },
         "TargetTypes": [
             "MartialWeapon"
@@ -3747,7 +3827,11 @@
         "ModType": "Prefix",
         "ItemMods": {
             "Axe": "AxeHaft",
+<<<<<<< HEAD
             "Sword": "SwordPommel",
+=======
+            "Sword": "SwordHilt",
+>>>>>>> frenkey/apo_source
             "Daggers": "DaggerTang",
             "Scythe": "ScytheSnathe",
             "Bow": "BowString",
@@ -3801,7 +3885,11 @@
             "Hammer": "HammerHaft",
             "Scythe": "ScytheSnathe",
             "Spear": "Spearhead",
+<<<<<<< HEAD
             "Sword": "SwordPommel"
+=======
+            "Sword": "SwordHilt"
+>>>>>>> frenkey/apo_source
         },
         "TargetTypes": [
             "MartialWeapon"
@@ -3889,7 +3977,11 @@
             "Hammer": "HammerHaft",
             "Scythe": "ScytheSnathe",
             "Spear": "Spearhead",
+<<<<<<< HEAD
             "Sword": "SwordPommel"
+=======
+            "Sword": "SwordHilt"
+>>>>>>> frenkey/apo_source
         },
         "TargetTypes": [
             "MartialWeapon"
@@ -3995,6 +4087,18 @@
                 "Max": 5
             },
             {
+<<<<<<< HEAD
+=======
+                "Identifier": 9520,
+                "Arg1": 2,
+                "Arg2": 102,
+                "Arg": 614,
+                "ModifierValueArg": "None_",
+                "Min": 0,
+                "Max": 255
+            },
+            {
+>>>>>>> frenkey/apo_source
                 "Identifier": 8424,
                 "Arg1": 0,
                 "Arg2": 1,
@@ -4026,7 +4130,11 @@
         "ModType": "Prefix",
         "ItemMods": {
             "Axe": "AxeHaft",
+<<<<<<< HEAD
             "Sword": "SwordPommel",
+=======
+            "Sword": "SwordHilt",
+>>>>>>> frenkey/apo_source
             "Daggers": "DaggerTang",
             "Spear": "Spearhead"
         },
@@ -4049,6 +4157,18 @@
                 "Max": 3
             },
             {
+<<<<<<< HEAD
+=======
+                "Identifier": 9520,
+                "Arg1": 2,
+                "Arg2": 102,
+                "Arg": 614,
+                "ModifierValueArg": "None_",
+                "Min": 0,
+                "Max": 255
+            },
+            {
+>>>>>>> frenkey/apo_source
                 "Identifier": 8424,
                 "Arg1": 0,
                 "Arg2": 1,
@@ -4085,7 +4205,11 @@
             "Hammer": "HammerHaft",
             "Scythe": "ScytheSnathe",
             "Spear": "Spearhead",
+<<<<<<< HEAD
             "Sword": "SwordPommel"
+=======
+            "Sword": "SwordHilt"
+>>>>>>> frenkey/apo_source
         },
         "TargetTypes": [
             "MartialWeapon"
@@ -4103,6 +4227,18 @@
                 "Max": 1
             },
             {
+<<<<<<< HEAD
+=======
+                "Identifier": 9520,
+                "Arg1": 2,
+                "Arg2": 102,
+                "Arg": 614,
+                "ModifierValueArg": "None_",
+                "Min": 0,
+                "Max": 255
+            },
+            {
+>>>>>>> frenkey/apo_source
                 "Identifier": 8392,
                 "Arg1": 0,
                 "Arg2": 1,
@@ -4334,6 +4470,18 @@
                 "Max": 1
             },
             {
+<<<<<<< HEAD
+=======
+                "Identifier": 42288,
+                "Arg1": 1,
+                "Arg2": 175,
+                "Arg": 431,
+                "ModifierValueArg": "None_",
+                "Min": 0,
+                "Max": 255
+            },
+            {
+>>>>>>> frenkey/apo_source
                 "Identifier": 41544,
                 "Arg1": 20,
                 "Arg2": 0,
@@ -4493,7 +4641,11 @@
             "Axe": "AxeGrip",
             "Bow": "BowGrip",
             "Hammer": "HammerGrip",
+<<<<<<< HEAD
             "Sword": "SwordHilt",
+=======
+            "Sword": "SwordPommel",
+>>>>>>> frenkey/apo_source
             "Staff": "StaffWrapping"
         },
         "TargetTypes": [
@@ -4516,6 +4668,18 @@
                 "Max": 0
             },
             {
+<<<<<<< HEAD
+=======
+                "Identifier": 42288,
+                "Arg1": 1,
+                "Arg2": 175,
+                "Arg": 431,
+                "ModifierValueArg": "None_",
+                "Min": 0,
+                "Max": 255
+            },
+            {
+>>>>>>> frenkey/apo_source
                 "Identifier": 41544,
                 "Arg1": 20,
                 "Arg2": 0,
@@ -4552,7 +4716,11 @@
             "Hammer": "HammerGrip",
             "Scythe": "ScytheGrip",
             "Spear": "SpearGrip",
+<<<<<<< HEAD
             "Sword": "SwordHilt",
+=======
+            "Sword": "SwordPommel",
+>>>>>>> frenkey/apo_source
             "Staff": "StaffWrapping"
         },
         "TargetTypes": [
@@ -4602,7 +4770,11 @@
             "Axe": "AxeGrip",
             "Bow": "BowGrip",
             "Hammer": "HammerGrip",
+<<<<<<< HEAD
             "Sword": "SwordHilt",
+=======
+            "Sword": "SwordPommel",
+>>>>>>> frenkey/apo_source
             "Staff": "StaffWrapping"
         },
         "TargetTypes": [
@@ -4625,6 +4797,18 @@
                 "Max": 8
             },
             {
+<<<<<<< HEAD
+=======
+                "Identifier": 42288,
+                "Arg1": 1,
+                "Arg2": 175,
+                "Arg": 431,
+                "ModifierValueArg": "None_",
+                "Min": 0,
+                "Max": 255
+            },
+            {
+>>>>>>> frenkey/apo_source
                 "Identifier": 41544,
                 "Arg1": 20,
                 "Arg2": 0,
@@ -4749,7 +4933,11 @@
             "Axe": "AxeGrip",
             "Bow": "BowGrip",
             "Hammer": "HammerGrip",
+<<<<<<< HEAD
             "Sword": "SwordHilt",
+=======
+            "Sword": "SwordPommel",
+>>>>>>> frenkey/apo_source
             "Staff": "StaffWrapping"
         },
         "TargetTypes": [
@@ -4772,6 +4960,18 @@
                 "Max": 9
             },
             {
+<<<<<<< HEAD
+=======
+                "Identifier": 42288,
+                "Arg1": 1,
+                "Arg2": 175,
+                "Arg": 431,
+                "ModifierValueArg": "None_",
+                "Min": 0,
+                "Max": 255
+            },
+            {
+>>>>>>> frenkey/apo_source
                 "Identifier": 41544,
                 "Arg1": 20,
                 "Arg2": 0,
@@ -4795,7 +4995,11 @@
             "Axe": "AxeGrip",
             "Bow": "BowGrip",
             "Hammer": "HammerGrip",
+<<<<<<< HEAD
             "Sword": "SwordHilt",
+=======
+            "Sword": "SwordPommel",
+>>>>>>> frenkey/apo_source
             "Staff": "StaffWrapping"
         },
         "TargetTypes": [
@@ -4818,6 +5022,18 @@
                 "Max": 6
             },
             {
+<<<<<<< HEAD
+=======
+                "Identifier": 42288,
+                "Arg1": 1,
+                "Arg2": 175,
+                "Arg": 431,
+                "ModifierValueArg": "None_",
+                "Min": 0,
+                "Max": 255
+            },
+            {
+>>>>>>> frenkey/apo_source
                 "Identifier": 41544,
                 "Arg1": 20,
                 "Arg2": 0,
@@ -4883,7 +5099,11 @@
             "Hammer": "HammerGrip",
             "Scythe": "ScytheGrip",
             "Spear": "SpearGrip",
+<<<<<<< HEAD
             "Sword": "SwordHilt",
+=======
+            "Sword": "SwordPommel",
+>>>>>>> frenkey/apo_source
             "Staff": "StaffWrapping"
         },
         "TargetTypes": [
@@ -5012,7 +5232,11 @@
             "Hammer": "HammerGrip",
             "Scythe": "ScytheGrip",
             "Spear": "SpearGrip",
+<<<<<<< HEAD
             "Sword": "SwordHilt",
+=======
+            "Sword": "SwordPommel",
+>>>>>>> frenkey/apo_source
             "Staff": "StaffWrapping",
             "Shield": "ShieldHandle",
             "Offhand": "FocusCore"
@@ -5056,7 +5280,11 @@
             "Axe": "AxeGrip",
             "Bow": "BowGrip",
             "Hammer": "HammerGrip",
+<<<<<<< HEAD
             "Sword": "SwordHilt",
+=======
+            "Sword": "SwordPommel",
+>>>>>>> frenkey/apo_source
             "Staff": "StaffWrapping"
         },
         "TargetTypes": [
@@ -5079,6 +5307,18 @@
                 "Max": 5
             },
             {
+<<<<<<< HEAD
+=======
+                "Identifier": 42288,
+                "Arg1": 1,
+                "Arg2": 175,
+                "Arg": 431,
+                "ModifierValueArg": "None_",
+                "Min": 0,
+                "Max": 255
+            },
+            {
+>>>>>>> frenkey/apo_source
                 "Identifier": 41544,
                 "Arg1": 20,
                 "Arg2": 0,
@@ -5355,7 +5595,11 @@
             "Axe": "AxeGrip",
             "Bow": "BowGrip",
             "Hammer": "HammerGrip",
+<<<<<<< HEAD
             "Sword": "SwordHilt",
+=======
+            "Sword": "SwordPommel",
+>>>>>>> frenkey/apo_source
             "Staff": "StaffWrapping"
         },
         "TargetTypes": [
@@ -5378,6 +5622,18 @@
                 "Max": 10
             },
             {
+<<<<<<< HEAD
+=======
+                "Identifier": 42288,
+                "Arg1": 1,
+                "Arg2": 175,
+                "Arg": 431,
+                "ModifierValueArg": "None_",
+                "Min": 0,
+                "Max": 255
+            },
+            {
+>>>>>>> frenkey/apo_source
                 "Identifier": 41544,
                 "Arg1": 20,
                 "Arg2": 0,
@@ -5440,7 +5696,11 @@
             "Axe": "AxeGrip",
             "Bow": "BowGrip",
             "Hammer": "HammerGrip",
+<<<<<<< HEAD
             "Sword": "SwordHilt",
+=======
+            "Sword": "SwordPommel",
+>>>>>>> frenkey/apo_source
             "Staff": "StaffWrapping"
         },
         "TargetTypes": [
@@ -5463,6 +5723,18 @@
                 "Max": 3
             },
             {
+<<<<<<< HEAD
+=======
+                "Identifier": 42288,
+                "Arg1": 1,
+                "Arg2": 175,
+                "Arg": 431,
+                "ModifierValueArg": "None_",
+                "Min": 0,
+                "Max": 255
+            },
+            {
+>>>>>>> frenkey/apo_source
                 "Identifier": 41544,
                 "Arg1": 20,
                 "Arg2": 0,
@@ -5616,7 +5888,11 @@
             "Hammer": "HammerGrip",
             "Scythe": "ScytheGrip",
             "Spear": "SpearGrip",
+<<<<<<< HEAD
             "Sword": "SwordHilt",
+=======
+            "Sword": "SwordPommel",
+>>>>>>> frenkey/apo_source
             "Staff": "StaffWrapping"
         },
         "TargetTypes": [
@@ -5650,7 +5926,11 @@
             "Axe": "AxeGrip",
             "Bow": "BowGrip",
             "Hammer": "HammerGrip",
+<<<<<<< HEAD
             "Sword": "SwordHilt",
+=======
+            "Sword": "SwordPommel",
+>>>>>>> frenkey/apo_source
             "Staff": "StaffWrapping"
         },
         "TargetTypes": [
@@ -5673,6 +5953,18 @@
                 "Max": 4
             },
             {
+<<<<<<< HEAD
+=======
+                "Identifier": 42288,
+                "Arg1": 1,
+                "Arg2": 175,
+                "Arg": 431,
+                "ModifierValueArg": "None_",
+                "Min": 0,
+                "Max": 255
+            },
+            {
+>>>>>>> frenkey/apo_source
                 "Identifier": 41544,
                 "Arg1": 20,
                 "Arg2": 0,
@@ -5920,7 +6212,11 @@
             "Axe": "AxeGrip",
             "Bow": "BowGrip",
             "Hammer": "HammerGrip",
+<<<<<<< HEAD
             "Sword": "SwordHilt",
+=======
+            "Sword": "SwordPommel",
+>>>>>>> frenkey/apo_source
             "Staff": "StaffWrapping"
         },
         "TargetTypes": [
@@ -5943,6 +6239,18 @@
                 "Max": 7
             },
             {
+<<<<<<< HEAD
+=======
+                "Identifier": 42288,
+                "Arg1": 1,
+                "Arg2": 175,
+                "Arg": 431,
+                "ModifierValueArg": "None_",
+                "Min": 0,
+                "Max": 255
+            },
+            {
+>>>>>>> frenkey/apo_source
                 "Identifier": 41544,
                 "Arg1": 20,
                 "Arg2": 0,
@@ -5966,7 +6274,11 @@
             "Axe": "AxeGrip",
             "Bow": "BowGrip",
             "Hammer": "HammerGrip",
+<<<<<<< HEAD
             "Sword": "SwordHilt",
+=======
+            "Sword": "SwordPommel",
+>>>>>>> frenkey/apo_source
             "Staff": "StaffWrapping"
         },
         "TargetTypes": [
@@ -5989,6 +6301,18 @@
                 "Max": 2
             },
             {
+<<<<<<< HEAD
+=======
+                "Identifier": 42288,
+                "Arg1": 1,
+                "Arg2": 175,
+                "Arg": 431,
+                "ModifierValueArg": "None_",
+                "Min": 0,
+                "Max": 255
+            },
+            {
+>>>>>>> frenkey/apo_source
                 "Identifier": 41544,
                 "Arg1": 20,
                 "Arg2": 0,
@@ -6068,7 +6392,11 @@
             "Hammer": "HammerGrip",
             "Scythe": "ScytheGrip",
             "Spear": "SpearGrip",
+<<<<<<< HEAD
             "Sword": "SwordHilt",
+=======
+            "Sword": "SwordPommel",
+>>>>>>> frenkey/apo_source
             "Staff": "StaffWrapping"
         },
         "TargetTypes": [
@@ -6144,7 +6472,11 @@
             "Hammer": "HammerGrip",
             "Scythe": "ScytheGrip",
             "Spear": "SpearGrip",
+<<<<<<< HEAD
             "Sword": "SwordHilt",
+=======
+            "Sword": "SwordPommel",
+>>>>>>> frenkey/apo_source
             "Wand": "WandWrapping",
             "Staff": "StaffWrapping"
         },
@@ -6193,7 +6525,11 @@
             "Hammer": "HammerGrip",
             "Scythe": "ScytheGrip",
             "Spear": "SpearGrip",
+<<<<<<< HEAD
             "Sword": "SwordHilt",
+=======
+            "Sword": "SwordPommel",
+>>>>>>> frenkey/apo_source
             "Wand": "WandWrapping",
             "Staff": "StaffWrapping"
         },
@@ -6232,7 +6568,11 @@
             "Hammer": "HammerGrip",
             "Scythe": "ScytheGrip",
             "Spear": "SpearGrip",
+<<<<<<< HEAD
             "Sword": "SwordHilt",
+=======
+            "Sword": "SwordPommel",
+>>>>>>> frenkey/apo_source
             "Wand": "WandWrapping",
             "Staff": "StaffWrapping"
         },
@@ -6281,7 +6621,11 @@
             "Hammer": "HammerGrip",
             "Scythe": "ScytheGrip",
             "Spear": "SpearGrip",
+<<<<<<< HEAD
             "Sword": "SwordHilt",
+=======
+            "Sword": "SwordPommel",
+>>>>>>> frenkey/apo_source
             "Wand": "WandWrapping",
             "Staff": "StaffWrapping"
         },
@@ -6330,7 +6674,11 @@
             "Hammer": "HammerGrip",
             "Scythe": "ScytheGrip",
             "Spear": "SpearGrip",
+<<<<<<< HEAD
             "Sword": "SwordHilt",
+=======
+            "Sword": "SwordPommel",
+>>>>>>> frenkey/apo_source
             "Wand": "WandWrapping",
             "Staff": "StaffWrapping"
         },
@@ -6379,7 +6727,11 @@
             "Hammer": "HammerGrip",
             "Scythe": "ScytheGrip",
             "Spear": "SpearGrip",
+<<<<<<< HEAD
             "Sword": "SwordHilt",
+=======
+            "Sword": "SwordPommel",
+>>>>>>> frenkey/apo_source
             "Wand": "WandWrapping",
             "Staff": "StaffWrapping"
         },
@@ -6428,7 +6780,11 @@
             "Hammer": "HammerGrip",
             "Scythe": "ScytheGrip",
             "Spear": "SpearGrip",
+<<<<<<< HEAD
             "Sword": "SwordHilt",
+=======
+            "Sword": "SwordPommel",
+>>>>>>> frenkey/apo_source
             "Wand": "WandWrapping",
             "Staff": "StaffWrapping"
         },
@@ -6477,7 +6833,11 @@
             "Hammer": "HammerGrip",
             "Scythe": "ScytheGrip",
             "Spear": "SpearGrip",
+<<<<<<< HEAD
             "Sword": "SwordHilt",
+=======
+            "Sword": "SwordPommel",
+>>>>>>> frenkey/apo_source
             "Wand": "WandWrapping",
             "Staff": "StaffWrapping"
         },
@@ -6526,7 +6886,11 @@
             "Hammer": "HammerGrip",
             "Scythe": "ScytheGrip",
             "Spear": "SpearGrip",
+<<<<<<< HEAD
             "Sword": "SwordHilt",
+=======
+            "Sword": "SwordPommel",
+>>>>>>> frenkey/apo_source
             "Wand": "WandWrapping",
             "Staff": "StaffWrapping"
         },
@@ -6575,7 +6939,11 @@
             "Hammer": "HammerGrip",
             "Scythe": "ScytheGrip",
             "Spear": "SpearGrip",
+<<<<<<< HEAD
             "Sword": "SwordHilt",
+=======
+            "Sword": "SwordPommel",
+>>>>>>> frenkey/apo_source
             "Wand": "WandWrapping",
             "Staff": "StaffWrapping"
         },

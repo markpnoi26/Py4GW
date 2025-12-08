@@ -205,12 +205,17 @@ def EquipSkillBar(bot: Botting):
     yield from AssignBuild(bot)
     yield from bot.config.build_handler.LoadSkillBar()
 
+def PrintDebug():
+   ConsoleLog("YAVB 2.0", "TEST") 
+   return
 
-def HandleInventory(bot: Botting) -> None:
+   yield
+
+def HandleInventory(bot: Botting) -> None:    
     bot.States.AddHeader("Inventory Handling")
     bot.Items.AutoIDAndSalvageAndDepositItems() #sort bags, auto id, salvage, deposit to bank
     bot.Move.XYAndInteractNPC(-23110, 14942) # Merchant in Longeyes Ledge
-    bot.Wait.ForTime(500)
+    bot.Wait.ForTime(250)
     bot.Merchant.SellMaterialsToMerchant() # Sell materials to merchant, make space in inventory
     bot.Merchant.Restock.IdentifyKits() #restock identify kits
     bot.Merchant.Restock.SalvageKits() #restock salvage kits
@@ -218,7 +223,7 @@ def HandleInventory(bot: Botting) -> None:
     bot.Merchant.SellMaterialsToMerchant() #Sell remaining materials again to make sure inventory is clear
     bot.Merchant.Restock.IdentifyKits() #restock identify kits
     bot.Merchant.Restock.SalvageKits() #restock salvage kits
-    bot.Items.Restock.BirthdayCupcake() #restock birthday cupcake
+    # bot.Items.Restock.BirthdayCupcake() #restock birthday cupcake
     
 def _wait_for_aggro_ball(bot: Botting, side_label: str, cycle_timeout: int = 150):
     """

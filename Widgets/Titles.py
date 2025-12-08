@@ -2,6 +2,7 @@ from Py4GWCoreLib import ThrottledTimer
 from Py4GWCoreLib import Routines
 from Py4GWCoreLib import GLOBAL_CACHE
 from Py4GWCoreLib import TitleID
+from Py4GWCoreLib.py4gwcorelib_src.Console import ConsoleLog
 
 
 module_name = "Set title on map load"
@@ -75,24 +76,16 @@ lightbringer_map_names = {
 game_throttle_timer = ThrottledTimer(100)
 
 
-def main():
-    
+def main():    
     if not game_throttle_timer.IsExpired():
         return
     
     game_throttle_timer.Reset()
     
-    is_map_valid = Routines.Checks.Map.MapValid()
-    is_explorable = GLOBAL_CACHE.Map.IsExplorable()
-    
-    if not is_map_valid:
+    if not Routines.Checks.Map.IsMapReady():
         widget_config.title_applied = False
         return
-    
-    if not is_explorable:
-        widget_config.title_applied = False
-        return
-    
+                
     map_name = GLOBAL_CACHE.Map.GetMapName()
 
     if not widget_config.title_applied:
@@ -104,8 +97,9 @@ def main():
             GLOBAL_CACHE.Player.SetActiveTitle(TitleID.Norn.value)
         elif map_name in vanguard_map_names:
             GLOBAL_CACHE.Player.SetActiveTitle(TitleID.Ebon_Vanguard.value)
-        elif map_name in lightbringer_map_names:
+        else:
             GLOBAL_CACHE.Player.SetActiveTitle(TitleID.Lightbringer.value)
+            
         widget_config.title_applied = True
 
 if __name__ == "__main__":

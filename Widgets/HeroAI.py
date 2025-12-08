@@ -1,8 +1,26 @@
 import math
+import sys
 import traceback
-from enum import Enum
-
 import Py4GW
+
+MODULE_NAME = "HeroAI"
+for module_name in list(sys.modules.keys()):
+    if module_name not in ("sys", "importlib", "cache_data"):
+        try:   
+            if f"{MODULE_NAME}." in module_name:
+                del sys.modules[module_name]
+        except Exception as e:
+            Py4GW.Console.Log(MODULE_NAME, f"Error reloading module {module_name}: {e}", Py4GW.Console.MessageType.Error)
+
+from enum import Enum
+from PyMap import PyMap
+from Py4GWCoreLib.GlobalCache.SharedMemory import AccountData, SharedMessage
+from Py4GWCoreLib.ImGui_src.WindowModule import WindowModule
+from Py4GWCoreLib.Skillbar import SkillBar
+from Py4GWCoreLib.py4gwcorelib_src.Console import ConsoleLog
+from Py4GW_widget_manager import WidgetHandler
+
+from HeroAI.settings import Settings
 from HeroAI.cache_data import CacheData
 from HeroAI.constants import FOLLOW_DISTANCE_OUT_OF_COMBAT
 from HeroAI.constants import MAX_NUM_PLAYERS
@@ -29,6 +47,7 @@ from HeroAI.windows import DrawMultiboxTools
 from HeroAI.windows import DrawOptions
 from HeroAI.windows import DrawPanelButtons
 from HeroAI.windows import SubmitGameOptions
+from HeroAI.ui import draw_combined_hero_panel, draw_command_panel, draw_configure_window, draw_dialog_overlay, draw_hero_panel, draw_hotbars, draw_skip_cutscene_overlay
 from Py4GWCoreLib import GLOBAL_CACHE
 from Py4GWCoreLib import ActionQueueManager
 from Py4GWCoreLib import IconsFontAwesome5
@@ -45,14 +64,36 @@ from Py4GWCoreLib import SharedCommandType
 from Py4GWCoreLib import UIManager
 from Py4GWCoreLib import Utils
 
-MODULE_NAME = "HeroAI"
 
 FOLLOW_COMBAT_DISTANCE = 150.0  # if body blocked, we get close enough.
 LEADER_FLAG_TOUCH_RANGE_THRESHOLD_VALUE = Range.Touch.value * 1.1
 LOOT_THROTTLE_CHECK = ThrottledTimer(250)
+SETTINGS_THROTTLE = ThrottledTimer(50)
+ACCOUNT_THROTTLE = ThrottledTimer(500)
 
 cached_data = CacheData()
+messages : list[tuple[int, SharedMessage]] = []
+hero_windows : dict[str, WindowModule] = {}
 
+configure_window : WindowModule = WindowModule(
+    module_name="HeroAI Configuration",
+    window_name="HeroAI Configuration",
+    window_size=(400, 300),
+    window_pos=(200, 200),
+    can_close=True,
+)
+command_panel_window : WindowModule = WindowModule(
+    module_name="HeroAI Command Panel",
+    window_name="HeroAI Command Panel",
+    window_size=(400, 300),
+    window_pos=(200, 200),
+    can_close=False,
+    window_flags=PyImGui.WindowFlags(PyImGui.WindowFlags.NoTitleBar | PyImGui.WindowFlags.AlwaysAutoResize),
+)
+widget_handler = WidgetHandler()
+module_info = None
+
+GLOBAL_CACHE.Coroutines.clear()
 
 def HandleOutOfCombat(cached_data: CacheData):
     if not cached_data.data.is_combat_enabled:  # halt operation if combat is disabled
@@ -237,6 +278,9 @@ def Follow(cached_data: CacheData):
 
 
 def draw_Targeting_floating_buttons(cached_data: CacheData):
+    if not settings.ShowFloatingTargets:
+        return
+    
     if not cached_data.option_show_floating_targets:
         return
     if not GLOBAL_CACHE.Map.IsExplorable():
@@ -272,6 +316,7 @@ class TabType(Enum):
 
 
 selected_tab: TabType = TabType.party
+settings : Settings = Settings()
 
 
 def DrawFramedContent(cached_data: CacheData, content_frame_id):
@@ -335,6 +380,9 @@ def DrawFramedContent(cached_data: CacheData, content_frame_id):
 
 
 def DrawEmbeddedWindow(cached_data: CacheData):
+    if not settings.ShowPartyPanelUI:
+        return
+    
     global selected_tab
     parent_frame_id = UIManager.GetFrameIDByHash(PARTY_WINDOW_HASH)
     outpost_content_frame_id = UIManager.GetChildFrameID(PARTY_WINDOW_HASH, PARTY_WINDOW_FRAME_OUTPOST_OFFSETS)
@@ -389,13 +437,102 @@ def DrawEmbeddedWindow(cached_data: CacheData):
 
 
 def UpdateStatus(cached_data: CacheData):
+    global hero_windows, messages
+    ## Blacklisted loot
+    ## 6102 - Spear of Archemorus
+    ## None - 965
+    ## Level 1 - 966
+    ## Level 2 - 967
+    ## Level 3 - 968
+    ## Level 4 - 969
+    ## Level 5 - 970
+    
+    ## 6104 - Urn of Saint Viktor
+    ## None - 1106
+    ## Level 1 - 1107
+    ## Level 2 - 1108
+    ## Level 3 - 1109
+    ## Level 4 - 1110
+    ## Level 5 - 1111 
+            
     RegisterPlayer(cached_data)
     RegisterHeroes(cached_data)
     UpdatePlayers(cached_data)
     UpdateGameOptions(cached_data)
 
     cached_data.UpdateGameOptions()
+    
+    own_data = GLOBAL_CACHE.ShMem.GetAccountDataFromEmail(cached_data.account_email)
+    
+    if own_data and own_data.PlayerIsPartyLeader and settings.DisableAutomationOnLeaderAccount:        
+        hero_ai_data = GLOBAL_CACHE.ShMem.GetGerHeroAIOptionsByPartyNumber(own_data.PartyPosition)
+                
+        if hero_ai_data is not None:
+            hero_ai_data.Following = False
+            hero_ai_data.Avoidance = False
+            hero_ai_data.Looting = False
+            hero_ai_data.Targeting = False
+            hero_ai_data.Combat = False
+            GLOBAL_CACHE.ShMem.SetHeroAIOptions(own_data.AccountEmail, hero_ai_data)            
+            
+                  
+    if not own_data:
+        return      
+    
+    identifier = "combined_hero_panel"
+    accounts = GLOBAL_CACHE.ShMem.GetAllAccountData()
+    if not settings.ShowPanelOnlyOnLeaderAccount or own_data.PlayerIsPartyLeader:
+        if settings.ShowHeroPanels:
+            messages = GLOBAL_CACHE.ShMem.GetAllMessages()
+        
+            if settings.CombinePanels:            
+                if not identifier in hero_windows:
+                    stored = settings.HeroPanelPositions.get(identifier, (200, 200, 200, 100, False))
+                    hero_windows[identifier] = WindowModule(
+                        module_name=f"HeroAI - {identifier}",
+                        window_name=f"Heroes##HeroAI - {identifier}",
+                        window_size=(stored[2], stored[3]),
+                        window_pos=(stored[0], stored[1]),
+                        collapse=stored[4],
+                        can_close=True,
+                    )
+                    
+                open = hero_windows[identifier].begin(True, PyImGui.WindowFlags.AlwaysAutoResize)
+            
+            for account in accounts:
+                if not account.AccountEmail:
+                    continue
+            
+                # if account.AccountEmail == GLOBAL_CACHE.Player.GetAccountEmail():
+                #     continue
+                
+                if not settings.CombinePanels:
+                    if not account.AccountEmail in hero_windows:
+                        stored = settings.HeroPanelPositions.get(account.AccountEmail.lower(), (200, 200, 200, 100, False))
+                        hero_windows[account.AccountEmail] = WindowModule(
+                            module_name=f"HeroAI - {account.AccountEmail}",
+                            window_name=f"##HeroAI - {account.AccountEmail}",
+                            window_size=(stored[2], stored[3]),
+                            window_pos=(stored[0], stored[1]),
+                            collapse=stored[4],
+                            can_close=False,
+                        )
+                        
+                    draw_hero_panel(hero_windows[account.AccountEmail], account, cached_data, messages)
+                else:                    
+                    draw_combined_hero_panel(account, cached_data, messages)
+                    
+            if settings.CombinePanels:
+                hero_windows[identifier].end()
 
+    if settings.ShowCommandPanel and (own_data.PlayerIsPartyLeader or not settings.ShowCommandPanelOnlyOnLeaderAccount):
+        draw_command_panel(command_panel_window, accounts, cached_data)
+    
+    if settings.CommandHotBars:
+        draw_hotbars(accounts, cached_data)
+        
+    draw_dialog_overlay(accounts, cached_data, messages)
+                
     DrawEmbeddedWindow(cached_data)
     if cached_data.ui_state_data.show_classic_controls:
         DrawMainWindow(cached_data)
@@ -475,16 +612,38 @@ def UpdateStatus(cached_data: CacheData):
 
 
 def configure():
-    pass
+    draw_configure_window()
 
 
 def main():
-    global cached_data
-    try:
+    global cached_data, settings
+    
+    try:        
         if not Routines.Checks.Map.MapValid():
             return
 
         cached_data.Update()
+        
+        if SETTINGS_THROTTLE.IsExpired():
+            SETTINGS_THROTTLE.Reset()
+                            
+            if not settings.ensure_initialized(): 
+                SETTINGS_THROTTLE.SetThrottleTime(50)                              
+                hero_windows.clear()
+                window_settings = settings.HeroPanelPositions.get(command_panel_window.window_name.lower().replace(" ", "_"), (200, 200, 400, 300, False))
+                
+                command_panel_window.window_pos = (window_settings[0], window_settings[1])
+                command_panel_window.window_size = (window_settings[2], window_settings[3])
+                command_panel_window.first_run = True             
+                return
+            elif SETTINGS_THROTTLE.throttle_time != 1000:
+                SETTINGS_THROTTLE.SetThrottleTime(1000)
+            
+            settings.write_settings()
+        
+        if not settings._initialized:
+            return
+            
         if GLOBAL_CACHE.Map.IsMapReady() and GLOBAL_CACHE.Party.IsPartyLoaded():
             UpdateStatus(cached_data)
 
@@ -504,6 +663,11 @@ def main():
     finally:
         pass
 
+def minimal():    
+    draw_skip_cutscene_overlay()
 
-if __name__ == "__main__":
-    main()
+def on_enable():
+    settings.reset()
+    SETTINGS_THROTTLE.SetThrottleTime(50)
+
+__all__ = ['main', 'configure', 'on_enable']

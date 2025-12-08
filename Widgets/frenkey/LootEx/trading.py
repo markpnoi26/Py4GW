@@ -12,13 +12,7 @@ from Py4GWCoreLib.Merchant import Trading
 from Py4GWCoreLib.py4gwcorelib_src.Console import ConsoleLog
 from Widgets.frenkey.LootEx import utility
 from Widgets.frenkey.LootEx.cache import Cached_Item
-from Widgets.frenkey.LootEx.enum import MAX_CHARACTER_GOLD, MAX_VAULT_GOLD, MerchantType
-
-class TraderActionState(Enum):
-    Pending = 0
-    Running = 1
-    Completed = 2
-    Timeout = 3
+from Widgets.frenkey.LootEx.enum import MAX_CHARACTER_GOLD, MAX_VAULT_GOLD, ActionState, MerchantType
 
 class ActionType(Enum):
     Buy = 1
@@ -28,24 +22,24 @@ class TraderCoroutine:
     def __init__(self, generator_fn: Callable[[], Generator], timeout_seconds: float = 5.0):
         self.generator_fn = generator_fn
         self.generator = None
-        self.state = TraderActionState.Pending
+        self.state = ActionState.Pending
         self.started_at = datetime.min
         # self.timeout_seconds = timeout_seconds
 
-    def step(self) -> TraderActionState:
+    def step(self) -> ActionState:
         """
         Advances the coroutine by one 'yield'.
         Returns its current state.
         """
         # Start coroutine if not running yet
-        if self.state == TraderActionState.Pending:
+        if self.state == ActionState.Pending:
             self.generator = self.generator_fn()
-            self.state = TraderActionState.Running
+            self.state = ActionState.Running
             self.started_at = datetime.now()
 
         # # Timeout?
         # if (datetime.now() - self.started_at).total_seconds() > self.timeout_seconds:
-        #     self.state = TraderActionState.Timeout
+        #     self.state = ActionState.Timeout
         #     return self.state
 
         # Advance generator one step
@@ -55,16 +49,16 @@ class TraderCoroutine:
                 return self.state  # still Running
             
             else:
-                self.state = TraderActionState.Completed
+                self.state = ActionState.Completed
                 return self.state
 
         except StopIteration:
-            self.state = TraderActionState.Completed
+            self.state = ActionState.Completed
             return self.state
 
         except Exception as e:
             ConsoleLog("LootEx", f"Coroutine error: {e}", Console.MessageType.Error)
-            self.state = TraderActionState.Timeout
+            self.state = ActionState.Timeout
             return self.state
             
 class TraderAction:
@@ -85,15 +79,11 @@ class TraderAction:
 
         self.coroutine: TraderCoroutine | None = None
 
-    # ---------------------------------------------------
-    # ENTRY POINT
-    # ---------------------------------------------------
+    # Entry point
     def run(self) -> TraderCoroutine:
         return TraderCoroutine(self._gen_main)
 
-    # ---------------------------------------------------
-    # MAIN COROUTINE LOOP — REPEATS UNTIL DONE
-    # ---------------------------------------------------
+    # Main generator function
     def _gen_main(self) -> Generator:
         """
         Loop until quantity objective is reached:
@@ -121,9 +111,7 @@ class TraderAction:
                     False
         )
 
-    # ---------------------------------------------------
-    # CONDITION: Are we finished?
-    # ---------------------------------------------------
+    # Condition to stop the trading action
     def _is_done(self) -> bool:
         self._update_item()
         
@@ -194,9 +182,7 @@ class TraderAction:
         # normal items
         return q <= self.desired_quantity
 
-    # ---------------------------------------------------
-    # REQUEST PRICE
-    # ---------------------------------------------------
+    # Request a price quote from the merchant
     def _request_price(self) -> Generator:             
         self._update_item()
         if not self.is_item_valid:
@@ -225,9 +211,7 @@ class TraderAction:
         self._start_quote_time = datetime.now()
         yield
 
-    # ---------------------------------------------------
-    # WAIT FOR PRICE
-    # ---------------------------------------------------
+    # Wait until we receive a price quote
     def _wait_for_price(self) -> Generator:
         while True:     
             self._update_item()
@@ -268,9 +252,7 @@ class TraderAction:
 
             yield
 
-    # ---------------------------------------------------
-    # EXECUTE TRADE
-    # ---------------------------------------------------
+    # Execute the trade at the quoted price
     def _execute_trade(self) -> Generator:        
         self._update_item()
         if not self.is_item_valid:
@@ -296,17 +278,13 @@ class TraderAction:
         self._start_trade_time = datetime.now()
         yield
         
-    # ---------------------------------------------------
-    # UPDATE ITEM
-    # ---------------------------------------------------
+    # Update item validity and quantity
     def _update_item(self) -> None:
         item = PyItem(self.item.id)
         self.is_item_valid = item.IsItemValid(self.item.id) and (self.action is not ActionType.Sell or item.is_inventory_item) if item else False
         self.item.quantity = 0 if not self.is_item_valid else item.quantity
 
-    # ---------------------------------------------------
-    # CONFIRM TRADE
-    # ---------------------------------------------------
+    # Confirm that the trade has completed
     def _confirm_trade(self) -> Generator:
         """
         We watch the item's quantity and wait until it changes.

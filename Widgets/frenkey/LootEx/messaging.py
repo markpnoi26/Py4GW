@@ -31,6 +31,9 @@ def SendReloadProfiles():
     for acc in GLOBAL_CACHE.ShMem.GetAllAccountData():
         if acc.AccountEmail == GLOBAL_CACHE.Player.GetAccountEmail():
             continue
+        
+        if not acc.AccountEmail:
+            continue
     
         GLOBAL_CACHE.ShMem.SendMessage(GLOBAL_CACHE.Player.GetAccountEmail(), acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.ReloadProfiles, 0, 0))
 
@@ -78,8 +81,12 @@ def MergeWhenCollectionPaused():
             continue
         
         GLOBAL_CACHE.ShMem.SendMessage(account_email, acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.ReloadData, 0, 0))
-        GLOBAL_CACHE.ShMem.SendMessage(account_email, acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.ResumeDataCollection, 0, 0))
-            
+        GLOBAL_CACHE.ShMem.SendMessage(account_email, acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.StartDataCollection, 0, 0))
+    
+    from Widgets.frenkey.LootEx import settings
+    settings = settings.Settings()
+    settings.collect_items = True
+    
     return True
 
 def SendStart(exclude_self: bool = False):    
