@@ -888,7 +888,7 @@ def search(query: str, items: list[str]) -> list[str]:
 
 
 def get_armor_name_from_modifiers(item):
-    if not LOOTEX_AVAILABLE or not Util:
+    if not LOOTEX_AVAILABLE or not Util or not Cached_Item:
         try:
             base_name = ModelID(item.model_id).name.replace("_", " ")
         except ValueError:
@@ -936,13 +936,15 @@ def get_armor_name_from_modifiers(item):
             return None
 
     # Collect mods
-    _, armor_mods, _ = Util.GetMods(item.item_id)
     prefix = None
     suffix = None
 
-    for armor_mod in armor_mods:
-        mod_name = armor_mod.identifier.strip()
-        mod_type = armor_mod.mod_type.name
+    cached_item = Cached_Item(item.item_id, item.slot)
+    rune_mods, _ = cached_item.GetModsFromModifiers() or ([], [])
+    for mod_info in rune_mods:
+        mod = mod_info.Rune
+        mod_name = mod.name
+        mod_type = mod.mod_type.name
 
         if mod_type == "Prefix":
             prefix = mod_name
@@ -964,7 +966,7 @@ def get_armor_name_from_modifiers(item):
 
 
 def get_weapon_name_from_modifiers(item):
-    if not LOOTEX_AVAILABLE or not Util or not WeaponModInfo:
+    if not LOOTEX_AVAILABLE or not Util or not Cached_Item:
         try:
             base_name = ModelID(item.model_id).name.replace("_", " ")
         except ValueError:
@@ -1009,14 +1011,16 @@ def get_weapon_name_from_modifiers(item):
         return None
 
     # Collect mods
-    _, _, weapon_mods = Util.GetMods(item.item_id)
     prefix = None
     suffix = None
     inherent = None
 
-    for weapon_mod in weapon_mods:
-        mod_name = weapon_mod.identifier.strip()
-        mod_type = weapon_mod.mod_type.name
+    cached_item = Cached_Item(item.item_id, item.slot)
+    _, weapon_mods = cached_item.GetModsFromModifiers() or ([], [])
+    for mod_info in weapon_mods:
+        mod = mod_info.WeaponMod
+        mod_name = mod.name
+        mod_type = mod.mod_type.name
 
         if mod_type == "Prefix":
             prefix = mod_name
@@ -1066,8 +1070,8 @@ def draw_widget():
         PyImGui.set_next_window_pos(window_x, window_y)
         PyImGui.set_next_window_collapsed(window_collapsed, 0)
         on_first_load = False
-        if LOOTEX_AVAILABLE:
-            Data().Load()  # type: ignore
+        # if LOOTEX_AVAILABLE:
+        #     Data().Load()  # type: ignore
 
         TEAM_INVENTORY_CACHE = multi_store.load_all()
         INVENTORY_MODEL_ID_CACHE = inventory_model_ids_store.load()

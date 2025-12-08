@@ -344,6 +344,7 @@ class Cached_Item:
         
         self.mods = self.runes + self.weapon_mods
         self.has_mods = bool(self.runes or self.weapon_mods)
+        return (self.runes, self.weapon_mods)
 
     def HasModToKeep(self) -> tuple[bool, list, list]:
         return True if self.max_runes or self.max_weapon_mods else False, self.max_runes, self.max_weapon_mods

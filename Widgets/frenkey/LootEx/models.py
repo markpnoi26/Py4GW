@@ -1164,7 +1164,8 @@ class Rune(ItemMod):
         if any(result[0] == False for result in results):
             return False, False
         
-        return all(result[0] for result in results), all(result[1] for result in results)        
+        vals =  all(result[0] for result in results), all(result[1] for result in results)        
+        return vals
         
     def to_json(self) -> dict:
         return {
