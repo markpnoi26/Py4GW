@@ -3,9 +3,10 @@ from datetime import datetime
 from datetime import timezone
 
 import Py4GW
+import PyUIManager
 
 from HeroAI.cache_data import CacheData
-from Py4GWCoreLib import GLOBAL_CACHE
+from Py4GWCoreLib import GLOBAL_CACHE, Player
 from Py4GWCoreLib import ActionQueueManager
 from Py4GWCoreLib import CombatPrepSkillsType
 from Py4GWCoreLib import Console
@@ -19,6 +20,7 @@ from Py4GWCoreLib import SharedCommandType
 from Py4GWCoreLib import UIManager
 from Py4GWCoreLib import AutoPathing
 from Py4GWCoreLib.Py4GWcorelib import Keystroke
+from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GW_widget_manager import WidgetHandler
 
 cached_data = CacheData()
@@ -668,6 +670,61 @@ def DonateToGuild(index, message):
     GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
 # endregion
 
+#region Open Chest
+def OpenChest(index, message):
+    start_time = time.time()
+    
+    GLOBAL_CACHE.ShMem.MarkMessageAsRunning(message.ReceiverEmail, index)
+    yield from SnapshotHeroAIOptions(message.ReceiverEmail)
+
+    has_lockpick = GLOBAL_CACHE.Inventory.GetModelCount(ModelID.Lockpick) > 0
+    if not has_lockpick:
+        ConsoleLog(MODULE_NAME, "No lockpicks available, halting.", Console.MessageType.Warning)
+        GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
+        yield from RestoreHeroAISnapshot(message.ReceiverEmail)
+        return
+        
+    chest_id = int(message.Params[0])
+    if not GLOBAL_CACHE.Agent.IsValid(chest_id):
+        GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
+        yield from RestoreHeroAISnapshot(message.ReceiverEmail)       
+        return
+                
+    try:
+        yield from DisableHeroAIOptions(message.ReceiverEmail)
+        # yield from Routines.Yield.wait(100)
+        # x, y = GLOBAL_CACHE.Agent.GetXY(chest_id)
+        # ConsoleLog(MODULE_NAME, f"Moving to chest at ({x}, {y})", Console.MessageType.Info)
+        # yield from Routines.Yield.Movement.FollowPath([(x, y)])
+        # yield from Routines.Yield.wait(100)
+        
+        # ConsoleLog(MODULE_NAME, f"Interacting with chest ID {chest_id}", Console.MessageType.Info)
+        # yield from Routines.Yield.Player.InteractAgent(chest_id)
+        # yield from Routines.Yield.wait(500)
+
+        ConsoleLog(MODULE_NAME, "Checking for locked chest window...", Console.MessageType.Info)
+        if UIManager.IsLockedChestWindowVisible():
+            while True:
+                if time.time() - start_time > 30:
+                    ConsoleLog(MODULE_NAME, "Timeout reached while opening chest, halting.", Console.MessageType.Warning)
+                    GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
+                    yield from RestoreHeroAISnapshot(message.ReceiverEmail)       
+                    return
+            
+                Player.SendDialog(2)
+                yield from Routines.Yield.wait(125)    
+            
+                if not UIManager.IsLockedChestWindowVisible():
+                    ConsoleLog(MODULE_NAME, "Chest successfully unlocked.", Console.MessageType.Info)
+                    break
+        else:
+            ConsoleLog(MODULE_NAME, "Chest is not locked or already opened.", Console.MessageType.Info)
+            
+    finally:
+        yield from RestoreHeroAISnapshot(message.ReceiverEmail)
+        GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
+        
+
 # region PickUpLoot
 def PickUpLoot(index, message):
     def _exit_if_not_map_valid():
@@ -1280,6 +1337,7 @@ def ProcessMessages():
         case SharedCommandType.GetBlessing:
             pass
         case SharedCommandType.OpenChest:
+            GLOBAL_CACHE.Coroutines.append(OpenChest(index, message))
             pass
         case SharedCommandType.PickUpLoot:
             GLOBAL_CACHE.Coroutines.append(PickUpLoot(index, message))

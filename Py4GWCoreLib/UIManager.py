@@ -541,6 +541,17 @@ class UIManager:
         PyUIManager.UIManager.set_window_position(window_id, position)
     
     @staticmethod
+    def IsLockedChestWindowVisible() -> bool:
+        """
+        Check if the chest window is visible.
+
+        :return: True if the chest window is visible, False otherwise.
+        """
+        
+        fid = UIManager.GetChildFrameID(3856160816, [1])
+        return fid != 0 and UIManager.FrameExists(fid)
+    
+    @staticmethod
     def IsNPCDialogVisible() -> bool:
         """
         Check if the NPC dialog is visible.

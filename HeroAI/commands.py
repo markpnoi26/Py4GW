@@ -47,6 +47,7 @@ class HeroAICommands:
         self.Empty = Command("Empty", "", None)
         self.PixelStack = Command("Pixel Stack", IconsFontAwesome5.ICON_COMPRESS_ARROWS_ALT, self.pixel_stack_command, "Pixel Stack Team")
         self.InteractWithTarget = Command("Interact With Target", IconsFontAwesome5.ICON_HAND_POINT_RIGHT, self.interact_with_target_command, "Interact with current target")
+        self.UnlockChest = Command("Unlock Chest", IconsFontAwesome5.ICON_KEY, self.unlock_chest_command, "Unlock chest with current target")
         self.TakeDialogWithTarget = Command("Dialog With Target", IconsFontAwesome5.ICON_COMMENT_DOTS, self.talk_and_dialog_with_target_command, "Take dialog with current target")
         self.OpenConsumables = Command("Open Consumables", IconsFontAwesome5.ICON_CANDY_CANE, self.open_consumables_commands, "Open/Close Consumables Configuration Window")
         self.FlagHeroes = Command("Flag Heroes", IconsFontAwesome5.ICON_FLAG, self.flag_heroes_command, "Flag all heroes", map_types=["Explorable"])
@@ -64,6 +65,7 @@ class HeroAICommands:
         self.__commands = [
             self.Empty,
             self.PixelStack,
+            self.UnlockChest,
             self.InteractWithTarget,
             self.TakeDialogWithTarget,
             self.OpenConsumables,
@@ -206,6 +208,13 @@ class HeroAICommands:
                 continue
             
             GLOBAL_CACHE.ShMem.SendMessage(sender_email, account.AccountEmail, SharedCommandType.PixelStack, (player_x, player_y, 0, 0))
+            
+    def unlock_chest_command(self, accounts: list[AccountData]):
+        sender_email = GLOBAL_CACHE.Player.GetAccountEmail()        
+        target_id = GLOBAL_CACHE.Player.GetTargetID()
+        
+        for account in accounts:
+            GLOBAL_CACHE.ShMem.SendMessage(sender_email, account.AccountEmail, SharedCommandType.OpenChest, (target_id, 0, 0, 0))
             
     def interact_with_target_command(self, accounts: list[AccountData]):
         sender_email = GLOBAL_CACHE.Player.GetAccountEmail()        
