@@ -110,6 +110,7 @@ class Settings:
         self.HeroPanelPositions : dict[str, tuple[int, int, int, int, bool]] = {}
         self.CommandHotBars : dict[str, Settings.CommandHotBar] = {}
         
+        self.ConfirmFollowPoint = False
         
         base_path = Console.get_projects_path()
         self.ini_path = os.path.join(base_path, "Widgets", "Config", "HeroAI.ini")
@@ -191,6 +192,8 @@ class Settings:
         self.ini_handler.write_key("General", "ShowHeroSkills", str(self.ShowHeroSkills))
         self.ini_handler.write_key("General", "ShowPartyPanelUI", str(self.ShowPartyPanelUI))
 
+        self.ini_handler.write_key("General", "ConfirmFollowPoint", str(self.ConfirmFollowPoint))
+
         for hero_email, (x, y, w, h, collapsed) in self.HeroPanelPositions.items():
             self.account_ini_handler.write_key("HeroPanelPositions", hero_email, f"{x},{y},{w},{h},{collapsed}")
             
@@ -224,6 +227,8 @@ class Settings:
         self.ShowFloatingTargets = self.ini_handler.read_bool("General", "ShowFloatingTargets", True)
         self.ShowHeroSkills = self.ini_handler.read_bool("General", "ShowHeroSkills", True)
         self.ShowPartyPanelUI = self.ini_handler.read_bool("General", "ShowPartyPanelUI", True)
+        
+        self.ConfirmFollowPoint = self.ini_handler.read_bool("General", "ConfirmFollowPoint", False)
 
         self.HeroPanelPositions.clear()        
         self.import_hero_panel_positions(self.account_ini_handler)

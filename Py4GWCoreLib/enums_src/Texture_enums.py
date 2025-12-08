@@ -1469,7 +1469,7 @@ SkillTextureMap = {
     #	1610 : "[1610] - Summoning of the Scepter.jpg",
     #	1611 : "[1611] - Rise From Your Grave.jpg",
     1612 : "Sugar_Rush_(long).jpg",
-    #	1613 : "[1613] - Corsair disguise.jpg",
+    1613 : "Corsair disguise.jpg",
     #	1614 : "[1614] - REMOVE Queen Wail.jpg",
     #	1615 : "[1615] - REMOVE Queen Armor.jpg",
     #	1616 : "[1616] - Queen Heal.jpg",

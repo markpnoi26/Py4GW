@@ -3,6 +3,9 @@ import sys
 import traceback
 import Py4GW
 
+from Py4GWCoreLib.Map import Map
+from Py4GWCoreLib.enums_src.Texture_enums import SkillTextureMap
+
 MODULE_NAME = "HeroAI"
 for module_name in list(sys.modules.keys()):
     if module_name not in ("sys", "importlib", "cache_data"):
@@ -74,6 +77,7 @@ ACCOUNT_THROTTLE = ThrottledTimer(500)
 cached_data = CacheData()
 messages : list[tuple[int, SharedMessage]] = []
 hero_windows : dict[str, WindowModule] = {}
+map_quads : list[Map.Pathing.Quad] = []
 
 configure_window : WindowModule = WindowModule(
     module_name="HeroAI Configuration",
@@ -210,7 +214,7 @@ following_flag = False
 
 
 def Follow(cached_data: CacheData):
-    global FOLLOW_DISTANCE_ON_COMBAT, following_flag
+    global FOLLOW_DISTANCE_ON_COMBAT, following_flag, map_quads
 
     if GLOBAL_CACHE.Player.GetAgentID() == GLOBAL_CACHE.Party.GetPartyLeaderID():
         cached_data.follow_throttle_timer.Reset()
@@ -271,6 +275,21 @@ def Follow(cached_data: CacheData):
         xx = Range.Touch.value * math.cos(angle_on_hero_grid) + follow_x
         yy = Range.Touch.value * math.sin(angle_on_hero_grid) + follow_y
 
+    def is_position_on_map(x, y) -> bool:
+        if not settings.ConfirmFollowPoint:
+            return True
+        
+        for quad in map_quads:    
+            if Map.Pathing._point_in_quad(x, y, quad):
+                return True
+            
+        return False
+            
+    if not is_position_on_map(xx, yy):
+        ConsoleLog("HEROAI", f"Follow: Adjusted follow position to be within pathing. Original: ({xx}, {yy})")
+        xx = follow_x
+        yy = follow_y
+    
     cached_data.data.angle_changed = False
     ActionQueueManager().ResetQueue("ACTION")
     GLOBAL_CACHE.Player.Move(xx, yy)
@@ -437,7 +456,7 @@ def DrawEmbeddedWindow(cached_data: CacheData):
 
 
 def UpdateStatus(cached_data: CacheData):
-    global hero_windows, messages
+    global hero_windows, messages, map_quads
     ## Blacklisted loot
     ## 6102 - Spear of Archemorus
     ## None - 965
@@ -572,6 +591,9 @@ def UpdateStatus(cached_data: CacheData):
         return
 
     if cached_data.follow_throttle_timer.IsExpired():
+        if not map_quads:
+            map_quads = Map.Pathing.GetMapQuads()
+        
         if Follow(cached_data):
             cached_data.follow_throttle_timer.Reset()
             return
@@ -620,6 +642,7 @@ def main():
     
     try:        
         if not Routines.Checks.Map.MapValid():
+            map_quads.clear()
             return
 
         cached_data.Update()
