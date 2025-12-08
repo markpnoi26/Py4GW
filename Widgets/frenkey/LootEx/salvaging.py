@@ -254,13 +254,7 @@ class SalvageAction:
         
         return
 
-<<<<<<< HEAD
-    # -----------------------------------------------------
-    # STEP 4 — WAIT FOR SALVAGE COMPLETION
-    # -----------------------------------------------------
-=======
     # Wait for the salvage action to complete
->>>>>>> frenkey/apo_source
     def _wait_for_completion(self) -> Generator:
         start = datetime.now()
 

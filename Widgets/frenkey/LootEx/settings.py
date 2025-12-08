@@ -189,22 +189,15 @@ class Settings:
                     "window_collapsed", False)
                 self.manual_window_visible = settings_dict.get(
                     "manual_window_visible", False)
-<<<<<<< HEAD
-                self.collect_items = settings_dict.get("collect_items", False)
-=======
                 self.max_xunlai_storage = Bag_enum(
                     settings_dict.get("max_xunlai_storage", Bag_enum.Storage_4.value))
->>>>>>> frenkey/apo_source
                 last_xunlai_check_str = settings_dict.get("last_xunlai_check", None)
                 if last_xunlai_check_str:
                     self.last_xunlai_check = datetime.datetime.fromisoformat(
                         last_xunlai_check_str)
 
-<<<<<<< HEAD
-=======
                 self.collect_items = True # settings_dict.get("collect_items", False)
         
->>>>>>> frenkey/apo_source
         except FileNotFoundError:
             ConsoleLog(
                 "LootEx",
