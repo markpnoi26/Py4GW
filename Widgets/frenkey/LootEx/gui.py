@@ -1557,32 +1557,9 @@ class UI:
                                         ConsoleLog("LootEx", f"Moved texture for Item {item.name}", Console.MessageType.Info)
                         pass
 
-                    def on_test_button_clicked():       
-                        m = self.MouseTest
-                        threshold = 10
-                        self.MouseTest.lparam += 1
-                        increase_wparam = self.MouseTest.lparam > threshold
-                        
-                        if increase_wparam:
-                            self.MouseTest.lparam = 0                            
-                            
-                        self.MouseTest.wparam_value += (1 if increase_wparam else 0)
-                        increase_state = self.MouseTest.wparam_value > threshold
-                        
-                        if increase_state:
-                            self.MouseTest.wparam_value = 0
-                            
-                        self.MouseTest.current_state += (1 if increase_state else 0)
-                        
-                        frame_id = UIManager.GetUseLockpickFrameId()      
-                        
-                        if frame_id is not None:
-                            ConsoleLog("LootEx", f"Testing mouse action current_state: {m.current_state}, wparam_value: {m.wparam_value}, lparam: {m.lparam}.", Console.MessageType.Info)
-                            PyUIManager.UIManager.test_mouse_action(frame_id, m.current_state, m.wparam_value, m.lparam)    
-                        else:
-                            ConsoleLog("LootEx", "Frame not found.", Console.MessageType.Error)
-                                
-                        pass
+                    def on_test_button_clicked():
+                        # items
+                        return
 
                     if self.settings.development_mode and ImGui.button("Test 123", 160, 30):
                         on_test_button_clicked()
