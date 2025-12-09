@@ -338,14 +338,13 @@ class Cached_Item:
             self.weapon_mods = WeaponModInfo.get_from_modifiers(modifier_values, self.item_type, self.model_id) or []
             self.max_weapon_mods = [mod for mod in self.weapon_mods if mod.IsMaxed]
             self.weapon_mods_to_keep = [mod for mod in self.max_weapon_mods if settings.profile and settings.profile.weapon_mods.get(mod.WeaponMod.identifier, {}).get(self.item_type.name, False)]
-                            
-        
+
         self.mods = self.runes + self.weapon_mods
         self.has_mods = bool(self.runes or self.weapon_mods)
 
         return {
-            'rune_mods': self.runes,
-            'weapon_mods': self.weapon_mods
+            'runes': self.runes,
+            'weapon_mods': self.weapon_mods,
         }
 
     def HasModToKeep(self) -> tuple[bool, list, list]:
