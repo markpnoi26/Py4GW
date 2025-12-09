@@ -2,6 +2,7 @@
 accounts.json
 accounts - Copy.json
 Py4GW_Launcher.exe
+Py4GW_injection_log.txt
 
 *.local.ini
 imgui.ini
