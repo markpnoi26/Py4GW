@@ -1557,68 +1557,9 @@ class UI:
                                         ConsoleLog("LootEx", f"Moved texture for Item {item.name}", Console.MessageType.Info)
                         pass
 
-                    def on_test_button_clicked():                             
-                        if ui_manager_extensions.UIManagerExtensions.IsConfirmMaterialsWindowOpen():
-                            ConsoleLog("LootEx", "Confirming Lesser Salvage...", Console.MessageType.Info)
-                            # ui_manager_extensions.UIManagerExtensions.ConfirmLesserSalvage()
-                                
-                        if ui_manager_extensions.UIManagerExtensions.ConfirmModMaterialSalvageVisible():
-                            ConsoleLog("LootEx", "Confirming Mod Material Salvage...", Console.MessageType.Info)
-                            ui_manager_extensions.UIManagerExtensions.ConfirmModMaterialSalvage() 
-                            
+                    def on_test_button_clicked():
+                        # items
                         return
-                        handler = inventory_handling.InventoryHandler()
-                        item_actions = handler.GetActions(start_bag=Bag.Backpack, end_bag=Bag.Bag_2)
-                        
-                        handler.identification_kits = item_actions.identification_kits
-            
-                        for _, item in item_actions.actions.items():
-                            if item.action != ItemAction.Identify:
-                                continue
-                            
-                            if item.is_identified:
-                                item.action = ItemAction.NONE
-                                continue
-                            
-                            ConsoleLog("LootEx", f"Found unidenfitied item: '{item.name} [{item.model_id}]' ({item.id})", Console.MessageType.Info)
-                            identificationKit = handler.GetIdentificationKit()
-
-                            if identificationKit is None or identificationKit.uses <= 0:
-                                continue
-
-                            ConsoleLog(
-                                "LootEx", f"Identifying item: '{item.name} [{item.model_id}]' ({item.id}) with kit {identificationKit.name} ({identificationKit.id})", Console.MessageType.Info)
-                            # Inventory.IdentifyItem(item.id, identificationKit.id)
-                            identificationKit.uses -= 1
-                            
-                        return
-                        m = self.MouseTest
-                        threshold = 10
-                        self.MouseTest.lparam += 1
-                        increase_wparam = self.MouseTest.lparam > threshold
-                        
-                        if increase_wparam:
-                            self.MouseTest.lparam = 0                            
-                            
-                        self.MouseTest.wparam_value += (1 if increase_wparam else 0)
-                        increase_state = self.MouseTest.wparam_value > threshold
-                        
-                        if increase_state:
-                            self.MouseTest.wparam_value = 0
-                            
-                        self.MouseTest.current_state += (1 if increase_state else 0)
-                        
-                        salvage_options = ui_manager_extensions.UIManagerExtensions.GetSalvageOptions()    
-                        frame_id = salvage_options.get(SalvageOption.Suffix)      
-                        
-                        if frame_id is not None:
-                            ConsoleLog("LootEx", f"Testing mouse action current_state: {m.current_state}, wparam_value: {m.wparam_value}, lparam: {m.lparam} on Salvage Options frame.", Console.MessageType.Info)
-                            PyUIManager.UIManager.test_mouse_action(frame_id, m.current_state, m.wparam_value, m.lparam)    
-                        else:
-                            ConsoleLog("LootEx", "Salvage Options frame not found.", Console.MessageType.Error)
-                                
-                        ui_manager_extensions.UIManagerExtensions.SelectSalvageOption(SalvageOption.Inherent)
-                        pass
 
                     if self.settings.development_mode and ImGui.button("Test 123", 160, 30):
                         on_test_button_clicked()

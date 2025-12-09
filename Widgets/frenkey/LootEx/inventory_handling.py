@@ -613,7 +613,7 @@ class InventoryHandler:
         if item.is_inventory_item:
             ConsoleLog(
                 "LootEx", f"Dropping {item.quantity}x {item.name} ({item.id})", Console.MessageType.Info)
-            GLOBAL_CACHE.Inventory.DropItem(item.id, 250)
+            GLOBAL_CACHE.Inventory.DropItem(item.id, item.quantity)
             return True
         else:
             ConsoleLog(
