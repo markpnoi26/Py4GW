@@ -274,12 +274,10 @@ class Cached_Item:
     def GetModsFromModifiers(self):
         from Widgets.frenkey.LootEx.models import WeaponModInfo
         from Widgets.frenkey.LootEx.data import Data
-        data = Data()
+        Data()
         
         from Widgets.frenkey.LootEx.settings import Settings
         settings = Settings()
-        
-        from Widgets.frenkey.LootEx import utility
         
         modifier_values: list[tuple[int, int, int]] = [
             (modifier.GetIdentifier(), modifier.GetArg1(), modifier.GetArg2())
@@ -344,6 +342,11 @@ class Cached_Item:
         
         self.mods = self.runes + self.weapon_mods
         self.has_mods = bool(self.runes or self.weapon_mods)
+
+        return {
+            'rune_mods': self.runes,
+            'weapon_mods': self.weapon_mods
+        }
 
     def HasModToKeep(self) -> tuple[bool, list, list]:
         return True if self.max_runes or self.max_weapon_mods else False, self.max_runes, self.max_weapon_mods
