@@ -884,45 +884,124 @@ def search(query: str, items: list[str]) -> list[str]:
 
 
 def get_armor_name_from_modifiers(item):
-    if not LOOTEX_AVAILABLE or not Util or not Cached_Item:
-        try:
-            base_name = ModelID(item.model_id).name.replace("_", " ")
-        except ValueError:
-            base_name = None
+    try:
+        if not LOOTEX_AVAILABLE or not Util or not Cached_Item:
+            try:
+                base_name = ModelID(item.model_id).name.replace("_", " ")
+            except ValueError:
+                base_name = None
 
-        base_name = INVENTORY_MODEL_ID_CACHE.get(str(item.model_id))
-        if not base_name:
-            return None
-
-        if base_name:
-            mod_hash = ModHashJSONStore.hash_mods(item.modifiers)
-            if mod_hash not in INVENTORY_MOD_HASH_CACHE:
+            base_name = INVENTORY_MODEL_ID_CACHE.get(str(item.model_id))
+            if not base_name:
                 return None
 
-            prefix, suffix = INVENTORY_MOD_HASH_CACHE.get(mod_hash, [None, None])
+            if base_name:
+                mod_hash = ModHashJSONStore.hash_mods(item.modifiers)
+                if mod_hash not in INVENTORY_MOD_HASH_CACHE:
+                    return None
 
-            name_parts = []
+                prefix, suffix = INVENTORY_MOD_HASH_CACHE.get(mod_hash, [None, None])
 
-            if prefix:
-                name_parts.append(prefix)
+                name_parts = []
 
-            name_parts.append(base_name)
+                if prefix:
+                    name_parts.append(prefix)
 
-            if suffix:
-                name_parts.append(suffix)
+                name_parts.append(base_name)
 
-            return " ".join(name_parts)
+                if suffix:
+                    name_parts.append(suffix)
+
+                return " ".join(name_parts)
+            return None
+
+        # Prefer the in-game name if available
+        final_name = Util.GetItemDataName(item.item_id)
+        if final_name and not final_name.startswith("Unknown"):
+            base_name, _prefix, _suffix = clean_gw_item_name(final_name)
+            base_name = base_name.strip()
+        else:
+            try:
+                base_name = ModelID(item.model_id).name.replace("_", " ")
+            except ValueError:
+                base_name = None
+
+            if not base_name:
+                base_name = INVENTORY_MODEL_ID_CACHE.get(str(item.model_id))
+
+            if not base_name:
+                return None
+
+        # Collect mods
+        prefix = None
+        suffix = None
+
+        cached_item = Cached_Item(item.item_id, item.slot)
+        mods = cached_item.GetModsFromModifiers()
+        for mod_info in mods.get('runes', []):
+            mod = mod_info.Rune
+            mod_name = mod.name
+            mod_type = mod.mod_type.name
+
+            if mod_type == "Prefix":
+                prefix = mod_name
+            elif mod_type == "Suffix":
+                suffix = mod_name
+
+        # --- Construct name ---
+        name_parts = []
+
+        name_parts.append(base_name)
+
+        if prefix:
+            name_parts.append(f'| {prefix}')
+
+        if suffix:
+            name_parts.append(f"| {suffix}")
+
+        return " ".join(name_parts)
+    except Exception:
         return None
 
-    # Prefer the in-game name if available
-    final_name = Util.GetItemDataName(item.item_id)
-    if final_name and not final_name.startswith("Unknown"):
-        base_name, _prefix, _suffix = clean_gw_item_name(final_name)
-        base_name = base_name.strip()
-    else:
-        try:
-            base_name = ModelID(item.model_id).name.replace("_", " ")
-        except ValueError:
+
+def get_weapon_name_from_modifiers(item):
+    try:
+        if not LOOTEX_AVAILABLE or not Util or not Cached_Item:
+            try:
+                base_name = ModelID(item.model_id).name.replace("_", " ")
+            except ValueError:
+                base_name = None
+
+            base_name = INVENTORY_MODEL_ID_CACHE.get(str(item.model_id))
+            if not base_name:
+                return None
+
+            if base_name:
+                mod_hash = ModHashJSONStore.hash_mods(item.modifiers)
+                if mod_hash not in INVENTORY_MOD_HASH_CACHE:
+                    return None
+
+                prefix, suffix = INVENTORY_MOD_HASH_CACHE.get(mod_hash, [None, None])
+
+                name_parts = []
+                # Inherent mods like “Vampiric” or “Insightful” go before everything else
+                if prefix:
+                    name_parts.append(prefix)
+
+                name_parts.append(base_name)
+
+                if suffix:
+                    name_parts.append(f"{suffix}")
+
+                return " ".join(name_parts)
+            return None
+
+        # Prefer the in-game name if available
+        final_name = Util.GetItemDataName(item.item_id)
+        if final_name and not final_name.startswith("Unknown"):
+            base_name, _prefix, _suffix = clean_gw_item_name(final_name)
+            base_name = base_name.strip()
+        else:
             base_name = None
 
         if not base_name:
@@ -931,116 +1010,43 @@ def get_armor_name_from_modifiers(item):
         if not base_name:
             return None
 
-    # Collect mods
-    prefix = None
-    suffix = None
+        # Collect mods
+        prefix = None
+        suffix = None
+        inherent = None
 
-    cached_item = Cached_Item(item.item_id, item.slot)
-    mods = cached_item.GetModsFromModifiers()
-    for mod_info in mods.get('runes', []):
-        mod = mod_info.Rune
-        mod_name = mod.name
-        mod_type = mod.mod_type.name
+        cached_item = Cached_Item(item.item_id, item.slot)
+        mods = cached_item.GetModsFromModifiers()
+        for mod_info in mods.get('weapon_mods', []):
+            mod = mod_info.WeaponMod
+            mod_name = mod.name
+            mod_type = mod.mod_type.name
 
-        if mod_type == "Prefix":
-            prefix = mod_name
-        elif mod_type == "Suffix":
-            suffix = mod_name
+            if mod_type == "Prefix":
+                prefix = mod_name
+            elif mod_type == "Suffix":
+                suffix = mod_name
+            elif mod_type == "Inherent":
+                inherent = mod_name
 
-    # --- Construct name ---
-    name_parts = []
+        # --- Construct name ---
+        name_parts = []
 
-    name_parts.append(base_name)
+        # Inherent mods like “Vampiric” or “Insightful” go before everything else
+        if prefix:
+            name_parts.append(prefix)
 
-    if prefix:
-        name_parts.append(f'| {prefix}')
+        name_parts.append(base_name)
 
-    if suffix:
-        name_parts.append(f"| {suffix}")
+        if suffix:
+            name_parts.append(f"{suffix}")
 
-    return " ".join(name_parts)
+        if inherent:
+            name_parts.append(f"({inherent})")
 
-
-def get_weapon_name_from_modifiers(item):
-    if not LOOTEX_AVAILABLE or not Util or not Cached_Item:
-        try:
-            base_name = ModelID(item.model_id).name.replace("_", " ")
-        except ValueError:
-            base_name = None
-
-        base_name = INVENTORY_MODEL_ID_CACHE.get(str(item.model_id))
-        if not base_name:
-            return None
-
-        if base_name:
-            mod_hash = ModHashJSONStore.hash_mods(item.modifiers)
-            if mod_hash not in INVENTORY_MOD_HASH_CACHE:
-                return None
-
-            prefix, suffix = INVENTORY_MOD_HASH_CACHE.get(mod_hash, [None, None])
-
-            name_parts = []
-            # Inherent mods like “Vampiric” or “Insightful” go before everything else
-            if prefix:
-                name_parts.append(prefix)
-
-            name_parts.append(base_name)
-
-            if suffix:
-                name_parts.append(f"{suffix}")
-
-            return " ".join(name_parts)
+        return " ".join(name_parts)
+    except Exception:
         return None
-
-    # Prefer the in-game name if available
-    final_name = Util.GetItemDataName(item.item_id)
-    if final_name and not final_name.startswith("Unknown"):
-        base_name, _prefix, _suffix = clean_gw_item_name(final_name)
-        base_name = base_name.strip()
-    else:
-        base_name = None
-
-    if not base_name:
-        base_name = INVENTORY_MODEL_ID_CACHE.get(str(item.model_id))
-
-    if not base_name:
-        return None
-
-    # Collect mods
-    prefix = None
-    suffix = None
-    inherent = None
-
-    cached_item = Cached_Item(item.item_id, item.slot)
-    mods = cached_item.GetModsFromModifiers()
-    for mod_info in mods.get('weapon_mods', []):
-        mod = mod_info.WeaponMod
-        mod_name = mod.name
-        mod_type = mod.mod_type.name
-
-        if mod_type == "Prefix":
-            prefix = mod_name
-        elif mod_type == "Suffix":
-            suffix = mod_name
-        elif mod_type == "Inherent":
-            inherent = mod_name
-
-    # --- Construct name ---
-    name_parts = []
-
-    # Inherent mods like “Vampiric” or “Insightful” go before everything else
-    if prefix:
-        name_parts.append(prefix)
-
-    name_parts.append(base_name)
-
-    if suffix:
-        name_parts.append(f"{suffix}")
-
-    if inherent:
-        name_parts.append(f"({inherent})")
-
-    return " ".join(name_parts)
 
 
 # region Widget
