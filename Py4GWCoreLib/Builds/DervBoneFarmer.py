@@ -182,8 +182,6 @@ class DervBoneFarmer(BuildMgr):
                         return
                 yield
                 return
-            yield
-            return
         yield
         return
 
