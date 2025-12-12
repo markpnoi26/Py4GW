@@ -59,7 +59,7 @@ class HeroAICommands:
         # self.GetBlessing = Command("Get Blessing", IconsFontAwesome5.ICON_PRAYING_HANDS, self.get_blessing_command, "Get Blessing from nearby shrine")
         self.PickUpLoot = Command("Pick up loot", IconsFontAwesome5.ICON_COINS, self.pick_up_loot_command, "Pick up loot from ground")
         self.CombatPrep = Command("Prepare for Combat", IconsFontAwesome5.ICON_SHIELD_ALT, self.combat_prep_command, "Use Combat Preparations", map_types=["Explorable"])
-        self.LeaveParty = Command("Disband Party", IconsFontAwesome5.ICON_SIGN_OUT_ALT, self.leave_party_command, "Make all heroes leave party", map_types=["Outpost"])
+        self.DisbandParty = Command("Disband Party", IconsFontAwesome5.ICON_SIGN_OUT_ALT, self.leave_party_command, "Make all heroes leave party", map_types=["Outpost"])
         self.FormParty = Command("Form Party", IconsFontAwesome5.ICON_USERS, self.invite_all_command, "Invite all heroes to party", map_types=["Outpost"])
         
         self.__commands = [
@@ -79,7 +79,7 @@ class HeroAICommands:
             # self.GetBlessing,
             self.PickUpLoot,
             self.CombatPrep,
-            self.LeaveParty,
+            self.DisbandParty,
             self.FormParty,
         ]
     

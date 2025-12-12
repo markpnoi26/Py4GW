@@ -88,7 +88,7 @@ class Settings:
         self.ShowCommandPanel = True
         self.ShowCommandPanelOnlyOnLeaderAccount = True
         
-        self.ShowPanelOnlyOnLeaderAccount = False
+        self.ShowPanelOnlyOnLeaderAccount = True
         self.DisableAutomationOnLeaderAccount = False
         
         self.ShowDialogOverlay = True
@@ -108,7 +108,36 @@ class Settings:
         self.ShowFloatingTargets = True
         self.ShowPartyPanelUI = True
         self.HeroPanelPositions : dict[str, tuple[int, int, int, int, bool]] = {}
-        self.CommandHotBars : dict[str, Settings.CommandHotBar] = {}
+        
+        default_hotbar = Settings.CommandHotBar("hotbar_1")
+        
+        commands = HeroAICommands()
+        default_hotbar.commands = {
+            0: {
+                0: commands.Resign.name,
+                1: commands.PixelStack.name,
+                2: commands.TakeDialogWithTarget.name,
+                3: commands.InteractWithTarget.name,
+                4: commands.UnlockChest.name,
+                5: commands.CombatPrep.name,
+                6: commands.FlagHeroes.name,
+                7: commands.UnflagHeroes.name,
+            },
+            1: {
+                0: commands.FormParty.name,
+                1: commands.DisbandParty.name,
+                2: "Empty",
+                3: commands.DonateFaction.name,
+                4: commands.PickUpLoot.name,
+                5: "Empty",
+                6: "Empty",
+                7: commands.OpenConsumables.name,
+            }
+        }
+        
+        self.CommandHotBars : dict[str, Settings.CommandHotBar] = {
+            "hotbar_1": default_hotbar
+        }
         
         self.ConfirmFollowPoint = False
         
@@ -208,7 +237,7 @@ class Settings:
         self.ShowCommandPanelOnlyOnLeaderAccount = self.ini_handler.read_bool("General", "ShowCommandPanelOnlyOnLeaderAccount", True)
         self.Anonymous_PanelNames = self.ini_handler.read_bool("General", "Anonymous_PanelNames", False)
         
-        self.ShowPanelOnlyOnLeaderAccount = self.ini_handler.read_bool("General", "ShowPanelOnlyOnLeaderAccount", False)
+        self.ShowPanelOnlyOnLeaderAccount = self.ini_handler.read_bool("General", "ShowPanelOnlyOnLeaderAccount", True)
         self.DisableAutomationOnLeaderAccount = self.ini_handler.read_bool("General", "DisableAutomationOnLeaderAccount", False)
         self.ShowDialogOverlay = self.ini_handler.read_bool("General", "ShowDialogOverlay", True)
         
