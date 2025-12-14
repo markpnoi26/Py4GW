@@ -5,6 +5,7 @@ import json
 import PyOverlay
 from collections import deque, defaultdict
 from .Py4GWcorelib import ConsoleLog, Console
+from dataclasses import dataclass, field
 
 # —— Constants ——————————————————
 NPC_DIALOG_HASH    = 3856160816
@@ -541,6 +542,17 @@ class UIManager:
         PyUIManager.UIManager.set_window_position(window_id, position)
     
     @staticmethod
+    def IsLockedChestWindowVisible() -> bool:
+        """
+        Check if the chest window is visible.
+
+        :return: True if the chest window is visible, False otherwise.
+        """
+        
+        fid = UIManager.GetChildFrameID(3856160816, [1])
+        return fid != 0 and UIManager.FrameExists(fid)
+    
+    @staticmethod
     def IsNPCDialogVisible() -> bool:
         """
         Check if the NPC dialog is visible.
@@ -651,7 +663,7 @@ class UIManager:
         ]
         sorted_ids = [fid for fid, _ in UIManager.SortFramesByVerticalPosition(valid)]
         if debug:
-            ConsoleLog("DialogHelper", f"BFS IDs → {sorted_ids}", Console.MessageType.Info)
+            ConsoleLog("DialogHelper", f"BFS IDs -> {sorted_ids}", Console.MessageType.Info)
         return sorted_ids
     
     @staticmethod
@@ -670,7 +682,7 @@ class UIManager:
         if debug:
             ConsoleLog(
                 "DialogHelper",
-                f"Clicking dialog choice #{choice} → frame {target}",
+                f"Clicking dialog choice #{choice} -> frame {target}",
                 Console.MessageType.Info
             )
         UIManager.FrameClick(target)
@@ -695,3 +707,238 @@ class UIManager:
             )
 
         return count
+        
+    @staticmethod
+    def GetDialogButtonFrames(debug: bool = False) -> list[tuple[int, tuple[int, int, int, int]]]:
+        if DIALOG_CHILD_OFFSET == DEFAULT_OFFSET:
+            UIManager.FindDialogOffset()
+
+        # --- Attempt offset lookup first ---
+        ids_from_offset = UIManager.GetAllChildFrameIDs(NPC_DIALOG_HASH, DIALOG_CHILD_OFFSET)
+
+        valid_frames = []
+        for fid in ids_from_offset:
+            if fid < 0:
+                continue
+            
+            fr = PyUIManager.UIFrame(fid)
+            
+            if not fr:
+                continue
+            
+            if not fr.is_visible:
+                continue
+            
+            if fr.template_type != 1:
+                continue
+
+            valid_frames.append(
+                (
+                    fr.frame_id,
+                    (
+                        fr.position.left_on_screen,
+                        fr.position.top_on_screen,
+                        fr.position.right_on_screen,
+                        fr.position.bottom_on_screen
+                    )
+                )
+            )
+
+        if debug:
+            ConsoleLog(
+                "DialogHelper",
+                f"Dialog button frames with offset {DIALOG_CHILD_OFFSET}: {[fid for fid, _ in valid_frames]}",
+                Console.MessageType.Info
+            )
+
+        # --- Sort by top_on_screen using cached tuples ---
+        valid_frames.sort(key=lambda x: x[1][0])
+
+        if debug:
+            ConsoleLog(
+                "DialogHelper",
+                f"Detected dialog button frames: {valid_frames}",
+                Console.MessageType.Info
+            )
+
+        # If we found frames, return immediately (no fallback needed)
+        if valid_frames:
+            return valid_frames
+
+        # --- BFS fallback (heavy, so optimized hard) ---
+        if debug:
+            ConsoleLog("DialogHelper", "Falling back to BFS for dialog buttons", Console.MessageType.Info)
+
+        # --- Preload the entire frame array + cache UIFrame objects once ---
+        frame_ids_all = UIManager.GetFrameArray()
+        
+        frame_cache : dict[int, PyUIManager.UIFrame] = {}
+        for fid in frame_ids_all:
+            try:
+                frame_cache[fid] = PyUIManager.UIFrame(fid)
+            except:
+                pass
+            
+        root = UIManager.GetFrameIDByHash(NPC_DIALOG_HASH)
+
+        # Build children map only once
+        children_map = defaultdict(list)
+        for fid, fr in frame_cache.items():
+            pid = fr.parent_id
+            if pid is not None:
+                children_map[pid].append(fid)
+
+        # BFS
+        descendants = []
+        dq = deque([root])
+        append_desc = descendants.append
+        extend_dq = dq.extend
+
+        while dq:
+            current = dq.popleft()
+            children = children_map.get(current)
+            if children:
+                extend_dq(children)
+                for c in children:
+                    append_desc(c)
+
+        # Filter valid dialog buttons
+        bfs_valid = []
+        for fid in descendants:
+            if fid < 0:
+                continue
+            
+            fr = frame_cache.get(fid)
+            if not fr:
+                continue
+            
+            if not fr.is_visible:
+                continue
+            
+            if fr.template_type != 1:
+                continue
+            bfs_valid.append(fid)
+
+        # Build final dictionary for BFS mode
+        result = []
+        for fid in bfs_valid:
+            fr = frame_cache[fid]
+            result.append((
+                fid,
+                (
+                    fr.position.left_on_screen,
+                    fr.position.top_on_screen,
+                    fr.position.right_on_screen,
+                    fr.position.bottom_on_screen
+                )
+            ))
+        
+        # Sort by top_on_screen
+        result.sort(key=lambda x: x[1][0])
+
+        return result
+    
+    @staticmethod
+    def ConfirmMaxAmountDialog():
+        max_amount = UIManager.GetFrameIDByHash(4008686776)
+        drop_offer_confirm = UIManager.GetFrameIDByHash(4014954629)
+        
+        if UIManager.FrameExists(max_amount):
+            UIManager.FrameClick(max_amount)
+            
+        if UIManager.FrameExists(drop_offer_confirm):
+            UIManager.FrameClick(drop_offer_confirm)
+    
+#region frameInfo
+@dataclass
+class FrameInfo:
+    WindowID: int = 0
+    WindowName: str = ""
+    WindowLabel: str = ""
+    FrameHash: int = 0
+    ParentFrameHash: int = 0
+    ChildOffsets: list = field(default_factory=list)
+    FrameID: int = 0
+    BlackBoard : dict = field(default_factory=dict)
+    
+    def update_frame_id(self):
+        if self.WindowLabel:
+            self.FrameID = UIManager.GetFrameIDByLabel(self.WindowLabel)
+            return
+
+        if self.FrameHash != 0:
+            self.FrameID = UIManager.GetFrameIDByHash(self.FrameHash)
+        else:
+            self.FrameID = UIManager.GetChildFrameID(self.ParentFrameHash, self.ChildOffsets)
+            
+    def FrameExists(self):
+        self.update_frame_id()
+        return UIManager.FrameExists(self.FrameID)
+    
+    def DrawFrame(self, color):
+        if self.FrameExists():
+            UIManager().DrawFrame(self.FrameID, color)
+            
+    def DrawFrameOutline(self, color):
+        if self.FrameExists():
+            UIManager().DrawFrameOutline(self.FrameID, color)
+            
+    def FrameClick(self):
+        if self.FrameExists():
+            UIManager().FrameClick(self.FrameID)
+            
+    def GetCoords(self):
+        if self.FrameExists():
+            return UIManager.GetFrameCoords(self.FrameID)
+        return (0,0,0,0)
+    
+    def IsMouseOver(self, mouse_x:float, mouse_y:float):
+        left, top, right, bottom = self.GetCoords()
+        return left <= mouse_x <= right and top <= mouse_y <= bottom
+            
+#region WindowFrames
+WindowFrames:dict[str, FrameInfo] = {}
+
+DeleteButtonFrame = FrameInfo(
+    WindowName="DeleteCharacterButton",
+    FrameHash=3379687503
+)
+
+FinalDeleteButtonFrame = FrameInfo(
+    WindowName="FinalDeleteCharacterButton",
+    ParentFrameHash=140452905,
+    ChildOffsets=[5,1,15,2]
+)
+
+CreateCharacterButtonFrame1 = FrameInfo(
+    WindowName="CreateCharacterButton1",
+    FrameHash=3372446797
+)
+
+CreateCharacterButtonFrame2 = FrameInfo(
+    WindowName="CreateCharacterButton2",
+    FrameHash=3973689736,
+)
+
+CreateCharacterTypeNextButtonFrame = FrameInfo(
+    WindowName="CreateCharacterTypeNextButton",
+    FrameHash=3110341991
+)
+
+CreateCharacterNextButtonGenericFrame = FrameInfo(
+    WindowName="CreateCharacterNextButtonGeneric",
+    FrameHash=1102119410
+)
+
+FinalCreateCharacterButtonFrame = FrameInfo(
+    WindowName="FinalCreateCharacterButton",
+    FrameHash=3856299307
+)
+
+WindowFrames["DeleteCharacterButton"] = DeleteButtonFrame
+WindowFrames["FinalDeleteCharacterButton"] = FinalDeleteButtonFrame
+WindowFrames["CreateCharacterButton1"] = CreateCharacterButtonFrame1
+WindowFrames["CreateCharacterButton2"] = CreateCharacterButtonFrame2
+WindowFrames["CreateCharacterTypeNextButton"] = CreateCharacterTypeNextButtonFrame
+WindowFrames["CreateCharacterNextButtonGeneric"] = CreateCharacterNextButtonGenericFrame
+WindowFrames["FinalCreateCharacterButton"] = FinalCreateCharacterButtonFrame

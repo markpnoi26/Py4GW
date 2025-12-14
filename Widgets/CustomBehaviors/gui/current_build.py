@@ -207,4 +207,4 @@ def render():
                     PyImGui.end_tab_item()
 
                 PyImGui.end_tab_bar()
-            PyImGui.end_child()
+        PyImGui.end_child()
