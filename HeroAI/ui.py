@@ -2100,6 +2100,12 @@ def draw_configure_window():
                         settings.save_settings()
                     ImGui.show_tooltip("Overlay buttons on NPC dialog with an invisible button for quick selection on all accounts by holding CTRL.\nOnly available to the party leader.\n\nThis is quite expensive due to UI queries, so only enable if needed.")
                         
+                    confirm_follow_point = ImGui.checkbox("Confirm Follow Point", settings.ConfirmFollowPoint)
+                    if confirm_follow_point != settings.ConfirmFollowPoint:
+                        settings.ConfirmFollowPoint = confirm_follow_point
+                        settings.save_settings()
+                    ImGui.show_tooltip("Reevalutes the follow point when following is enabled. This is beeing tested right now and can impact the performance a lot.")
+                        
                 ImGui.end_child()
                 ImGui.end_tab_item()
                 
@@ -2113,6 +2119,11 @@ def draw_configure_window():
                     show_on_leader = ImGui.checkbox("Show only on Leader", settings.ShowPanelOnlyOnLeaderAccount)
                     if show_on_leader != settings.ShowPanelOnlyOnLeaderAccount:
                         settings.ShowPanelOnlyOnLeaderAccount = show_on_leader
+                        settings.save_settings()
+                    
+                    show_leader_panel = ImGui.checkbox("Show Leader's Panel", settings.ShowLeaderPanel)
+                    if show_leader_panel != settings.ShowLeaderPanel:
+                        settings.ShowLeaderPanel = show_leader_panel
                         settings.save_settings()
                     
                     combine_panels = ImGui.checkbox("Combine Hero Panels", settings.CombinePanels)

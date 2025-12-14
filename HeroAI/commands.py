@@ -47,6 +47,7 @@ class HeroAICommands:
         self.Empty = Command("Empty", "", None)
         self.PixelStack = Command("Pixel Stack", IconsFontAwesome5.ICON_COMPRESS_ARROWS_ALT, self.pixel_stack_command, "Pixel Stack Team")
         self.InteractWithTarget = Command("Interact With Target", IconsFontAwesome5.ICON_HAND_POINT_RIGHT, self.interact_with_target_command, "Interact with current target")
+        self.UnlockChest = Command("Unlock Chest", IconsFontAwesome5.ICON_KEY, self.unlock_chest_command, "Unlock chest with current target")
         self.TakeDialogWithTarget = Command("Dialog With Target", IconsFontAwesome5.ICON_COMMENT_DOTS, self.talk_and_dialog_with_target_command, "Take dialog with current target")
         self.OpenConsumables = Command("Open Consumables", IconsFontAwesome5.ICON_CANDY_CANE, self.open_consumables_commands, "Open/Close Consumables Configuration Window")
         self.FlagHeroes = Command("Flag Heroes", IconsFontAwesome5.ICON_FLAG, self.flag_heroes_command, "Flag all heroes", map_types=["Explorable"])
@@ -58,12 +59,13 @@ class HeroAICommands:
         # self.GetBlessing = Command("Get Blessing", IconsFontAwesome5.ICON_PRAYING_HANDS, self.get_blessing_command, "Get Blessing from nearby shrine")
         self.PickUpLoot = Command("Pick up loot", IconsFontAwesome5.ICON_COINS, self.pick_up_loot_command, "Pick up loot from ground")
         self.CombatPrep = Command("Prepare for Combat", IconsFontAwesome5.ICON_SHIELD_ALT, self.combat_prep_command, "Use Combat Preparations", map_types=["Explorable"])
-        self.LeaveParty = Command("Disband Party", IconsFontAwesome5.ICON_SIGN_OUT_ALT, self.leave_party_command, "Make all heroes leave party", map_types=["Outpost"])
+        self.DisbandParty = Command("Disband Party", IconsFontAwesome5.ICON_SIGN_OUT_ALT, self.leave_party_command, "Make all heroes leave party", map_types=["Outpost"])
         self.FormParty = Command("Form Party", IconsFontAwesome5.ICON_USERS, self.invite_all_command, "Invite all heroes to party", map_types=["Outpost"])
         
         self.__commands = [
             self.Empty,
             self.PixelStack,
+            self.UnlockChest,
             self.InteractWithTarget,
             self.TakeDialogWithTarget,
             self.OpenConsumables,
@@ -77,7 +79,7 @@ class HeroAICommands:
             # self.GetBlessing,
             self.PickUpLoot,
             self.CombatPrep,
-            self.LeaveParty,
+            self.DisbandParty,
             self.FormParty,
         ]
     
@@ -206,6 +208,34 @@ class HeroAICommands:
                 continue
             
             GLOBAL_CACHE.ShMem.SendMessage(sender_email, account.AccountEmail, SharedCommandType.PixelStack, (player_x, player_y, 0, 0))
+            
+    def unlock_chest_command(self, accounts: list[AccountData]):
+        sender_email = GLOBAL_CACHE.Player.GetAccountEmail()        
+        target_id = GLOBAL_CACHE.Player.GetTargetID()
+        
+        account_data = GLOBAL_CACHE.ShMem.GetAccountDataFromEmail(sender_email) 
+        if account_data is None:
+            return 
+        
+        party_id = account_data.PartyID
+        map_id = account_data.MapID
+        map_region = account_data.MapRegion
+        map_district = account_data.MapDistrict
+        map_language = account_data.MapLanguage
+
+        def on_same_map_and_party(account : AccountData) -> bool:                    
+            return (account.PartyID == party_id and
+                    account.MapID == map_id and
+                    account.MapRegion == map_region and
+                    account.MapDistrict == map_district and
+                    account.MapLanguage == map_language)
+            
+        all_accounts = [account for account in GLOBAL_CACHE.ShMem.GetAllAccountData() if on_same_map_and_party(account)]
+        lowest_party_index_account = min(all_accounts, key=lambda account: account.PartyPosition, default=None)
+        if lowest_party_index_account is None:
+            return
+        
+        GLOBAL_CACHE.ShMem.SendMessage(sender_email, lowest_party_index_account.AccountEmail, SharedCommandType.OpenChest, (target_id, 1, 0, 0))
             
     def interact_with_target_command(self, accounts: list[AccountData]):
         sender_email = GLOBAL_CACHE.Player.GetAccountEmail()        

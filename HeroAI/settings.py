@@ -88,12 +88,13 @@ class Settings:
         self.ShowCommandPanel = True
         self.ShowCommandPanelOnlyOnLeaderAccount = True
         
-        self.ShowPanelOnlyOnLeaderAccount = False
+        self.ShowPanelOnlyOnLeaderAccount = True
         self.DisableAutomationOnLeaderAccount = False
         
         self.ShowDialogOverlay = True
         
         self.CombinePanels = False
+        self.ShowLeaderPanel = False
         self.ShowHeroPanels = True
         self.ShowHeroEffects = True
         self.ShowEffectDurations = False
@@ -107,8 +108,38 @@ class Settings:
         self.ShowFloatingTargets = True
         self.ShowPartyPanelUI = True
         self.HeroPanelPositions : dict[str, tuple[int, int, int, int, bool]] = {}
-        self.CommandHotBars : dict[str, Settings.CommandHotBar] = {}
         
+        default_hotbar = Settings.CommandHotBar("hotbar_1")
+        
+        commands = HeroAICommands()
+        default_hotbar.commands = {
+            0: {
+                0: commands.Resign.name,
+                1: commands.PixelStack.name,
+                2: commands.TakeDialogWithTarget.name,
+                3: commands.InteractWithTarget.name,
+                4: commands.UnlockChest.name,
+                5: commands.CombatPrep.name,
+                6: commands.FlagHeroes.name,
+                7: commands.UnflagHeroes.name,
+            },
+            1: {
+                0: commands.FormParty.name,
+                1: commands.DisbandParty.name,
+                2: "Empty",
+                3: commands.DonateFaction.name,
+                4: commands.PickUpLoot.name,
+                5: "Empty",
+                6: "Empty",
+                7: commands.OpenConsumables.name,
+            }
+        }
+        
+        self.CommandHotBars : dict[str, Settings.CommandHotBar] = {
+            "hotbar_1": default_hotbar
+        }
+        
+        self.ConfirmFollowPoint = False
         
         base_path = Console.get_projects_path()
         self.ini_path = os.path.join(base_path, "Widgets", "Config", "HeroAI.ini")
@@ -175,6 +206,7 @@ class Settings:
         
         self.ini_handler.write_key("General", "CombinePanels", str(self.CombinePanels))
         self.ini_handler.write_key("General", "ShowHeroPanels", str(self.ShowHeroPanels))
+        self.ini_handler.write_key("General", "ShowLeaderPanel", str(self.ShowLeaderPanel))
         
         
         self.ini_handler.write_key("General", "ShowHeroEffects", str(self.ShowHeroEffects))
@@ -188,6 +220,8 @@ class Settings:
         self.ini_handler.write_key("General", "ShowFloatingTargets", str(self.ShowFloatingTargets))
         self.ini_handler.write_key("General", "ShowHeroSkills", str(self.ShowHeroSkills))
         self.ini_handler.write_key("General", "ShowPartyPanelUI", str(self.ShowPartyPanelUI))
+
+        self.ini_handler.write_key("General", "ConfirmFollowPoint", str(self.ConfirmFollowPoint))
 
         for hero_email, (x, y, w, h, collapsed) in self.HeroPanelPositions.items():
             self.account_ini_handler.write_key("HeroPanelPositions", hero_email, f"{x},{y},{w},{h},{collapsed}")
@@ -203,12 +237,13 @@ class Settings:
         self.ShowCommandPanelOnlyOnLeaderAccount = self.ini_handler.read_bool("General", "ShowCommandPanelOnlyOnLeaderAccount", True)
         self.Anonymous_PanelNames = self.ini_handler.read_bool("General", "Anonymous_PanelNames", False)
         
-        self.ShowPanelOnlyOnLeaderAccount = self.ini_handler.read_bool("General", "ShowPanelOnlyOnLeaderAccount", False)
+        self.ShowPanelOnlyOnLeaderAccount = self.ini_handler.read_bool("General", "ShowPanelOnlyOnLeaderAccount", True)
         self.DisableAutomationOnLeaderAccount = self.ini_handler.read_bool("General", "DisableAutomationOnLeaderAccount", False)
         self.ShowDialogOverlay = self.ini_handler.read_bool("General", "ShowDialogOverlay", True)
         
         self.CombinePanels = self.ini_handler.read_bool("General", "CombinePanels", False)
         self.ShowHeroPanels = self.ini_handler.read_bool("General", "ShowHeroPanels", True)
+        self.ShowLeaderPanel = self.ini_handler.read_bool("General", "ShowLeaderPanel", False)
         
         self.ShowHeroEffects = self.ini_handler.read_bool("General", "ShowHeroEffects", True)
         self.ShowEffectDurations = self.ini_handler.read_bool("General", "ShowEffectDurations", True)
@@ -221,6 +256,8 @@ class Settings:
         self.ShowFloatingTargets = self.ini_handler.read_bool("General", "ShowFloatingTargets", True)
         self.ShowHeroSkills = self.ini_handler.read_bool("General", "ShowHeroSkills", True)
         self.ShowPartyPanelUI = self.ini_handler.read_bool("General", "ShowPartyPanelUI", True)
+        
+        self.ConfirmFollowPoint = self.ini_handler.read_bool("General", "ConfirmFollowPoint", False)
 
         self.HeroPanelPositions.clear()        
         self.import_hero_panel_positions(self.account_ini_handler)

@@ -2,6 +2,11 @@ import math
 import sys
 import traceback
 import Py4GW
+import PyPathing
+
+from Py4GWCoreLib.Map import Map
+from Py4GWCoreLib.Pathing import AutoPathing
+from Py4GWCoreLib.enums_src.Texture_enums import SkillTextureMap
 
 MODULE_NAME = "HeroAI"
 for module_name in list(sys.modules.keys()):
@@ -74,6 +79,7 @@ ACCOUNT_THROTTLE = ThrottledTimer(500)
 cached_data = CacheData()
 messages : list[tuple[int, SharedMessage]] = []
 hero_windows : dict[str, WindowModule] = {}
+map_quads : list[Map.Pathing.Quad] = []
 
 configure_window : WindowModule = WindowModule(
     module_name="HeroAI Configuration",
@@ -210,7 +216,7 @@ following_flag = False
 
 
 def Follow(cached_data: CacheData):
-    global FOLLOW_DISTANCE_ON_COMBAT, following_flag
+    global FOLLOW_DISTANCE_ON_COMBAT, following_flag, map_quads
 
     if GLOBAL_CACHE.Player.GetAgentID() == GLOBAL_CACHE.Party.GetPartyLeaderID():
         cached_data.follow_throttle_timer.Reset()
@@ -264,13 +270,38 @@ def Follow(cached_data: CacheData):
     hero_grid_pos = party_number + GLOBAL_CACHE.Party.GetHeroCount() + GLOBAL_CACHE.Party.GetHenchmanCount()
     angle_on_hero_grid = follow_angle + Utils.DegToRad(hero_formation[hero_grid_pos])
 
+    def is_position_on_map(x, y) -> bool:
+        player_pos = GLOBAL_CACHE.Agent.GetXYZ(GLOBAL_CACHE.Player.GetAgentID())
+        
+        if not settings.ConfirmFollowPoint:
+            return True
+        
+        for quad in map_quads:    
+            if Map.Pathing._point_in_quad(x, y, quad):                        
+                # path_planner = PyPathing.PathPlanner()
+                # path_planner.reset()
+                # path_planner.plan(
+                #     start_x=player_pos[0], start_y=player_pos[1], start_z=player_pos[2],
+                #     goal_x=follow_x, goal_y=follow_y, goal_z=player_pos[2]
+                # )
+                # path = path_planner.get_path()
+                # return path is not None and len(path) > 0 
+                return True
+            
+        return False
+    
     if following_flag:
         xx = follow_x
         yy = follow_y
     else:
         xx = Range.Touch.value * math.cos(angle_on_hero_grid) + follow_x
         yy = Range.Touch.value * math.sin(angle_on_hero_grid) + follow_y
-
+            
+        if not is_position_on_map(xx, yy):
+            ConsoleLog("HEROAI", f"Follow: Adjusted follow position to be within pathing. Original: ({xx}, {yy})")
+            xx = follow_x
+            yy = follow_y
+    
     cached_data.data.angle_changed = False
     ActionQueueManager().ResetQueue("ACTION")
     GLOBAL_CACHE.Player.Move(xx, yy)
@@ -437,7 +468,7 @@ def DrawEmbeddedWindow(cached_data: CacheData):
 
 
 def UpdateStatus(cached_data: CacheData):
-    global hero_windows, messages
+    global hero_windows, messages, map_quads
     ## Blacklisted loot
     ## 6102 - Spear of Archemorus
     ## None - 965
@@ -503,8 +534,8 @@ def UpdateStatus(cached_data: CacheData):
                 if not account.AccountEmail:
                     continue
             
-                # if account.AccountEmail == GLOBAL_CACHE.Player.GetAccountEmail():
-                #     continue
+                if account.AccountEmail == GLOBAL_CACHE.Player.GetAccountEmail() and not settings.ShowLeaderPanel:
+                    continue
                 
                 if not settings.CombinePanels:
                     if not account.AccountEmail in hero_windows:
@@ -572,6 +603,9 @@ def UpdateStatus(cached_data: CacheData):
         return
 
     if cached_data.follow_throttle_timer.IsExpired():
+        if not map_quads:
+            map_quads = Map.Pathing.GetMapQuads()
+        
         if Follow(cached_data):
             cached_data.follow_throttle_timer.Reset()
             return
@@ -620,6 +654,7 @@ def main():
     
     try:        
         if not Routines.Checks.Map.MapValid():
+            map_quads.clear()
             return
 
         cached_data.Update()

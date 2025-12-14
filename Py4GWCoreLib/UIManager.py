@@ -542,6 +542,17 @@ class UIManager:
         PyUIManager.UIManager.set_window_position(window_id, position)
     
     @staticmethod
+    def IsLockedChestWindowVisible() -> bool:
+        """
+        Check if the chest window is visible.
+
+        :return: True if the chest window is visible, False otherwise.
+        """
+        
+        fid = UIManager.GetChildFrameID(3856160816, [1])
+        return fid != 0 and UIManager.FrameExists(fid)
+    
+    @staticmethod
     def IsNPCDialogVisible() -> bool:
         """
         Check if the NPC dialog is visible.
@@ -826,6 +837,17 @@ class UIManager:
         result.sort(key=lambda x: x[1][0])
 
         return result
+    
+    @staticmethod
+    def ConfirmMaxAmountDialog():
+        max_amount = UIManager.GetFrameIDByHash(4008686776)
+        drop_offer_confirm = UIManager.GetFrameIDByHash(4014954629)
+        
+        if UIManager.FrameExists(max_amount):
+            UIManager.FrameClick(max_amount)
+            
+        if UIManager.FrameExists(drop_offer_confirm):
+            UIManager.FrameClick(drop_offer_confirm)
     
 #region frameInfo
 @dataclass
