@@ -156,6 +156,8 @@ class UIFrame:
 class UIManager:
     #def __init__(self) -> None: ... 
     @staticmethod
+    def get_frame_logs() -> List[Tuple[int, int, str]]: ...
+    @staticmethod
     def get_frame_id_by_label(label: str) -> int: ...
     @staticmethod
     def get_frame_id_by_hash(hash: int) -> int: ...
@@ -165,6 +167,33 @@ class UIManager:
     def get_frame_hierarchy() -> List[Tuple[int, int, int, int]]: ...
     @staticmethod
     def get_frame_coords_by_hash(frame_hash: int) -> List[Tuple[int, int]]: ...
+    @staticmethod
+    def SendUIMessage(
+        msgid: int,
+        wparam: int,
+        lparam: int = 0,
+        skip_hooks: bool = False
+    ) -> bool:
+        """
+        Low-level UI message dispatcher.
+
+        Parameters:
+            msgid (int):
+                UI message ID.
+
+            wparam (int):
+                Pointer to payload (ctypes.addressof(...) or 0).
+
+            lparam (int):
+                Optional pointer to secondary payload.
+
+            skip_hooks (bool):
+                If True, bypass UI hooks.
+
+        Returns:
+            bool: True if the message was processed.
+        """
+        ...
     @staticmethod
     def button_click(frame_id: int) -> None: ...
     @staticmethod

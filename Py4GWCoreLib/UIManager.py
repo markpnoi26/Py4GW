@@ -5,6 +5,7 @@ import json
 import PyOverlay
 from collections import deque, defaultdict
 from .Py4GWcorelib import ConsoleLog, Console
+from .enums_src.UI_enums import WindowID
 from dataclasses import dataclass, field
 
 # —— Constants ——————————————————
@@ -131,6 +132,14 @@ class UIManager:
         return 0  # No matching frame found
 
 
+    @staticmethod
+    def GetFrameLogs() -> List[tuple[int, int, str]]:
+        """
+        Get the frame logs.
+
+        :return: list of tuples: Each tuple contains (timestamp, frame_id, frame_label).
+        """
+        return PyUIManager.UIManager.get_frame_logs()
     
     @staticmethod
     def GetFrameIDByLabel(label):
@@ -189,6 +198,19 @@ class UIManager:
         :return: list: The frame array.
         """
         return PyUIManager.UIManager.get_frame_array()
+    
+    @staticmethod
+    def SendUIMessage(msgid, wparam, lparam=0, skip_hooks=False):
+        """
+        Send a UI message.
+
+        :param msgid: The message ID.
+        :param wparam: Pointer to payload (ctypes.addressof(...) or 0).
+        :param lparam: Optional pointer to secondary payload.
+        :param skip_hooks: If True, bypass UI hooks.
+        :returns bool: True if the message was processed.
+        """
+        return PyUIManager.UIManager.SendUIMessage(msgid, wparam, lparam, skip_hooks)
     
     @staticmethod
     def FrameClick(frame_id):
@@ -710,6 +732,15 @@ class UIManager:
         
     @staticmethod
     def GetDialogButtonFrames(debug: bool = False) -> list[tuple[int, tuple[int, int, int, int]]]:
+<<<<<<< HEAD
+=======
+        '''
+        Returns a list of tuples containing the frame ID and its coordinates
+        for all visible dialog button frames (template_type == 1), sorted by their vertical position.
+        Each tuple is in the format: (frame_id, (left, top, right, bottom))
+        '''
+        
+>>>>>>> upstream/main
         if DIALOG_CHILD_OFFSET == DEFAULT_OFFSET:
             UIManager.FindDialogOffset()
 
@@ -840,6 +871,9 @@ class UIManager:
     
     @staticmethod
     def ConfirmMaxAmountDialog():
+        '''
+        Confirm the max amount dialog such as those from Trading and Dropping items by clicking the relevant buttons.
+        '''
         max_amount = UIManager.GetFrameIDByHash(4008686776)
         drop_offer_confirm = UIManager.GetFrameIDByHash(4014954629)
         
@@ -875,11 +909,11 @@ class FrameInfo:
         self.update_frame_id()
         return UIManager.FrameExists(self.FrameID)
     
-    def DrawFrame(self, color):
+    def DrawFrame(self, color:int):
         if self.FrameExists():
             UIManager().DrawFrame(self.FrameID, color)
             
-    def DrawFrameOutline(self, color):
+    def DrawFrameOutline(self, color:int):
         if self.FrameExists():
             UIManager().DrawFrameOutline(self.FrameID, color)
             
@@ -898,6 +932,13 @@ class FrameInfo:
             
 #region WindowFrames
 WindowFrames:dict[str, FrameInfo] = {}
+
+InventoryBags = FrameInfo(
+    WindowID = WindowID.WindowID_InventoryBags,
+    WindowName = "Inventory Bags",
+    WindowLabel = "InvAggregate",
+    FrameHash = 291586130
+)
 
 DeleteButtonFrame = FrameInfo(
     WindowName="DeleteCharacterButton",
@@ -935,6 +976,8 @@ FinalCreateCharacterButtonFrame = FrameInfo(
     FrameHash=3856299307
 )
 
+   
+WindowFrames["Inventory Bags"] = InventoryBags
 WindowFrames["DeleteCharacterButton"] = DeleteButtonFrame
 WindowFrames["FinalDeleteCharacterButton"] = FinalDeleteButtonFrame
 WindowFrames["CreateCharacterButton1"] = CreateCharacterButtonFrame1

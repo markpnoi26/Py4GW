@@ -318,10 +318,10 @@ def DrawWindow():
     try:    
         button_rect = (widget_config.button_position[0], widget_config.button_position[1], 48, 48)
         ## Ensure the button is within the screen bounds
-        io = PyImGui.get_io()        
+        io = PyImGui.get_io()  
         screen_width, screen_height = io.display_size_x, io.display_size_y
         
-        button_rect = ensure_on_screen(button_rect, screen_width, screen_height)
+        button_rect = ensure_on_screen(button_rect, screen_width, screen_height)                
         PyImGui.set_next_window_size(button_rect[2] + 4, button_rect[3] + 4)
         
         PyImGui.push_style_var2(ImGui.ImGuiStyleVar.WindowPadding, 0, 0)
