@@ -2496,11 +2496,7 @@ SkillTextureMap = {
     #	2691 : "[2691] - Disenchantment Togo.jpg",
     #	2692 : "[2692] - Fire Dart1.jpg",
     #	2698 : "[2698] - Corrupted Haiju Lagoon Water.jpg",
-<<<<<<< HEAD
-    	2699 : "Journey_to_the_North.png",
-=======
         2699 : "Journey_to_the_North.png",
->>>>>>> upstream/main
     #	2701 : "[2701] - Rat Form.jpg",
     #	2702 : "[2702] - Ox Form.jpg",
     #	2703 : "[2703] - Tiger Form.jpg",
@@ -3142,14 +3138,7 @@ SkillTextureMap = {
     #	3528 : "[3528] - EchoRefrain.jpg",
     #	3529 : "[3529] - Disguise.jpg",
     #	3530 : "[3530] - Enemy.jpg",
-<<<<<<< HEAD
 }
 
 
 # endregion
-=======
-    }
-
-
-# endregion
->>>>>>> upstream/main
