@@ -2,7 +2,9 @@
 accounts.json
 accounts - Copy.json
 Py4GW_Launcher.exe
+Py4GW_injection_log.txt
 
+*.local.ini
 imgui.ini
 Inject.au3
 AlcoholProc.ini
@@ -191,3 +193,11 @@ cython_debug/
 
 # # But keep the .default.json ones
 !/Styles/*.default.json
+
+<<<<<<< HEAD
+# Ignore VSCode settings folder
+.vscode/
+=======
+# Ignore Visual Studio Code settings folder
+.vscode/
+>>>>>>> upstream/main

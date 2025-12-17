@@ -74,11 +74,17 @@ class SF_Ass_vaettir(BuildMgr):
     def DefensiveActions(self):
         player_agent_id = GLOBAL_CACHE.Player.GetAgentID()
         has_deadly_paradox = Routines.Checks.Effects.HasBuff(player_agent_id, self.deadly_paradox)
+        has_shroud_of_distress = Routines.Checks.Effects.HasBuff(player_agent_id, self.shroud_of_distress)
+        
         if (yield from Routines.Yield.Skills.IsSkillIDUsable(self.shadow_form)):
             if (yield from self._CastSkillID(self.deadly_paradox,extra_condition=(not has_deadly_paradox), log=False, aftercast_delay=100)):
                 ConsoleLog(self.build_name, "Casting Deadly Paradox.", Py4GW.Console.MessageType.Info, log=False)
+                
             if (yield from self._CastSkillID(self.shadow_form, log=False, aftercast_delay=1750)):
                 ConsoleLog(self.build_name, "Casting Shadow Form.", Py4GW.Console.MessageType.Info, log=False)
+                
+            if (yield from self._CastSkillID(self.shroud_of_distress,extra_condition=(not has_shroud_of_distress), log=False, aftercast_delay=1750)):
+                ConsoleLog(self.build_name, "Casting Shroud of Distress.", Py4GW.Console.MessageType.Info, log=False)
                 
     def CastShroudOfDistress(self):
         player_agent_id = GLOBAL_CACHE.Player.GetAgentID()
