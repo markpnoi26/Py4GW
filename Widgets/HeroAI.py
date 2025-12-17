@@ -9,13 +9,6 @@ from Py4GWCoreLib.Pathing import AutoPathing
 from Py4GWCoreLib.enums_src.Texture_enums import SkillTextureMap
 
 MODULE_NAME = "HeroAI"
-for module_name in list(sys.modules.keys()):
-    if module_name not in ("sys", "importlib", "cache_data"):
-        try:   
-            if f"{MODULE_NAME}." in module_name:
-                del sys.modules[module_name]
-        except Exception as e:
-            Py4GW.Console.Log(MODULE_NAME, f"Error reloading module {module_name}: {e}", Py4GW.Console.MessageType.Error)
 
 from enum import Enum
 from PyMap import PyMap
@@ -25,7 +18,6 @@ from Py4GWCoreLib.Skillbar import SkillBar
 from Py4GWCoreLib.py4gwcorelib_src.Console import ConsoleLog
 from Py4GW_widget_manager import WidgetHandler
 
-from HeroAI.settings import Settings
 from HeroAI.cache_data import CacheData
 from HeroAI.constants import FOLLOW_DISTANCE_OUT_OF_COMBAT
 from HeroAI.constants import MAX_NUM_PLAYERS
@@ -53,6 +45,7 @@ from HeroAI.windows import DrawOptions
 from HeroAI.windows import DrawPanelButtons
 from HeroAI.windows import SubmitGameOptions
 from HeroAI.ui import draw_combined_hero_panel, draw_command_panel, draw_configure_window, draw_dialog_overlay, draw_hero_panel, draw_hotbars, draw_skip_cutscene_overlay
+from HeroAI.settings import Settings
 from Py4GWCoreLib import GLOBAL_CACHE
 from Py4GWCoreLib import ActionQueueManager
 from Py4GWCoreLib import IconsFontAwesome5
