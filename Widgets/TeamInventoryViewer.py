@@ -937,8 +937,8 @@ def get_armor_name_from_modifiers(item):
         suffix = None
 
         cached_item = Cached_Item(item.item_id, item.slot)
-        mods = cached_item.GetModsFromModifiers()
-        for mod_info in mods.get('runes', []):
+        runes, _ = cached_item.GetModsFromModifiers() or ([], [])
+        for mod_info in runes:
             mod = mod_info.Rune
             mod_name = mod.name
             mod_type = mod.mod_type.name
@@ -1016,8 +1016,8 @@ def get_weapon_name_from_modifiers(item):
         inherent = None
 
         cached_item = Cached_Item(item.item_id, item.slot)
-        mods = cached_item.GetModsFromModifiers()
-        for mod_info in mods.get('weapon_mods', []):
+        _, weapon_mods = cached_item.GetModsFromModifiers() or ([], [])
+        for mod_info in weapon_mods:
             mod = mod_info.WeaponMod
             mod_name = mod.name
             mod_type = mod.mod_type.name
