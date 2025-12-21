@@ -2,7 +2,9 @@ import os
 
 from PyPlayer import PyPlayer
 from HeroAI.commands import HeroAICommands
+from HeroAI.types import Docked
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
+from Py4GWCoreLib.ImGui_src.types import Alignment
 from Py4GWCoreLib.py4gwcorelib_src.Console import Console, ConsoleLog
 from Py4GWCoreLib.py4gwcorelib_src.IniHandler import IniHandler
 
@@ -14,10 +16,14 @@ class Settings:
             self.position: tuple[int, int] = (0, 0)   
             self.visible: bool = True
             self.button_size: int = 32
+            self.docked: Docked = Docked.Freely
+            self.alignment: Alignment = Alignment.TopCenter
         
         def to_ini_string(self) -> str:
             #save the position, visible state and combine commands into string into a single row
             ini_string = ""
+            ini_string += f"{self.docked.name};"
+            ini_string += f"{self.alignment.name};"
             ini_string += f"{self.visible};"
             ini_string += f"{self.button_size};"
             
@@ -40,7 +46,12 @@ class Settings:
             hotbar.commands = {}
             
             try:
-                visible_str, button_size_str, *command_rows_str = ini_string.split(";")                                
+                if ini_string.startswith("True") or ini_string.startswith("False"):
+                    ini_string = f"{Docked.Freely.name};{Alignment.TopCenter.name};{ini_string}"
+                    
+                docked_str, aligned_str, visible_str, button_size_str, *command_rows_str = ini_string.split(";")                                
+                hotbar.docked = Docked[docked_str]
+                hotbar.alignment = Alignment[aligned_str]
                 hotbar.visible = visible_str.lower() == "true"
                 hotbar.button_size = int(button_size_str)
 
