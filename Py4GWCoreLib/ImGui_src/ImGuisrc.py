@@ -96,6 +96,8 @@ class ImGui:
 
     @staticmethod
     def get_x_position_aligned(alignment: Alignment, parent_pos: tuple[float, float], parent_size: tuple[float, float], child_size: tuple[float, float], offset: tuple[float, float]=(0,0)) -> float: 
+        '''Get X position aligned within/in relation to a parent rectangle.'''
+        
         match alignment.horizontal:
             case HorizontalAlignment.LeftOf:
                 return parent_pos[0] - child_size[0] + offset[0]
@@ -114,6 +116,8 @@ class ImGui:
         
     @staticmethod
     def get_y_position_aligned(alignment: Alignment, parent_pos: tuple[float, float], parent_size: tuple[float, float], child_size: tuple[float, float], offset: tuple[float, float]=(0,0)) -> float: 
+        '''Get Y position aligned within/in relation to a parent rectangle.'''
+        
         match alignment.vertical:
             case VerticalAlignment.Above:
                 return parent_pos[1] - child_size[1] + offset[1]
@@ -131,7 +135,8 @@ class ImGui:
                 return parent_pos[1] + parent_size[1] + offset[1]
             
     @staticmethod
-    def get_position_aligned(alignment: Alignment, parent_pos: tuple[float, float], parent_size: tuple[float, float], child_size: tuple[float, float], offset: tuple[float, float]=(0,0)) -> tuple[float, float]:    
+    def get_position_aligned(alignment: Alignment, parent_pos: tuple[float, float], parent_size: tuple[float, float], child_size: tuple[float, float], offset: tuple[float, float]=(0,0)) -> tuple[float, float]:  
+        '''Get position (x,y) aligned within/in relation to a parent rectangle.'''  
                        
         x = ImGui.get_x_position_aligned(alignment, parent_pos, parent_size, child_size, offset)
         y = ImGui.get_y_position_aligned(alignment, parent_pos, parent_size, child_size, offset)
@@ -436,7 +441,7 @@ class ImGui:
             
             PyImGui.set_cursor_pos(x, y)
             PyImGui.text(text)
-            item_rect_min, item_rect_max, item_rect_size = ImGui.get_item_rect()
+            _, _, item_rect_size = ImGui.get_item_rect()
             
             #Restore cursor position
             PyImGui.set_cursor_pos(x0, y0)
