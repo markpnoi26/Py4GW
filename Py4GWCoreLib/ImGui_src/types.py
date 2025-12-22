@@ -18,6 +18,9 @@ class StyleTheme(IntEnum):
     Negative = 5
     
 class VerticalAlignment(IntEnum):
+    '''
+    Vertical Alignment Options
+    '''
     Above = 0
     Top = 1
     Middle = 2
@@ -26,6 +29,9 @@ class VerticalAlignment(IntEnum):
 
 
 class HorizontalAlignment(IntEnum):
+    '''
+    Horizontal Alignment Options
+    '''
     LeftOf = 0
     Left = 1
     Center = 2
@@ -40,6 +46,21 @@ _H_MASK = 0b111 << _H_SHIFT
 _V_MASK = 0b111 << _V_SHIFT
 
 class Alignment(IntEnum):
+    '''
+    All Combinations of VerticalAlignment and HorizontalAlignment
+    as bit-packed enum values.
+    Allows easy extraction of vertical and horizontal components.
+    
+    Properties:
+        vertical: VerticalAlignment
+        horizontal: HorizontalAlignment
+    
+    Example:
+        alignment = Alignment.TopRight
+        alignment.vertical      --> VerticalAlignment.Top
+        alignment.horizontal    --> HorizontalAlignment.Right
+    '''
+    
     # bit layout:
     # bits 0–2 : horizontal (0–4)
     # bits 3–5 : vertical   (0–4)

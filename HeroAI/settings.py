@@ -12,6 +12,7 @@ class Settings:
     class CommandHotBar:
         def __init__(self, identifier: str = ""):
             self.identifier: str = identifier
+            self.name: str = identifier
             self.commands: dict[int, dict[int, str]] = {0: {0: HeroAICommands().Empty.name}}
             self.position: tuple[int, int] = (0, 0)   
             self.visible: bool = True
@@ -22,6 +23,7 @@ class Settings:
         def to_ini_string(self) -> str:
             #save the position, visible state and combine commands into string into a single row
             ini_string = ""
+            ini_string += f"{self.name};"
             ini_string += f"{self.docked.name};"
             ini_string += f"{self.alignment.name};"
             ini_string += f"{self.visible};"
@@ -47,9 +49,10 @@ class Settings:
             
             try:
                 if ini_string.startswith("True") or ini_string.startswith("False"):
-                    ini_string = f"{Docked.Freely.name};{Alignment.TopCenter.name};{ini_string}"
+                    ini_string = f"Hotbar;{Docked.Freely.name};{Alignment.TopCenter.name};{ini_string}"
                     
-                docked_str, aligned_str, visible_str, button_size_str, *command_rows_str = ini_string.split(";")                                
+                name, docked_str, aligned_str, visible_str, button_size_str, *command_rows_str = ini_string.split(";")     
+                hotbar.name = name                           
                 hotbar.docked = Docked[docked_str]
                 hotbar.alignment = Alignment[aligned_str]
                 hotbar.visible = visible_str.lower() == "true"
@@ -204,8 +207,8 @@ class Settings:
         if hotbar_id in self.CommandHotBars:
             del self.CommandHotBars[hotbar_id]
             
-            if self.account_ini_handler is not None:
-                self.account_ini_handler.delete_key("CommandHotBars", hotbar_id)
+            if self.ini_handler is not None:
+                self.ini_handler.delete_key("CommandHotBars", hotbar_id)
     
     def write_settings(self):               
         if not self.save_requested:

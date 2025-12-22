@@ -416,14 +416,14 @@ class UIManager:
         Get the coordinates of a frame.
 
         :param frame_id: The ID of the frame.
-        :return: left, top, right, bottom coordinates of the frame.
+        :return: top, left, bottom, right coordinates of the frame.
         """
         frame = PyUIManager.UIFrame(frame_id)
         top = frame.position.top_on_screen
         left = frame.position.left_on_screen
         bottom = frame.position.bottom_on_screen
         right = frame.position.right_on_screen
-        return left, top, right, bottom
+        return left,top, right, bottom
     
         
     def DrawFrame(self,frame_id:int, draw_color:int):

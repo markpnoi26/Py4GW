@@ -26,6 +26,7 @@ from Py4GWCoreLib.Overlay import Overlay
 from Py4GWCoreLib.Player import Player
 from Py4GWCoreLib.UIManager import UIManager
 from Py4GWCoreLib.enums_src.GameData_enums import Allegiance, Profession, ProfessionShort, Range
+from Py4GWCoreLib.enums_src.IO_enums import Key
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.enums_src.Multiboxing_enums import SharedCommandType
 from Py4GWCoreLib.py4gwcorelib_src.Color import Color
@@ -33,8 +34,6 @@ from Py4GWCoreLib.py4gwcorelib_src.Console import ConsoleLog
 from Py4GWCoreLib.py4gwcorelib_src.Timer import ThrottledTimer, Timer
 from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
 from Py4GW_widget_manager import WidgetHandler
-from Widgets.frenkey.LootEx.utility import Util
-
 
 class CachedSkillInfo:
     def __init__(self, skill_id: int):
@@ -2322,11 +2321,18 @@ def draw_configure_window():
                     
                     if ImGui.begin_child("##HotbarListChild", (0, 0), True):
                         for key, hotbar in settings.CommandHotBars.items():
-                            if ImGui.collapsing_header(f"{key}"):
+                            if ImGui.collapsing_header(f"{hotbar.name}"):
                                 if ImGui.begin_child(f"##HotbarConfigChild_{key}", (0, 0), True):
                                     x_avail, y_avail = PyImGui.get_content_region_avail()
                     
-                                    ImGui.text_aligned(f"{key}", height=20, alignment=Alignment.MidLeft, font_size=14)
+                                    name = ImGui.input_text(f"##hotbar name{key}", hotbar.name)
+                                    if name != hotbar.name:
+                                        if PyImGui.is_key_down(Key.Enter.value):
+                                            hotbar.name = name
+                                            settings.save_settings()
+                                    ImGui.show_tooltip("Name of the hotbar. Press Enter to confirm changes.")
+
+                                        
                                     PyImGui.same_line(x_avail - 24 - 32, 0)
 
                                     visible = ImGui.toggle_icon_button(f"{(IconsFontAwesome5.ICON_EYE if hotbar.visible else IconsFontAwesome5.ICON_EYE_SLASH)}##{key}", hotbar.visible, 32, 20)
@@ -2342,14 +2348,14 @@ def draw_configure_window():
                                         break
                                     ImGui.show_tooltip(f"Delete Hotbar '{key}'")
                                     
-                                    positioning = ImGui.combo(f"Docked##positioning {key}", hotbar.docked.value, [Util.reformat_string(pos.name) for pos in Docked])
+                                    positioning = ImGui.combo(f"Docked##positioning {key}", hotbar.docked.value, [Utils.humanize_string(pos.name) for pos in Docked])
                                     if positioning != hotbar.docked.value:
                                         hotbar.docked = Docked(positioning)
                                         settings.save_settings()
                                     ImGui.show_tooltip("Positioning preset for the hotbar. Custom allows free movement.")
                                     
-                                    alignment_names = [f"{Util.reformat_string(pos.name)}" for pos in Alignment]
-                                    current_alignment = f"{Util.reformat_string(hotbar.alignment.name)}"
+                                    alignment_names = [f"{Utils.humanize_string(pos.name)}" for pos in Alignment]
+                                    current_alignment = f"{Utils.humanize_string(hotbar.alignment.name)}"
                                     current_alignment_index = alignment_names.index(current_alignment) if current_alignment in alignment_names else 0
                                     
                                     alignment = ImGui.combo(f"Alignment##positioning {key}", current_alignment_index, alignment_names)
@@ -2393,7 +2399,6 @@ def draw_configure_window():
                                                     
                                         hotbar.commands = new_commands
                                         settings.save_settings()
-                                
                                 
                     ImGui.end_child()
                         
