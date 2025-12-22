@@ -5,6 +5,7 @@ from datetime import datetime
 
 from Py4GWCoreLib.GlobalCache.ItemCache import Bag_enum
 from Py4GWCoreLib.ImGui_src.types import Alignment, TextDecorator
+from Py4GW_widget_manager import WidgetHandler
 from Widgets.frenkey.Core.iterable import chunked
 from Widgets.frenkey.Core.utility import ImGuiIniReader, string_similarity
 from Widgets.frenkey.Core.gui import GUI
@@ -192,6 +193,7 @@ class UI:
         from Widgets.frenkey.LootEx.data import Data
         self.data = Data()
         
+        self.widget_handler = WidgetHandler()        
         self.imgui_ini_reader = ImGuiIniReader()
         window_pos, window_size, collapse = self.get_window_info()
         
@@ -792,13 +794,19 @@ class UI:
         
         return window_pos, window_size, collapse
     
-    def show_main_window(self, ensure_on_screen: bool = False):        
-        self.settings.window_visible = True
-        self.module_window.open = True
-        self.ensure_window_on_screen = ensure_on_screen
+    def show_main_window(self, ensure_on_screen: bool = False):             
+        widget_info = self.widget_handler.get_widget_info("LootEx")
+        if not widget_info:
+            return
         
-    def hide_main_window(self):        
-        self.settings.window_visible = False
+        widget_info.configuring = True
+        
+    def hide_main_window(self):              
+        widget_info = self.widget_handler.get_widget_info("LootEx")
+        if not widget_info:
+            return
+        
+        widget_info.configuring = False
     
     def draw_disclaimer(self, active_inventory_widgets):
         if not self.InventoryBagsVisible():
@@ -875,8 +883,13 @@ class UI:
         style.WindowPadding.pop_style_var()
         style.WindowRounding.pop_style_var()
     
-    def draw_window(self):    
-        if not self.settings.window_visible:
+    def draw_window(self):
+        widget_info = self.widget_handler.get_widget_info("LootEx")
+        
+        self.settings.window_visible = widget_info.configuring if widget_info else False
+        self.module_window.open = self.settings.window_visible
+        
+        if not widget_info or not widget_info.configuring:
             return       
 
         window_style = ex_style.ExStyle()
@@ -990,7 +1003,7 @@ class UI:
         
         if self.module_window.open != self.settings.window_visible:
             self.settings.window_visible = self.module_window.open
-            self.settings.manual_window_visible = self.module_window.open
+            widget_info.configuring = self.module_window.open
             self.settings.save()
     
     def InventoryBagsVisible(self) -> bool:
@@ -1084,12 +1097,6 @@ class UI:
             self._draw_sort_inventory_button(width)
 
             PyImGui.end()
-
-        if self.settings.manual_window_visible:
-            if not self.settings.window_visible:
-                self.show_main_window(True)
-        else:
-            self.hide_main_window()
             
     def _draw_inventory_toggle_button(self, width):
         if UI.transparent_button(IconsFontAwesome5.ICON_CHECK, self.settings.automatic_inventory_handling, width, width):
@@ -1175,21 +1182,27 @@ class UI:
         )
     
     def _draw_manual_window_toggle_button(self, width):
-        if UI.transparent_button(IconsFontAwesome5.ICON_COG, self.settings.manual_window_visible, width, width):
+        if UI.transparent_button(IconsFontAwesome5.ICON_COG, self.settings.window_visible, width, width):
             imgui_io = self.py_io
             if imgui_io.key_ctrl:
-                if self.settings.manual_window_visible:
+                if self.settings.window_visible:
                     messaging.SendHideLootExWindow(imgui_io.key_shift)
                     self.settings.save()
                 else:
                     messaging.SendShowLootExWindow(imgui_io.key_shift)
                     self.settings.save()
             else:
-                self.settings.manual_window_visible = not self.settings.manual_window_visible
+                self.settings.window_visible = not self.settings.window_visible
+                
+                if self.settings.window_visible:
+                    self.show_main_window(True) 
+                else:
+                    self.hide_main_window()
+    
                 self.settings.save()
 
         ImGui.show_tooltip(
-            ("Hide" if self.settings.manual_window_visible else "Show") + " Window" +
+            ("Hide" if self.settings.window_visible else "Show") + " Window" +
             "\nHold Ctrl to send message to all accounts" +
             "\nHold Shift to send message to all accounts excluding yourself")
 
