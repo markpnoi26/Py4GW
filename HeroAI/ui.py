@@ -13,7 +13,7 @@ from HeroAI.commands import HeroAICommands
 from HeroAI.constants import NUMBER_OF_SKILLS, PARTY_WINDOW_HASH, SKILLBAR_WINDOW_HASH
 from HeroAI.settings import Settings
 from HeroAI.types import Docked, GameOptionStruct
-from HeroAI.utils import IsHeroFlagged
+from HeroAI.utils import IsHeroFlagged, SameMapAsAccount
 from HeroAI.windows import CompareAndSubmitGameOptions
 from Py4GWCoreLib import ImGui
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
@@ -2246,7 +2246,7 @@ def draw_party_overlay(accounts: list[AccountData], hero_windows : dict[str, Win
         account = next((acc for acc in accounts if acc.PartyPosition == i - 1), None)
         
         if account and account.AccountEmail != GLOBAL_CACHE.Player.GetAccountEmail():
-            if account.PartyID != main_account.PartyID:
+            if account.PartyID != main_account.PartyID or not SameMapAsAccount(account):
                 continue
             
             window_info = settings.HeroPanelPositions.get(account.AccountEmail, None)
