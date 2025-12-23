@@ -1,7 +1,7 @@
 from typing import Optional
 import Py4GW
 
-from Py4GWCoreLib import Timer
+from Py4GWCoreLib import Timer, UIManager
 from Py4GWCoreLib import GLOBAL_CACHE
 from Py4GWCoreLib import PyImGui
 from Py4GWCoreLib import ImGui
@@ -316,6 +316,11 @@ def DrawWindow():
     global game_throttle_time, game_throttle_timer, save_throttle_time, save_throttle_timer
     
     try:    
+        show_ui = not UIManager.IsWorldMapShowing() and not GLOBAL_CACHE.Map.IsMapLoading() and not GLOBAL_CACHE.Map.IsInCinematic() and not GLOBAL_CACHE.Player.InCharacterSelectScreen()
+        
+        if not show_ui:
+            return
+        
         button_rect = (widget_config.button_position[0], widget_config.button_position[1], 48, 48)
         ## Ensure the button is within the screen bounds
         io = PyImGui.get_io()  
