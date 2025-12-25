@@ -329,16 +329,16 @@ class ImGui:
     def calc_text_size(text : str) : PyImGui.calc_text_size(text)
     
     @staticmethod
-    def invisible_button(label: str, width: float, height: float) : PyImGui.invisible_button(label, int(width), int(height))
+    def invisible_button(label: str, width: float, height: float) : return PyImGui.invisible_button(label, int(width), int(height))
 
     @staticmethod
     def selectable(label: str, selected: bool, flags: PyImGui.SelectableFlags = PyImGui.SelectableFlags.NoFlag, size: Tuple[float, float] = (0.0, 0.0)) : PyImGui.selectable(label, selected, flags, (int(size[0]), int(size[1])))
         
     @staticmethod
-    def color_edit3(label: str, color: Tuple[float, float, float]) : PyImGui.color_edit3(label, color)
+    def color_edit3(label: str, color: Tuple[float, float, float]) : return PyImGui.color_edit3(label, color)
     
     @staticmethod
-    def color_edit4(label: str, color: Tuple[float, float, float, float]) : PyImGui.color_edit4(label, color)
+    def color_edit4(label: str, color: Tuple[float, float, float, float]): return PyImGui.color_edit4(label, color)
 
     @staticmethod
     def dummy(width: float, height: float) : PyImGui.dummy(int(width), int(height))
