@@ -154,6 +154,11 @@ class CameraCache:
     def IsPointInFOV(self, target_x: float, target_y: float) -> bool:
         cam_x, cam_y, _ = self.GetPosition()
         yaw = self.GetYaw()
+        
+        ## if yaw is inf
+        if yaw == float('inf') or yaw == float('-inf'):
+            return False
+        
         fov = self.GetFieldOfView()
 
         dx = target_x - cam_x
