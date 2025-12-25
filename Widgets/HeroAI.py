@@ -6,11 +6,6 @@ import Py4GW
 from Py4GWCoreLib.Map import Map
 
 MODULE_NAME = "HeroAI"
-##Remove imported HeroAI modules from sys.modules to ensure fresh imports
-for module_name in list(sys.modules.keys()):
-    if module_name.startswith("HeroAI."):
-        del sys.modules[module_name]
-      
 from enum import Enum
 from Py4GWCoreLib.GlobalCache.SharedMemory import SharedMessage
 from Py4GWCoreLib.ImGui_src.WindowModule import WindowModule
