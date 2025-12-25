@@ -18,7 +18,7 @@ widget_info : Widget | None = None
 configure_window : WindowModule = WindowModule(
     "Sulfurous Runner",
     "Sulfurous Runner",
-    window_size=(500, 250),
+    window_size=(500, 280),
     window_pos=(200, 200),
     can_close=True,
 )
@@ -56,7 +56,7 @@ def draw_flags(waypoints : list[Waypoint3D], flag_color : Color = Color(0, 204, 
         if wp.distance > 5000:
             continue
 
-        draw_flag(overlay, wp, flag_color, collision)
+        draw_flag(overlay, wp, flag_color)
         
     overlay.EndDraw()
     
@@ -121,6 +121,11 @@ def draw_configure():
         draw_paths = ImGui.checkbox("Draw Paths", settings.draw_paths)
         if draw_paths != settings.draw_paths:
             settings.draw_paths = draw_paths        
+            settings.save()
+            
+        path_collision = ImGui.checkbox("Use Path Collision", settings.use_path_collision)
+        if path_collision != settings.use_path_collision:
+            settings.use_path_collision = path_collision        
             settings.save()
 
         flag_color = ImGui.color_edit4("Flag Color", settings.flag_color.color_tuple)

@@ -30,7 +30,7 @@ def configure():
     draw_configure()
     pass
 
-def main():        
+def main():            
     if Routines.Checks.Map.IsLoading():
         draw_throttle.Reset()
         return
@@ -46,8 +46,7 @@ def main():
     if UIManager.IsWorldMapShowing():
         draw_throttle.Reset()
         return
-    
-    
+        
     if not settings.draw_flags and not settings.draw_paths:
         return
 
