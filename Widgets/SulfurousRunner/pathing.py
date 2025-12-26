@@ -37,7 +37,7 @@ def search_paths():
         except StopIteration:
             g.current_path_generator = None
     else:
-        # ConsoleLog("SulfurousRunner", "Starting new path search...")
+        # ConsoleLog("Sulfurous Runner", "Starting new path search...")
         g.current_path_generator = search_path_generator(g.waypoints.get(GLOBAL_CACHE.Map.GetMapID(), []))
         
 def search_path_generator(waypoints : list[Waypoint3D] | None = None) -> Generator:   

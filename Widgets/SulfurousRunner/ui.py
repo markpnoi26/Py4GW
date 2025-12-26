@@ -10,8 +10,8 @@ from Py4GWCoreLib.py4gwcorelib_src.Color import Color
 from Py4GWCoreLib.py4gwcorelib_src.Console import ConsoleLog
 from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
 from Py4GW_widget_manager import Widget, WidgetHandler
-from Widgets.SulfurousRunner.settings import Settings
-from Widgets.frenkey.LootEx import settings
+
+from .settings import Settings
 from .waypoint import Waypoint3D
 
 widget_info : Widget | None = None

@@ -1,9 +1,4 @@
 import sys
-
-# Remove all SulfurousRunner from sys
-for mod in list(sys.modules.keys()):    
-    if "SulfurousRunner" in mod:
-        del sys.modules[mod]
         
 from Py4GWCoreLib import UIManager
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
