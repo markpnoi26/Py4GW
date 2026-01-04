@@ -6,7 +6,7 @@ import Py4GW
 import PyUIManager
 
 from HeroAI.cache_data import CacheData
-from Py4GWCoreLib import GLOBAL_CACHE, Player
+from Py4GWCoreLib import GLOBAL_CACHE, Player, Map, Agent
 from Py4GWCoreLib import ActionQueueManager
 from Py4GWCoreLib import CombatPrepSkillsType
 from Py4GWCoreLib import Console
@@ -394,7 +394,7 @@ def InteractWithTarget(index, message):
     try:
         yield from DisableHeroAIOptions(message.ReceiverEmail)
         yield from Routines.Yield.wait(100)
-        x, y = GLOBAL_CACHE.Agent.GetXY(target)
+        x, y = Agent.GetXY(target)
         yield from Routines.Yield.Movement.FollowPath([(x, y)])
         yield from Routines.Yield.wait(100)
         yield from Routines.Yield.Player.InteractAgent(target)
@@ -425,7 +425,7 @@ def TakeDialogWithTarget(index, message):
     try:
         yield from DisableHeroAIOptions(message.ReceiverEmail)
         yield from Routines.Yield.wait(100)
-        x, y = GLOBAL_CACHE.Agent.GetXY(target)
+        x, y = Agent.GetXY(target)
         yield from Routines.Yield.Movement.FollowPath([(x, y)])
         yield from Routines.Yield.wait(100)
         yield from Routines.Yield.Player.InteractAgent(target)
@@ -461,7 +461,7 @@ def SendDialogToTarget(index, message):
     try:
         yield from DisableHeroAIOptions(message.ReceiverEmail)
         yield from Routines.Yield.wait(100)
-        x, y = GLOBAL_CACHE.Agent.GetXY(target)
+        x, y = Agent.GetXY(target)
         yield from Routines.Yield.Movement.FollowPath([(x, y)])
         yield from Routines.Yield.wait(100)
         yield from Routines.Yield.Player.InteractAgent(target)
@@ -509,7 +509,7 @@ def GetBlessing(index, message):
     try:
         yield from DisableHeroAIOptions(message.ReceiverEmail)
         yield from Routines.Yield.wait(100)
-        x, y = GLOBAL_CACHE.Agent.GetXY(target)
+        x, y = Agent.GetXY(target)
         yield from Routines.Yield.Movement.FollowPath([(x, y)])
         yield from Routines.Yield.wait(100)
         yield from Routines.Yield.Player.InteractAgent(target)
@@ -604,7 +604,7 @@ def DonateToGuild(index, message):
         GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
         return
 
-    map_id = GLOBAL_CACHE.Map.GetMapID()
+    map_id = Map.GetMapID()
     TITLE_CAP = 10_000_000
     TOTAL_CUMULATIVE = 0
     if map_id == 77:  # House zu Heltzer
@@ -626,7 +626,7 @@ def DonateToGuild(index, message):
 
     # --- Move to NPC ---
     px, py = GLOBAL_CACHE.Player.GetXY()
-    z = GLOBAL_CACHE.Agent.GetZPlane(GLOBAL_CACHE.Player.GetAgentID())
+    z = Agent.GetZPlane(GLOBAL_CACHE.Player.GetAgentID())
     try:
         path3d = yield from AutoPathing().get_path(
             (px, py, z), (npc_pos[0], npc_pos[1], z), smooth_by_los=True, margin=100.0, step_dist=500.0
@@ -690,12 +690,12 @@ def OpenChest(index, message):
             ConsoleLog(MODULE_NAME, "No lockpicks available, halting.", Console.MessageType.Warning)
             return
             
-        if not GLOBAL_CACHE.Agent.IsValid(chest_id):
+        if not Agent.IsValid(chest_id):
             return
                 
         yield from DisableHeroAIOptions(email_owner)
         yield from Routines.Yield.wait(100)
-        x, y = GLOBAL_CACHE.Agent.GetXY(chest_id)
+        x, y = Agent.GetXY(chest_id)
         ConsoleLog(MODULE_NAME, f"Moving to chest at ({x}, {y})", Console.MessageType.Info)
         yield from Routines.Yield.Movement.FollowPath([(x, y)])
         yield from Routines.Yield.wait(100)
@@ -736,10 +736,10 @@ def OpenChest(index, message):
                 ConsoleLog(MODULE_NAME, f"Current account party position: {account_data.PartyPosition}", Console.MessageType.Info)
                 
                 party_id = account_data.PartyID
-                map_id = GLOBAL_CACHE.Map.GetMapID()
-                map_region = GLOBAL_CACHE.Map.GetRegion()[0]
-                map_district = GLOBAL_CACHE.Map.GetDistrict()
-                map_language = GLOBAL_CACHE.Map.GetLanguage()[0]
+                map_id = Map.GetMapID()
+                map_region = Map.GetRegion()[0]
+                map_district = Map.GetDistrict()
+                map_language = Map.GetLanguage()[0]
 
                 def on_same_map_and_party(account : AccountData) -> bool:                    
                     return (account.PartyID == party_id and
@@ -749,7 +749,7 @@ def OpenChest(index, message):
                             account.MapLanguage == map_language)
                 
                 all_accounts = [account for account in GLOBAL_CACHE.ShMem.GetAllAccountData() if on_same_map_and_party(account) and account.PartyPosition > account_data.PartyPosition]
-                chest_pos = GLOBAL_CACHE.Agent.GetXY(chest_id)
+                chest_pos = Agent.GetXY(chest_id)
                                 
                 sorted_by_party_index = sorted(
                     [acc for acc in all_accounts if Utils.Distance((acc.PlayerPosX, acc.PlayerPosY), chest_pos) < 2500.0], 
@@ -825,11 +825,11 @@ def PickUpLoot(index, message):
                 ActionQueueManager().ResetAllQueues()
                 return
 
-            if not GLOBAL_CACHE.Agent.IsValid(item_id):
+            if not Agent.IsValid(item_id):
                 yield from Routines.Yield.wait(100)
                 continue
 
-            pos = GLOBAL_CACHE.Agent.GetXY(item_id)
+            pos = Agent.GetXY(item_id)
             follow_success = yield from Routines.Yield.Movement.FollowPath([pos], timeout=10000)
             if not follow_success:
                 LootConfig().AddItemIDToBlacklist(item_id)
@@ -1313,7 +1313,7 @@ def LoadSkillTemplate(index, message):
         GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
         return
     
-    if GLOBAL_CACHE.Map.IsOutpost():
+    if Map.IsOutpost():
         extra = tuple(GLOBAL_CACHE.ShMem._c_wchar_array_to_str(arr) for arr in message.ExtraData)
         template = extra[0] if extra else ""
             
@@ -1334,8 +1334,8 @@ def SkipCutscene(index, message):
         GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
         return
     
-    if GLOBAL_CACHE.Map.IsInCinematic():
-        GLOBAL_CACHE.Map.SkipCinematic()
+    if Map.IsInCinematic():
+        Map.SkipCinematic()
         yield from Routines.Yield.wait(100)
     
     GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
@@ -1350,11 +1350,11 @@ def TravelToGuildHall(index, message):
         GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
         return
     
-    if GLOBAL_CACHE.Map.IsGuildHall():
+    if Map.IsGuildHall():
         GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
         return
     
-    GLOBAL_CACHE.Map.TravelGH()
+    Map.TravelGH()
     yield from Routines.Yield.wait(100)
     GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
     ConsoleLog(MODULE_NAME, "TravelToGuildHall message processed and finished.", Console.MessageType.Info, False)

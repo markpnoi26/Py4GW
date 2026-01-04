@@ -1,7 +1,7 @@
 from turtle import title
 
 from PyParty import Hero
-from Py4GWCoreLib import ImGui, ColorPalette, TITLE_TIERS, TITLE_NAME, GLOBAL_CACHE, TITLE_CATEGORIES
+from Py4GWCoreLib import Map, Agent, TITLE_TIERS, TITLE_NAME, GLOBAL_CACHE, TITLE_CATEGORIES
 from Py4GWCoreLib import ProfessionShort, Campaign, Routines, Utils
 import PyImGui
 import PyPlayer
@@ -44,38 +44,41 @@ class AgentData:
             self.overcast: float = 0.0
             
         def update(self):
-            self.owner_id = GLOBAL_CACHE.Agent.GetOwnerID(self.agent_id)
-            self.login_number = GLOBAL_CACHE.Agent.GetLoginNumber(self.agent_id)
-            self.player_number = GLOBAL_CACHE.Agent.GetPlayerNumber(self.agent_id)
+            self.owner_id = Agent.GetOwnerID(self.agent_id)
+            self.login_number = Agent.GetLoginNumber(self.agent_id)
+            self.player_number = Agent.GetPlayerNumber(self.agent_id)
             if not self.name_requested:
-                GLOBAL_CACHE.Agent.RequestName(self.agent_id)
+                Agent.RequestName(self.agent_id)
                 self.name_requested = True
                 
             if self.name_requested and self.name == "":
-                if GLOBAL_CACHE.Agent.IsNameReady(self.agent_id):
-                    self.name = GLOBAL_CACHE.Agent.GetName(self.agent_id)
-                    
-            self.professions = GLOBAL_CACHE.Agent.GetProfessionIDs(self.agent_id)
-            self.level = GLOBAL_CACHE.Agent.GetLevel(self.agent_id)
-            energy = GLOBAL_CACHE.Agent.GetEnergy(self.agent_id)
-            max_energy = GLOBAL_CACHE.Agent.GetMaxEnergy(self.agent_id)
-            energy_pips = GLOBAL_CACHE.Agent.GetEnergyPips(self.agent_id)
+                if Agent.IsNameReady(self.agent_id):
+                    self.name = Agent.GetNameByID(self.agent_id)
+               
+            prof1, prof2 = Agent.GetProfessionIDs(self.agent_id)  
+            if prof1 is None: prof1 = 0
+            if prof2 is None: prof2 = 0   
+            self.professions = (prof1, prof2)
+            self.level = Agent.GetLevel(self.agent_id)
+            energy = Agent.GetEnergy(self.agent_id)
+            max_energy = Agent.GetMaxEnergy(self.agent_id)
+            energy_pips = Agent.GetEnergyPips(self.agent_id)
             self.energy_data = (energy, max_energy, energy_pips)
-            hp = GLOBAL_CACHE.Agent.GetHealth(self.agent_id)
-            max_hp = GLOBAL_CACHE.Agent.GetMaxHealth(self.agent_id)
-            hp_regen = GLOBAL_CACHE.Agent.GetHealthRegen(self.agent_id)
+            hp = Agent.GetHealth(self.agent_id)
+            max_hp = Agent.GetMaxHealth(self.agent_id)
+            hp_regen = Agent.GetHealthRegen(self.agent_id)
             self.hp_data = (hp, max_hp, hp_regen)
-            self.dager_status = GLOBAL_CACHE.Agent.GetDaggerStatus(self.agent_id)
-            self.weapon_type = GLOBAL_CACHE.Agent.GetWeaponType(self.agent_id)[0]
-            self.attributes = GLOBAL_CACHE.Agent.GetAttributes(self.agent_id)
-            self.model_id = GLOBAL_CACHE.Agent.GetModelID(self.agent_id)
-            x,y,z = GLOBAL_CACHE.Agent.GetXYZ(self.agent_id)
+            self.dager_status = Agent.GetDaggerStatus(self.agent_id)
+            self.weapon_type = Agent.GetWeaponType(self.agent_id)[0]
+            self.attributes = Agent.GetAttributes(self.agent_id)
+            self.model_id = Agent.GetModelID(self.agent_id)
+            x,y,z = Agent.GetXYZ(self.agent_id)
             self.coords = (x,y,z)
-            self.zplane = GLOBAL_CACHE.Agent.GetZPlane(self.agent_id)
-            self.rotation_angle = GLOBAL_CACHE.Agent.GetRotationAngle(self.agent_id)
-            self.velocity_vector = GLOBAL_CACHE.Agent.GetVelocityXY(self.agent_id)
-            self.can_be_viewed_in_party_window = GLOBAL_CACHE.Agent.CanBeViewedInPartyWindow(self.agent_id)
-            self.overcast = GLOBAL_CACHE.Agent.GetOvercast(self.agent_id)
+            self.zplane = int(Agent.GetZPlane(self.agent_id))
+            self.rotation_angle = Agent.GetRotationAngle(self.agent_id)
+            self.velocity_vector = Agent.GetVelocityXY(self.agent_id)
+            self.can_be_viewed_in_party_window = Agent.CanBeViewedInPartyWindow(self.agent_id)
+            self.overcast = Agent.GetOvercast(self.agent_id)
 
     class Flags:
         def __init__(self):
@@ -102,27 +105,27 @@ class AgentData:
             self.is_ranged: bool = False
             
         def update(self, agent_id:int):
-            self.is_moving = GLOBAL_CACHE.Agent.IsMoving(agent_id)
-            self.is_knocked_down = GLOBAL_CACHE.Agent.IsKnockedDown(agent_id)
-            self.is_bleeding = GLOBAL_CACHE.Agent.IsBleeding(agent_id)
-            self.is_crippled = GLOBAL_CACHE.Agent.IsCrippled(agent_id)
-            self.is_deep_wounded = GLOBAL_CACHE.Agent.IsDeepWounded(agent_id)
-            self.is_poisoned = GLOBAL_CACHE.Agent.IsPoisoned(agent_id)
-            self.is_conditioned = GLOBAL_CACHE.Agent.IsConditioned(agent_id)
-            self.is_enchanted = GLOBAL_CACHE.Agent.IsEnchanted(agent_id)
-            self.is_hexed = GLOBAL_CACHE.Agent.IsHexed(agent_id)
-            self.is_degen_hexed = GLOBAL_CACHE.Agent.IsDegenHexed(agent_id)
-            self.is_dead = GLOBAL_CACHE.Agent.IsDead(agent_id)
-            self.is_weapon_spelled = GLOBAL_CACHE.Agent.IsWeaponSpelled(agent_id)
-            self.is_in_combat_stance = GLOBAL_CACHE.Agent.IsInCombatStance(agent_id)
-            self.is_aggressive = GLOBAL_CACHE.Agent.IsAggressive(agent_id)
-            self.is_attacking = GLOBAL_CACHE.Agent.IsAttacking(agent_id)
-            self.is_casting = GLOBAL_CACHE.Agent.IsCasting(agent_id)
-            self.is_idle = GLOBAL_CACHE.Agent.IsIdle(agent_id)
-            self.is_martial = GLOBAL_CACHE.Agent.IsMartial(agent_id)
-            self.is_caster = GLOBAL_CACHE.Agent.IsCaster(agent_id)
-            self.is_melee = GLOBAL_CACHE.Agent.IsMelee(agent_id)
-            self.is_ranged = GLOBAL_CACHE.Agent.IsRanged(agent_id)
+            self.is_moving = Agent.IsMoving(agent_id)
+            self.is_knocked_down = Agent.IsKnockedDown(agent_id)
+            self.is_bleeding = Agent.IsBleeding(agent_id)
+            self.is_crippled = Agent.IsCrippled(agent_id)
+            self.is_deep_wounded = Agent.IsDeepWounded(agent_id)
+            self.is_poisoned = Agent.IsPoisoned(agent_id)
+            self.is_conditioned = Agent.IsConditioned(agent_id)
+            self.is_enchanted = Agent.IsEnchanted(agent_id)
+            self.is_hexed = Agent.IsHexed(agent_id)
+            self.is_degen_hexed = Agent.IsDegenHexed(agent_id)
+            self.is_dead = Agent.IsDead(agent_id)
+            self.is_weapon_spelled = Agent.IsWeaponSpelled(agent_id)
+            self.is_in_combat_stance = Agent.IsInCombatStance(agent_id)
+            self.is_aggressive = Agent.IsAggressive(agent_id)
+            self.is_attacking = Agent.IsAttacking(agent_id)
+            self.is_casting = Agent.IsCasting(agent_id)
+            self.is_idle = Agent.IsIdle(agent_id)
+            self.is_martial = Agent.IsMartial(agent_id)
+            self.is_caster = Agent.IsCaster(agent_id)
+            self.is_melee = Agent.IsMelee(agent_id)
+            self.is_ranged = Agent.IsRanged(agent_id)
             
     class SkillbarData:
         def __init__(self):
@@ -136,7 +139,7 @@ class AgentData:
             self.agent_id = GLOBAL_CACHE.SkillBar.GetAgentID()
             self.disabled = GLOBAL_CACHE.SkillBar.GetDisabled()
             self.casting = GLOBAL_CACHE.SkillBar.GetCasting()
-            self.casting_skill_id = GLOBAL_CACHE.Agent.GetCastingSkill(self.agent_id)
+            self.casting_skill_id = Agent.GetCastingSkill(self.agent_id)
             
             for i in range(1,9):
                 skill_data = GLOBAL_CACHE.SkillBar.GetSkillBySlot(i)
@@ -211,7 +214,7 @@ class PlayerData:
                     if self.show_details["missions_not_completed"] or completed:
                         status_txt = "Completed" if completed else "Not Completed"
                         PyImGui.text_colored(
-                            f"MapID {map_id} - {GLOBAL_CACHE.Map.GetMapName(map_id)} - {status_txt}",
+                            f"MapID {map_id} - {Map.GetMapName(map_id)} - {status_txt}",
                             Utils.TrueFalseColor(bool(completed))
                         )
 
@@ -241,7 +244,7 @@ class PlayerData:
                     if self.show_details["missions_bonus_not_completed"] or completed:
                         status_txt = "Completed" if completed else "Not Completed"
                         PyImGui.text_colored(
-                            f"MapID {map_id} - {GLOBAL_CACHE.Map.GetMapName(map_id)} - {status_txt}",
+                            f"MapID {map_id} - {Map.GetMapName(map_id)} - {status_txt}",
                             Utils.TrueFalseColor(bool(completed))
                         )
 
@@ -268,7 +271,7 @@ class PlayerData:
                     if self.show_details["missions_hm_not_completed"] or completed:
                         status_txt = "Completed" if completed else "Not Completed"
                         PyImGui.text_colored(
-                            f"MapID {map_id} - {GLOBAL_CACHE.Map.GetMapName(map_id)} - {status_txt}",
+                            f"MapID {map_id} - {Map.GetMapName(map_id)} - {status_txt}",
                             Utils.TrueFalseColor(bool(completed))
                         )
 
@@ -292,7 +295,7 @@ class PlayerData:
                     if self.show_details["missions_bonus_hm_not_completed"] or completed:
                         status_txt = "Completed" if completed else "Not Completed"
                         PyImGui.text_colored(
-                            f"MapID {map_id} - {GLOBAL_CACHE.Map.GetMapName(map_id)} - {status_txt}",
+                            f"MapID {map_id} - {Map.GetMapName(map_id)} - {status_txt}",
                             Utils.TrueFalseColor(bool(completed))
                         )
 
@@ -375,7 +378,7 @@ class AccountInfo:
 
                     # Map
                     PyImGui.table_set_column_index(2)
-                    PyImGui.text(GLOBAL_CACHE.Map.GetMapName(char.map_id))
+                    PyImGui.text(Map.GetMapName(char.map_id))
 
                     # Professions
                     PyImGui.table_set_column_index(3)

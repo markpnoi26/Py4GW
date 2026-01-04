@@ -2,6 +2,8 @@
 from Py4GWCoreLib.routines_src.Agents import Agents
 from ..GlobalCache import GLOBAL_CACHE
 from ..Py4GWcorelib import ConsoleLog, Console
+from ..Map import Map
+from ..Agent import Agent
 from ..enums_src.Title_enums import TITLE_NAME
 from ..UIManager import UIManager
 from ..enums_src.UI_enums import ControlAction
@@ -404,21 +406,21 @@ class BT:
             Returns: None
             """
             def arrived_early(outpost_id) -> bool: 
-                if GLOBAL_CACHE.Map.GetMapID() == outpost_id: 
-                    ConsoleLog("TravelToOutpost", f"Already at {GLOBAL_CACHE.Map.GetMapName(outpost_id)}", log=log) 
+                if Map.GetMapID() == outpost_id: 
+                    ConsoleLog("TravelToOutpost", f"Already at {Map.GetMapName(outpost_id)}", log=log) 
                     return True
                 return False
 
             def travel_action(outpost_id) -> BehaviorTree.NodeState:
-                ConsoleLog("TravelToOutpost", f"Travelling to {GLOBAL_CACHE.Map.GetMapName(outpost_id)}", log=log)
-                GLOBAL_CACHE.Map.Travel(outpost_id)
+                ConsoleLog("TravelToOutpost", f"Travelling to {Map.GetMapName(outpost_id)}", log=log)
+                Map.Travel(outpost_id)
                 return BehaviorTree.NodeState.SUCCESS 
             
             def map_arrival (outpost_id: int) -> BehaviorTree.NodeState: 
-                if (GLOBAL_CACHE.Map.IsMapReady() and 
+                if (Map.IsMapReady() and 
                     GLOBAL_CACHE.Party.IsPartyLoaded() and 
-                    GLOBAL_CACHE.Map.GetMapID() == outpost_id): 
-                    ConsoleLog("TravelToOutpost", f"Arrived at {GLOBAL_CACHE.Map.GetMapName(outpost_id)}", log=log) 
+                    Map.GetMapID() == outpost_id): 
+                    ConsoleLog("TravelToOutpost", f"Arrived at {Map.GetMapName(outpost_id)}", log=log) 
                     return BehaviorTree.NodeState.SUCCESS 
                 return BehaviorTree.NodeState.RUNNING 
             
@@ -437,13 +439,13 @@ class BT:
         def TravelToRegion(outpost_id, region, district, language=0, log:bool=False, timeout: int = 10000):
             # 1. EARLY ARRIVAL CHECK
             def arrived_early() -> bool:
-                if (GLOBAL_CACHE.Map.GetMapID() == outpost_id and
-                    GLOBAL_CACHE.Map.GetRegion() == region and
-                    GLOBAL_CACHE.Map.GetDistrict() == district and
-                    GLOBAL_CACHE.Map.GetLanguage() == language):
+                if (Map.GetMapID() == outpost_id and
+                    Map.GetRegion() == region and
+                    Map.GetDistrict() == district and
+                    Map.GetLanguage() == language):
 
                     ConsoleLog("TravelToRegion",
-                            f"Already at {GLOBAL_CACHE.Map.GetMapName(outpost_id)}",
+                            f"Already at {Map.GetMapName(outpost_id)}",
                             log=log)
                     return True
                 
@@ -451,21 +453,21 @@ class BT:
             # 2. TRAVEL ACTION
             def travel_action() -> BehaviorTree.NodeState:
                 ConsoleLog("TravelToRegion",
-                        f"Travelling to {GLOBAL_CACHE.Map.GetMapName(outpost_id)}",
+                        f"Travelling to {Map.GetMapName(outpost_id)}",
                         log=log)
-                GLOBAL_CACHE.Map.TravelToRegion(outpost_id, region, district, language)
+                Map.TravelToRegion(outpost_id, region, district, language)
                 return BehaviorTree.NodeState.SUCCESS
             # 3. ARRIVAL CHECK
             def map_arrival() -> BehaviorTree.NodeState:
-                if (GLOBAL_CACHE.Map.IsMapReady() and
+                if (Map.IsMapReady() and
                     GLOBAL_CACHE.Party.IsPartyLoaded() and
-                    GLOBAL_CACHE.Map.GetMapID() == outpost_id and
-                    GLOBAL_CACHE.Map.GetRegion() == region and
-                    GLOBAL_CACHE.Map.GetDistrict() == district and
-                    GLOBAL_CACHE.Map.GetLanguage() == language):
+                    Map.GetMapID() == outpost_id and
+                    Map.GetRegion() == region and
+                    Map.GetDistrict() == district and
+                    Map.GetLanguage() == language):
 
                     ConsoleLog("TravelToRegion",
-                            f"Arrived at {GLOBAL_CACHE.Map.GetMapName(outpost_id)}",
+                            f"Arrived at {Map.GetMapName(outpost_id)}",
                             log=log)
                     return BehaviorTree.NodeState.SUCCESS
 
@@ -489,13 +491,13 @@ class BT:
                 nonlocal map_id, map_name, log
                 
                 if map_name:
-                    map_id = GLOBAL_CACHE.Map.GetMapIDByName(map_name)
+                    map_id = Map.GetMapIDByName(map_name)
 
-                if (GLOBAL_CACHE.Map.IsMapReady() and
+                if (Map.IsMapReady() and
                     GLOBAL_CACHE.Party.IsPartyLoaded() and
-                    GLOBAL_CACHE.Map.GetMapID() == map_id and
-                    GLOBAL_CACHE.Map.GetInstanceUptime() >= 2000):
-                    ConsoleLog("WaitforMapLoad", f"Map {GLOBAL_CACHE.Map.GetMapName(map_id)} loaded successfully.", log=log)
+                    Map.GetMapID() == map_id and
+                    Map.GetInstanceUptime() >= 2000):
+                    ConsoleLog("WaitforMapLoad", f"Map {Map.GetMapName(map_id)} loaded successfully.", log=log)
                     return BehaviorTree.NodeState.SUCCESS
                 return BehaviorTree.NodeState.RUNNING
 
@@ -562,18 +564,19 @@ class BT:
         agent_ids = None
         @staticmethod
         def GetAgentIDByName(agent_name: str) -> BehaviorTree:
+            from ..AgentArray import AgentArray
             def _request_names(node):
-                ids = GLOBAL_CACHE.AgentArray.GetAgentArray()
+                ids = AgentArray.GetAgentArray()
                 node.blackboard["agent_ids"] = ids
 
                 for aid in ids:
-                    GLOBAL_CACHE.Agent.RequestName(aid)
+                    Agent.RequestName(aid)
 
                 return BehaviorTree.NodeState.SUCCESS
 
             def _check_names_ready(node):
                 for aid in node.blackboard["agent_ids"]:
-                    if not GLOBAL_CACHE.Agent.IsNameReady(aid):
+                    if not Agent.IsNameReady(aid):
                         return BehaviorTree.NodeState.FAILURE
                 return BehaviorTree.NodeState.SUCCESS
             
@@ -582,8 +585,8 @@ class BT:
                 found = 0
 
                 for aid in node.blackboard["agent_ids"]:
-                    if GLOBAL_CACHE.Agent.IsNameReady(aid):
-                        name = GLOBAL_CACHE.Agent.GetName(aid)
+                    if Agent.IsNameReady(aid):
+                        name = Agent.GetNameByID(aid)
                         if search_lower in name.lower():
                             found = aid
                             break
@@ -623,11 +626,12 @@ class BT:
             Returns: int: The agent ID or 0 if not found.
             """
             def _search_model_id(node):
-                ids = GLOBAL_CACHE.AgentArray.GetAgentArray()
+                from ..AgentArray import AgentArray
+                ids = AgentArray.GetAgentArray()
                 found = 0
 
                 for aid in ids:
-                    if GLOBAL_CACHE.Agent.GetModelID(aid) == model_id:
+                    if Agent.GetModelID(aid) == model_id:
                         found = aid
                         break
 

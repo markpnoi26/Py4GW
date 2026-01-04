@@ -4,6 +4,8 @@ from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.Pathing import AutoPathing
 from Py4GWCoreLib.py4gwcorelib_src.Console import ConsoleLog
 from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
+from Py4GWCoreLib.Map import Map
+from Py4GWCoreLib.Agent import Agent
 from .waypoint import Waypoint3D, Waypoints
 from .globals import Global
 
@@ -11,7 +13,7 @@ def update_waypoints():
     g = Global()        
     overlay = Overlay()
     
-    waypoints = g.waypoints.get(GLOBAL_CACHE.Map.GetMapID(), [])
+    waypoints = g.waypoints.get(Map.GetMapID(), [])
     if not waypoints:
         return
     
@@ -38,7 +40,7 @@ def search_paths():
             g.current_path_generator = None
     else:
         # ConsoleLog("Sulfurous Runner", "Starting new path search...")
-        g.current_path_generator = search_path_generator(g.waypoints.get(GLOBAL_CACHE.Map.GetMapID(), []))
+        g.current_path_generator = search_path_generator(g.waypoints.get(Map.GetMapID(), []))
         
 def search_path_generator(waypoints : list[Waypoint3D] | None = None) -> Generator:   
     if not waypoints:
@@ -47,7 +49,7 @@ def search_path_generator(waypoints : list[Waypoint3D] | None = None) -> Generat
     g = Global()        
             
     player_x, player_y = GLOBAL_CACHE.Player.GetXY()
-    zplane = GLOBAL_CACHE.Agent.GetZPlane(GLOBAL_CACHE.Player.GetAgentID())
+    zplane = Agent.GetZPlane(GLOBAL_CACHE.Player.GetAgentID())
     
     for idx in range(g.closest_waypoint, len(waypoints)):                
         if idx in g.paths and idx != g.closest_waypoint:

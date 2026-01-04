@@ -1,217 +1,572 @@
 import PyImGui
-from Py4GWCoreLib.Map import Map
-from Py4GWCoreLib.py4gwcorelib_src.Timer import FormatTime
+from Py4GWCoreLib.AgentArray import AgentArray
+from py4gw_demo_src.helpers import draw_kv_table
+from Py4GWCoreLib.Player import Player
+from py4gw_demo_src.helpers import VIEW_LIST, _selected_view
+from py4gw_demo_src.map_demo import draw_map_data
 
 MODULE_NAME = "Py4GW DEMO 2.0"
 
-VIEW_LIST = [
-    "Map",
-]
 
-SECTION_INFO = {
-    "Map": {
-        "title": "Map Library",
-        "description": (
-            "The Map Library provides a comprehensive set of methods to gather "
-            "map-related data and interact with the game world.\n"
-            "It allows you to retrieve information about locations, distances, and "
-            "other geographical data within the game environment.\n"
-            "It also offers pathing and geo-location functionalities to enhance "
-            "navigation and spatial awareness."
-            "Privides data for various map-related features, including:\n\n"
-            "- Maps.\n"
-            "- Mission Map.\n"
-            "- Mini Map.\n"
-            "- World Map.\n"
-            "- Geo Location and Pathing.\n"
-            "- Observing Matches Data.\n"
-        ),
-    },
-}
 
-_selected_view: str = "Map"
+from Py4GWCoreLib import PyImGui
+from Py4GWCoreLib import ImGui 
+from Py4GWCoreLib import Routines
+from Py4GWCoreLib import Allegiance
+from Py4GWCoreLib import Color
+from typing import Tuple
+from Py4GWCoreLib import AgentArray, Agent, Player
+from Py4GWCoreLib.native_src.context.AgentContext import AgentStruct, AgentLivingStruct, AgentItemStruct, AgentGadgetStruct
 
-def draw_kv_table(table_id: str, rows: list[tuple[str, str | int | float]]):
-    flags = (
-        PyImGui.TableFlags.BordersInnerV
-        | PyImGui.TableFlags.RowBg
-        | PyImGui.TableFlags.SizingStretchProp
-    )
+MODULE_NAME = "Agent Info Viewer"
+LOG_ACTIONS = True
 
-    if PyImGui.begin_table(table_id, 2, flags):
-        PyImGui.table_setup_column("Field", PyImGui.TableColumnFlags.WidthFixed, 180)
-        PyImGui.table_setup_column("Value", PyImGui.TableColumnFlags.WidthStretch)
-        PyImGui.table_headers_row()
 
-        for field, value in rows:
-            PyImGui.table_next_row()
-            PyImGui.table_next_column()
-            PyImGui.text_unformatted(str(field))
-            PyImGui.table_next_column()
-            PyImGui.text_unformatted(str(value))
+#region WinwowStup
+window_module = ImGui.WindowModule(
+    MODULE_NAME, 
+    window_name="Agent Info Viewer", 
+    window_size=(0, 0),
+    window_flags=PyImGui.WindowFlags.AlwaysAutoResize
+)
 
-        PyImGui.end_table()
+#endregion
+
+#region ImGui
+SELECTED_ALLIEGANCE = 0
+SELECTED_AGENT_INDEX = 0 
+SELECTED_AGENT_ID = 0    
+def draw_agents_view():
+    global SELECTED_ALLIEGANCE, SELECTED_AGENT_INDEX, SELECTED_AGENT_ID
+    def _get_type(agent:AgentStruct) -> str:
+        if agent.is_living_type:
+            return "Living"
+        elif agent.is_item_type:
+            return "Item"
+        elif agent.is_gadget_type:
+            return "Gadget"
+        else:
+            return "Unknown"
         
-class MapVars:
-    class Travel:
-        map_id: int = 0
-        region: int = 0
-        district_number: int = 0
-        language: int = 0
+    def _format_agent_row(label: str, agent:AgentStruct | None) -> tuple: 
+        from Py4GWCoreLib import GLOBAL_CACHE
+        if agent is None:
+            return (label, "N/A", "N/A", "N/A", "N/A")
+        return (
+            label,
+            agent.agent_id,
+            Agent.GetNameByID(agent.agent_id),
+            f"({agent.pos.x:.2f}, {agent.pos.y:.2f}, {agent.z:.2f})",
+            _get_type(agent)
+        )
         
-map_vars = MapVars()
-        
-def draw_map_data():
-    global _selected_view, SECTION_INFO, map_vars
-    if PyImGui.begin_tab_bar("MapDataTabBar"):
-        if PyImGui.begin_tab_item("Map##MapInfoTab"):
-            if _selected_view in SECTION_INFO:
-                info = SECTION_INFO[_selected_view]
-                #PyImGui.text(info["title"])
-                #PyImGui.separator()
-                PyImGui.text_wrapped(info["description"])
+    def _colored_bool(value: bool) -> Tuple[int, int, int, int]:
+        return Color(0,255,0,255).to_tuple() if value else Color(255,0,0,255).to_tuple()
+    
+    def _draw_agent_tab_item(agent_id:  int):
+        from Py4GWCoreLib import GLOBAL_CACHE
+        _AGENT_ID = agent_id
+        PyImGui.text(f"ID: {_AGENT_ID}")
+        PyImGui.text(f"Name: {Agent.GetNameByID(_AGENT_ID)}")
+        if PyImGui.button("Target Agent"):
+            Player.ChangeTarget(_AGENT_ID)
+        PyImGui.separator()
+        if PyImGui.collapsing_header(f"Positional Data:"):
+            flags = PyImGui.TableFlags.Borders | PyImGui.TableFlags.SizingStretchSame | PyImGui.TableFlags.Resizable
+            if PyImGui.begin_table(f"PositionalData##PositionalData{_AGENT_ID}", 5,flags):                                
+                PyImGui.table_next_row()
+                PyImGui.table_next_column()
+                PyImGui.text("Position")
+                PyImGui.same_line(0,-1)
+                if PyImGui.button("Copy to Clipboard"):
+                    PyImGui.set_clipboard_text(f"({Agent.GetXY(_AGENT_ID)[0]:.2f}, {Agent.GetXY(_AGENT_ID)[1]:.2f})")
+                PyImGui.table_next_column()
+                PyImGui.text(f"X: {Agent.GetXYZ(_AGENT_ID)[0]:.2f}")
+                PyImGui.table_next_column()
+                PyImGui.text(f"Y: {Agent.GetXYZ(_AGENT_ID)[1]:.2f}")
+                PyImGui.table_next_column()
+                PyImGui.text(f"Z: {Agent.GetXYZ(_AGENT_ID)[2]:.2f}")
+                PyImGui.table_next_column()
+                PyImGui.text(f"ZPlane {Agent.GetZPlane(_AGENT_ID):.2f}")
+                PyImGui.table_next_row()
+                PyImGui.table_next_column()
                 
-            PyImGui.separator()
-        
-            PyImGui.text("Common fields:")
-
-            rows: list[tuple[str, str | int | float]] = [
-                ("Instance Type", Map.GetInstanceTypeName()),
-                ("Current Map", f"[{Map.GetMapID()}] - {Map.GetMapName()}"),
-                ("Instance uptime (ms)", f"{FormatTime(Map.GetInstanceUptime(), 'hh:mm:ss:ms')}"),
-                ("Region", f"[{Map.GetRegion()[0]}] - {Map.GetRegion()[1]}"),
-                ("Region Type", f"[{Map.GetRegionType()[0]}] - {Map.GetRegionType()[1]}"),
-                ("District", f"[{Map.GetDistrict()}]"),
-                ("Language", f"[{Map.GetLanguage()[0]}] - {Map.GetLanguage()[1]}"),
-                ("Amount of Players in Instance", f"{Map.GetAmountOfPlayersInInstance()}"),
-            ]
-
-            draw_kv_table("WorldMapTable", rows)
-            PyImGui.end_tab_item()
-        if PyImGui.begin_tab_item("Data##MapInfoDataTab"):
-            if PyImGui.collapsing_header("Common fields:"):
-                rows: list[tuple[str, str | int | float]] = [
-                    ("Instance Type", Map.GetInstanceTypeName()),
-                    ("Current Map", f"[{Map.GetMapID()}] - {Map.GetMapName()}"),
-                    ("Instance uptime (ms)", f"{FormatTime(Map.GetInstanceUptime(), 'hh:mm:ss:ms')}"),
-                    ("Campaign", f"[{Map.GetCampaign()[0]}] - {Map.GetCampaign()[1]}"),
-                    ("Continent", f"[{Map.GetContinent()[0]}] - {Map.GetContinent()[1]}"),
-                    ("Is Guild Hall", f"{Map.IsGuildHall()}"),
-                    ("Region", f"[{Map.GetRegion()[0]}] - {Map.GetRegion()[1]}"),
-                    ("Region Type", f"[{Map.GetRegionType()[0]}] - {Map.GetRegionType()[1]}"),
-                    ("District", f"[{Map.GetDistrict()}]"),
-                    ("Language", f"[{Map.GetLanguage()[0]}] - {Map.GetLanguage()[1]}"),
-                    ("Amount of Players in Instance", f"{Map.GetAmountOfPlayersInInstance()}"),
-                    ("Max Party Size", f"{Map.GetMaxPartySize()}"),
-                    ("Foes Killed", f"{Map.GetFoesKilled()}"),
-                    ("Foes to Kill", f"{Map.GetFoesToKill()}"),
-                    ("Is Vanquishable", f"{Map.IsVanquishable()}"),
-                    ("Is Vanquish Complete", f"{Map.IsVanquishComplete()}"),
-                    ("Is in Cinematic", f"{Map.IsInCinematic()}"),
-                    ("Has Enter Challenge Button", f"{Map.HasEnterChallengeButton()}"),  
-                    ("Is Map Unlocked", f"{Map.IsMapUnlocked()}"),
-                ]
-
-                draw_kv_table("MissionMapTable", rows)
+                PyImGui.text("Rotation")
+                PyImGui.table_next_column()
+                PyImGui.text(f"Angle: {Agent.GetRotationAngle(_AGENT_ID):.2f}")
+                PyImGui.table_next_column()
+                PyImGui.text(f"Cos: {Agent.GetRotationCos(_AGENT_ID):.2f}")
+                PyImGui.table_next_column()
+                PyImGui.text(f"Sin: {Agent.GetRotationSin(_AGENT_ID):.2f}")
+                PyImGui.table_next_row()
+                PyImGui.table_next_column()
                 
-            if PyImGui.collapsing_header("Additional Fields:"):
-                rows: list[tuple[str, str | int | float]] = [
-                    ("Is Unlockable", f"{Map.IsUnlockable()}"),
-                    ("Has Mission Maps To", f"{Map.HasMissionMapsTo()}"),
-                    ("Mission Maps To", f"{Map.GetMissionMapsTo()} - {Map.GetMapName(Map.GetMissionMapsTo())}"),
-                    ("Controlled Outpost ID", f"{Map.GetControlledOutpostID()} - {Map.GetMapName(Map.GetControlledOutpostID())}"),
-                    ("Is on World Map", f"{Map.IsOnWorldMap()}"),
-                    ("Is PvP Map", f"{Map.IsPVP()}"),
-                    ("Min Party Size", f"{Map.GetMinPartySize()}"),
-                    ("Min Player Size", f"{Map.GetMinPlayerSize()}"),
-                    ("Max Player Size", f"{Map.GetMaxPlayerSize()}"),
-                    ("flags", f"{Map.GetFlags()}"),
-                    ("Min Level", f"{Map.GetMinLevel()}"),
-                    ("Max Level", f"{Map.GetMaxLevel()}"),
-                    ("Thumbnail ID", f"{Map.GetThumbnailID()}"),
-                    ("Fraction Mission", f"{Map.GetFractionMission()}"),
-                    ("Needed PQ", f"{Map.GetNeededPQ()}"),
-                    ("Icon Position (x, y)", f"{Map.GetIconPosition()}"),
-                    ("Icon Start Position (x, y)", f"{Map.GetIconStartPosition()}"),
-                    ("Icon End Position (x, y)", f"{Map.GetIconEndPosition()}"),
-                    ("File ID", f"{Map.GetFileID()}"),
-                    ("Mission Chronology", f"{Map.GetMissionChronology()}"),
-                    ("HA Chronology", f"{Map.GetHAChronology()}"),
-                    ("Name ID", f"{Map.GetNameID()}"),
-                    ("Description ID", f"{Map.GetDescriptionID()}"),
-                    ("File ID 1", f"{Map.GetFileID1()}"),
-                    ("File ID 2", f"{Map.GetFileID2()}"),
-                    
-                ]
+                PyImGui.text("Velocity")
+                PyImGui.table_next_column()
+                PyImGui.text(f"X: {Agent.GetVelocityXY(_AGENT_ID)[0]:.2f}")
+                PyImGui.table_next_column()
+                PyImGui.text(f"Y: {Agent.GetVelocityXY(_AGENT_ID)[1]:.2f}")
+                PyImGui.table_next_row()
+                PyImGui.table_next_column()
 
-                draw_kv_table("MissionMapTable", rows)
+                PyImGui.text("Name Tag")
+                PyImGui.table_next_column()
+                PyImGui.text(f"X: {Agent.GetNameTagXYZ(_AGENT_ID)[0]:.2f}")
+                PyImGui.table_next_column()
+                PyImGui.text(f"Y: {Agent.GetNameTagXYZ(_AGENT_ID)[1]:.2f}")
+                PyImGui.table_next_column()
+                PyImGui.text(f"Z: {Agent.GetNameTagXYZ(_AGENT_ID)[2]:.2f}")
+                PyImGui.table_next_row()
+                PyImGui.table_next_column()
                 
-            PyImGui.end_tab_item()
-        if PyImGui.begin_tab_item("Actions##MapInfoActionsTab"):
-            PyImGui.text("SkipCinematic:")
-            PyImGui.indent(20.0)
-            if not Map.IsInCinematic():
-                PyImGui.text("No cinematic is currently playing.")
-            else:
-                if PyImGui.button("Skip Cinematic"):
-                    Map.SkipCinematic()
-                    
-            PyImGui.unindent(20.0)
-            PyImGui.separator()
-            if PyImGui.collapsing_header("Travel to Map:"):
-                PyImGui.indent(20.0)
-                map_vars.Travel.map_id = PyImGui.input_int("Map ID", map_vars.Travel.map_id)
-                map_vars.Travel.region = PyImGui.input_int("Region", map_vars.Travel.region)
-                map_vars.Travel.district_number = PyImGui.input_int("District Number", map_vars.Travel.district_number)
-                map_vars.Travel.language = PyImGui.input_int("Language", map_vars.Travel.language)
-                    
-                if PyImGui.button("Travel"):
-                    Map.TravelToRegion(
-                        map_vars.Travel.map_id,
-                        map_vars.Travel.region,
-                        map_vars.Travel.district_number,
-                        map_vars.Travel.language
-                    )
-                PyImGui.unindent(20.0)
+                PyImGui.end_table()
                 
-            if PyImGui.collapsing_header("Guild Hall:"):
-                PyImGui.indent(20.0)
-                is_guild_hall = Map.IsGuildHall()
-                if is_guild_hall:
-                    if PyImGui.button("Leave Guild Hall"):    
-                        Map.LeaveGH()
-                else:
-                    if PyImGui.button("Travel to Guild Hall"):
-                        Map.TravelGH()
-                PyImGui.unindent(20.0)
-                
-            if PyImGui.collapsing_header("Enter Challenge:"):
-                PyImGui.indent(20.0)
-                if not Map.HasEnterChallengeButton():
-                    PyImGui.text("No 'Enter Challenge' button is available in this map.")
-                else:
-                    if not Map.IsEnteringChallenge():
-                        if PyImGui.button("Enter Challenge"):
-                            Map.EnterChallenge()
-                    else:
-                        if PyImGui.button("Cancel Enter Challenge"):
-                            Map.CancelEnterChallenge()
+        if PyImGui.collapsing_header(f"Agent Properties"):
+            flags = PyImGui.TableFlags.Borders | PyImGui.TableFlags.SizingStretchSame | PyImGui.TableFlags.Resizable
+            if PyImGui.begin_table(f"AgentProperties##AgentProperties{_AGENT_ID}", 5,flags):                                
+                PyImGui.table_next_row()
+                PyImGui.table_next_column()
+                PyImGui.text("Model 1")
+                PyImGui.table_next_column()
+                PyImGui.text(f"Width: {Agent.GetModelScale1(_AGENT_ID)[0]:.2f}")
+                PyImGui.table_next_column()
+                PyImGui.text(f"Height: {Agent.GetModelScale1(_AGENT_ID)[1]:.2f}")
+                PyImGui.table_next_row()
+                PyImGui.table_next_column()
+                PyImGui.text("Model 2")
+                PyImGui.table_next_column()
+                PyImGui.text(f"Width: {Agent.GetModelScale2(_AGENT_ID)[0]:.2f}")
+                PyImGui.table_next_column() 
+                PyImGui.text(f"Height: {Agent.GetModelScale2(_AGENT_ID)[1]:.2f}")
+                PyImGui.table_next_row()
+                PyImGui.table_next_column()
+                PyImGui.text("Model 3")
+                PyImGui.table_next_column()
+                PyImGui.text(f"Width: {Agent.GetModelScale3(_AGENT_ID)[0]:.2f}")
+                PyImGui.table_next_column()
+                PyImGui.text(f"Height: {Agent.GetModelScale3(_AGENT_ID)[1]:.2f}")
+                PyImGui.table_next_row()
+                PyImGui.table_next_column()
+                PyImGui.text(f"Name Properties")
+                PyImGui.table_next_column()
+                PyImGui.text(f"{Agent.GetNameProperties(_AGENT_ID)}")
+                PyImGui.table_next_column()
+                PyImGui.text(f"HEX: {hex(Agent.GetNameProperties(_AGENT_ID))}")
+                PyImGui.table_next_column()
+                PyImGui.text(f"BIN: {bin(Agent.GetNameProperties(_AGENT_ID))}")
+                PyImGui.table_next_row()
+                PyImGui.table_next_column()
+                PyImGui.text(f"Visual Effectes")
+                PyImGui.table_next_column()
+                PyImGui.text(f"{Agent.GetVisualEffects(_AGENT_ID)}")
+                PyImGui.table_next_column()
+                PyImGui.text(f"Hex: {hex(Agent.GetVisualEffects(_AGENT_ID))}")
+                PyImGui.table_next_column()
+                PyImGui.text(f"Bin: {bin(Agent.GetVisualEffects(_AGENT_ID))}")
+                PyImGui.table_next_row()
+                PyImGui.table_next_column()
+                PyImGui.end_table()
 
-                PyImGui.unindent(20.0)
+                
+        if _AGENT_ID == Player.GetAgentID():
+            if PyImGui.collapsing_header(f"Player Instance Exclusive Data:"):
             
+                PyImGui.text("Terrain Normal")
+                PyImGui.table_next_column()
+                PyImGui.text(f"X: {Agent.GetTerrainNormalXYZ(_AGENT_ID)[0]:.2f}")
+                PyImGui.table_next_column()
+                PyImGui.text(f"Y: {Agent.GetTerrainNormalXYZ(_AGENT_ID)[1]:.2f}")
+                PyImGui.table_next_column()
+                PyImGui.text(f"Z: {Agent.GetTerrainNormalXYZ(_AGENT_ID)[2]:.2f}")
+                PyImGui.table_next_column()
+                PyImGui.text(f"Ground: {Agent.GetGround(_AGENT_ID):.2f}")
                 
                 
-            PyImGui.end_tab_item()
-        PyImGui.end_tab_bar()
+        if PyImGui.collapsing_header("Attributes"):
+
+            attributes = Agent.GetAttributes(_AGENT_ID)
+
+            headers = ["Attribute", "Base Level", "Level"]
+            data = []
+            for attribute in attributes:
+                data.append((attribute.GetName(), str(attribute.level_base), str(attribute.level)))
+
+            ImGui.table(f"Attributes Info##attinfo{_AGENT_ID}", headers, data)
+            
+        PyImGui.text_colored("Is Living", _colored_bool(Agent.IsLiving(_AGENT_ID)))
+        PyImGui.same_line(0, -1)
+        PyImGui.text_colored("Is Item", _colored_bool(Agent.IsItem(_AGENT_ID)))
+        PyImGui.same_line(0, -1)
+        PyImGui.text_colored("Is Gadget", _colored_bool(Agent.IsGadget(_AGENT_ID)))
+        
+        if Agent.IsLiving(_AGENT_ID):
+            if PyImGui.collapsing_header("Living Agent Data"):
+                flags = PyImGui.TableFlags.Borders | PyImGui.TableFlags.SizingStretchSame | PyImGui.TableFlags.Resizable
+                if PyImGui.begin_table(f"livingfields##livingfields{_AGENT_ID}", 3,flags):                                
+                    PyImGui.table_next_row()
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Owner ID: {Agent.GetOwnerID(_AGENT_ID)}")
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Player Number/ModelID: {Agent.GetPlayerNumber(_AGENT_ID)}")
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Animation Code: {Agent.GetAnimationCode(_AGENT_ID)}")
+                    PyImGui.table_next_row()
+                    PyImGui.table_next_column()
+                    primary, secondary = Agent.GetProfessions(_AGENT_ID)
+                    primary_name, secondary_name = Agent.GetProfessionNames(_AGENT_ID)
+                    PyImGui.text(f"Primary: [{primary}] {primary_name}")
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Secondary: [{secondary}] {secondary_name}")
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Level: {Agent.GetLevel(_AGENT_ID)}")
+                    PyImGui.table_next_row()
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Energy: {Agent.GetEnergy(_AGENT_ID)}")
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Max Energy: {Agent.GetMaxEnergy(_AGENT_ID)}")
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Energy Regeneration: {Agent.GetEnergyRegen(_AGENT_ID)}")
+                    PyImGui.table_next_row()
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Health: {Agent.GetHealth(_AGENT_ID)}")
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Max Health: {Agent.GetMaxHealth(_AGENT_ID)}")
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Health Regeneration: {Agent.GetHealthRegen(_AGENT_ID)}")
+                    PyImGui.table_next_row()
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Login Number: {Agent.GetLoginNumber(_AGENT_ID)}")
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Dagger Status: {Agent.GetDaggerStatus(_AGENT_ID)}")
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Allegiance: {Agent.GetAllegiance(_AGENT_ID)[0]} ({Agent.GetAllegiance(_AGENT_ID)[1]})")
+                    PyImGui.table_next_row()
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Weapon Type: {Agent.GetWeaponType(_AGENT_ID)[0]} ({Agent.GetWeaponType(_AGENT_ID)[1]})")
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Weapon Item Type: {Agent.GetWeaponItemType(_AGENT_ID)}")
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Offhand Item Type: {Agent.GetOffhandItemType(_AGENT_ID)}")
+                    PyImGui.table_next_row()
+                    PyImGui.table_next_column()
+                    extra_data = Agent.GetWeaponExtraData(_AGENT_ID)
+                    weapon_item_id = extra_data[0]
+                    offhand_item_id = extra_data[2]
+                    PyImGui.text(f"Weapon Item ID: {weapon_item_id}")
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Offhand Item ID: {offhand_item_id}")
+                    PyImGui.table_next_row()
+                    PyImGui.table_next_column()
+                    PyImGui.text_colored("Is Bleeding", _colored_bool(Agent.IsBleeding(_AGENT_ID)))
+                    PyImGui.table_next_column()
+                    PyImGui.text_colored("Is Conditioned", _colored_bool(Agent.IsConditioned(_AGENT_ID)))
+                    PyImGui.table_next_column()
+                    PyImGui.text_colored("Is Crippled", _colored_bool(Agent.IsCrippled(_AGENT_ID)))
+                    PyImGui.table_next_row()
+                    PyImGui.table_next_column()
+                    PyImGui.text_colored("Is Dead", _colored_bool(Agent.IsDead(_AGENT_ID)))
+                    PyImGui.table_next_column()
+                    PyImGui.text_colored("Is Deep Wounded", _colored_bool(Agent.IsDeepWounded(_AGENT_ID)))
+                    PyImGui.table_next_column()
+                    PyImGui.text_colored("Is Poisoned", _colored_bool(Agent.IsPoisoned(_AGENT_ID)))
+                    PyImGui.table_next_row()
+                    PyImGui.table_next_column()
+                    PyImGui.text_colored("Is Enchanted", _colored_bool(Agent.IsEnchanted(_AGENT_ID)))
+                    PyImGui.table_next_column()
+                    PyImGui.text_colored("Is Degen Hexed", _colored_bool(Agent.IsDegenHexed(_AGENT_ID)))
+                    PyImGui.table_next_column()
+                    PyImGui.text_colored("Is Hexed", _colored_bool(Agent.IsHexed(_AGENT_ID)))
+                    PyImGui.table_next_row()
+                    PyImGui.table_next_column()
+                    PyImGui.text_colored("Is Weapon Spelled", _colored_bool(Agent.IsWeaponSpelled(_AGENT_ID)))
+                    PyImGui.table_next_column()
+                    PyImGui.text_colored("In Combat Stance", _colored_bool(Agent.IsInCombatStance(_AGENT_ID)))
+                    PyImGui.table_next_column()
+                    PyImGui.text_colored("Has Quest", _colored_bool(Agent.HasQuest(_AGENT_ID)))
+                    PyImGui.table_next_row()
+                    PyImGui.table_next_column()
+                    PyImGui.text_colored("Is Dead By Type Map", _colored_bool(Agent.IsDeadByTypeMap(_AGENT_ID)))
+                    PyImGui.table_next_column()
+                    PyImGui.text_colored("Is Female", _colored_bool(Agent.IsFemale(_AGENT_ID)))
+                    PyImGui.table_next_column()
+                    PyImGui.text_colored("Has Boss Glow", _colored_bool(Agent.HasBossGlow(_AGENT_ID)))
+                    PyImGui.table_next_row()
+                    PyImGui.table_next_column()
+                    PyImGui.text_colored("Is Hiding Cape", _colored_bool(Agent.IsHidingCape(_AGENT_ID)))
+                    PyImGui.table_next_column()
+                    PyImGui.text_colored("Can Be Viewed In Party Window", _colored_bool(Agent.CanBeViewedInPartyWindow(_AGENT_ID)))
+                    PyImGui.table_next_column()
+                    PyImGui.text_colored("Is Spawned", _colored_bool(Agent.IsSpawned(_AGENT_ID)))
+                    PyImGui.table_next_row()
+                    PyImGui.table_next_column()
+                    PyImGui.text_colored("Is Being Observed", _colored_bool(Agent.IsBeingObserved(_AGENT_ID)))
+                    PyImGui.table_next_column()
+                    PyImGui.text_colored("Is Knocked Down", _colored_bool(Agent.IsKnockedDown(_AGENT_ID)))
+                    PyImGui.table_next_column()
+                    PyImGui.text_colored("Is Moving", _colored_bool(Agent.IsMoving(_AGENT_ID)))
+                    PyImGui.table_next_row()
+                    PyImGui.table_next_column()
+                    PyImGui.text_colored("Is Attacking", _colored_bool(Agent.IsAttacking(_AGENT_ID)))
+                    PyImGui.table_next_column()
+                    PyImGui.text_colored("Is Casting", _colored_bool(Agent.IsCasting(_AGENT_ID)))
+                    PyImGui.table_next_column()
+                    PyImGui.text_colored("Is Idle", _colored_bool(Agent.IsIdle(_AGENT_ID)))
+                    PyImGui.table_next_row()
+                    PyImGui.table_next_column()
+                    PyImGui.text_colored("Is Alive", _colored_bool(Agent.IsAlive(_AGENT_ID)))
+                    PyImGui.table_next_column()
+                    PyImGui.text_colored("Is Player", _colored_bool(Agent.IsPlayer(_AGENT_ID)))
+                    PyImGui.table_next_column()
+                    PyImGui.text_colored("Is NPC", _colored_bool(Agent.IsNPC(_AGENT_ID)))
+                    PyImGui.table_next_row()
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Casting Skill ID: {Agent.GetCastingSkill(_AGENT_ID)}")
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Overcast: {Agent.GetOvercast(_AGENT_ID)}")
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Animation Type: {Agent.GetAnimationType(_AGENT_ID)}")
+                    PyImGui.table_next_row()
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Weapon Attack Speed: {Agent.GetWeaponAttackSpeed(_AGENT_ID)}")
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Attack Speed Modifier: {Agent.GetAttackSpeedModifier(_AGENT_ID)}")
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Agent Model Type: {Agent.GetAgentModelType(_AGENT_ID)}")
+                    PyImGui.table_next_row()
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Transmog NPC ID: {Agent.GetTransmogNPCID(_AGENT_ID)}")
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Guild ID: {Agent.GetGuildID(_AGENT_ID)}")
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Team ID: {Agent.GetTeamID(_AGENT_ID)}")
+                    PyImGui.table_next_row()
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Effects: {Agent.GetAgentEffects(_AGENT_ID)}")
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Hex: {hex(Agent.GetAgentEffects(_AGENT_ID))}")
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Bin: {bin(Agent.GetAgentEffects(_AGENT_ID))}")
+                    PyImGui.table_next_row()
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Model State: {Agent.GetModelState(_AGENT_ID)}")
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Hex: {hex(Agent.GetModelState(_AGENT_ID))}")
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Bin: {bin(Agent.GetModelState(_AGENT_ID))}")
+                    PyImGui.table_next_row()
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Type Map: {Agent.GetTypeMap(_AGENT_ID)}")
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Hex: {hex(Agent.GetTypeMap(_AGENT_ID))}")
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Bin: {bin(Agent.GetTypeMap(_AGENT_ID))}")
+                    PyImGui.table_next_row()
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Animation Speed: {Agent.GetAnimationSpeed(_AGENT_ID)}")
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Animation Code: {Agent.GetAnimationCode(_AGENT_ID)}")
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Animation ID: {Agent.GetAnimationID(_AGENT_ID)}")
+ 
+                    PyImGui.end_table()
+    
+        if Agent.IsItem(_AGENT_ID):
+            if PyImGui.collapsing_header("Item Agent Data"):
+                flags = PyImGui.TableFlags.Borders | PyImGui.TableFlags.SizingStretchSame | PyImGui.TableFlags.Resizable
+                if PyImGui.begin_table(f"itemfields##itemfields{_AGENT_ID}", 3,flags):                                
+                    PyImGui.table_next_row()
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Owner ID: {Agent.GetItemAgentOwnerID(_AGENT_ID)}")
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Item Id: {Agent.GetItemAgentItemID(_AGENT_ID)}")
+                    PyImGui.table_next_row()
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Extra Type: {Agent.GetItemAgentExtraType(_AGENT_ID)}")
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Hex: {hex(Agent.GetItemAgentExtraType(_AGENT_ID))}")
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Bin: {bin(Agent.GetItemAgentExtraType(_AGENT_ID))}")
+                    PyImGui.table_next_row()
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"h00CC: {Agent.GetItemAgenth00CC(_AGENT_ID)}")
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Hex: {hex(Agent.GetItemAgenth00CC(_AGENT_ID))}")
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Bin: {bin(Agent.GetItemAgenth00CC(_AGENT_ID))}")
+                    PyImGui.table_next_row()
+                    PyImGui.table_next_column()
+                    
+                    PyImGui.end_table()
+                    
+        if Agent.IsGadget(_AGENT_ID):
+            if PyImGui.collapsing_header("Gadget Agent Data"):
+                flags = PyImGui.TableFlags.Borders | PyImGui.TableFlags.SizingStretchSame | PyImGui.TableFlags.Resizable
+                if PyImGui.begin_table(f"gadgetfields##gadgetfields{_AGENT_ID}", 3,flags):                                
+                    PyImGui.table_next_row()
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Gadget ID: {Agent.GetGadgetAgentID(_AGENT_ID)}")
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Extra Type: {Agent.GetGadgetAgentExtraType(_AGENT_ID)}")
+                    PyImGui.table_next_row()
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"h00C4: {Agent.GetGadgetAgenth00C4(_AGENT_ID)}")
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Hex: {hex(Agent.GetGadgetAgenth00C4(_AGENT_ID))}")
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Bin: {bin(Agent.GetGadgetAgenth00C4(_AGENT_ID))}")
+                    PyImGui.table_next_row()
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"h00C8: {Agent.GetGadgetAgenth00C8(_AGENT_ID)}")
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Hex: {hex(Agent.GetGadgetAgenth00C8(_AGENT_ID))}")
+                    PyImGui.table_next_column()
+                    PyImGui.text(f"Bin: {bin(Agent.GetGadgetAgenth00C8(_AGENT_ID))}")
+                    PyImGui.table_next_row()
+                    PyImGui.table_next_column()
+                    
+                    for idx, h00D4 in enumerate(Agent.GetGadgetAgenth00D4(_AGENT_ID)):
+                        PyImGui.text(f"h00D4[{idx}]")
+                        PyImGui.table_next_column()
+                        PyImGui.text(f"{h00D4}")
+                        PyImGui.table_next_column()
+                        PyImGui.text(f"Hex: {hex(h00D4)}")
+                        PyImGui.table_next_column()
+                        PyImGui.text(f"Bin: {bin(h00D4)}")
+                        PyImGui.table_next_row()
+                        PyImGui.table_next_column()
+
+                    
+                    PyImGui.end_table()
+
+        
+    player:AgentStruct | None = Agent.GetAgentByID(Player.GetAgentID() or 0)
+    nearest_enemy:AgentStruct | None = Agent.GetAgentByID(Routines.Agents.GetNearestEnemy() or 0)
+    nearest_ally:AgentStruct | None = Agent.GetAgentByID(Routines.Agents.GetNearestAlly() or 0)
+    nearest_item:AgentStruct | None = Agent.GetAgentByID(Routines.Agents.GetNearestItem() or 0)
+    nearest_gadget:AgentStruct | None = Agent.GetAgentByID(Routines.Agents.GetNearestGadget() or 0)
+    nearest_npc:AgentStruct | None = Agent.GetAgentByID(Routines.Agents.GetNearestNPC() or 0)
+    target:AgentStruct | None = Agent.GetAgentByID(Player.GetTargetID() or 0)
+
+#region main
+    #if PyImGui.begin(window_module.window_name, window_module.window_flags):
+    if PyImGui.begin_child("NearestAgents Info", size=(600, 230),border=True, flags=PyImGui.WindowFlags.HorizontalScrollbar):
+        headers = ["Closest", "ID", "Name", "{x,y,z}", "Type"]
+        data = [
+            _format_agent_row("Player:", player),
+            _format_agent_row("Enemy:", nearest_enemy),
+            _format_agent_row("Ally:", nearest_ally),
+            _format_agent_row("Item:", nearest_item),
+            _format_agent_row("Gadget:", nearest_gadget),
+            _format_agent_row("NPC/Minipet:", nearest_npc),
+            _format_agent_row("Target:", target),
+        ]
+
+        ImGui.table("Nearest Agents Data",headers,data)
+        
+        PyImGui.text("Targetting:")
+        PyImGui.push_item_width(175)
+        # Build combo items where index 0 = "All" (Unknown), rest map to Allegiance values 1..6
+        combo_items = ["All"] + [a.name for a in Allegiance if a != Allegiance.Unknown]
+        SELECTED_ALLIEGANCE = PyImGui.combo("Allegiance", SELECTED_ALLIEGANCE, combo_items)
+        PyImGui.pop_item_width()
+        PyImGui.same_line(0, -1)
+
+        # Efficiently use the correct pre-filtered array
+        if SELECTED_ALLIEGANCE == 0:
+            agent_ids = AgentArray.GetAgentArray()
+        else:
+            allegiance_enum = list(Allegiance)[SELECTED_ALLIEGANCE]
+            
+            if allegiance_enum == Allegiance.Ally:
+                agent_ids = AgentArray.GetAllyArray()
+            elif allegiance_enum == Allegiance.Neutral:
+                agent_ids = AgentArray.GetNeutralArray()
+            elif allegiance_enum == Allegiance.Enemy:
+                agent_ids = AgentArray.GetEnemyArray()
+            elif allegiance_enum == Allegiance.SpiritPet:
+                agent_ids = AgentArray.GetSpiritPetArray()
+            elif allegiance_enum == Allegiance.Minion:
+                agent_ids = AgentArray.GetMinionArray()
+            elif allegiance_enum == Allegiance.NpcMinipet:
+                agent_ids = AgentArray.GetNPCMinipetArray()
+            else:
+                agent_ids = AgentArray.GetAgentArray()
+        # Build combo items: "id - name"
+        combo_items = []
+        id_map = []
+        for agent_id in agent_ids:
+            agent = Agent.GetAgentByID(agent_id)
+            if agent and agent.agent_id != 0:
+                from Py4GWCoreLib import GLOBAL_CACHE
+                combo_items.append(f"{agent.agent_id} - {Agent.GetNameByID(agent.agent_id)}")
+                id_map.append(agent.agent_id)  # maintain index mapping
+
+        # Show combo
+        PyImGui.push_item_width(175)
+        SELECTED_AGENT_INDEX = PyImGui.combo("Agent", SELECTED_AGENT_INDEX, combo_items)
+
+        # Validate selection and update selected agent ID
+        if 0 <= SELECTED_AGENT_INDEX < len(id_map):
+            SELECTED_AGENT_ID = id_map[SELECTED_AGENT_INDEX]
+        else:
+            SELECTED_AGENT_ID = 0  # Reset if invalid
+
+        PyImGui.pop_item_width()
+        PyImGui.same_line(0, -1)
+
+        # Only show the button if there's a valid agent selected
+        if SELECTED_AGENT_ID != 0:
+            if PyImGui.button("Set Target"):
+                Player.ChangeTarget(SELECTED_AGENT_ID)
+
+        PyImGui.end_child()
+        
+    if PyImGui.begin_child("InfoGlobalArea", size=(600, 500),border=True, flags=PyImGui.WindowFlags.HorizontalScrollbar):
+        if PyImGui.begin_tab_bar("InfoTabBar"):
+            if player and player.agent_id != 0:
+                if PyImGui.begin_tab_item(f"{"Player"}##tab{player.agent_id}"):
+                    _draw_agent_tab_item(player.agent_id)
+                    PyImGui.end_tab_item()
+            
+            if target and target.agent_id is not None:
+                if PyImGui.begin_tab_item(f"{"Target"}##tab{target.agent_id}"):
+                    _draw_agent_tab_item(target.agent_id)
+                    PyImGui.end_tab_item()
+            if nearest_enemy and nearest_enemy.agent_id != 0:
+                if PyImGui.begin_tab_item(f"{"Enemy"}##tab{nearest_enemy.agent_id}"):
+                    _draw_agent_tab_item(nearest_enemy.agent_id)
+                    PyImGui.end_tab_item()
+            if nearest_ally and nearest_ally.agent_id != 0:
+                if PyImGui.begin_tab_item(f"{"Ally"}##tab{nearest_ally.agent_id}"):
+                    _draw_agent_tab_item(nearest_ally.agent_id)
+                    PyImGui.end_tab_item()
+            if nearest_item and nearest_item.agent_id != 0:
+                if PyImGui.begin_tab_item(f"{"Item"}##tab{nearest_item.agent_id}"):
+                    _draw_agent_tab_item(nearest_item.agent_id)
+                    PyImGui.end_tab_item()
+            if nearest_gadget and nearest_gadget.agent_id != 0:
+                if PyImGui.begin_tab_item(f"{"Gadget"}##tab{nearest_gadget.agent_id}"):
+                    _draw_agent_tab_item(nearest_gadget.agent_id)
+                    PyImGui.end_tab_item()
+            if nearest_npc and nearest_npc.agent_id != 0:
+                if PyImGui.begin_tab_item(f"{"NPC"}##tab{nearest_npc.agent_id}"):
+                    _draw_agent_tab_item(nearest_npc.agent_id)
+                    PyImGui.end_tab_item()
+                    
+            PyImGui.end_tab_bar()
+        PyImGui.end_child()
+        
+    #PyImGui.end()
     
 
+#region Main Window
 def draw_window():
     global _selected_view
     if PyImGui.begin(MODULE_NAME, True, PyImGui.WindowFlags.AlwaysAutoResize):
         # ================= LEFT PANEL =================
         PyImGui.begin_child(
             "left_panel",
-            (180.0, 500.0),   # fixed width, full height
+            (180.0, 600.0),   # fixed width, full height
             True,
             0
         )
@@ -235,13 +590,15 @@ def draw_window():
         # ================= RIGHT PANEL =================
         PyImGui.begin_child(
             "right_panel",
-            (400.0, 500.0),     # take remaining space
+            (600.0, 600.0),     # take remaining space
             False,
             0
         )
         
         if _selected_view == "Map":
             draw_map_data()
+        elif _selected_view == "Agents":
+            draw_agents_view()
 
         PyImGui.end_child()
 

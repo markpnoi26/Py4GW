@@ -57,24 +57,24 @@ class _WAIT:
         
     def _coro_until_model_has_quest(self, model_id: int):
         from ...Routines import Routines
-        from ...GlobalCache import GLOBAL_CACHE
+        from ...Agent import Agent
         from ...enums import Range
         wait_function = lambda: (
             not (Routines.Checks.Agents.InDanger(aggro_area=Range.Spirit)) and
-            GLOBAL_CACHE.Agent.HasQuest(Routines.Agents.GetAgentIDByModelID(model_id))
+            Agent.HasQuest(Routines.Agents.GetAgentIDByModelID(model_id))
         )
         yield from self._coro_until_condition(wait_function, duration=1000)
         
     def _coro_for_map_to_change(self, target_map_id: int = 0, target_map_name: str = ""):
         """Waits until all action finishes in current map and game sends you to a new one"""
         from ...Routines import Routines
-        from ...GlobalCache import GLOBAL_CACHE
+        from ...Map import Map
 
         wait_condition = lambda: (
-            not GLOBAL_CACHE.Map.IsMapLoading()
+            not Map.IsMapLoading()
             and Routines.Checks.Map.MapValid()
-            and GLOBAL_CACHE.Map.GetMapID() == (
-                target_map_id if target_map_id else GLOBAL_CACHE.Map.GetMapIDByName(target_map_name)
+            and Map.GetMapID() == (
+                target_map_id if target_map_id else Map.GetMapIDByName(target_map_name)
             )
         )
 

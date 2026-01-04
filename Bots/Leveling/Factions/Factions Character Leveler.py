@@ -3,7 +3,7 @@ from typing import List, Tuple, Generator, Any
 import PyImGui
 import os
 from Py4GWCoreLib import (GLOBAL_CACHE, Routines, Range, Py4GW, ConsoleLog, ModelID, Botting,
-                          AutoPathing, ImGui, ActionQueueManager)
+                          AutoPathing, ImGui, ActionQueueManager, Map, Agent)
 
 bot = Botting("Factions Leveler",
               upkeep_birthday_cupcake_restock=10,
@@ -87,8 +87,8 @@ def ConfigureAggressiveEnv(bot: Botting) -> None:
 
     
 def EquipSkillBar(skillbar = ""): 
-    profession, _ = GLOBAL_CACHE.Agent.GetProfessionNames(GLOBAL_CACHE.Player.GetAgentID())
-    level = GLOBAL_CACHE.Agent.GetLevel(GLOBAL_CACHE.Player.GetAgentID())
+    profession, _ = Agent.GetProfessionNames(GLOBAL_CACHE.Player.GetAgentID())
+    level = Agent.GetLevel(GLOBAL_CACHE.Player.GetAgentID())
 
     if profession == "Warrior":
         if level <= 3: #10 attribute points available
@@ -127,7 +127,7 @@ def EquipSkillBar(skillbar = ""):
     yield from Routines.Yield.Skills.LoadSkillbar(skillbar)
 
 def EquipCaptureSkillBar(skillbar = ""): 
-    profession, _ = GLOBAL_CACHE.Agent.GetProfessionNames(GLOBAL_CACHE.Player.GetAgentID())
+    profession, _ = Agent.GetProfessionNames(GLOBAL_CACHE.Player.GetAgentID())
     if profession == "Warrior": skillbar = "OQIAEbGAAAAAAAAAAA"
     elif profession == "Ranger": skillbar = "OgAAEbGAAAAAAAAAAA"
     elif profession == "Monk": skillbar = "OwIAEbGAAAAAAAAAAA"
@@ -145,20 +145,20 @@ def AddHenchmen():
         ConsoleLog("addhenchman",f"Added Henchman: {henchman_id}", log=False)
         yield from Routines.Yield.wait(250)
         
-    party_size = GLOBAL_CACHE.Map.GetMaxPartySize()
+    party_size = Map.GetMaxPartySize()
 
     henchmen_list = []
     if party_size <= 4:
         henchmen_list.extend([1, 5, 2]) 
-    elif GLOBAL_CACHE.Map.GetMapID() == GLOBAL_CACHE.Map.GetMapIDByName("Seitung Harbor"):
+    elif Map.GetMapID() == Map.GetMapIDByName("Seitung Harbor"):
         henchmen_list.extend([2, 3, 1, 4, 5]) 
-    elif GLOBAL_CACHE.Map.GetMapID() == GLOBAL_CACHE.Map.GetMapIDByName("The Marketplace"):
+    elif Map.GetMapID() == Map.GetMapIDByName("The Marketplace"):
         henchmen_list.extend([6,9,5,1,4,7,3])
-    elif GLOBAL_CACHE.Map.GetMapID() == 213: #zen_daijun_map_id
+    elif Map.GetMapID() == 213: #zen_daijun_map_id
         henchmen_list.extend([3,1,6,8,5])
-    elif GLOBAL_CACHE.Map.GetMapID() == 194: #kaineng_map_id
+    elif Map.GetMapID() == 194: #kaineng_map_id
         henchmen_list.extend([2,10,4,8,7,9,12])
-    elif GLOBAL_CACHE.Map.GetMapID() == GLOBAL_CACHE.Map.GetMapIDByName("Boreal Station"):
+    elif Map.GetMapID() == Map.GetMapIDByName("Boreal Station"):
         henchmen_list.extend([7,9,2,3,4,6,5])
     else:
         henchmen_list.extend([2,3,5,6,7,9,10])
@@ -172,14 +172,14 @@ def AddHenchmenLA():
         ConsoleLog("addhenchman",f"Added Henchman: {henchman_id}", log=False)
         yield from Routines.Yield.wait(250)
         
-    party_size = GLOBAL_CACHE.Map.GetMaxPartySize()
+    party_size = Map.GetMaxPartySize()
 
     henchmen_list = []
     if party_size <= 4:
         henchmen_list.extend([2, 3, 1]) 
-    elif GLOBAL_CACHE.Map.GetMapID() == GLOBAL_CACHE.Map.GetMapIDByName("Lions Arch"):
+    elif Map.GetMapID() == Map.GetMapIDByName("Lions Arch"):
         henchmen_list.extend([7, 2, 5, 3, 1]) 
-    elif GLOBAL_CACHE.Map.GetMapID() == GLOBAL_CACHE.Map.GetMapIDByName("Ascalon City"):
+    elif Map.GetMapID() == Map.GetMapIDByName("Ascalon City"):
         henchmen_list.extend([2, 3, 1])
     else:
         henchmen_list.extend([2,8,6,7,3,5,1])
@@ -193,7 +193,7 @@ def StandardHeroTeam():
         ConsoleLog("addhero",f"Added Hero: {hero_id}", log=False)
         yield from Routines.Yield.wait(250)
 
-    party_size = GLOBAL_CACHE.Map.GetMaxPartySize()
+    party_size = Map.GetMaxPartySize()
 
     hero_list = []
     skill_templates = []
@@ -202,9 +202,9 @@ def StandardHeroTeam():
         # Small party: Gwen, Vekk, Ogden
         hero_list.extend([24, 26, 27])
         skill_templates = [
-            "OQhkAsC8gFKzJY6lDMd40hQG4iB",  # 1 Gwen
-            "OgVDI8gsO5gTw0z0hTFAZgiA",     # 2 Vekk
-            "OwUUMsG/E4SNgbE3N3ETfQgZAMEA"  # 3 Ogden
+            "OQhkAsC8gFKgGckjHFRUGCA",  # 1 Gwen
+            "OgVDI8gsCawROeUEtZIA",     # 2 Vekk
+            "OwUUMsG/E4GgMnZskzkIZQAA"  # 3 Ogden
         ]
     # Add all heroes
     for hero_id in hero_list:
@@ -226,7 +226,7 @@ def PrepareForBattle(bot: Botting):
     bot.Items.Restock.WarSupplies()
   
 def GetArmorMaterialPerProfession(headpiece = False) -> int:
-    primary, _ = GLOBAL_CACHE.Agent.GetProfessionNames(GLOBAL_CACHE.Player.GetAgentID())
+    primary, _ = Agent.GetProfessionNames(GLOBAL_CACHE.Player.GetAgentID())
     if primary == "Warrior":
         return ModelID.Bolt_Of_Cloth.value
     elif primary == "Ranger":
@@ -257,7 +257,7 @@ def BuyMaterials():
         yield from Routines.Yield.Merchant.BuyMaterial(GetArmorMaterialPerProfession())
 
 def GetArmorPiecesByProfession(bot: Botting):
-    primary, _ = GLOBAL_CACHE.Agent.GetProfessionNames(GLOBAL_CACHE.Player.GetAgentID())
+    primary, _ = Agent.GetProfessionNames(GLOBAL_CACHE.Player.GetAgentID())
     HEAD,CHEST,GLOVES ,PANTS ,BOOTS = 0,0,0,0,0
 
     if primary == "Warrior":
@@ -378,7 +378,7 @@ def CraftRemainingArmor():
 
 def GetMaxArmorCommonMaterial() -> int:
     """Returns the common material type for max armor crafting in Kaineng."""
-    primary, _ = GLOBAL_CACHE.Agent.GetProfessionNames(GLOBAL_CACHE.Player.GetAgentID())
+    primary, _ = Agent.GetProfessionNames(GLOBAL_CACHE.Player.GetAgentID())
     if primary == "Warrior":
         return ModelID.Tanned_Hide_Square.value
     elif primary == "Ranger":
@@ -401,7 +401,7 @@ def GetMaxArmorCommonMaterial() -> int:
 def GetMaxArmorRareMaterial() -> int | None:
     """Returns the rare material type for max armor, None if not needed.
     Note: Necromancer and Monk need 2 rare materials (handled in BuyMaxArmorMaterials and DoCraftMaxArmor)."""
-    primary, _ = GLOBAL_CACHE.Agent.GetProfessionNames(GLOBAL_CACHE.Player.GetAgentID())
+    primary, _ = Agent.GetProfessionNames(GLOBAL_CACHE.Player.GetAgentID())
     if primary == "Warrior":
         return ModelID.Steel_Ingot.value
     elif primary == "Ranger":
@@ -423,7 +423,7 @@ def GetMaxArmorRareMaterial() -> int | None:
 
 def GetArmorCrafterCoords() -> tuple[float, float]:
     """Returns the armor crafter coordinates based on profession."""
-    primary, _ = GLOBAL_CACHE.Agent.GetProfessionNames(GLOBAL_CACHE.Player.GetAgentID())
+    primary, _ = Agent.GetProfessionNames(GLOBAL_CACHE.Player.GetAgentID())
     if primary == "Warrior":
         return (-891.00, -5382.00) #Suki armor npc
     elif primary == "Ranger":
@@ -440,10 +440,12 @@ def GetArmorCrafterCoords() -> tuple[float, float]:
         return (-1682.00, -3970.00) #Ryoko armor npc
     elif primary == "Elementalist":
         return (-1682.00, -3970.00) #Ryoko armor npc
+    else:
+        return (-1682.00, -3970.00) #default Ryoko armor npc
 
 def GetMaxArmorPiecesByProfession(bot: Botting):
     """Returns model IDs for max armor pieces in Kaineng."""
-    primary, _ = GLOBAL_CACHE.Agent.GetProfessionNames(GLOBAL_CACHE.Player.GetAgentID())
+    primary, _ = Agent.GetProfessionNames(GLOBAL_CACHE.Player.GetAgentID())
     HEAD, CHEST, GLOVES, PANTS, BOOTS = 0, 0, 0, 0, 0
 
     if primary == "Warrior":
@@ -499,7 +501,7 @@ def GetMaxArmorPiecesByProfession(bot: Botting):
 
 def BuyMaxArmorMaterials(material_type: str = "common"):
     """Buy max armor materials. Pass 'common' or 'rare' to specify which type."""
-    primary, _ = GLOBAL_CACHE.Agent.GetProfessionNames(GLOBAL_CACHE.Player.GetAgentID())
+    primary, _ = Agent.GetProfessionNames(GLOBAL_CACHE.Player.GetAgentID())
     
     if material_type == "common":
         # Necromancer needs two common materials: Tanned Hide and Bone
@@ -571,7 +573,7 @@ def BuyMaxArmorMaterials(material_type: str = "common"):
 def DoCraftMaxArmor(bot: Botting):
     """Core max armor crafting logic - assumes already at armor crafter NPC."""
     HEAD, CHEST, GLOVES, PANTS, BOOTS = GetMaxArmorPiecesByProfession(bot)
-    primary, _ = GLOBAL_CACHE.Agent.GetProfessionNames(GLOBAL_CACHE.Player.GetAgentID())
+    primary, _ = Agent.GetProfessionNames(GLOBAL_CACHE.Player.GetAgentID())
     
     # Max armor needs both common and rare materials
     rare_mat = GetMaxArmorRareMaterial()
@@ -717,7 +719,8 @@ def withdraw_gold_weapon(target_gold=500, deposit_all=True):
 
 def destroy_starter_armor_and_useless_items() -> Generator[Any, Any, None]:
     """Destroy starter armor pieces based on profession and useless items."""
-    primary, _ = GLOBAL_CACHE.Agent.GetProfessionNames(GLOBAL_CACHE.Player.GetAgentID())
+    global starter_armor
+    primary, _ = Agent.GetProfessionNames(GLOBAL_CACHE.Player.GetAgentID())
     
     # Profession-specific starter armor model IDs
     if primary == "Assassin":
@@ -790,7 +793,8 @@ def destroy_starter_armor_and_useless_items() -> Generator[Any, Any, None]:
 
 def destroy_seitung_armor() -> Generator[Any, Any, None]:
     """Destroy Seitung armor pieces based on profession."""
-    primary, _ = GLOBAL_CACHE.Agent.GetProfessionNames(GLOBAL_CACHE.Player.GetAgentID())
+    global seitung_armor
+    primary, _ = Agent.GetProfessionNames(GLOBAL_CACHE.Player.GetAgentID())
     
     # Profession-specific Seitung armor model IDs
     if primary == "Warrior":
@@ -848,7 +852,7 @@ def ExitToCourtyard(bot: Botting) -> None:
 def UnlockSecondaryProfession(bot: Botting) -> None:
     def assign_profession_unlocker_dialog():
         global bot
-        primary, _ = GLOBAL_CACHE.Agent.GetProfessionNames(GLOBAL_CACHE.Player.GetAgentID())
+        primary, _ = Agent.GetProfessionNames(GLOBAL_CACHE.Player.GetAgentID())
         if primary == "Ranger":
             yield from bot.Interact._coro_with_agent((-92, 9217),0x813D0A)
         else:
@@ -903,7 +907,7 @@ def ExitToSunquaVale(bot: Botting) -> None:
     bot.Move.XYAndExitMap(-14961, 11453, target_map_name="Sunqua Vale")
     
 def RangerCapturePet(bot: Botting) -> Generator[Any, Any, None]:
-    primary, _ = GLOBAL_CACHE.Agent.GetProfessionNames(GLOBAL_CACHE.Player.GetAgentID())
+    primary, _ = Agent.GetProfessionNames(GLOBAL_CACHE.Player.GetAgentID())
     #ConsoleLog("RangerCapturePet", f"Primary Profession: {primary}", Py4GW.Console.MessageType.Info)
     if primary != "Ranger": return
     yield from bot.Move._coro_get_path_to(-7782.00, 6687.00)
@@ -913,7 +917,7 @@ def RangerCapturePet(bot: Botting) -> Generator[Any, Any, None]:
     yield from bot.helpers.UI._cancel_skill_reward_window()
 
 def RangerGetSkills(bot: Botting) -> Generator[Any, Any, None]:
-    primary, _ = GLOBAL_CACHE.Agent.GetProfessionNames(GLOBAL_CACHE.Player.GetAgentID())
+    primary, _ = Agent.GetProfessionNames(GLOBAL_CACHE.Player.GetAgentID())
     if primary != "Ranger": return
     yield from bot.Move._coro_get_path_to(5103.00, -4769.00)
     yield from bot.Move._coro_follow_path_to()
@@ -987,7 +991,7 @@ def AttributePointQuest1(bot: Botting):
     bot.Dialogs.WithModel(GUARD_MODEL, 0x815A04)
     exit_function = lambda: (
         not (Routines.Checks.Agents.InDanger(aggro_area=Range.Spirit)) and
-        GLOBAL_CACHE.Agent.HasQuest(Routines.Agents.GetAgentIDByModelID(GUARD_MODEL))
+        Agent.HasQuest(Routines.Agents.GetAgentIDByModelID(GUARD_MODEL))
     )
     bot.Move.FollowModel(GUARD_MODEL, follow_range=(Range.Area.value), exit_condition=exit_function)
     bot.Dialogs.WithModel(GUARD_MODEL, 0x815A07)
@@ -1740,7 +1744,7 @@ def UnlockRemainingSecondaryProfessions(bot: Botting):
     bot.States.AddCustomState(withdraw_gold, "Get 5000 gold")
     bot.Move.XY(-5540.40, -5733.11)
     bot.Move.XY(-3151.22, -7255.13)  # Move to profession trainers area
-    primary, _ = GLOBAL_CACHE.Agent.GetProfessionNames(GLOBAL_CACHE.Player.GetAgentID())
+    primary, _ = Agent.GetProfessionNames(GLOBAL_CACHE.Player.GetAgentID())
     
     if primary == "Warrior":
         bot.Dialogs.WithModel(201, 0x584)  # Mesmer trainer - Model ID 201. Model id updated 20.12.2025
@@ -1912,7 +1916,7 @@ iconwidth = 96
 
 def _draw_texture():
     global iconwidth
-    level = GLOBAL_CACHE.Agent.GetLevel(GLOBAL_CACHE.Player.GetAgentID())
+    level = Agent.GetLevel(GLOBAL_CACHE.Player.GetAgentID())
     path = os.path.join(Py4GW.Console.get_projects_path(),"Bots", "Leveling", "Factions","factions_leveler_art.png")
     size = (float(iconwidth), float(iconwidth))
     tint = (255, 255, 255, 255)
@@ -2018,14 +2022,14 @@ def main():
                     if PyImGui.collapsing_header("Direct Navigation"):
                         for step_num, waypoint in WAYPOINTS.items():
 
-                            map_name = GLOBAL_CACHE.Map.GetMapName(waypoint.MapID)
+                            map_name = Map.GetMapName(waypoint.MapID)
 
                             # Tree node: visible label is waypoint.label, ID is unique
                             if PyImGui.tree_node(f"{waypoint.label}##wp_{step_num}"):
 
                                 # Travel button
                                 if PyImGui.button(f"Travel##travel_{step_num}"):
-                                    GLOBAL_CACHE.Map.Travel(waypoint.MapID)
+                                    Map.Travel(waypoint.MapID)
 
                                 PyImGui.same_line(0,-1)
 

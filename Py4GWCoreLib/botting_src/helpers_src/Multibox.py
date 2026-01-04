@@ -9,6 +9,7 @@ from typing import Any, Generator, TYPE_CHECKING, Tuple, List, Optional, Callabl
 from Py4GWCoreLib.enums import SharedCommandType 
 
 from Py4GWCoreLib import ConsoleLog, Console
+from Py4GWCoreLib.Map import Map
 
 #region Multibox
 class _Multibox:
@@ -249,20 +250,22 @@ class _Multibox:
         
     def _pixel_stack(self):
         from ...GlobalCache import GLOBAL_CACHE
+        from ...Agent import Agent
         from ...import Range
         sender_email = GLOBAL_CACHE.Player.GetAccountEmail()
         x, y = GLOBAL_CACHE.Player.GetXY()
 
         players = GLOBAL_CACHE.Party.GetPlayers()
-        current_map = GLOBAL_CACHE.Map.GetMapID()
+        current_map = Map.GetMapID()
         player_names = []
 
         for player in players:
             agent_name = GLOBAL_CACHE.Party.Players.GetPlayerNameByLoginNumber(player.login_number)
             agent_id = GLOBAL_CACHE.Party.Players.GetAgentIDByLoginNumber(player.login_number)
-            agent = GLOBAL_CACHE.Agent.GetAgentByID(agent_id)
-
-            dx, dy = x - agent.x, y - agent.y
+            agent = Agent.GetAgentByID(agent_id)
+            if not agent:
+                continue
+            dx, dy = x - agent.pos.x, y - agent.pos.y
             players_dist_sq = dx * dx + dy * dy
             max_dist_sq = Range.Earshot.value ** 2
 
@@ -293,7 +296,7 @@ class _Multibox:
         x, y = GLOBAL_CACHE.Player.GetXY()
 
         players = GLOBAL_CACHE.Party.GetPlayers()
-        current_map = GLOBAL_CACHE.Map.GetMapID()
+        current_map = Map.GetMapID()
         player_names = []
 
         for player in players:

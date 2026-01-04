@@ -57,20 +57,20 @@ class OnDeathEvent(Event):
     
     def should_trigger(self) -> bool:
         from Py4GWCoreLib import GLOBAL_CACHE  # local import!
-        from Py4GWCoreLib import Routines
+        from Py4GWCoreLib import Routines, Agent
         if not Routines.Checks.Map.MapValid() or not Routines.Checks.Map.IsExplorable():
             return False
-        dead = GLOBAL_CACHE.Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID())
+        dead = Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID())
         #if dead:
         #    print("OnDeathEvent triggered")
         return dead
 
     def should_reset(self) -> bool:
-        from Py4GWCoreLib import GLOBAL_CACHE, Routines
+        from Py4GWCoreLib import GLOBAL_CACHE, Routines, Agent
         if not Routines.Checks.Map.MapValid():
             return True
         
-        return not GLOBAL_CACHE.Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID())
+        return not Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID())
 
 class OnPartyDefeated(Event):
     def should_trigger(self) -> bool:
@@ -94,14 +94,14 @@ class OnPartyDefeated(Event):
     
 class OnPartyWipe(Event):
     def should_trigger(self):
-        from Py4GWCoreLib import Routines, GLOBAL_CACHE
+        from Py4GWCoreLib import Routines, Map
         if not Routines.Checks.Map.MapValid():
             return False
         
         if not Routines.Checks.Map.IsExplorable():
             return False
         
-        map_uptime = GLOBAL_CACHE.Map.GetInstanceUptime()
+        map_uptime = Map.GetInstanceUptime()
         if map_uptime < 5000:
             return False
         
@@ -216,7 +216,7 @@ class OnStuck(Event):
         self.active = value
 
     def should_trigger(self) -> bool:
-        from Py4GWCoreLib import GLOBAL_CACHE, Routines
+        from Py4GWCoreLib import GLOBAL_CACHE, Routines, Agent
 
         if not self.active:
             return False
@@ -232,7 +232,7 @@ class OnStuck(Event):
 
         if not Routines.Checks.Map.MapValid():
             return _reset_counter()
-        if GLOBAL_CACHE.Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
+        if Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
             return _reset_counter()
 
         if self.in_waiting_routine or self.finished_routine or self.in_killing_routine:

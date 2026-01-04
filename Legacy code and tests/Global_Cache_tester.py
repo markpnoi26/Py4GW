@@ -17,23 +17,23 @@ def main():
                 x, y = 100, 100
                 GLOBAL_CACHE.Player.Move(x, y)
         if PyImGui.collapsing_header("Map"):
-            PyImGui.text(f"Map ID: {GLOBAL_CACHE.Map.GetMapID()}")
-            PyImGui.text(f"Map Name: {GLOBAL_CACHE.Map.GetMapName()}")
+            PyImGui.text(f"Map ID: {Map.GetMapID()}")
+            PyImGui.text(f"Map Name: {Map.GetMapName()}")
             if PyImGui.button("travel to 248"):
                 map_id = 248
-                GLOBAL_CACHE.Map.Travel(map_id)
+                Map.Travel(map_id)
         
         if PyImGui.collapsing_header("Agent"):
             agent_id = GLOBAL_CACHE.Player.GetTargetID() if GLOBAL_CACHE.Player.GetTargetID() != 0 else GLOBAL_CACHE.Player.GetAgentID()
             PyImGui.text(f"Agent ID: {agent_id}")
-            PyImGui.text(f"Agent Name: {GLOBAL_CACHE.Agent.GetName(agent_id)}")
-            PyImGui.text(f"Agent Position: {GLOBAL_CACHE.Agent.GetXY(agent_id)}")
+            PyImGui.text(f"Agent Name: {Agent.GetNameByID(agent_id)}")
+            PyImGui.text(f"Agent Position: {Agent.GetXY(agent_id)}")
 
         if PyImGui.collapsing_header("Agent Array"):
-            agent_array = GLOBAL_CACHE.AgentArray.GetAgentArray()
+            agent_array = AgentArray.GetAgentArray()
             for agent_id in agent_array:
-                agent_name = GLOBAL_CACHE.Agent.GetName(agent_id)
-                agent_position = GLOBAL_CACHE.Agent.GetXY(agent_id)
+                agent_name = Agent.GetNameByID(agent_id)
+                agent_position = Agent.GetXY(agent_id)
                 PyImGui.text(f"Agent ID: {agent_id}, Name: {agent_name}, Position: {agent_position}")
                 
         if PyImGui.collapsing_header("Camera"):

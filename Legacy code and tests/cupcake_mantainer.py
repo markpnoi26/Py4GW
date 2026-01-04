@@ -1,6 +1,6 @@
 
 from Py4GWCoreLib import (GLOBAL_CACHE, Routines, Range, AutoPathing, Py4GW, FSM, ConsoleLog, Color, DXOverlay,
-                          UIManager,ModelID, Utils, SkillManager, Map
+                          UIManager,ModelID, Agent, SkillManager, Map
                          )
 from typing import List, Tuple, Any, Generator, Callable
 import PyImGui
@@ -67,16 +67,16 @@ class GeneralHelpers:
  
         for player in players:
             agent_id = GLOBAL_CACHE.Party.Players.GetAgentIDByLoginNumber(player.login_number)
-            if GLOBAL_CACHE.Agent.IsDead(agent_id):
+            if Agent.IsDead(agent_id):
                 is_someone_dead = True
                 break
         for henchman in henchmen:
-            if GLOBAL_CACHE.Agent.IsDead(henchman.agent_id):
+            if Agent.IsDead(henchman.agent_id):
                 is_someone_dead = True
                 break
             
         for hero in heroes:
-            if GLOBAL_CACHE.Agent.IsDead(hero.agent_id):
+            if Agent.IsDead(hero.agent_id):
                 is_someone_dead = True
                 break
 
@@ -85,7 +85,7 @@ class GeneralHelpers:
     
     @staticmethod
     def is_player_dead():
-        return GLOBAL_CACHE.Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID())
+        return Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID())
 
 
 class StepNameCounters:
@@ -164,12 +164,12 @@ class LiveData:
         self.map_max_party_size = 0
 
     def update(self):
-        primary, secondary = GLOBAL_CACHE.Agent.GetProfessionNames(GLOBAL_CACHE.Player.GetAgentID())
+        primary, secondary = Agent.GetProfessionNames(GLOBAL_CACHE.Player.GetAgentID())
         self.player_profession_primary = primary
         self.player_profession_secondary = secondary
-        self.level = GLOBAL_CACHE.Agent.GetLevel(GLOBAL_CACHE.Player.GetAgentID())
-        self.current_map_id = GLOBAL_CACHE.Map.GetMapID()
-        self.map_max_party_size = GLOBAL_CACHE.Map.GetMaxPartySize()
+        self.level = Agent.GetLevel(GLOBAL_CACHE.Player.GetAgentID())
+        self.current_map_id = Map.GetMapID()
+        self.map_max_party_size = Map.GetMaxPartySize()
         
 #region BotConfig
 class BotConfig:
@@ -290,7 +290,7 @@ class BottingHelpers:
         self.parent = parent
         
     def is_map_loading(self):
-        if GLOBAL_CACHE.Map.IsMapLoading():
+        if Map.IsMapLoading():
             return True
         if not self.parent.config.fsm_running:
             return True
@@ -361,7 +361,7 @@ class BottingHelpers:
     def _alive_explorable(self) -> bool:
         return (Routines.Checks.Map.MapValid()
                 and Map.IsExplorable()
-                and not GLOBAL_CACHE.Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()))
+                and not Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()))
 
     def _use_first(self, model_list) -> bool:
         for m in model_list:
@@ -387,7 +387,7 @@ class BottingHelpers:
     CITY_10M = [ModelID.Creme_Brulee, ModelID.Jar_Of_Honey, ModelID.Krytan_Lokum]
     CITY_5M  = [ModelID.Chocolate_Bunny, ModelID.Fruitcake, ModelID.Red_Bean_Cake]
     CITY_3M  = [ModelID.Mandragor_Root_Cake]
-    CITY_2M  = [ModelID.Delicious_Cake, ModelID.Minitreats_Of_Purity, ModelID.Sugary_Blue_Drink]
+    CITY_2M  = [ModelID.Delicious_Cake, ModelID.Minitreat_Of_Purity, ModelID.Sugary_Blue_Drink]
 
     CON_SET = [ModelID.Grail_Of_Might, ModelID.Armor_Of_Salvation, ModelID.Essence_Of_Celerity]
 
@@ -405,10 +405,10 @@ class BottingHelpers:
             if ((not Routines.Checks.Map.MapValid()) and (not Map.IsExplorable())):
                 return
 
-            if GLOBAL_CACHE.Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
+            if Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
                 return
 
-            level = GLOBAL_CACHE.Agent.GetLevel(GLOBAL_CACHE.Player.GetAgentID())
+            level = Agent.GetLevel(GLOBAL_CACHE.Player.GetAgentID())
 
             if level >= 20:
                 return
@@ -423,8 +423,8 @@ class BottingHelpers:
             cast_imp = True  # Assume we should cast
 
             for other in others:
-                if GLOBAL_CACHE.Agent.GetModelID(other) == imp_model_id:
-                    if not GLOBAL_CACHE.Agent.IsDead(other):
+                if Agent.GetModelID(other) == imp_model_id:
+                    if not Agent.IsDead(other):
                         # Imp is alive — no need to cast
                         cast_imp = False
                     break  # Found the imp, no need to keep checking
@@ -439,7 +439,7 @@ class BottingHelpers:
                 yield from Routines.Yield.wait(500)
                 continue
             
-            if GLOBAL_CACHE.Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
+            if Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
                 yield from Routines.Yield.wait(500)
                 continue
 
@@ -452,7 +452,7 @@ class BottingHelpers:
             
     def maintain_honeycomb(self):
         while True:
-            if GLOBAL_CACHE.Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
+            if Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
                 yield from Routines.Yield.wait(500)
                 continue
             
@@ -477,7 +477,7 @@ class BottingHelpers:
             if self.parent.config.use_grail.get():
                 if ((not Routines.Checks.Map.MapValid()) and (not Map.IsExplorable())):
                     yield; continue
-                if GLOBAL_CACHE.Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
+                if Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
                     yield; continue
 
                 grail_id = GLOBAL_CACHE.Inventory.GetFirstModelID(ModelID.Grail_Of_Might.value)
@@ -493,7 +493,7 @@ class BottingHelpers:
             if self.parent.config.use_salvation.get():
                 if ((not Routines.Checks.Map.MapValid()) and (not Map.IsExplorable())):
                     yield; continue
-                if GLOBAL_CACHE.Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
+                if Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
                     yield; continue
 
                 salvation_id = GLOBAL_CACHE.Inventory.GetFirstModelID(ModelID.Armor_Of_Salvation.value)
@@ -509,7 +509,7 @@ class BottingHelpers:
             if self.parent.config.use_celerity.get():
                 if ((not Routines.Checks.Map.MapValid()) and (not Map.IsExplorable())):
                     yield; continue
-                if GLOBAL_CACHE.Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
+                if Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
                     yield; continue
 
                 celerity_id = GLOBAL_CACHE.Inventory.GetFirstModelID(ModelID.Essence_Of_Celerity.value)
@@ -771,7 +771,7 @@ class BottingHelpers:
 
     @_yield_step(label="Travel", counter_key="TRAVEL")
     def travel(self, target_map_id):
-        GLOBAL_CACHE.Map.Travel(target_map_id)
+        Map.Travel(target_map_id)
         yield from Routines.Yield.wait(1000)
 
     @_yield_step(label="FollowPath", counter_key="FOLLOW_PATH")
@@ -820,7 +820,7 @@ class BottingHelpers:
     @_yield_step(label="InteractWithModel", counter_key="DIALOG_AT")
     def interact_with_model(self, model_id: int, dialog_id: int=0) -> Generator[Any, Any, bool]:
         agent_id = Routines.Agents.GetAgentIDByModelID(model_id)
-        x,y = GLOBAL_CACHE.Agent.GetXY(agent_id)
+        x,y = Agent.GetXY(agent_id)
         return (yield from self._interact_with_agent((x, y), dialog_id))
 
     @_yield_step(label="WaitForMapLoad", counter_key="WAIT_FOR_MAP_LOAD")
@@ -833,7 +833,7 @@ class BottingHelpers:
 
     @_yield_step(label="EnterChallenge", counter_key="ENTER_CHALLENGE")
     def enter_challenge(self, wait_for:int= 3000):
-        GLOBAL_CACHE.Map.EnterChallenge()
+        Map.EnterChallenge()
         yield from Routines.Yield.wait(wait_for)
 
     @_yield_step(label="CancelSkillRewardWindow", counter_key="CANCEL_SKILL_REWARD_WINDOW")
@@ -984,7 +984,7 @@ class Botting:
 
     def Travel(self, target_map_id: int = 0, target_map_name: str = "") -> None:
         if target_map_name:
-            target_map_id = GLOBAL_CACHE.Map.GetMapIDByName(target_map_name)
+            target_map_id = Map.GetMapIDByName(target_map_name)
 
         self.helpers.travel(target_map_id)
 
@@ -1032,7 +1032,7 @@ class Botting:
 
     def WaitForMapLoad(self, target_map_id: int = 0, target_map_name: str = "") -> None:
         if target_map_name:
-            target_map_id = GLOBAL_CACHE.Map.GetMapIDByName(target_map_name)
+            target_map_id = Map.GetMapIDByName(target_map_name)
             
         self.helpers.wait_for_map_load(target_map_id)
 

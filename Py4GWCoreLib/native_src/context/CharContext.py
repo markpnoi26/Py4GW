@@ -1,13 +1,12 @@
 import PyPlayer
 from Py4GW import Game
 from ctypes import Structure, c_uint32, c_uint8, c_wchar, POINTER, cast, c_int32
-from typing import List, Optional
 from ..internals.helpers import read_wstr, encoded_wstr_to_str
 from ..internals.gw_array import GW_Array, GW_Array_Value_View
-from ..internals.types import Vec2f   # if needed later
+from typing import List
 
 # -------------------------------------------------------------
-# ObserverMatch::Flags (nested struct)
+#region  ObserverMatch
 # -------------------------------------------------------------
 
 class ObserverMatchFlags(Structure):
@@ -31,7 +30,7 @@ class ObserverMatchFlags(Structure):
 
 
 # -------------------------------------------------------------
-# ObserverMatch main struct
+#region ObserverMatch main struct
 # -------------------------------------------------------------
 
 class ObserverMatch(Structure):
@@ -76,7 +75,7 @@ class ObserverMatch(Structure):
             return encoded_wstr_to_str(encoded)
         return None
    
-    
+#region  ProgressBar
 class ProgressBar(Structure):
     _pack_ = 1
     _fields_ = [
@@ -88,7 +87,7 @@ class ProgressBar(Structure):
         #// possibly more
     ]
 
-
+#region CharContextStruct
 class CharContextStruct(Structure):
     _pack_ = 1
     _fields_ = [
@@ -201,9 +200,11 @@ class CharContextStruct(Structure):
         return None
     
 
-#region Facade
+#region CharContext Facade
 class CharContext:
     _ptr: int = 0
+    _cached_ptr: int = 0
+    _cached_ctx: CharContextStruct | None = None
     _callback_name = "CharContext.UpdateCharContextPtr"
 
     @staticmethod
@@ -225,17 +226,24 @@ class CharContext:
     def disable():
         Game.remove_callback(CharContext._callback_name)
         CharContext._ptr = 0
+        CharContext._cached_ptr = 0
+        CharContext._cached_ctx = None
 
     @staticmethod
     def get_context() -> CharContextStruct | None:
         ptr = CharContext._ptr
         if not ptr:
+            CharContext._cached_ptr = 0
+            CharContext._cached_ctx = None
             return None
-        return cast(
-            ptr,
-            POINTER(CharContextStruct)
-        ).contents
         
+        if ptr != CharContext._cached_ptr:
+            CharContext._cached_ptr = ptr
+            CharContext._cached_ctx = cast(
+                ptr,
+                POINTER(CharContextStruct)
+            ).contents
         
+        return CharContext._cached_ctx
         
 CharContext.enable()

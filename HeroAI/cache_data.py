@@ -5,7 +5,7 @@ from .globals import HeroAI_varsClass, HeroAI_Window_varsClass
 from .combat import CombatClass
 from Py4GWCoreLib import GLOBAL_CACHE
 from Py4GWCoreLib import Timer, ThrottledTimer
-from Py4GWCoreLib import Range, Utils, ConsoleLog
+from Py4GWCoreLib import Range, Agent, ConsoleLog
 from Py4GWCoreLib import AgentArray, Weapon, Routines
 
 @dataclass
@@ -47,7 +47,7 @@ class GameData:
     def update(self):
         
         #Player data
-        attributes = GLOBAL_CACHE.Agent.GetAttributes(GLOBAL_CACHE.Player.GetAgentID())
+        attributes = Agent.GetAttributes(GLOBAL_CACHE.Player.GetAgentID())
         self.fast_casting_exists = False
         self.fast_casting_level = 0
         self.expertise_exists = False
@@ -84,13 +84,13 @@ class CacheData:
         """
         Returns the attack speed of the current weapon.
         """
-        weapon_type,_ = GLOBAL_CACHE.Agent.GetWeaponType(GLOBAL_CACHE.Player.GetAgentID())
-        player = GLOBAL_CACHE.Agent.GetAgentByID(GLOBAL_CACHE.Player.GetAgentID())
-        if player is None:
+        weapon_type,_ = Agent.GetWeaponType(GLOBAL_CACHE.Player.GetAgentID())
+        player_living = Agent.GetLivingAgentByID(GLOBAL_CACHE.Player.GetAgentID())
+        if player_living is None:
             return 0
         
-        attack_speed = player.living_agent.weapon_attack_speed
-        attack_speed_modifier = player.living_agent.attack_speed_modifier if player.living_agent.attack_speed_modifier != 0 else 1.0
+        attack_speed = player_living.weapon_attack_speed
+        attack_speed_modifier = player_living.attack_speed_modifier if player_living.attack_speed_modifier != 0 else 1.0
         
         if attack_speed == 0:
             match weapon_type:
@@ -188,9 +188,9 @@ class CacheData:
                 self.data.update()
                 
                 if self.stay_alert_timer.HasElapsed(STAY_ALERT_TIME):
-                    self.data.in_aggro = self.InAggro(GLOBAL_CACHE.AgentArray.GetEnemyArray(), Range.Earshot.value)
+                    self.data.in_aggro = self.InAggro(AgentArray.GetEnemyArray(), Range.Earshot.value)
                 else:
-                    self.data.in_aggro = self.InAggro(GLOBAL_CACHE.AgentArray.GetEnemyArray(), Range.Spellcast.value)
+                    self.data.in_aggro = self.InAggro(AgentArray.GetEnemyArray(), Range.Spellcast.value)
                     
                 if self.data.in_aggro:
                     self.stay_alert_timer.Reset()
