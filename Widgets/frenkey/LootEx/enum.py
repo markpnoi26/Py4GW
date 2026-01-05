@@ -15,6 +15,8 @@ ITEM_TEXTURE_FOLDER = os.path.join(Console.get_projects_path(), "Textures", "Ite
 MAX_CHARACTER_GOLD = 100000
 MAX_VAULT_GOLD = 1000000
 
+INVALID_NAMES = ["", "Unknown", "No Item"]
+
 COMMON_MATERIALS: list[int] = [
     ModelID.Bone,
     ModelID.Iron_Ingot,
