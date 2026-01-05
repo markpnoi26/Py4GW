@@ -182,9 +182,13 @@ class Settings:
     
     def ensure_initialized(self) -> bool: 
         account_email = GLOBAL_CACHE.Player.GetAccountEmail()
+        
+        if not account_email:
+            return True
+         
         initialized = True if account_email and account_email == self.account_email else False
         
-        if not initialized:
+        if not initialized or not self._initialized:
             self.initialize_account_config()
         
         return self._initialized == initialized
@@ -197,7 +201,7 @@ class Settings:
             config_dir = os.path.join(base_path, "Widgets", "Config", "Accounts", account_email)
             os.makedirs(config_dir, exist_ok=True)
             self.account_ini_path = os.path.join(config_dir, "HeroAI.ini")
-            self.account_ini_handler = IniHandler(self.account_ini_path)
+            self.account_ini_handler = IniHandler(self.account_ini_path)            
             self.account_email = account_email
                     
         self._initialized = True if account_email and account_email == self.account_email else False

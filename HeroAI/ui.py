@@ -146,14 +146,16 @@ def draw_health_bar(width: float, height: float, max_health: float, current_heal
     pips = Utils.calculate_health_pips(max_health, regen)
 
     if not draw_textures:
+        xpos, ypos = PyImGui.get_cursor_pos()
         color = state.value
         style.PlotHistogram.push_color(color.rgb_tuple)
         style.FrameRounding.push_style_var(0)
         ImGui.progress_bar(current_health, width, height)
         style.FrameRounding.pop_style_var()
         style.PlotHistogram.pop_color()            
-    else:
-        ImGui.dummy(width, height)
+        PyImGui.set_cursor_pos(xpos, ypos)
+    
+    ImGui.dummy(width, height)
 
     fraction = (max(0.0, min(1.0, current_health))
                 if max_health > 0 else 0.0)

@@ -136,7 +136,7 @@ def handle_keys():
                     return
                 
                 
-                if GLOBAL_CACHE.Map.IsExplorable():
+                if Map.IsExplorable():
                     if item.is_inventory_item:
                         ConsoleLog(MODULE_NAME, f"Dropping item '{item.name}' to floor.", Console.MessageType.Info)
                         inventory_handler.DropItem(item)
@@ -172,7 +172,7 @@ def main():
     if messaging.HandleMessages():
         return
     
-    show_ui = not UIManager.IsWorldMapShowing() and not GLOBAL_CACHE.Map.IsMapLoading() and not GLOBAL_CACHE.Map.IsInCinematic() and not Player.InCharacterSelectScreen()
+    show_ui = not UIManager.IsWorldMapShowing() and not Map.IsMapLoading() and not Map.IsInCinematic() and not Player.InCharacterSelectScreen()
     
     conflicting_widgets = ["InventoryPlus"]
     active_conflicting_inventory_widgets = [w for w in conflicting_widgets if widget_handler.is_widget_enabled(w)]
@@ -206,7 +206,7 @@ def main():
             return
         
         if Agent.IsNameReady(agent_id):
-            current_character = Agent.GetName(agent_id)        
+            current_character = Agent.GetNameByID(agent_id)        
             
     if current_character == "Timeout":
         ConsoleLog(MODULE_NAME, "Character name request timed out. Try again...", Console.MessageType.Error)

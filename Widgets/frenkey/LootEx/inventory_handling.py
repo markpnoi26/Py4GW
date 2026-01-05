@@ -56,17 +56,17 @@ class LootExAutoInventoryHandler(AutoInventoryHandler):
         self._initialized = True
         
         
-    @override
-    def AutoID(self, item_id):
-        # Let LootEx handle identification
-        ConsoleLog("LootExAutoInventoryHandler", f"AutoID called for item_id: {item_id}. Let LootEx handle identification.", Console.MessageType.Debug, self.LOG_LOOTEX_AUTO_INVENTORY_HANDLER)
-        pass       
+    # @override
+    # def AutoID(self, item_id):
+    #     # Let LootEx handle identification
+    #     ConsoleLog("LootExAutoInventoryHandler", f"AutoID called for item_id: {item_id}. Let LootEx handle identification.", Console.MessageType.Debug, self.LOG_LOOTEX_AUTO_INVENTORY_HANDLER)
+    #     pass       
     
-    @override
-    def AutoSalvage(self, item_id):
-        # Let LootEx handle salvaging
-        ConsoleLog("LootExAutoInventoryHandler", f"AutoSalvage called for item_id: {item_id}. Let LootEx handle salvaging.", Console.MessageType.Debug, self.LOG_LOOTEX_AUTO_INVENTORY_HANDLER)
-        pass
+    # @override
+    # def AutoSalvage(self, item_id):
+    #     # Let LootEx handle salvaging
+    #     ConsoleLog("LootExAutoInventoryHandler", f"AutoSalvage called for item_id: {item_id}. Let LootEx handle salvaging.", Console.MessageType.Debug, self.LOG_LOOTEX_AUTO_INVENTORY_HANDLER)
+    #     pass
     
     @override
     def IdentifyItems(self, progress_callback: Optional[Callable[[float], None]] = None, log: bool = False):
@@ -1898,7 +1898,7 @@ class InventoryHandler:
         self.run_once = False
         self.soft_reset()
 
-        self.is_outpost = GLOBAL_CACHE.Map.IsOutpost() or utility.Util.IsGuildHall(GLOBAL_CACHE.Map.GetMapID())
+        self.is_outpost = Map.IsOutpost() or utility.Util.IsGuildHall(Map.GetMapID())
         
         if not settings.profile or not settings.automatic_inventory_handling:
             return
