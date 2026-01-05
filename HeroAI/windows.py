@@ -1543,6 +1543,9 @@ class HeroAI_Windows():
             
     @staticmethod
     def DrawControlPanelWindow(cached_data:CacheData):
+        if not HeroAI_FloatingWindows.settings.ShowControlPanelWindow:      
+            return
+        
         global MAX_NUM_PLAYERS
         own_party_number = GLOBAL_CACHE.Party.GetOwnPartyNumber()
         game_option = GameOptionStruct()     

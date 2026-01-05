@@ -119,6 +119,7 @@ class Settings:
         self.DisableAutomationOnLeaderAccount = False
         
         self.ShowDialogOverlay = True
+        self.ShowControlPanelWindow = True
         
         self.CombinePanels = False
         self.ShowLeaderPanel = False
@@ -242,8 +243,7 @@ class Settings:
         
         self.ini_handler.write_key("General", "CombinePanels", str(self.CombinePanels))
         self.ini_handler.write_key("General", "ShowHeroPanels", str(self.ShowHeroPanels))
-        self.ini_handler.write_key("General", "ShowLeaderPanel", str(self.ShowLeaderPanel))
-        
+        self.ini_handler.write_key("General", "ShowLeaderPanel", str(self.ShowLeaderPanel))        
         
         self.ini_handler.write_key("General", "ShowHeroEffects", str(self.ShowHeroEffects))
         self.ini_handler.write_key("General", "ShowEffectDurations", str(self.ShowEffectDurations))
@@ -255,7 +255,9 @@ class Settings:
         self.ini_handler.write_key("General", "ShowHeroBars", str(self.ShowHeroBars))
         self.ini_handler.write_key("General", "ShowFloatingTargets", str(self.ShowFloatingTargets))
         self.ini_handler.write_key("General", "ShowHeroSkills", str(self.ShowHeroSkills))
+        
         self.ini_handler.write_key("General", "ShowPartyPanelUI", str(self.ShowPartyPanelUI))
+        self.ini_handler.write_key("General", "ShowControlPanelWindow", str(self.ShowControlPanelWindow))
 
         self.ini_handler.write_key("General", "ConfirmFollowPoint", str(self.ConfirmFollowPoint))
 
@@ -298,7 +300,9 @@ class Settings:
         self.ShowHeroBars = self.ini_handler.read_bool("General", "ShowHeroBars", True)
         self.ShowFloatingTargets = self.ini_handler.read_bool("General", "ShowFloatingTargets", True)
         self.ShowHeroSkills = self.ini_handler.read_bool("General", "ShowHeroSkills", True)
+        
         self.ShowPartyPanelUI = self.ini_handler.read_bool("General", "ShowPartyPanelUI", True)
+        self.ShowControlPanelWindow = self.ini_handler.read_bool("General", "ShowControlPanelWindow", True)
         
         self.ConfirmFollowPoint = self.ini_handler.read_bool("General", "ConfirmFollowPoint", False)
 
