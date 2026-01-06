@@ -337,7 +337,6 @@ class HeroAI_FloatingWindows():
                     
             if hero_ai_data is not None:
                 if own_data.AccountEmail:
-                    ConsoleLog("HeroAI", "Disabling main automation as party leader.")
                     hero_ai_data.Following = False
                     hero_ai_data.Avoidance = False
                     hero_ai_data.Looting = False
@@ -1544,6 +1543,9 @@ class HeroAI_Windows():
             
     @staticmethod
     def DrawControlPanelWindow(cached_data:CacheData):
+        if not HeroAI_FloatingWindows.settings.ShowControlPanelWindow:      
+            return
+        
         global MAX_NUM_PLAYERS
         own_party_number = GLOBAL_CACHE.Party.GetOwnPartyNumber()
         game_option = GameOptionStruct()     

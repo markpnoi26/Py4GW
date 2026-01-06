@@ -2626,6 +2626,11 @@ def draw_configure_window(module_name : str, configure_window : WindowModule):
                         settings.ShowPartyPanelUI = show_party_panel_ui
                         settings.save_settings()
                         
+                    show_control_panel_window = ImGui.checkbox("Show Control Panel Window", settings.ShowControlPanelWindow)
+                    if show_control_panel_window != settings.ShowControlPanelWindow:
+                        settings.ShowControlPanelWindow = show_control_panel_window
+                        settings.save_settings()
+                        
                     show_floating_targets = ImGui.checkbox("Show Floating Target Buttons", settings.ShowFloatingTargets)
                     if show_floating_targets != settings.ShowFloatingTargets:
                         settings.ShowFloatingTargets = show_floating_targets
