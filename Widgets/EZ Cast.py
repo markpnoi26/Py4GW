@@ -260,14 +260,15 @@ def draw_widget(cached_data):
 def configure():
     pass
 
-def UseGenericSkills(energy, player_id, player_ag : GW.PyAgent.PyAgent, now):
+def UseGenericSkills(energy, player_id, player_ag, now):
     global cache
+    player_x, player_y = GW.Agent.GetXY(player_id)
     nearest_foe_id = GW.Routines.Agents.GetNearestEnemy()
-    nearest_foe : GW.PyAgent.PyAgent = GW.Agent.GetAgentByID(nearest_foe_id)
     nearest_distance = 5000 * 5000
     square_dis = cache.combat_range_slider * cache.combat_range_slider
-    if nearest_foe is not None:
-        nearest_distance = (player_ag.x - nearest_foe.x) ** 2 + (player_ag.y - nearest_foe.y) ** 2
+    if nearest_foe_id:
+        foe_x, foe_y = GW.Agent.GetXY(nearest_foe_id)
+        nearest_distance = (player_x - foe_x) ** 2 + (player_y - foe_y) ** 2
     cache.combat = (nearest_distance < square_dis)
     # GW.Console.Log("",f"{cache.combat} cache result")
     for n in range(0,3):
@@ -276,16 +277,19 @@ def UseGenericSkills(energy, player_id, player_ag : GW.PyAgent.PyAgent, now):
             if cache.combat_skill[i - 1] and not cache.combat: continue
             if not GW.Routines.Checks.Skills.IsSkillSlotReady(i): continue
             skill_id = GW.SkillBar.GetSkillData(i).id.id
-            skill_instance : GW.PySkill.Skill = GW.PySkill.Skill(skill_id)
+            skill_data : GW.PySkill.Skill = GW.PySkill.Skill(skill_id)
+            skill_instance: GW.PySkillbar.SkillbarSkill = GW.SkillBar.GetSkillData(i)
             if GW.Skill.Data.GetEnergyCost(skill_id) + cache.generic_energy_buffer > energy: continue
-            if skill_instance.adrenaline_a != skill_instance.adrenaline != 0: continue
+            # GW.Console.Log("", f"Skill adr {skill_instance.adrenaline}, adr_a {skill_instance.adrenaline_b}")
+            if skill_instance.adrenaline_a < skill_data.adrenaline != 0: continue
+
             effect = GW.Effects.GetEffectTimeRemaining(player_id, skill_id)
             effect_valid = False
             if n == 0 and effect == 0: effect_valid = True
-            if n == 1 and effect / 1000.0 < skill_instance.activation + cache.generic_skill_use_buffer: effect_valid = True
+            if n == 1 and effect / 1000.0 < skill_data.activation + cache.generic_skill_use_buffer: effect_valid = True
             if n == 2: effect_valid = True
             if effect_valid:
-                cast_delay = skill_instance.activation + skill_instance.aftercast
+                cast_delay = skill_data.activation + skill_data.aftercast
                 if cast_delay > 0:
                     cache.busy_timer = cast_delay + cache.ping_buffer
                 else:
@@ -294,7 +298,7 @@ def UseGenericSkills(energy, player_id, player_ag : GW.PyAgent.PyAgent, now):
                 return True
     return False
 
-def MaintainRefrains(player_id, player_ag : GW.PyAgent, now):
+def MaintainRefrains(player_id, player_ag, now):
     effects = GW.Effects.GetEffects(player_id)
     effect : GW.PyEffects.EffectType
     rit_lord = next((effect for effect in effects if effect.skill_id == GW.Skill.GetID("Ritual_Lord")), None)
@@ -341,8 +345,8 @@ def MaintainRefrains(player_id, player_ag : GW.PyAgent, now):
     refrains = [heroic, bladeturn, aggressive, burning, hasty, mending]
     refrains = [x for x in refrains if x is not None]
     help_me_slot = GW.SkillBar.GetSlotBySkillID(help_me_skill.id.id)
-    n : GW.PyAgent.AttributeClass
-    command : GW.PyAgent.AttributeClass = next((n for n in player_ag.attributes if n.attribute_id == GW.PyAgent.SafeAttribute.Command), None)
+    attributes = GW.Agent.GetAttributes(player_id)
+    command = next((attr for attr in attributes if attr.attribute_id == GW.PyAgent.SafeAttribute.Command), None)
     if command is None:
         help_me_duration = help_me_skill.duration_0pts
     else:
@@ -392,12 +396,13 @@ def MaintainRefrains(player_id, player_ag : GW.PyAgent, now):
                     return True
     return False
 
-def AuraOfTheAssassin(energy, player_id, player_ag : GW.PyAgent, now):
-    foes = GW.Routines.Agents.GetFilteredEnemyArray(player_ag.x, player_ag.y, 1000)
-    agent : GW.PyAgent.PyAgent
+def AuraOfTheAssassin(energy, player_id, player_ag, now):
+    player_x, player_y = GW.Agent.GetXY(player_id)
+    foes = GW.Routines.Agents.GetFilteredEnemyArray(player_x, player_y, 1000)
     found = False
-    for agent in foes:
-        if agent.living_agent.hp < cache.aota_threshold / 100.0:
+    for agent_id in foes:
+        agent_hp = GW.Agent.GetHealth(agent_id)
+        if agent_hp < cache.aota_threshold / 100.0:
             found = True
             break
     if found:
@@ -411,13 +416,14 @@ def AuraOfTheAssassin(energy, player_id, player_ag : GW.PyAgent, now):
             return True
     return False
 
-def QuickAttack(energy, played_id, player_ag : GW.PyAgent, now, delta):
+def QuickAttack(energy, player_id, player_ag, now, delta):
     global cache
-    player : GW.PyAgent.PyLivingAgent = player_ag.living_agent
-    if player.is_attacking:
+    if GW.Agent.IsAttacking(player_id):
         if not cache.qa_attack_detect:
             cache.qa_attack_detect = True
-            cache.qa_attack_time = player.weapon_attack_speed * player.attack_speed_modifier * cache.qa_percent_cancel
+            weapon_speed = GW.Agent.GetWeaponAttackSpeed(player_id)
+            speed_mod = GW.Agent.GetAttackSpeedModifier(player_id)
+            cache.qa_attack_time = weapon_speed * speed_mod * cache.qa_percent_cancel
         else:
             cache.qa_attack_time -= delta
             if cache.qa_attack_time < 0:
@@ -436,7 +442,7 @@ def Update():
     if cache.busy_timer > 0:
         return
     player_id = GW.Player.GetAgentID()
-    player_ag: GW.PyAgent = GW.Player.GetAgent()
+    player_ag = GW.Player.GetAgent()
     energy = GW.Agent.GetEnergy(player_id) * GW.Agent.GetMaxEnergy(player_id)
     if cache.generic_skill_use_checkbox:
         if UseGenericSkills(energy, player_id, player_ag, now): return

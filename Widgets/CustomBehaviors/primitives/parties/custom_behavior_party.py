@@ -7,8 +7,9 @@ from typing import Callable, Generator, Any, List
 
 from PyAgent import AttributeClass
 
-from Py4GWCoreLib import Routines
+from Py4GWCoreLib import Routines, Map, Agent
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
+from Py4GWCoreLib.GlobalCache.SharedMemory import AccountData
 from Py4GWCoreLib.enums_src.Multiboxing_enums import SharedCommandType
 from Py4GWCoreLib.py4gwcorelib_src.Timer import ThrottledTimer
 
@@ -57,6 +58,22 @@ class CustomBehaviorParty:
             self.party_command_handler_manager.execute_next_step()
             self.messaging_process()
             self.party_teambuild_manager.act() # todo only if idle ?
+
+            if GLOBAL_CACHE.Party.IsPartyLeader() and Map.IsExplorable():
+                
+                current_party_target_id = self.get_party_custom_target()
+                if current_party_target_id is not None:
+                    # if not Agent.IsValid(current_party_target_id): self.set_party_custom_target(None)
+                    if not Agent.IsAlive(current_party_target_id): self.set_party_custom_target(None)
+
+                players = GLOBAL_CACHE.Party.GetPlayers()
+                for player in players:
+                    agent_id = GLOBAL_CACHE.Party.Players.GetAgentIDByLoginNumber(player.login_number)
+                    if agent_id != GLOBAL_CACHE.Player.GetAgentID(): continue
+                    called_target_id = player.called_target_id
+                    if called_target_id != 0:
+                        self.set_party_custom_target(called_target_id)
+                
             yield
     
     def act(self):

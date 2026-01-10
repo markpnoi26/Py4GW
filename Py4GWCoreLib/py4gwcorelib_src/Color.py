@@ -40,12 +40,42 @@ class Color:
     def to_dx_color(self) -> int:
         return self._rgb_to_dx_color(self.r, self.g, self.b, self.a)
     
-    def to_tuple(self) -> tuple:
-        return (self.r, self.g, self.b, self.a)
+    def from_dx_color(self, color: int) -> None:
+        # DirectX D3DCOLOR (ARGB)
+        r, g, b, a = self._unpack_argb(color)
+        self.set_rgba(r, g, b, a)
+    
+    def to_tuple(self) -> tuple: return (self.r, self.g, self.b, self.a)  
+    
+    @classmethod
+    def from_float_tuple(cls, color: tuple[float, float, float, float]) -> "Color":
+        if any(c > 255.0 for c in color):
+            raise ValueError("Color components must be in the range 0.0 to 255.0")
+        r, g, b, a = (int(c) for c in color)
+        return cls(r, g, b, a)
+
+    
+    @classmethod
+    def from_tuple(cls, color: tuple[float, float, float, float]) -> "Color":
+        # Your original method: normalized floats 0..1
+        if color[0] > 1.0 or color[1] > 1.0 or color[2] > 1.0 or color[3] > 1.0:
+            raise ValueError("Color components must be in the range 0.0 to 1.0")
+        
+        r, g, b, a = [int(c * 255) for c in color]
+        return cls(r, g, b, a)
     
     def to_tuple_normalized(self) -> tuple:
         return (self.r / 255, self.g / 255, self.b / 255, self.a / 255)
-    
+
+    @classmethod
+    def from_tuple_normalized(cls, color: tuple[float, float, float, float]) -> "Color":
+        if any(c > 1.0 or c < 0.0 for c in color):
+            raise ValueError("Color components must be in the range 0.0 to 1.0")
+
+        r, g, b, a = (int(c * 255) for c in color)
+        return cls(r, g, b, a)
+
+        
     def copy(self) -> "Color":
         return Color(self.r, self.g, self.b, self.a)
 

@@ -1,6 +1,6 @@
 from typing import List, Any, Generator, Callable, override
 
-from Py4GWCoreLib import GLOBAL_CACHE, AgentArray, Routines, Range
+from Py4GWCoreLib import GLOBAL_CACHE, AgentArray, Agent, Range
 from Widgets.CustomBehaviors.primitives.behavior_state import BehaviorState
 from Widgets.CustomBehaviors.primitives.bus.event_bus import EventBus
 from Widgets.CustomBehaviors.primitives.helpers import custom_behavior_helpers
@@ -33,8 +33,8 @@ class GenericResurrectionUtility(CustomSkillUtilityBase):
         self.score_definition: ScoreStaticDefinition = score_definition
 
     def _get_target(self) -> int | None:
-        allies: list[int] = GLOBAL_CACHE.AgentArray.GetAllyArray()
-        allies = AgentArray.Filter.ByCondition(allies, lambda agent_id: not GLOBAL_CACHE.Agent.IsAlive(agent_id))
+        allies: list[int] = AgentArray.GetAllyArray()
+        allies = AgentArray.Filter.ByCondition(allies, lambda agent_id: not Agent.IsAlive(agent_id))
         allies = AgentArray.Filter.ByDistance(allies, GLOBAL_CACHE.Player.GetXY(), Range.Spellcast.value)
         if len(allies) == 0: return None
         return allies[0]

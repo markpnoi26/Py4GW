@@ -3,10 +3,21 @@ import PyPlayer
 from .enums import *
 from .Map import *
 from .Agent import *
+from .native_src.internals.helpers import encoded_wstr_to_str
 
 
 # Player
 class Player:
+    @staticmethod
+    def _format_uuid_as_email(player_uuid):
+        if not player_uuid:
+            return ""
+        try:
+            result = encoded_wstr_to_str("uuid_" + "_".join(str(part) for part in player_uuid))
+            return result if result else "INVALID"
+        except TypeError:
+            return str(player_uuid)
+
     @staticmethod
     def player_instance():
         """
@@ -34,7 +45,7 @@ class Player:
         Args: None
         Returns: str
         """
-        return Agent.GetName(Player.GetAgentID())
+        return Agent.GetNameByID(Player.GetAgentID())
 
     @staticmethod
     def GetXY():
@@ -286,7 +297,17 @@ class Player:
         Args: None
         Returns: str
         """
-        return Player.player_instance().account_email
+        try:
+            player_instance = Player.player_instance()
+            account_email = player_instance.account_email
+            if account_email:
+                return account_email
+            player_uuid = player_instance.player_uuid
+            if all(part == 0 for part in player_uuid):
+                return ""
+            return Player._format_uuid_as_email(player_uuid)
+        except Exception:
+            return ""
     
     @staticmethod
     def GetPlayerUUID():

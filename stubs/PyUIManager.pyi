@@ -1,4 +1,4 @@
-from typing import List, Tuple, Callable
+from typing import List, Tuple, Sequence, Any
 
 class UIInteractionCallback:
     def __init__(self) -> None:
@@ -10,7 +10,6 @@ class UIInteractionCallback:
         ...
 
 
-    
     
 class FramePosition:
     def __init__(self) -> None: ...
@@ -158,6 +157,12 @@ class UIManager:
     @staticmethod
     def get_frame_logs() -> List[Tuple[int, int, str]]: ...
     @staticmethod
+    def clear_frame_logs() -> None: ...
+    @staticmethod
+    def get_ui_message_logs() -> List[Tuple[int, int, bool, bool, int, list[int], list[int]]]: ...
+    @staticmethod
+    def clear_ui_message_logs() -> None: ...
+    @staticmethod
     def get_frame_id_by_label(label: str) -> int: ...
     @staticmethod
     def get_frame_id_by_hash(hash: int) -> int: ...
@@ -170,30 +175,18 @@ class UIManager:
     @staticmethod
     def SendUIMessage(
         msgid: int,
-        wparam: int,
-        lparam: int = 0,
+        values: list[int],
         skip_hooks: bool = False
-    ) -> bool:
-        """
-        Low-level UI message dispatcher.
-
-        Parameters:
-            msgid (int):
-                UI message ID.
-
-            wparam (int):
-                Pointer to payload (ctypes.addressof(...) or 0).
-
-            lparam (int):
-                Optional pointer to secondary payload.
-
-            skip_hooks (bool):
-                If True, bypass UI hooks.
-
-        Returns:
-            bool: True if the message was processed.
-        """
-        ...
+    ) -> bool: ...
+    
+    @staticmethod
+    def SendUIMessageRaw(
+        msgid: int,
+        wparam: int,
+        lparam: int,
+        skip_hooks: bool = False
+    ) -> bool: ...
+    
     @staticmethod
     def button_click(frame_id: int) -> None: ...
     @staticmethod

@@ -23,14 +23,14 @@ class _Items:
         from ...Py4GWcorelib import LootConfig
         from ...enums import Range
         from ...GlobalCache import GLOBAL_CACHE
+        from ...Agent import Agent
         
         if not Routines.Checks.Map.MapValid():
             ConsoleLog("LootItems", "Map is not valid. Cannot loot items.", Console.MessageType.Warning)
             yield from Routines.Yield.wait(1000)  # Wait for map to be valid
             return
             
-        if GLOBAL_CACHE.Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
-            ConsoleLog("LootItems", "Player is dead. Cannot loot items.", Console.MessageType.Warning)
+        if Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
             yield from Routines.Yield.wait(1000)  # Wait if dead
             return 
         

@@ -1,6 +1,7 @@
 from .enums_src.GameData_enums import (
     Ailment,
     Allegiance,
+    AllegianceNames,
     Attribute,
     DamageType,
     DyeColor,
@@ -8,11 +9,14 @@ from .enums_src.GameData_enums import (
     FactionType,
     Inscription,
     Profession,
+    Profession_Names,
     ProfessionShort,
+    ProfessionShort_Names,
     Range,
     Reduced_Ailment,
     SkillType,
     Weapon,
+    Weapon_Names,
     WeaporReq,
     CAP_EXPERIENCE,
     CAP_STEP,
@@ -27,19 +31,25 @@ from .enums_src.Map_enums import (
     name_to_map_id,
     outpost_name_to_id,
     outposts,
+    InstanceType,
+    InstanceTypeName,
 )
 from .enums_src.Model_enums import AgentModelID, ModelID, PetModelID, SPIRIT_BUFF_MAP, SpiritModelID
 from .enums_src.Multiboxing_enums import CombatPrepSkillsType, SharedCommandType
 from .enums_src.Py4GW_enums import Console
 from .enums_src.Region_enums import (
     Campaign,
+    CampaignName,
     Continent,
+    ContinentName,
     District,
     Language,
     RegionType,
+    RegionTypeName,
     ServerLanguage,
     ServerLanguageName,
     ServerRegionName,
+    DistrictName,
 )
 from .enums_src.Texture_enums import (
     ProfessionTextureMap,
@@ -69,10 +79,14 @@ from .enums_src.UI_enums import (
     BoolPreference,
     
 )
+
+from .enums_src.Calendar_enums import YEARS, MONTHS, EVENTS,PVE_WEEKLY_BONUSES,PVP_WEEKLY_BONUSES,NICHOLAS_CYCLE
+
 __all__ = [
     # GameData_enums
     "Ailment",
     "Allegiance",
+    "AllegianceNames",
     "FactionAllegiance",
     "FactionType",
     "Attribute",
@@ -80,11 +94,14 @@ __all__ = [
     "DyeColor",
     "Inscription",
     "Profession",
+    "Profession_Names",
     "ProfessionShort",
+    "ProfessionShort_Names",
     "Range",
     "Reduced_Ailment",
     "SkillType",
     "Weapon",
+    "Weapon_Names",
     "WeaporReq",
     "CAP_EXPERIENCE",
     "CAP_STEP",
@@ -112,6 +129,8 @@ __all__ = [
     "name_to_map_id",
     "outpost_name_to_id",
     "outposts",
+    "InstanceType",
+    "InstanceTypeName",
 
     # Model_enums
     "AgentModelID",
@@ -129,13 +148,17 @@ __all__ = [
 
     # Region_enums
     "Campaign",
+    "CampaignName",
     "Continent",
+    "ContinentName",
     "District",
     "Language",
     "RegionType",
+    "RegionTypeName",
     "ServerLanguage",
     "ServerLanguageName",
     "ServerRegionName",
+    "DistrictName",
 
     # Texture_enums
     "ProfessionTextureMap",
@@ -168,6 +191,14 @@ __all__ = [
     "ShaderQuality",
     "FrameLimiter",
     "BoolPreference",
+    
+    # Calendar_enums
+    "YEARS",
+    "MONTHS",
+    "EVENTS",
+    "PVE_WEEKLY_BONUSES",
+    "PVP_WEEKLY_BONUSES",
+    "NICHOLAS_CYCLE",
 ]
 
 

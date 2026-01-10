@@ -5,8 +5,9 @@ from Py4GWCoreLib.py4gwcorelib_src.Keystroke import Keystroke
 from Py4GWCoreLib.py4gwcorelib_src.Timer import Timer, ThrottledTimer
 from Py4GWCoreLib.enums_src.IO_enums import Key
 from Py4GWCoreLib.py4gwcorelib_src.Keystroke import Keystroke
-from Py4GWCoreLib.py4gwcorelib_src.Timer import Timer
+from Py4GWCoreLib.Agent import Agent
 from Py4GWCoreLib.routines_src import Checks
+from ..Map import Map
 
 from ..GlobalCache import GLOBAL_CACHE
 from ..Py4GWcorelib import ConsoleLog, Console, Utils, ActionQueueManager
@@ -466,7 +467,7 @@ class Yield:
                         ConsoleLog("FollowPath", "Custom exit condition met, stopping movement.", Console.MessageType.Info, log=log)
                         return False
 
-                    if GLOBAL_CACHE.Agent.IsCasting(GLOBAL_CACHE.Player.GetAgentID()):
+                    if Agent.IsCasting(GLOBAL_CACHE.Player.GetAgentID()):
                         ConsoleLog("FollowPath", "Player casting detected, waiting 750ms...", Console.MessageType.Debug, log=detailed_log)
                 
                         yield from Yield.wait(750)
@@ -697,37 +698,42 @@ class Yield:
             yield from _run_bt_tree(tree, throttle_ms=100)
             
         @staticmethod
-        def InteractWithNearestChest():
+        def InteractWithNearestChest(max_distance:int = 2500, before_interact_fn = lambda: None, after_interact_fn = lambda: None):
             """Target and interact with chest and items."""
             from .Agents import Agents
             
             from ..Py4GWcorelib import LootConfig, Utils
             from ..enums_src.GameData_enums import Range
 
-            nearest_chest = Agents.GetNearestChest(2500)
-            chest_x, chest_y = GLOBAL_CACHE.Agent.GetXY(nearest_chest)
+            nearest_chest = Agents.GetNearestChest(max_distance)
+            chest_x, chest_y = Agent.GetXY(nearest_chest)
 
 
             yield from Yield.Movement.FollowPath([(chest_x, chest_y)])
             yield from Yield.wait(500)
-        
+
+            before_interact_fn()
+
             yield from Yield.Player.InteractAgent(nearest_chest)
             yield from Yield.wait(500)
             GLOBAL_CACHE.Player.SendDialog(2)
-            yield from Yield.wait(1000)
+            yield from Yield.wait(500)
 
             yield from Yield.Agents.TargetNearestItem(distance=300)
             filtered_loot = LootConfig().GetfilteredLootArray(Range.Area.value, multibox_loot= True)
             item = Utils.GetFirstFromArray(filtered_loot)
             yield from Yield.Agents.ChangeTarget(item)
             yield from Yield.Player.InteractTarget()
+
+            after_interact_fn()
+            
             yield from Yield.wait(1000)
             
         @staticmethod
         def InteractWithAgentByName(agent_name:str):
             
             yield from Yield.Agents.TargetAgentByName(agent_name)
-            agent_x, agent_y = GLOBAL_CACHE.Agent.GetXY(GLOBAL_CACHE.Player.GetTargetID())
+            agent_x, agent_y = Agent.GetXY(GLOBAL_CACHE.Player.GetTargetID())
 
             yield from Yield.Movement.FollowPath([(agent_x, agent_y)])
             yield from Yield.wait(500)
@@ -755,7 +761,7 @@ class Yield:
             step = 100  # ms
             while elapsed < timeout_ms:
                 px, py = GLOBAL_CACHE.Player.GetXY()
-                tx, ty = GLOBAL_CACHE.Agent.GetXY(target_id)
+                tx, ty = Agent.GetXY(target_id)
                 if Utils.Distance((px, py), (tx, ty)) <= tolerance:
                     break
 
@@ -796,7 +802,7 @@ class Yield:
             step = 100  # ms
             while elapsed < timeout_ms:
                 px, py = GLOBAL_CACHE.Player.GetXY()
-                tx, ty = GLOBAL_CACHE.Agent.GetXY(target_id)
+                tx, ty = Agent.GetXY(target_id)
                 if Utils.Distance((px, py), (tx, ty)) <= tolerance:
                     break
 
@@ -837,7 +843,7 @@ class Yield:
             step = 100  # ms
             while elapsed < timeout_ms:
                 px, py = GLOBAL_CACHE.Player.GetXY()
-                tx, ty = GLOBAL_CACHE.Agent.GetXY(target_id)
+                tx, ty = Agent.GetXY(target_id)
                 if Utils.Distance((px, py), (tx, ty)) <= tolerance:
                     break
 
@@ -990,6 +996,68 @@ class Yield:
                 Console.MessageType.Success
             )
             return True
+        
+        @staticmethod
+        def SellMaterial(model_id: int):
+            MODULE_NAME = "Inventory + Sell Material"
+
+            def _is_material_trader():
+                merchant_models = [
+                    GLOBAL_CACHE.Item.GetModelID(item_id)
+                    for item_id in GLOBAL_CACHE.Trading.Trader.GetOfferedItems()
+                ]
+                return ModelID.Wood_Plank.value in merchant_models
+
+            def _get_minimum_quantity():
+                return 10 if _is_material_trader() else 1
+
+            required_quantity = _get_minimum_quantity()
+            merchant_item_list = GLOBAL_CACHE.Trading.Trader.GetOfferedItems()
+
+            # resolve merchant item ID from model_id
+            item_id = None
+            for candidate in merchant_item_list:
+                if GLOBAL_CACHE.Item.GetModelID(candidate) == model_id:
+                    item_id = candidate
+                    break
+
+            if item_id is None:
+                ConsoleLog(MODULE_NAME, f"Model {model_id} not sold here.", Console.MessageType.Warning)
+                return False
+
+            # Request a single quote
+            # GLOBAL_CACHE.Trading.Trader.RequestQuote(item_id)
+            GLOBAL_CACHE.Trading.Trader.RequestSellQuote(item_id)
+            ConsoleLog(MODULE_NAME, f"Requested Sell Quote for item {item_id}.", Console.MessageType.Warning)
+
+            while True:
+                yield from Yield.wait(50)
+                quoted_id = GLOBAL_CACHE.Trading.Trader.GetQuotedItemID()
+                cost = GLOBAL_CACHE.Trading.Trader.GetQuotedValue()
+                ConsoleLog(MODULE_NAME, f"Attempted to request sell quote for item {quoted_id}.", Console.MessageType.Warning)
+                ConsoleLog(MODULE_NAME, f"Received sell quote for item {item_id} at cost: {cost}", Console.MessageType.Warning)
+                if cost >= 0:
+                    break
+
+            if cost == 0:
+                ConsoleLog(MODULE_NAME, f"Item {item_id} has no price.", Console.MessageType.Warning)
+                return False
+
+            # Perform a single buy transaction
+            GLOBAL_CACHE.Trading.Trader.SellItem(item_id, cost)
+
+            while True:
+                yield from Yield.wait(50)
+                if GLOBAL_CACHE.Trading.IsTransactionComplete():
+                    break
+
+            ConsoleLog(
+                MODULE_NAME,
+                f"Bought {required_quantity} units of model {model_id} for {cost} gold.",
+                Console.MessageType.Success
+            )
+            return True
+
 
 
 #region Items
@@ -1184,10 +1252,10 @@ class Yield:
                     ActionQueueManager().ResetAllQueues()
                     return False
                 
-                if not GLOBAL_CACHE.Agent.IsValid(item_id):
+                if not Agent.IsValid(item_id):
                     continue
                 
-                item_x, item_y = GLOBAL_CACHE.Agent.GetXY(item_id)
+                item_x, item_y = Agent.GetXY(item_id)
                 item_reached = yield from Yield.Movement.FollowPath([(item_x, item_y)], timeout=pickup_timeout)
                 if not item_reached:
                     item_array.clear()
@@ -1198,7 +1266,7 @@ class Yield:
                     item_array.clear()
                     ActionQueueManager().ResetAllQueues()
                     return False
-                if GLOBAL_CACHE.Agent.IsValid(item_id):
+                if Agent.IsValid(item_id):
                     yield from Yield.Player.InteractAgent(item_id)
                     while True:
                         yield from Yield.wait(50)
@@ -1245,23 +1313,23 @@ class Yield:
                     ActionQueueManager().ResetAllQueues()
                     return failed_items + item_array
 
-                if not GLOBAL_CACHE.Agent.IsValid(item_id):
+                if not Agent.IsValid(item_id):
                     continue
 
                 # Try to walk to item
-                item_x, item_y = GLOBAL_CACHE.Agent.GetXY(item_id)
+                item_x, item_y = Agent.GetXY(item_id)
                 item_reached = yield from Yield.Movement.FollowPath([(item_x, item_y)], timeout=pickup_timeout)
                 if not item_reached:
                     ConsoleLog("LootItems", f"Failed to reach item {item_id}, skipping.", Console.MessageType.Warning)
                     failed_items.append(item_id)
                     continue
 
-                if GLOBAL_CACHE.Agent.IsValid(item_id):
+                if Agent.IsValid(item_id):
                     attempts = 0
                     picked_up = False
 
                     while attempts < max_attempts and not picked_up:
-                        if GLOBAL_CACHE.Agent.IsValid(item_id):
+                        if Agent.IsValid(item_id):
                             yield from Yield.Player.InteractAgent(item_id)
 
                         for _ in range(attempts_timeout_seconds * 10):  # default 3s
@@ -1456,15 +1524,15 @@ class Yield:
                 yield from Yield.wait(500)
                 return
 
-            if (not GLOBAL_CACHE.Map.IsExplorable()):
+            if (not Map.IsExplorable()):
                 yield from Yield.wait(500)
                 return
 
-            if GLOBAL_CACHE.Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
+            if Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
                 yield from Yield.wait(500)
                 return
 
-            level = GLOBAL_CACHE.Agent.GetLevel(GLOBAL_CACHE.Player.GetAgentID())
+            level = Agent.GetLevel(GLOBAL_CACHE.Player.GetAgentID())
 
             if level >= 20:
                 yield from Yield.wait(500)
@@ -1480,8 +1548,8 @@ class Yield:
             cast_imp = True  # Assume we should cast
 
             for other in others:
-                if GLOBAL_CACHE.Agent.GetModelID(other) == imp_model_id:
-                    if not GLOBAL_CACHE.Agent.IsDead(other):
+                if Agent.GetModelID(other) == imp_model_id:
+                    if not Agent.IsDead(other):
                         # Imp is alive — no need to cast
                         cast_imp = False
                     break  # Found the imp, no need to keep checking
@@ -1500,11 +1568,11 @@ class Yield:
                 yield from Yield.wait(500)
                 return
 
-            if (not GLOBAL_CACHE.Map.IsExplorable()):
+            if (not Map.IsExplorable()):
                 yield from Yield.wait(500)
                 return
 
-            if GLOBAL_CACHE.Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
+            if Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
                 yield from Yield.wait(500)
                 return
 
@@ -1585,11 +1653,11 @@ class Yield:
                 for m in Yield.Upkeepers.MORALE_ITEMS
             ]
 
-            if not (Checks.Map.MapValid() and GLOBAL_CACHE.Map.IsExplorable()):
+            if not (Checks.Map.MapValid() and Map.IsExplorable()):
                 yield from Yield.wait(500)
                 return
 
-            if GLOBAL_CACHE.Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
+            if Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
                 yield from Yield.wait(500)
                 return
 
@@ -1623,11 +1691,11 @@ class Yield:
             #    PyEffects.PyEffects.ApplyDrunkEffect(0, 0)
 
             
-            if not (Checks.Map.MapValid() and GLOBAL_CACHE.Map.IsExplorable()):
+            if not (Checks.Map.MapValid() and Map.IsExplorable()):
                 yield from Yield.wait(500)
                 return
 
-            if GLOBAL_CACHE.Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
+            if Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
                 yield from Yield.wait(500)
                 return
 
@@ -1669,10 +1737,10 @@ class Yield:
                 yield from Yield.wait(period_ms)
                 return
             # City speed is for towns/outposts, so skip if explorable
-            if not GLOBAL_CACHE.Map.IsOutpost():
+            if not Map.IsOutpost():
                 yield from Yield.wait(period_ms)
                 return
-            if GLOBAL_CACHE.Agent.IsDead(player_id()):
+            if Agent.IsDead(player_id()):
                 yield from Yield.wait(period_ms)
                 return
 
@@ -1963,10 +2031,11 @@ class Yield:
             
         @staticmethod
         def HeroSkill(hero_index:int, skill_slot:int, log=False):
-            if hero_index < 1 or hero_index > 4:
+            party_size = GLOBAL_CACHE.Party.GetPartySize()
+            if hero_index < 1 or hero_index > party_size:
                 return
-            if skill_slot < 1 or skill_slot > 8:
-                return
+            # if skill_slot < 1 or skill_slot > 8:
+            #     return
             yield from Yield.Keybinds.PressKeybind(ControlAction.ControlAction_Hero1Skill1.value + (hero_index - 1) * 8 + (skill_slot - 1), 75, log=log)
             
         @staticmethod
@@ -2013,7 +2082,7 @@ class Yield:
             yield from Yield.wait(1000)
             pregame = GLOBAL_CACHE.Player.GetPreGameContext()
             character_index = pregame.chars.index(character_name_to_delete) if character_name_to_delete in pregame.chars else -1
-            last_known_index = pregame.index_1
+            last_known_index = pregame.chosen_character_index
             
             """if character_index == -1:
                 ConsoleLog("Reroll", f"Character '{character_name_to_delete}' not found in character list.", Console.MessageType.Error)
@@ -2209,7 +2278,7 @@ class Yield:
                 
             pregame = GLOBAL_CACHE.Player.GetPreGameContext()
             character_index = pregame.chars.index(target_character_name) if target_character_name in pregame.chars else -1
-            last_known_index = pregame.index_1
+            last_known_index = pregame.chosen_character_index
             
             if character_index == -1:
                 ConsoleLog("Reroll", f"Character '{target_character_name}' not found in character list.", Console.MessageType.Error)
@@ -2225,7 +2294,7 @@ class Yield:
                     Keystroke.PressAndRelease(key)
                     yield from Yield.wait(250)
                     pregame = GLOBAL_CACHE.Player.GetPreGameContext()
-                    last_known_index = pregame.index_1
+                    last_known_index = pregame.chosen_character_index
                     
             if _failed():
                 ConsoleLog("Reroll", "Timeout while navigating to target character.", Console.MessageType.Error, log)
@@ -2236,7 +2305,7 @@ class Yield:
             Keystroke.PressAndRelease(Key.P.value)
             yield from Yield.wait(50)
             
-            while not GLOBAL_CACHE.Map.IsMapReady() and not _timeout_reached():
+            while not Map.IsMapReady() and not _timeout_reached():
                 yield from Yield.wait(250)
                 
             if _timeout_reached():

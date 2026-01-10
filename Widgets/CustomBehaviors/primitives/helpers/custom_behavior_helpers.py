@@ -10,9 +10,10 @@ from Py4GWCoreLib.py4gwcorelib_src.Timer import Timer
 from Widgets.CustomBehaviors.primitives.helpers import custom_behavior_helpers_tests
 from Widgets.CustomBehaviors.primitives.helpers.behavior_result import BehaviorResult
 from Widgets.CustomBehaviors.primitives.helpers.targeting_order import TargetingOrder
+from Widgets.CustomBehaviors.primitives.parties.custom_behavior_party import CustomBehaviorParty
 from Widgets.CustomBehaviors.primitives.skills.custom_skill import CustomSkill
 
-from Py4GWCoreLib import GLOBAL_CACHE, Overlay, SkillBar, ActionQueueManager, Routines, Range, Utils, SPIRIT_BUFF_MAP, SpiritModelID, AgentArray
+from Py4GWCoreLib import GLOBAL_CACHE,Agent, Overlay, SkillBar, ActionQueueManager, Routines, Range, Utils, SPIRIT_BUFF_MAP, SpiritModelID, AgentArray
 from Widgets.CustomBehaviors.primitives import constants
 
 MODULE_NAME = "Custom Combat Behavior Helpers"
@@ -128,7 +129,7 @@ class Resources:
         gadget_array = AgentArray.Sort.ByDistance(gadget_array, GLOBAL_CACHE.Player.GetXY())
 
         for agent_id in gadget_array:
-            gadget_id = GLOBAL_CACHE.Agent.GetGadgetID(agent_id)
+            gadget_id = Agent.GetGadgetID(agent_id)
             if gadget_id in valid_chest_ids:
                 return agent_id
 
@@ -149,7 +150,7 @@ class Resources:
         gadget_array = AgentArray.Sort.ByDistance(gadget_array, GLOBAL_CACHE.Player.GetXY())
 
         for agent_id in gadget_array:
-            gadget_id = GLOBAL_CACHE.Agent.GetGadgetID(agent_id)
+            gadget_id = Agent.GetGadgetID(agent_id)
             if gadget_id in valid_chest_ids:
                 return agent_id
 
@@ -158,7 +159,7 @@ class Resources:
 
     @staticmethod
     def is_player_holding_an_item() -> bool:
-        weapon_type, _ = GLOBAL_CACHE.Agent.GetWeaponType(GLOBAL_CACHE.Player.GetAgentID())
+        weapon_type, _ = Agent.GetWeaponType(GLOBAL_CACHE.Player.GetAgentID())
         if weapon_type == 0:
             return True
         return False
@@ -168,7 +169,7 @@ class Resources:
         players = GLOBAL_CACHE.Party.GetPlayers()
         for player in players:
             agent_id = GLOBAL_CACHE.Party.Players.GetAgentIDByLoginNumber(player.login_number)
-            if GLOBAL_CACHE.Agent.IsDead(agent_id) == False:
+            if Agent.IsDead(agent_id) == False:
                 return False
         return True
 
@@ -201,14 +202,14 @@ class Resources:
         player_agent_id = GLOBAL_CACHE.Player.GetAgentID()
 
         def get_attribute_level(attribute_name):
-            attributes = GLOBAL_CACHE.Agent.GetAttributes(player_agent_id)
+            attributes = Agent.GetAttributes(player_agent_id)
             for attr in attributes:
                 if attr.GetName() == attribute_name:
                     return attr.level
             return 0
 
         energy_cost = Routines.Checks.Skills.GetEnergyCostWithEffects(skill.skill_id, player_agent_id)
-        profession = GLOBAL_CACHE.Agent.GetProfessionNames(player_agent_id)[0]
+        profession = Agent.GetProfessionNames(player_agent_id)[0]
         skill_type = GLOBAL_CACHE.Skill.GetType(skill.skill_id)[1]
 
         if profession == "Dervish" and skill_type == "Enchantment":
@@ -233,15 +234,15 @@ class Resources:
     @staticmethod
     def get_player_absolute_health() -> float:
         player_agent_id = GLOBAL_CACHE.Player.GetAgentID()
-        current_heath_percent = GLOBAL_CACHE.Agent.GetHealth(player_agent_id)
-        heath_max = GLOBAL_CACHE.Agent.GetMaxHealth(player_agent_id)
+        current_heath_percent = Agent.GetHealth(player_agent_id)
+        heath_max = Agent.GetMaxHealth(player_agent_id)
         return current_heath_percent * heath_max
 
     @staticmethod
     def get_player_absolute_energy() -> float:
         player_agent_id = GLOBAL_CACHE.Player.GetAgentID()
-        current_energy_percent = GLOBAL_CACHE.Agent.GetEnergy(player_agent_id)
-        energy_max = GLOBAL_CACHE.Agent.GetMaxEnergy(player_agent_id)
+        current_energy_percent = Agent.GetEnergy(player_agent_id)
+        energy_max = Agent.GetMaxEnergy(player_agent_id)
         return current_energy_percent * energy_max
 
     @staticmethod
@@ -250,7 +251,7 @@ class Resources:
         min_health_percent_left = 0.3,
         min_health_absolute_left = 175,
     ) -> bool:
-        player_max_health = GLOBAL_CACHE.Agent.GetMaxHealth(GLOBAL_CACHE.Player.GetAgentID())
+        player_max_health = Agent.GetMaxHealth(GLOBAL_CACHE.Player.GetAgentID())
         amount_we_will_sacrifice = player_max_health * percentage_to_sacrifice / 100
         player_current_health = Resources.get_player_absolute_health()
         health_after_sacrifice = player_current_health - amount_we_will_sacrifice
@@ -264,17 +265,17 @@ class Resources:
             associated_to_skill: Optional[CustomSkill] = None,
             condition: Optional[Callable[[int], bool]] = None) -> bool:
 
-        spirit_array = GLOBAL_CACHE.AgentArray.GetSpiritPetArray()
+        spirit_array = AgentArray.GetSpiritPetArray()
         spirit_array = AgentArray.Filter.ByDistance(spirit_array, GLOBAL_CACHE.Player.GetXY(), within_range.value)
-        spirit_array = AgentArray.Filter.ByCondition(spirit_array, lambda agent_id: GLOBAL_CACHE.Agent.IsAlive(agent_id))
-        spirit_array = AgentArray.Filter.ByCondition(spirit_array, lambda agent_id: GLOBAL_CACHE.Agent.IsSpawned(agent_id))
+        spirit_array = AgentArray.Filter.ByCondition(spirit_array, lambda agent_id: Agent.IsAlive(agent_id))
+        spirit_array = AgentArray.Filter.ByCondition(spirit_array, lambda agent_id: Agent.IsSpawned(agent_id))
         
         if condition is not None:
             spirit_array = AgentArray.Filter.ByCondition(spirit_array, condition)
 
         if associated_to_skill is not None:
             for spirit_id in spirit_array:
-                model_value = GLOBAL_CACHE.Agent.GetPlayerNumber(spirit_id)
+                model_value = Agent.GetPlayerNumber(spirit_id)
 
                 # Check if model_value is valid for SpiritModelID Enum
                 if model_value in SpiritModelID._value2member_map_:
@@ -322,25 +323,6 @@ class Actions:
             return BehaviorResult.ACTION_PERFORMED
 
         return BehaviorResult.ACTION_SKIPPED
-
-    @staticmethod
-    def auto_attack(target_id: Optional[int] = None) -> Generator[Any, Any, Any]:
-
-        if GLOBAL_CACHE.Agent.IsAttacking(GLOBAL_CACHE.Player.GetAgentID()):
-            yield
-            return BehaviorResult.ACTION_SKIPPED
-
-        if target_id is None:
-            target_id = Targets.get_nearest_or_default_from_enemy_ordered_by_priority(Range.Spellcast.value)
-
-        if not GLOBAL_CACHE.Agent.IsValid(target_id):
-            return None
-
-        GLOBAL_CACHE.Player.ChangeTarget(target_id)
-        yield from Helpers.wait_for(100) 
-        GLOBAL_CACHE.Player.Interact(target_id, False)
-        yield from Helpers.wait_for(100)
-        return BehaviorResult.ACTION_PERFORMED
 
     @staticmethod
     def cast_skill_to_lambda(skill: CustomSkill, select_target: Optional[Callable[[], int]]) -> Generator[Any, Any, BehaviorResult]:
@@ -451,13 +433,13 @@ class Targets:
         find position that will cover max allies within range
         '''
         OVERLAY_DEBUG = constants.DEBUG
-        player_x, player_y, player_z = GLOBAL_CACHE.Agent.GetXYZ(GLOBAL_CACHE.Player.GetAgentID()) #cached_data.data.player_xyz # needs to be live
+        player_x, player_y, player_z = Agent.GetXYZ(GLOBAL_CACHE.Player.GetAgentID()) #cached_data.data.player_xyz # needs to be live
         if OVERLAY_DEBUG: Overlay().BeginDraw()
         
         player_position: tuple[float, float] = GLOBAL_CACHE.Player.GetXY()
-        other_party_member_positions = [GLOBAL_CACHE.Agent.GetXY(agent_id) for agent_id in agent_ids]
-        # other_party_member_positions: list[tuple[float, float]] = [GLOBAL_CACHE.Agent.GetXY(agent_id) for agent_id in GLOBAL_CACHE.AgentArray.GetAllyArray() if agent_id != GLOBAL_CACHE.Player.GetAgentID()]
-        # other_party_member_positions: list[tuple[float, float]] = [GLOBAL_CACHE.Agent.GetXY(agent_id) for agent_id in GLOBAL_CACHE.AgentArray.GetAllyArray()]
+        other_party_member_positions = [Agent.GetXY(agent_id) for agent_id in agent_ids]
+        # other_party_member_positions: list[tuple[float, float]] = [Agent.GetXY(agent_id) for agent_id in GLOBAL_CACHE.AgentArray.GetAllyArray() if agent_id != GLOBAL_CACHE.Player.GetAgentID()]
+        # other_party_member_positions: list[tuple[float, float]] = [Agent.GetXY(agent_id) for agent_id in GLOBAL_CACHE.AgentArray.GetAllyArray()]
         seek_range: float = range_to_cover.value - 50
         
         if OVERLAY_DEBUG: Overlay().DrawPoly3D(player_x, player_y, player_z, seek_range, Utils.RGBToColor(255, 128, 0 , 128), numsegments=32, thickness=5.0)
@@ -497,43 +479,47 @@ class Targets:
 
         enemy_id = Targets.get_nearest_or_default_from_enemy_ordered_by_priority(
             within_range = Range.Spellcast.value + 350,
-            condition = lambda agent_id: not GLOBAL_CACHE.Agent.IsAggressive(agent_id),
+            should_prioritize_party_target=False,
+            condition = lambda agent_id: not Agent.IsAggressive(agent_id),
         )
-        if enemy_id is not None and enemy_id > 0 and GLOBAL_CACHE.Agent.IsValid(enemy_id): return True
+        if enemy_id is not None and enemy_id > 0 and Agent.IsValid(enemy_id): return True
         return False
-
 
     @staticmethod
     def is_player_in_aggro() -> bool:
         
         enemy_aggressive_id = Targets.get_nearest_or_default_from_enemy_ordered_by_priority(
             within_range = Range.Spellcast.value + 400,
-            condition = lambda agent_id: GLOBAL_CACHE.Agent.IsAggressive(agent_id))
-        if enemy_aggressive_id is not None and enemy_aggressive_id > 0 and GLOBAL_CACHE.Agent.IsValid(enemy_aggressive_id): return True
+            should_prioritize_party_target=False,
+            condition = lambda agent_id: Agent.IsAggressive(agent_id))
+        if enemy_aggressive_id is not None and enemy_aggressive_id > 0 and Agent.IsValid(enemy_aggressive_id): return True
 
         enemy_id = Targets.get_nearest_or_default_from_enemy_ordered_by_priority(
             within_range = Range.Spellcast.value,
-            condition = lambda agent_id: not GLOBAL_CACHE.Agent.IsAggressive(agent_id))
-        if enemy_id is not None and enemy_id > 0 and GLOBAL_CACHE.Agent.IsValid(enemy_id): return True
+            should_prioritize_party_target=False,
+            condition = lambda agent_id: not Agent.IsAggressive(agent_id))
+        if enemy_id is not None and enemy_id > 0 and Agent.IsValid(enemy_id): return True
 
         return False
 
     @staticmethod
     def is_party_member_in_aggro(agent_id:int) -> bool:
         
-        agent_pos:tuple[float, float] = GLOBAL_CACHE.Agent.GetXY(agent_id)
+        agent_pos:tuple[float, float] = Agent.GetXY(agent_id)
 
         enemy_aggressive_id = Targets.get_nearest_or_default_from_enemy_ordered_by_priority_custom_source(
             source_agent_pos=agent_pos,
             within_range = Range.Spellcast.value + 400,
-            condition = lambda agent_id: GLOBAL_CACHE.Agent.IsAggressive(agent_id))
-        if enemy_aggressive_id is not None and enemy_aggressive_id > 0 and GLOBAL_CACHE.Agent.IsValid(enemy_aggressive_id): return True
+            should_prioritize_party_target=False,
+            condition = lambda agent_id: Agent.IsAggressive(agent_id))
+        if enemy_aggressive_id is not None and enemy_aggressive_id > 0 and Agent.IsValid(enemy_aggressive_id): return True
 
         enemy_id = Targets.get_nearest_or_default_from_enemy_ordered_by_priority_custom_source(
             source_agent_pos=agent_pos,
             within_range = Range.Spellcast.value,
-            condition = lambda agent_id: not GLOBAL_CACHE.Agent.IsAggressive(agent_id))
-        if enemy_id is not None and enemy_id > 0 and GLOBAL_CACHE.Agent.IsValid(enemy_id): return True
+            should_prioritize_party_target=False,
+            condition = lambda agent_id: not Agent.IsAggressive(agent_id))
+        if enemy_id is not None and enemy_id > 0 and Agent.IsValid(enemy_id): return True
 
         return False
 
@@ -564,21 +550,21 @@ class Targets:
             within_range: Range,
             spirit_model_ids: list[SpiritModelID] | None = None,
             condition: Optional[Callable[[int], bool]] = None) -> list[SpiritAgentData]:
-        spirit_agent_ids = GLOBAL_CACHE.AgentArray.GetSpiritPetArray()
+        spirit_agent_ids = AgentArray.GetSpiritPetArray()
         spirit_agent_ids = AgentArray.Filter.ByDistance(spirit_agent_ids, GLOBAL_CACHE.Player.GetXY(), within_range.value)
-        spirit_agent_ids = AgentArray.Filter.ByCondition(spirit_agent_ids, lambda agent_id: GLOBAL_CACHE.Agent.IsAlive(agent_id))
+        spirit_agent_ids = AgentArray.Filter.ByCondition(spirit_agent_ids, lambda agent_id: Agent.IsAlive(agent_id))
         if condition is not None:
             spirit_agent_ids = AgentArray.Filter.ByCondition(spirit_agent_ids, condition)
 
         if spirit_model_ids is not None:
-            spirit_agent_ids = AgentArray.Filter.ByCondition(spirit_agent_ids, lambda agent_id: GLOBAL_CACHE.Agent.GetPlayerNumber(agent_id) in spirit_model_ids)
+            spirit_agent_ids = AgentArray.Filter.ByCondition(spirit_agent_ids, lambda agent_id: Agent.GetPlayerNumber(agent_id) in spirit_model_ids)
 
         spirit_data: list[SpiritAgentData] = []
         for spirit_agent_id in spirit_agent_ids:
             spirit_data.append(SpiritAgentData(
                 agent_id=spirit_agent_id,
-                distance_from_player=Utils.Distance(GLOBAL_CACHE.Agent.GetXY(spirit_agent_id), GLOBAL_CACHE.Player.GetXY()),
-                hp=GLOBAL_CACHE.Agent.GetHealth(spirit_agent_id)
+                distance_from_player=Utils.Distance(Agent.GetXY(spirit_agent_id), GLOBAL_CACHE.Player.GetXY()),
+                hp=Agent.GetHealth(spirit_agent_id)
             ))
 
         return spirit_data
@@ -601,24 +587,24 @@ class Targets:
             range_to_count_allies: float | None = None) -> list[SortableAgentData]:
 
         player_pos: tuple[float, float] = GLOBAL_CACHE.Player.GetXY()
-        agent_ids: list[int] = GLOBAL_CACHE.AgentArray.GetAllyArray()
-        all_enemies_ids: list[int] = GLOBAL_CACHE.AgentArray.GetEnemyArray()
+        agent_ids: list[int] = AgentArray.GetAllyArray()
+        all_enemies_ids: list[int] = AgentArray.GetEnemyArray()
 
-        agent_ids = AgentArray.Filter.ByCondition(agent_ids, lambda agent_id: GLOBAL_CACHE.Agent.IsAlive(agent_id))
+        agent_ids = AgentArray.Filter.ByCondition(agent_ids, lambda agent_id: Agent.IsAlive(agent_id))
         agent_ids = AgentArray.Filter.ByDistance(agent_ids, player_pos, within_range.value)
         if condition is not None: agent_ids = AgentArray.Filter.ByCondition(agent_ids, condition)
 
         def build_sortable_array(agent_id):
-            agent_pos = GLOBAL_CACHE.Agent.GetXY(agent_id)
+            agent_pos = Agent.GetXY(agent_id)
 
             # scan enemies within range
-            enemies_ids = AgentArray.Filter.ByCondition(all_enemies_ids, lambda agent_id: GLOBAL_CACHE.Agent.IsAlive(agent_id))
+            enemies_ids = AgentArray.Filter.ByCondition(all_enemies_ids, lambda agent_id: Agent.IsAlive(agent_id))
             enemies_ids = AgentArray.Filter.ByDistance(enemies_ids, player_pos, within_range.value)
             enemies_quantity_within_range = 0
 
             if range_to_count_enemies is not None:
                 for enemy_id in enemies_ids:
-                    if Utils.Distance(GLOBAL_CACHE.Agent.GetXY(enemy_id), agent_pos) <= range_to_count_enemies:
+                    if Utils.Distance(Agent.GetXY(enemy_id), agent_pos) <= range_to_count_enemies:
                         enemies_quantity_within_range += 1
 
             # scan agents within aoe range
@@ -626,16 +612,16 @@ class Targets:
 
             if range_to_count_allies is not None:
                 for other_agent_id in agent_ids:
-                    if other_agent_id != agent_id and Utils.Distance(GLOBAL_CACHE.Agent.GetXY(other_agent_id), agent_pos) <= range_to_count_allies:
+                    if other_agent_id != agent_id and Utils.Distance(Agent.GetXY(other_agent_id), agent_pos) <= range_to_count_allies:
                         allies_quantity_within_range += 1
 
             return SortableAgentData(
                 agent_id=agent_id,
                 distance_from_player=Utils.Distance(agent_pos, player_pos),
-                hp=GLOBAL_CACHE.Agent.GetHealth(agent_id),
-                is_caster=GLOBAL_CACHE.Agent.IsCaster(agent_id),
-                is_melee=GLOBAL_CACHE.Agent.IsMelee(agent_id),
-                is_martial=GLOBAL_CACHE.Agent.IsMartial(agent_id),
+                hp=Agent.GetHealth(agent_id),
+                is_caster=Agent.IsCaster(agent_id),
+                is_melee=Agent.IsMelee(agent_id),
+                is_martial=Agent.IsMartial(agent_id),
                 enemy_quantity_within_range=enemies_quantity_within_range,
                 agent_quantity_within_range=allies_quantity_within_range,
                 energy=Resources.get_energy_percent_in_party(agent_id)
@@ -710,11 +696,13 @@ class Targets:
     def get_nearest_or_default_from_enemy_ordered_by_priority_custom_source(
             source_agent_pos: tuple[float, float],
             within_range: float,
+            should_prioritize_party_target:bool,
             condition: Optional[Callable[[int], bool]] = None) -> Optional[int]:
         
         enemies = Targets._get_all_possible_enemies_ordered_by_priority_raw(
             source_agent_pos=source_agent_pos, 
             within_range=within_range,
+            should_prioritize_party_target=should_prioritize_party_target,
             condition=condition,
             sort_key=(TargetingOrder.DISTANCE_ASC, TargetingOrder.HP_ASC))
             
@@ -724,11 +712,13 @@ class Targets:
     @staticmethod
     def get_nearest_or_default_from_enemy_ordered_by_priority(
             within_range: float,
+            should_prioritize_party_target:bool,
             condition: Optional[Callable[[int], bool]] = None) -> Optional[int]:
-        
+    
         enemies = Targets._get_all_possible_enemies_ordered_by_priority_raw(
             source_agent_pos=GLOBAL_CACHE.Player.GetXY(), 
             within_range=within_range,
+            should_prioritize_party_target=should_prioritize_party_target,
             condition=condition,
             sort_key=(TargetingOrder.DISTANCE_ASC, TargetingOrder.HP_ASC))
 
@@ -768,29 +758,30 @@ class Targets:
             within_range: float,
             condition: Callable[[int], bool] | None = None,
             sort_key: tuple[TargetingOrder, ...] | None = None,
-            range_to_count_enemies: float | None = None) -> list[SortableAgentData]:
+            range_to_count_enemies: float | None = None,
+            should_prioritize_party_target:bool = True) -> list[SortableAgentData]:
         
-        agent_ids: list[int] = GLOBAL_CACHE.AgentArray.GetEnemyArray()
+        agent_ids: list[int] = AgentArray.GetEnemyArray()
         agent_ids = AgentArray.Filter.ByDistance(agent_ids, source_agent_pos, within_range)
-        agent_ids = AgentArray.Filter.ByCondition(agent_ids, lambda agent_id: GLOBAL_CACHE.Agent.IsAlive(agent_id))
+        agent_ids = AgentArray.Filter.ByCondition(agent_ids, lambda agent_id: Agent.IsAlive(agent_id))
         if condition is not None: agent_ids = AgentArray.Filter.ByCondition(agent_ids, condition)
 
         def build_sortable_array(agent_id):
-            agent_pos = GLOBAL_CACHE.Agent.GetXY(agent_id)
+            agent_pos = Agent.GetXY(agent_id)
             enemy_quantity_within_range = 0
 
             if range_to_count_enemies is not None:
                 for other_agent_id in agent_ids:  # complexity O(n^2) !
-                    if other_agent_id != agent_id and Utils.Distance(GLOBAL_CACHE.Agent.GetXY(other_agent_id), agent_pos) <= range_to_count_enemies:
+                    if other_agent_id != agent_id and Utils.Distance(Agent.GetXY(other_agent_id), agent_pos) <= range_to_count_enemies:
                         enemy_quantity_within_range += 1
 
             return SortableAgentData(
                 agent_id=agent_id,
                 distance_from_player=Utils.Distance(agent_pos, source_agent_pos),
-                hp=GLOBAL_CACHE.Agent.GetHealth(agent_id),
-                is_caster=GLOBAL_CACHE.Agent.IsCaster(agent_id),
-                is_melee=GLOBAL_CACHE.Agent.IsMelee(agent_id),
-                is_martial=GLOBAL_CACHE.Agent.IsMartial(agent_id),
+                hp=Agent.GetHealth(agent_id),
+                is_caster=Agent.IsCaster(agent_id),
+                is_melee=Agent.IsMelee(agent_id),
+                is_martial=Agent.IsMartial(agent_id),
                 enemy_quantity_within_range=enemy_quantity_within_range,
                 agent_quantity_within_range=0,  # Not used for enemies
                 energy=0.0  # Not used for enemies
@@ -821,6 +812,16 @@ class Targets:
                 data_to_sort = sorted(data_to_sort, key=lambda x: x.is_melee)
             else:
                 raise ValueError(f"Invalid sorting criterion: {criterion}")
+
+        if should_prioritize_party_target:
+            party_forced_target_agent_id: int | None = CustomBehaviorParty().get_party_custom_target()
+
+            # Final sort: move party forced target to the front if it exists in the array
+            if party_forced_target_agent_id is not None:
+                forced_target_index = next((i for i, x in enumerate(data_to_sort) if x.agent_id == party_forced_target_agent_id), None)
+                if forced_target_index is not None:
+                    forced_target = data_to_sort.pop(forced_target_index)
+                    data_to_sort.insert(0, forced_target)
 
         return data_to_sort
 
@@ -871,13 +872,12 @@ class Targets:
 
 class Heals:
 
-
     @staticmethod
     def is_party_damaged(within_range:Range, min_allies_count:int, less_health_than_percent:float) -> bool:
 
         allies = Targets.get_all_possible_allies_ordered_by_priority(
             within_range=within_range,
-            condition= lambda agent_id: GLOBAL_CACHE.Agent.GetHealth(agent_id) < less_health_than_percent,
+            condition= lambda agent_id: Agent.GetHealth(agent_id) < less_health_than_percent,
             sort_key= (TargetingOrder.HP_ASC, TargetingOrder.DISTANCE_ASC),
             range_to_count_enemies=None,
             range_to_count_allies=None)
@@ -892,14 +892,14 @@ class Heals:
             condition= lambda agent_id: True,
             sort_key= (TargetingOrder.HP_ASC, TargetingOrder.DISTANCE_ASC),
         )
-        return reduce(lambda acc, ally: acc + GLOBAL_CACHE.Agent.GetHealth(ally), allies, 0) / len(allies)
+        return reduce(lambda acc, ally: acc + Agent.GetHealth(ally), allies, 0) / len(allies)
 
     @staticmethod
     def get_first_member_damaged(within_range: Range, less_health_than_percent: float, exclude_player:bool, condition: Optional[Callable[[int], bool]] = None) -> int | None:
 
         allies = Targets.get_all_possible_allies_ordered_by_priority(
             within_range=within_range,
-            condition=lambda agent_id: GLOBAL_CACHE.Agent.GetHealth(agent_id) < less_health_than_percent,
+            condition=lambda agent_id: Agent.GetHealth(agent_id) < less_health_than_percent,
             sort_key=(TargetingOrder.HP_ASC, TargetingOrder.DISTANCE_ASC),
             range_to_count_enemies=None,
             range_to_count_allies=None)
