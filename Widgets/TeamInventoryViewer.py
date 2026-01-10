@@ -747,7 +747,7 @@ def _collect_bag_items(bag, bag_id, email, storage_name=None, char_name=None):
     def _get_frenkey_texture_file(model_id, item_type):
         if LOOTEX_AVAILABLE and Data:
             data = Data()
-            item_data = data.Items[item_type].get(model_id)
+            item_data = data.Items.get(item_type, {}).get(model_id)
             if item_data:
                 return item_data.texture_file
         return ''

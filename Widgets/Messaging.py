@@ -6,11 +6,7 @@ import Py4GW
 import PyUIManager
 
 from HeroAI.cache_data import CacheData
-<<<<<<< HEAD
-from Py4GWCoreLib import GLOBAL_CACHE, Player
-=======
 from Py4GWCoreLib import GLOBAL_CACHE, Player, Map, Agent
->>>>>>> upstream/main
 from Py4GWCoreLib import ActionQueueManager
 from Py4GWCoreLib import CombatPrepSkillsType
 from Py4GWCoreLib import Console

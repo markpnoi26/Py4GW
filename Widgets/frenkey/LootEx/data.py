@@ -9,11 +9,7 @@ import Py4GW
 from Py4GWCoreLib.enums_src.GameData_enums import DyeColor
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Widgets.frenkey.LootEx import models
-<<<<<<< HEAD
 from Widgets.frenkey.LootEx.enum import ItemCategory, ModType, ModsModels
-=======
-from Widgets.frenkey.LootEx.enum import INVALID_NAMES, ItemCategory, ModType, ModsModels
->>>>>>> frenkey/main
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.Py4GWcorelib import ConsoleLog
 from Py4GWCoreLib.enums import Attribute, ServerLanguage

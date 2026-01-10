@@ -1898,11 +1898,7 @@ class InventoryHandler:
         self.run_once = False
         self.soft_reset()
 
-<<<<<<< HEAD
-        self.is_outpost = GLOBAL_CACHE.Map.IsOutpost() or utility.Util.IsGuildHall(GLOBAL_CACHE.Map.GetMapID())
-=======
         self.is_outpost = Map.IsOutpost() or utility.Util.IsGuildHall(Map.GetMapID())
->>>>>>> frenkey/main
         
         if not settings.profile or not settings.automatic_inventory_handling:
             return

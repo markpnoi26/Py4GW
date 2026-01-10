@@ -5586,11 +5586,7 @@ class UI:
                     PyImGui.table_next_column()
                     ImGui.text(f"Last Checked")
                     PyImGui.table_next_column()
-<<<<<<< HEAD
-                    time_ago = f"{utility.Util.format_time_ago(datetime.now() - mod.vendor_updated)}\n" if mod.vendor_updated else ""
-=======
                     time_ago = f"{utility.Util.format_custom_time_ago(datetime.now() - mod.vendor_updated)}\n" if mod.vendor_updated else ""
->>>>>>> frenkey/main
                     ImGui.text(f"{time_ago}")
                     
                 ImGui.end_table()
