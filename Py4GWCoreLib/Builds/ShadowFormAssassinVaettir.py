@@ -9,6 +9,7 @@ from Py4GWCoreLib import BuildMgr
 from Py4GWCoreLib import Agent
 from Py4GWCoreLib import Range
 from Py4GWCoreLib import Utils
+from Py4GWCoreLib import Map
 
 
 #region SFAssassinVaettir
@@ -82,7 +83,7 @@ class ShadowFormAssassinVaettir(BuildMgr):
                 
     def CastShroudOfDistress(self):
         player_agent_id = GLOBAL_CACHE.Player.GetAgentID()
-        if GLOBAL_CACHE.Agent.GetHealth(player_agent_id) < 0.45:
+        if Agent.GetHealth(player_agent_id) < 0.45:
             ConsoleLog(self.build_name, "Casting Shroud of Distress.", Py4GW.Console.MessageType.Info, log=False)
             # ** Cast Shroud of Distress **
             yield from self._CastSkillID(self.shroud_of_distress, log =False, aftercast_delay=1750)
@@ -114,9 +115,9 @@ class ShadowFormAssassinVaettir(BuildMgr):
         enemy_array = Routines.Agents.GetFilteredEnemyArray(player_pos[0], player_pos[1], Range.Spellcast.value)
         
         for enemy in enemy_array:
-            if GLOBAL_CACHE.Agent.IsDead(enemy):
+            if Agent.IsDead(enemy):
                 continue
-            enemy_pos = GLOBAL_CACHE.Agent.GetXY(enemy)
+            enemy_pos = Agent.GetXY(enemy)
             to_enemy = (enemy_pos[0] - player_pos[0], enemy_pos[1] - player_pos[1])
             angle_score = self.vector_angle(to_goal, to_enemy)  # -1 is most opposite
             if angle_score < most_opposite_score:
@@ -134,7 +135,7 @@ class ShadowFormAssassinVaettir(BuildMgr):
             player_pos =  GLOBAL_CACHE.Player.GetXY()
             enemy_array = Routines.Agents.GetFilteredEnemyArray(player_pos[0],player_pos[1],Range.Spellcast.value)
             for enemy in enemy_array:
-                if GLOBAL_CACHE.Agent.IsDead(enemy):
+                if Agent.IsDead(enemy):
                     continue
                 if Agent.IsHexed(enemy):
                     continue 
@@ -147,12 +148,12 @@ class ShadowFormAssassinVaettir(BuildMgr):
                 yield from Routines.Yield.wait(1000)
                 continue
             
-            if not GLOBAL_CACHE.Map.GetMapID() == GLOBAL_CACHE.Map.GetMapIDByName("Jaga Moraine"):
+            if not Map.GetMapID() == Map.GetMapIDByName("Jaga Moraine"):
                 yield from Routines.Yield.wait(1000)
                 return
             
             
-            if GLOBAL_CACHE.Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
+            if Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
                 yield from Routines.Yield.wait(1000)
                 continue
             
@@ -193,10 +194,10 @@ class ShadowFormAssassinVaettir(BuildMgr):
             if (yield from self._CastSkillID(self.way_of_perfection, log=False, aftercast_delay=1000)):
                 ConsoleLog(self.build_name, "Casting Way of Perfection.", Py4GW.Console.MessageType.Info, log=False)
                 continue
-            if not self.in_killing_routine or GLOBAL_CACHE.Agent.GetHealth(player_agent_id) < 0.05:
-                if GLOBAL_CACHE.Agent.GetHealth(player_agent_id) < 0.05:
+            if not self.in_killing_routine or Agent.GetHealth(player_agent_id) < 0.05:
+                if Agent.GetHealth(player_agent_id) < 0.05:
                     ConsoleLog(self.build_name, "Forcing HoS to survive, run was going to fail anyways :(", Py4GW.Console.MessageType.Warning, log=False)
-                if GLOBAL_CACHE.Agent.GetHealth(player_agent_id) < 0.35 or self.stuck_counter > 0:
+                if Agent.GetHealth(player_agent_id) < 0.35 or self.stuck_counter > 0:
                     center_point1 = (10980, -21532)
                     center_point2 = (11461, -17282)
                     player_pos = GLOBAL_CACHE.Player.GetXY()
@@ -213,9 +214,9 @@ class ShadowFormAssassinVaettir(BuildMgr):
                     enemy_array = Routines.Agents.GetFilteredEnemyArray(player_pos[0], player_pos[1], Range.Spellcast.value)
                     
                     for enemy in enemy_array:
-                        if GLOBAL_CACHE.Agent.IsDead(enemy):
+                        if Agent.IsDead(enemy):
                             continue
-                        enemy_pos = GLOBAL_CACHE.Agent.GetXY(enemy)
+                        enemy_pos = Agent.GetXY(enemy)
                         to_enemy = (enemy_pos[0] - player_pos[0], enemy_pos[1] - player_pos[1])
                         angle_score = self.vector_angle(to_goal, to_enemy)  # -1 is most opposite
                         if angle_score < most_opposite_score:

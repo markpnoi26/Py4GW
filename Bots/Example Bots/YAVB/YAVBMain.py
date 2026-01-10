@@ -9,7 +9,7 @@ from Py4GWCoreLib import PyImGui, ImGui, Color
 from Py4GWCoreLib import FSM
 from Py4GWCoreLib import AutoInventoryHandler
 from Py4GWCoreLib import IniHandler
-from Py4GWCoreLib import GLOBAL_CACHE
+from Py4GWCoreLib import GLOBAL_CACHE, Agent
 from Py4GWCoreLib import ConsoleLog
 from Py4GWCoreLib.Builds import ShadowFormAssassinVaettir, ShadowFormMesmerVaettir
 
@@ -25,6 +25,7 @@ from Py4GWCoreLib import Routines
 from Py4GWCoreLib import AgentArray
 from Py4GWCoreLib import AgentModelID
 from Py4GWCoreLib import Range
+from Py4GWCoreLib import Map
 
 
 class YAVB:
@@ -154,9 +155,9 @@ class YAVB:
         self.console.SetMainWindowSize(self.main_window_size)
         self.console.SetLogToFile(self.console_log_to_file)
         
-        self.LONGEYES_LEDGE = GLOBAL_CACHE.Map.GetMapIDByName("Longeyes Ledge")
-        self.BJORA_MARCHES = GLOBAL_CACHE.Map.GetMapIDByName("Bjora Marches")
-        self.JAGA_MORAINE = GLOBAL_CACHE.Map.GetMapIDByName("Jaga Moraine")
+        self.LONGEYES_LEDGE = Map.GetMapIDByName("Longeyes Ledge")
+        self.BJORA_MARCHES = Map.GetMapIDByName("Bjora Marches")
+        self.JAGA_MORAINE = Map.GetMapIDByName("Jaga Moraine")
         
         self.FSM_Handler._initialize_fsm()
         
@@ -334,7 +335,7 @@ class YAVB:
                 yield from Routines.Yield.wait(1000)
                 continue
                 
-            if GLOBAL_CACHE.Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
+            if Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
                 return
             
             if self.in_waiting_routine:
@@ -351,7 +352,7 @@ class YAVB:
                 continue
 
 
-            if GLOBAL_CACHE.Map.GetMapID() == self.BJORA_MARCHES:
+            if Map.GetMapID() == self.BJORA_MARCHES:
                 if self.stuck_timer.IsExpired():
                     GLOBAL_CACHE.Player.SendChatCommand("stuck")
                     self.stuck_timer.Reset()
@@ -362,7 +363,7 @@ class YAVB:
                         self.LogMessage("Stuck Detection", "Player is stuck, sending stuck command.", LogConsole.LogSeverity.WARNING)
                         GLOBAL_CACHE.Player.SendChatCommand("stuck")
                         player_pos = GLOBAL_CACHE.Player.GetXY() #(x,y)
-                        facing_direction = GLOBAL_CACHE.Agent.GetRotationAngle(GLOBAL_CACHE.Player.GetAgentID())
+                        facing_direction = Agent.GetRotationAngle(GLOBAL_CACHE.Player.GetAgentID())
                         left_angle = facing_direction + math.pi / 2
                         distance = 200
                         offset_x = math.cos(left_angle) * distance
@@ -380,8 +381,8 @@ class YAVB:
                 build = self.build or ShadowFormAssassinVaettir()   
                 yield from build.CastShroudOfDistress()
                     
-                agent_array = GLOBAL_CACHE.AgentArray.GetEnemyArray()
-                agent_array = AgentArray.Filter.ByCondition(agent_array, lambda agent: GLOBAL_CACHE.Agent.GetModelID(agent) in (AgentModelID.FROZEN_ELEMENTAL.value, AgentModelID.FROST_WURM.value))
+                agent_array = AgentArray.GetEnemyArray()
+                agent_array = AgentArray.Filter.ByCondition(agent_array, lambda agent: Agent.GetModelID(agent) in (AgentModelID.FROZEN_ELEMENTAL.value, AgentModelID.FROST_WURM.value))
                 agent_array = AgentArray.Filter.ByDistance(agent_array, GLOBAL_CACHE.Player.GetXY(), Range.Spellcast.value)
                 if len(agent_array) > 0:
                     yield from build.DefensiveActions()  
@@ -402,7 +403,7 @@ class YAVB:
                 yield from Routines.Yield.wait(1000)
                 continue
                 
-            if GLOBAL_CACHE.Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
+            if Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
                 return
             
             if self.current_run_node and self.current_run_node.GetRunDuration() > 30000:
@@ -433,7 +434,7 @@ class YAVB:
                 yield from Routines.Yield.wait(1000)
                 continue
 
-            if GLOBAL_CACHE.Map.GetMapID() == self.JAGA_MORAINE:
+            if Map.GetMapID() == self.JAGA_MORAINE:
                 if self.stuck_timer.IsExpired():
                     GLOBAL_CACHE.Player.SendChatCommand("stuck")
                     self.stuck_timer.Reset()

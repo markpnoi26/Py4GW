@@ -1,6 +1,8 @@
 #region STATES
 from typing import TYPE_CHECKING, List, Tuple, Optional, Callable
 
+from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
+
 if TYPE_CHECKING:
     from Py4GWCoreLib.botting_src.helpers import BottingClass
     
@@ -112,10 +114,10 @@ class _MOVE:
         yield
         
     def _coro_to_model(self, model_id: int) -> Generator[Any, Any, bool]:
-        from ...GlobalCache import GLOBAL_CACHE
         from ...Routines import Routines
+        from ...Agent import Agent
         agent_id = Routines.Agents.GetAgentIDByModelID(model_id)
-        x,y = GLOBAL_CACHE.Agent.GetXY(agent_id)
+        x,y = Agent.GetXY(agent_id)
         yield from self._coro_get_path_to(x, y)
         yield from self._coro_follow_path_to()
         return True
@@ -192,7 +194,13 @@ class _MOVE:
         yield from self.parent.Dialogs._coro_at_xy(last_point[0], last_point[1], dialog_id)
         
     def _coro_follow_path_and_exit_map(self, path: List[Tuple[float, float]], target_map_id: int = 0, target_map_name: str = "", step_name: str="") -> Generator[Any, Any, None]:
+        current_map = GLOBAL_CACHE.Map.GetMapID() 
+        
         yield from self._coro_follow_path(path)
+        
+        if current_map != GLOBAL_CACHE.Map.GetMapID():
+            return
+        
         yield from self.parent.Wait._coro_for_map_load(target_map_id=target_map_id, target_map_name=target_map_name)
         
     #region Yield Steps (ys_)

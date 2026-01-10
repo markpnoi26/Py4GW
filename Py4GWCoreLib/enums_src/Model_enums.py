@@ -6,15 +6,17 @@ class AgentModelID(IntEnum):
     FOG_NIGHTMARE = 1729
     FROST_WURM = 6491
     FROZEN_ELEMENTAL = 6478
-    SENSALI_DARKFEATHER = 3946
-    SENSALI_CLAW = 3944
-    SENSALI_CUTTER = 3948
+    SENSALI_DARKFEATHER = 3946 + 51
+    SENSALI_CLAW = 3944 + 51
+    SENSALI_CUTTER = 3948 + 51
     SPINED_ALOE = 1731
     
 class GadgetModelID(IntEnum):
     CHEST_HIDDEN_STASH = 9 #ID for Hidden Stash (Pre-Searing)
     CHEST_ASCALONIAN = 69 #ID for Ascalonian Chest
     CHEST_SHING_JEA = 4579 #ID for Shing Jea Chest
+    CHEST_KOURNAN = 6064 #ID for Kournan Chest
+    CHEST_DARKSTONE = 73 # ID for Darkstone Chest
     CHEST_GENERIC = 8141 #ID for generic chest (used in many places)
     
     CHEST_DUNGEON_SECRET_LAIR_OF_THE_SNOWMAN = 9274 #ID for Secret Lair of the Snowman
@@ -22,67 +24,68 @@ class GadgetModelID(IntEnum):
     CHEST_DUNGEON_SLAVERS_EXILE_JUSTICIAR_THOMMIS_ROOM = 9284 #ID for Slavers Exile (Justiciar Thommis room)
 
     BURIED_TREASURE_THE_MIRROR_OF_LYSS = 7465
+    BURIED_TREASURE_NIGHTFALLEN_JAHAI_AND_DOMAIN_OF_PAIN_AND_KODLONU_HAMLET = 7466
     
-    
+SPIRIT_OFFSET = 51
 class SpiritModelID(IntEnum):
     # SPIRIT_MODEL
     # RANGER
-    BRAMBLES = 4239
-    CONFLAGRATION = 4237
-    ENERGIZING_WIND = 2885
-    EQUINOX = 4236
-    EDGE_OF_EXTINCTION = 2876
-    FAMINE = 4238
-    FAVORABLE_WINDS = 2883
-    FERTILE_SEASON = 2878
-    FROZEN_SOIL = 2882
-    GREATER_CONFLAGRATION = 2877
-    INFURIATING_HEAT = 5715
-    LACERATE = 4232
-    MUDDY_TERRAIN = 2888
-    NATURES_RENEWAL = 2887
-    PESTILENCE = 4234
-    PREDATORY_SEASON = 2881
-    PRIMAL_ECHOES = 2880
-    QUICKENING_ZEPHYR = 2886
-    QUICKSAND = 5718
-    ROARING_WINDS = 5717
-    SYMBIOSIS = 2879
-    TOXICITY = 5716
-    TRANQUILITY = 4235
-    WINTER = 2874
-    WINNOWING = 2875
+    BRAMBLES = 4239 + SPIRIT_OFFSET
+    CONFLAGRATION = 4237 + SPIRIT_OFFSET
+    ENERGIZING_WIND = 2885 + SPIRIT_OFFSET
+    EQUINOX = 4236 + SPIRIT_OFFSET
+    EDGE_OF_EXTINCTION = 2876 + SPIRIT_OFFSET
+    FAMINE = 4238 + SPIRIT_OFFSET
+    FAVORABLE_WINDS = 2883 + SPIRIT_OFFSET
+    FERTILE_SEASON = 2878 + SPIRIT_OFFSET
+    FROZEN_SOIL = 2882 + SPIRIT_OFFSET
+    GREATER_CONFLAGRATION = 2877 + SPIRIT_OFFSET
+    INFURIATING_HEAT = 5715 + SPIRIT_OFFSET
+    LACERATE = 4232 + SPIRIT_OFFSET
+    MUDDY_TERRAIN = 2888 + SPIRIT_OFFSET
+    NATURES_RENEWAL = 2887 + SPIRIT_OFFSET
+    PESTILENCE = 4234 + SPIRIT_OFFSET
+    PREDATORY_SEASON = 2881 + SPIRIT_OFFSET
+    PRIMAL_ECHOES = 2880 + SPIRIT_OFFSET
+    QUICKENING_ZEPHYR = 2886 + SPIRIT_OFFSET
+    QUICKSAND = 5718 + SPIRIT_OFFSET
+    ROARING_WINDS = 5717 + SPIRIT_OFFSET
+    SYMBIOSIS = 2879 + SPIRIT_OFFSET
+    TOXICITY = 5716 + SPIRIT_OFFSET
+    TRANQUILITY = 4235 + SPIRIT_OFFSET
+    WINTER = 2874 + SPIRIT_OFFSET
+    WINNOWING = 2875 + SPIRIT_OFFSET
 
     # RITUALIST
-    AGONY = 5854
-    ANGUISH = 5720
-    ANGER = 4229
-    BLOODSONG = 4227
-    DESTRUCTION = 4215
-    DISENCHANTMENT = 4225
-    DISPLACEMENT = 4217
-    DISSONANCE = 4221
-    EARTHBIND = 4222
-    EMPOWERMENT = 5721
-    HATE = 4230
-    LIFE = 4218
-    PAIN = 4214
-    PRESERVATION = 4219
-    RECOVERY = 5719
-    RECUPERATION = 4220
-    REJUVENATION = 5853
-    RESTORATION = 4226
-    SHADOWSONG = 4213
-    SHELTER = 4223
-    SOOTHING = 4216
-    SUFFERING = 4231
-    UNION = 4224
-    WANDERLUST = 4228
+    AGONY = 5854 + SPIRIT_OFFSET
+    ANGUISH = 5720 + SPIRIT_OFFSET
+    ANGER = 4229 + SPIRIT_OFFSET
+    BLOODSONG = 4227 + SPIRIT_OFFSET
+    DESTRUCTION = 4215 + SPIRIT_OFFSET
+    DISENCHANTMENT = 4225 + SPIRIT_OFFSET
+    DISPLACEMENT = 4217 + SPIRIT_OFFSET
+    DISSONANCE = 4221 + SPIRIT_OFFSET
+    EARTHBIND = 4222 + SPIRIT_OFFSET
+    EMPOWERMENT = 5721 + SPIRIT_OFFSET
+    HATE = 4230 + SPIRIT_OFFSET
+    LIFE = 4218 + SPIRIT_OFFSET
+    PAIN = 4214 + SPIRIT_OFFSET
+    PRESERVATION = 4219 + SPIRIT_OFFSET
+    RECOVERY = 5719 + SPIRIT_OFFSET
+    RECUPERATION = 4220 + SPIRIT_OFFSET
+    REJUVENATION = 5853 + SPIRIT_OFFSET
+    RESTORATION = 4226 + SPIRIT_OFFSET
+    SHADOWSONG = 4213 + SPIRIT_OFFSET
+    SHELTER = 4223 + SPIRIT_OFFSET
+    SOOTHING = 4216 + SPIRIT_OFFSET
+    SUFFERING = 4231 + SPIRIT_OFFSET
+    UNION = 4224 + SPIRIT_OFFSET
+    WANDERLUST = 4228 + SPIRIT_OFFSET
 
     # OTHER
-    FURY = 5722
-    VAMPIRISM = 5723
-    WINDS = 2884
+    FURY = 5722 + SPIRIT_OFFSET
+    VAMPIRISM = 5723 + SPIRIT_OFFSET
+    WINDS = 2884 + SPIRIT_OFFSET
 
 SPIRIT_BUFF_MAP = {
     SpiritModelID.FROZEN_SOIL: PySkill.Skill("Frozen_Soil").id.id,
@@ -672,9 +675,179 @@ class PetModelID(IntEnum):
     HOUND_20_HEARTY = 1147
     HOUND_20_DIRE = 1148
 
-
 # region ItemModels
 class ModelID(IntEnum):
+    LesserStoneBlade = 1955
+    GreaterStoneBlade = 1956
+    ScorpionsBow = 2008
+    ScorpionsLust = 2009
+    BlackHawksLust = 2010
+    IthasBow = 2011
+    
+    ChimericPrismFastcasting = 2012
+    ChimericPrismSoulReaping = 2013  # Needs confirmation
+    ChimericPrismEnergyStorage = 2014
+    ChimericPrismDivineFavor = 2015
+    ChimericPrismSpawningPower = 2016  # Needs confirmation
+    
+    BoneIdolSoulReaping = 2017
+    BoneIdolBloodMagic = 2018
+    BoneIdolCurses = 2019
+    BoneIdolDeathMagic = 2020  # Needs confirmation
+    
+    StormEmberAirMagic = 2021
+    StormEmberEarthMagic = 2022
+    StormEmberEnergyStorage = 2023
+    StormEmberFireMagic = 2024
+    StormEmberWaterMagic = 2025
+    
+    LionsPrideAirMagic = 2026
+    LionsPrideEarthMagic = 2027
+    LionsPrideEnergyStorage = 2028
+    LionsPrideFireMagic = 2029
+    LionsPrideWaterMagic = 2030
+    
+    TigersPrideFastcasting = 2031
+    TigersPrideSoulReaping = 2045
+    TigersPrideEnergyStorage = 2047
+    TigersPrideDivineFavor = 2054
+    TigersPrideCommuning = 2055
+    
+    HeavensArchDivineFavor = 2056
+    HeavensArchHealingPrayers = 2057
+    HeavensArchProtectionPrayers = 2066
+    HeavensArchSmitingPrayers = 2067
+    
+    FoxsGreedDivineFavor = 2068
+    FoxsGreedHealingPrayers = 2069
+    FoxsGreedProtectionPrayers = 2070
+    FoxsGreedSmitingPrayers = 2080
+    FoxsGreedCommuning = 2081
+    FoxsGreedSpawningPower = 2082
+    FoxsGreedRestoration = 2083
+    FoxsGreedChanneling = 2084
+    
+    WolfsGreedDivineFavor = 2085
+    WolfsGreedHealingPrayers = 2087
+    WolfsGreedProtectionPrayers = 2088
+    WolfsGreedSmitingPrayers = 2090
+    WolfsGreedCommuning = 2091
+    WolfsGreedSpawningPower = 2092
+    WolfsGreedRestoration = 2094
+    WolfsGreedChanneling = 2095
+    
+    CensorsIconProtectionPrayers = 2096  # Needs confirmation
+    CensorsIconSmitingPrayers = 2097  # Needs confirmation
+    CensorsIconDivineFavor = 2100
+    CensorsIconHealingPrayers = 2101
+    
+    LesserEtchedSword = 2102
+    GreaterEtchedSword = 2103
+    
+    LesserGraniteEdge = 2116
+    GreaterGraniteEdge = 2117
+    
+    Stoneblade = 2125
+    FuriousBonecrusher = 2133
+    EtchedSword = 2134
+    
+    BearsSloth = 2239
+    RhinosSloth = 2240
+    
+    QuicksilverDomination = 2242
+    QuicksilverFastcasting = 2243
+    QuicksilverIllusion = 2244
+    QuicksilverInspiration = 2245
+    
+    UnicornsWrathDomination = 2246
+    UnicornsWrathFastcasting = 2424
+    UnicornsWrathIllusion = 2425
+    UnicornsWrathInspiration = 2426
+    UnicornsWrathSoulReaping = 2427
+    UnicornsWrathEnergyStorage = 2428
+    UnicornsWrathDivineFavor = 2429
+    UnicornsWrathCommuning = 2430
+    
+    PeacocksWrathDomination = 2431
+    PeacocksWrathFastcasting = 2432
+    PeacocksWrathIllusion = 2433
+    PeacocksWrathInspiration = 2434
+    
+    BronzeGuardianTactics = 2435
+    BronzeGuardianStrength = 2436
+    BronzeGuardianLeadership = 2437
+    
+    HogsGluttonyTactics = 2438
+    HogsGluttonyStrength = 2439
+    HogsGluttonyLeadership = 2440
+    
+    SpidersGluttonyTactics = 2441
+    SpidersGluttonyStrength = 2442
+    SpidersGluttonyLeadership = 2443
+    
+    CanthanTargeTactics = 2444
+    CanthanTargeStrength = 2445  # Need confirmation
+    CanthanTargeLeadership = 2446 
+    
+    DeathsHeadSoulReaping = 2447
+    DeathsHeadBloodMagic = 2448
+    DeathsHeadCurses = 2449
+    DeathsHeadDeathMagic = 2450
+    
+    SnakesEnvySoulReaping = 2451
+    SnakesEnvyBloodMagic = 2452
+    SnakesEnvyCurses = 2453
+    SnakesEnvyDeathMagic = 2454
+    
+    DragonsEnvyFastcasting = 2455
+    DragonsEnvySoulReaping = 2456
+    DragonsEnvyEnergyStorage = 2457
+    DragonsEnvyDivineFavor = 2458
+    DragonsEnvyCommuning = 2459
+    
+    DragonFangs = 2460
+    
+    OminousAegisTactics = 2461
+    OminousAegisStrength = 2462
+    OminousAegisLeadership = 2463
+    
+    SpiritbinderCommuning = 2464
+    SpiritbinderSpawningPower = 2465
+    SpiritbinderRestoration = 2466  # Needs confirmation
+    SpiritbinderChanneling = 2467
+    
+    Soulbreaker = 2468
+    JapanAnniversaryShieldStrength = 2469
+    JapanAnniversaryShieldLeadership = 2470
+    
+    Sunspear = 2471
+    DarksteelLongbow = 2472
+    GlacialBlade = 2473
+    GlacialBlades = 2474
+    
+    HourglassStaffDomination = 2475
+    HourglassStaffFastcasting = 2476
+    HourglassStaffIllusion = 2477
+    HourglassStaffInspiration = 2478
+    HourglassStaffSoulReaping = 2479
+    HourglassStaffBloodMagic = 2480
+    HourglassStaffCurses = 2481
+    HourglassStaffDeathMagic = 2482
+    HourglassStaffAirMagic = 2483
+    HourglassStaffEarthMagic = 2484
+    HourglassStaffEnergyStorage = 2485
+    HourglassStaffFireMagic = 2486
+    HourglassStaffWaterMagic = 2487
+    HourglassStaffDivineFavor = 2488
+    HourglassStaffHealingPrayers = 2489
+    HourglassStaffProtectionPrayers = 2490
+    HourglassStaffSmitingPrayers = 2491
+    HourglassStaffCommuning = 2492
+    HourglassStaffSpawningPower = 2493
+    HourglassStaffRestoration = 2494
+    HourglassStaffChanneling = 2495
+    
+    
     Roaring_Ether_Heart = 12345678910
     Charr_Hide = 1234567891
     Herring = 9876543210
@@ -1595,4 +1768,3 @@ class ModelID(IntEnum):
 
 
 # region AgentModels
-

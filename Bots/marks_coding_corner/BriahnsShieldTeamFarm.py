@@ -9,13 +9,14 @@ from Py4GWCoreLib import ConsoleLog
 from Py4GWCoreLib import Range
 from Py4GWCoreLib import Routines
 from Py4GWCoreLib import Utils
+from Py4GWCoreLib import Map, Agent
 
 BOT_NAME = "Briahn's Shield Farm"
 TEXTURE = os.path.join(
     Py4GW.Console.get_projects_path(), "Bots", "marks_coding_corner", "textures", "briahns_guidance.png"
 )
-OUTPOST_TO_TRAVEL_KODASH = GLOBAL_CACHE.Map.GetMapIDByName('The Kodash Bazaar')
-OUTPOST_TO_TRAVEL_HONUR_HILL = GLOBAL_CACHE.Map.GetMapIDByName('Honur Hill')
+OUTPOST_TO_TRAVEL_KODASH = Map.GetMapIDByName('The Kodash Bazaar')
+OUTPOST_TO_TRAVEL_HONUR_HILL = Map.GetMapIDByName('Honur Hill')
 MIRROR_OF_LYSS_MAP_ID = 419
 BRIAHNS_MODEL_ID = 5518
 
@@ -64,21 +65,21 @@ def is_briahn_killed_or_time_elapsed():
         return True
 
     if is_briahn_spotted and briahn_agent_id:
-        if not GLOBAL_CACHE.Agent.IsDead(briahn_agent_id):
+        if not Agent.IsDead(briahn_agent_id):
             return False
         is_briahn_killed = True
 
     enemy_array = AgentArray.GetEnemyArray()
     enemy_array = AgentArray.Filter.ByCondition(
         enemy_array,
-        lambda agent_id: Utils.Distance(GLOBAL_CACHE.Player.GetXY(), GLOBAL_CACHE.Agent.GetXY(agent_id))
+        lambda agent_id: Utils.Distance(GLOBAL_CACHE.Player.GetXY(), Agent.GetXY(agent_id))
         <= Range.SafeCompass.value,
     )
     enemy_array = AgentArray.Filter.ByCondition(
         enemy_array, lambda agent_id: GLOBAL_CACHE.Player.GetAgentID() != agent_id
     )
     for enemy_id in enemy_array:
-        if GLOBAL_CACHE.Agent.GetModelID(enemy_id) == BRIAHNS_MODEL_ID:
+        if Agent.GetModelID(enemy_id) == BRIAHNS_MODEL_ID:
             is_briahn_spotted = True
             briahn_agent_id = enemy_id
     return False
@@ -97,8 +98,8 @@ def reset_farm_flags():
 
 
 def _on_party_wipe(bot: "Botting"):
-    while GLOBAL_CACHE.Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
-        yield from bot.helpers.Wait._for_time(1000)
+    while Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
+        yield from bot.Wait._coro_for_time(1000)
         if not Routines.Checks.Map.MapValid():
             # Map invalid → release FSM and exit
             bot.config.FSM.resume()
@@ -122,7 +123,7 @@ def handle_briahn_killed_en_route():
     global briahn_agent_id
 
     while True:
-        if not GLOBAL_CACHE.Map.IsExplorable():
+        if not Map.IsExplorable():
             yield from Routines.Yield.wait(1000)
             continue
 
@@ -132,21 +133,21 @@ def handle_briahn_killed_en_route():
 
         if is_briahn_spotted and briahn_agent_id:
             yield from Routines.Yield.wait(1000)
-            if GLOBAL_CACHE.Agent.IsDead(briahn_agent_id):
+            if Agent.IsDead(briahn_agent_id):
                 is_briahn_killed = True
             continue
 
         enemy_array = AgentArray.GetEnemyArray()
         enemy_array = AgentArray.Filter.ByCondition(
             enemy_array,
-            lambda agent_id: Utils.Distance(GLOBAL_CACHE.Player.GetXY(), GLOBAL_CACHE.Agent.GetXY(agent_id))
+            lambda agent_id: Utils.Distance(GLOBAL_CACHE.Player.GetXY(), Agent.GetXY(agent_id))
             <= Range.SafeCompass.value,
         )
         enemy_array = AgentArray.Filter.ByCondition(
             enemy_array, lambda agent_id: GLOBAL_CACHE.Player.GetAgentID() != agent_id
         )
         for enemy_id in enemy_array:
-            if GLOBAL_CACHE.Agent.GetModelID(enemy_id) == BRIAHNS_MODEL_ID:
+            if Agent.GetModelID(enemy_id) == BRIAHNS_MODEL_ID:
                 is_briahn_spotted = True
                 briahn_agent_id = enemy_id
                 yield from Routines.Yield.wait(1000)

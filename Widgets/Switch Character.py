@@ -57,9 +57,9 @@ class RerollCharacter:
         target_name = self.target_character_name
         found_index = -99
         try:
-            for char in pregame.chars:
-                if target_name == char:
-                    found_index = pregame.chars.index(target_name)
+            for idx, char in enumerate(pregame.chars):
+                if target_name == char.character_name:
+                    found_index = idx
                     break
         except Exception as e:
             ConsoleLog("Reroll", f"Error accessing character list: {e}", Console.MessageType.Error)
@@ -68,7 +68,7 @@ class RerollCharacter:
 
         if found_index != -99:
             self.target_index = found_index
-            self.last_known_index = pregame.index_1
+            self.last_known_index = pregame.chosen_character_index
             ConsoleLog("Reroll", f"Found '{target_name}' at index {found_index}. Current selection: {self.last_known_index}", Console.MessageType.Info)
         else:
             ConsoleLog("Reroll", f"Character '{target_name}' not found in list yet.", Console.MessageType.Debug)
@@ -80,7 +80,7 @@ class RerollCharacter:
             return
 
         pregame = GLOBAL_CACHE.Player.GetPreGameContext()
-        current_index = pregame.index_1
+        current_index = pregame.chosen_character_index
 
         if current_index == self.target_index:
             return
@@ -137,7 +137,7 @@ class RerollCharacter:
                  return
 
             pregame = GLOBAL_CACHE.Player.GetPreGameContext()
-            current_index = pregame.index_1
+            current_index = pregame.chosen_character_index
 
             if current_index == self.target_index:
                 ConsoleLog("Reroll", "Target character is selected.", Console.MessageType.Debug)
@@ -205,7 +205,6 @@ class RerollCharacter:
         self.last_known_index = -99
             
 
-reroll_widget = RerollCharacter()
 window_module = ImGui.WindowModule(module_name="RerollCharacter", window_name=MODULE_NAME, window_size=(337, 326), window_flags=PyImGui.WindowFlags.AlwaysAutoResize)
 is_visible = False
 
@@ -257,10 +256,8 @@ def DrawWindow():
     def _item_clicked():
         """Helper function to check if an item was clicked."""
         if PyImGui.is_item_clicked(0):
-            reroll_widget.selected_char_index = index
-            reroll_widget.target_character_name = character.player_name
-            ConsoleLog("Reroll", f"UI Selected target: {character.player_name}", Console.MessageType.Debug)
-            reroll_widget.start_reroll()  
+            GLOBAL_CACHE.Coroutines.append(Routines.Yield.RerollCharacter.Reroll(character.player_name))
+            # ConsoleLog("Reroll", f"UI Selected target: {character.player_name}", Console.MessageType.Debug)
             
     global window_module, tmp_is_selected
     if window_module.first_run:
@@ -317,7 +314,7 @@ def DrawWindow():
                     level = 20 if character.is_pvp else character.level
                     current_map = character.map_id
                     campaign_origin = character.campaign
-                    current_map_name = GLOBAL_CACHE.Map.GetMapName(current_map)
+                    current_map_name = Map.GetMapName(current_map)
                     campaign_name = Campaign(campaign_origin).name if campaign_origin else "Unknown"
                     row_color = Color(0, 0, 0, 50)  # Default row color
                     
@@ -388,14 +385,12 @@ def is_in_character_select():
     return in_char_select
 
 def main():
-    global reroll_widget, window_module, character_select, is_visible
+    global window_module, character_select, is_visible
     try:
         character_select = is_in_character_select()
 
         if not character_select and not Routines.Checks.Map.MapValid():
             return
-        
-        reroll_widget.Update()
         
         frame_id = UIManager.GetChildFrameID(1144678641, [0])
         left, top, right, bottom = 0, 0, 0, 0

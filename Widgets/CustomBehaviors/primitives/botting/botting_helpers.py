@@ -1,7 +1,7 @@
 from collections.abc import Callable, Generator
 import time
-from typing import Any
-from Py4GWCoreLib import Player, Item, ItemArray, Bags, Routines
+from typing import Any, List
+from Py4GWCoreLib import Map, Agent, ItemArray, Bags, Routines
 from Py4GWCoreLib.AgentArray import AgentArray
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.enums_src.GameData_enums import Range
@@ -11,13 +11,22 @@ from Py4GWCoreLib.py4gwcorelib_src.Lootconfig_src import LootConfig
 from Py4GWCoreLib.py4gwcorelib_src.Timer import ThrottledTimer
 
 from Widgets.CustomBehaviors.primitives.bus.event_type import EventType
+from Widgets.CustomBehaviors.primitives.custom_behavior_loader import CustomBehaviorLoader
 from Widgets.CustomBehaviors.primitives.helpers import custom_behavior_helpers
+from Widgets.CustomBehaviors.primitives.skillbars import custom_behavior_base_utility
+from Widgets.CustomBehaviors.primitives.skills.custom_skill_utility_base import CustomSkillUtilityBase
 
 
 class BottingHelpers:
     
     @staticmethod
-    def wrapper(action: Generator[Any, Any, bool], on_failure: Callable[[], Generator[Any, Any, Any]]) -> Generator[Any, Any, bool]:
+    def botting_unrecoverable_issue(fsm: FSM) -> Generator[Any, Any, Any]:
+        if fsm is not None:
+            fsm.stop()
+        yield
+
+    @staticmethod
+    def wrapper(action: Generator[Any, Any, bool], on_failure: Callable[[FSM], Generator[Any, Any, Any]]) -> Generator[Any, Any, bool]:
         result: bool = yield from action
         if result is False:
             yield from on_failure()
@@ -29,7 +38,7 @@ class BottingHelpers:
         timeout = ThrottledTimer(timeout_ms)
 
         while not timeout.IsExpired():
-            if GLOBAL_CACHE.Map.GetMapID() == target_map_id:
+            if Map.GetMapID() == target_map_id:
                 return True
             yield from custom_behavior_helpers.Helpers.wait_for(100)
         return False
@@ -41,10 +50,10 @@ class BottingHelpers:
         timeout = ThrottledTimer(timeout_ms)
 
         def search_item_id_by_name(item_name: str) -> int | None:
-            item_array = GLOBAL_CACHE.AgentArray.GetItemArray()
+            item_array = AgentArray.GetItemArray()
             item_array = AgentArray.Filter.ByDistance(item_array, GLOBAL_CACHE.Player.GetXY(), Range.Spirit.value)
             for item_id in item_array:
-                name = GLOBAL_CACHE.Agent.GetName(item_id)
+                name = Agent.GetNameByID(item_id)
                 # print(f"item {name}")
 
                 # Clean both strings to remove non-printable characters (like NULL bytes) and whitespace
@@ -67,7 +76,7 @@ class BottingHelpers:
                 continue
 
             # LOOT
-            pos = GLOBAL_CACHE.Agent.GetXY(item_id)
+            pos = Agent.GetXY(item_id)
             follow_success = yield from Routines.Yield.Movement.FollowPath([pos], timeout=6_000)
             if not follow_success:
                 print("Failed to follow path to loot item, next attempt.")
@@ -97,7 +106,7 @@ class BottingHelpers:
         loop_counter = 0
         while not timeout.IsExpired():
 
-            if GLOBAL_CACHE.Map.IsOutpost(): return True
+            if Map.IsOutpost(): return True
             if GLOBAL_CACHE.Party.IsPartyDefeated(): return True
 
             accounts = GLOBAL_CACHE.ShMem.GetAllAccountData()

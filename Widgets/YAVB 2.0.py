@@ -1,7 +1,7 @@
 import Py4GW
 import math
-from Py4GWCoreLib import (Routines,Botting,ActionQueueManager, ConsoleLog, GLOBAL_CACHE, AgentArray, Utils)
-from Py4GWCoreLib import ThrottledTimer
+from Py4GWCoreLib import (Routines,Botting,ActionQueueManager, ConsoleLog, GLOBAL_CACHE, Agent, Utils)
+from Py4GWCoreLib import ThrottledTimer, Map
 from Py4GWCoreLib.enums import ModelID, Range, TitleID
 
 from Py4GWCoreLib.BuildMgr import BuildMgr
@@ -34,7 +34,6 @@ def InitializeBot(bot: Botting) -> None:
     bot.Properties.Enable("birthday_cupcake")
     bot.Properties.Enable("identify_kits")
     bot.Properties.Enable("salvage_kits")
-    
     
 def TownRoutines(bot: Botting) -> None:
     bot.States.AddHeader("Town Routines")
@@ -171,7 +170,7 @@ def KillEnemies(bot: Botting):
             yield from Routines.Yield.wait(500)
             return
   
-        if GLOBAL_CACHE.Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
+        if Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
             ConsoleLog("Killing Routine", "Player is dead, restarting.", Py4GW.Console.MessageType.Warning)
             yield from Routines.Yield.wait(500)
             return 
@@ -189,7 +188,7 @@ def KillEnemies(bot: Botting):
 
 
 def AssignBuild(bot: Botting):
-    profession, _ = GLOBAL_CACHE.Agent.GetProfessionNames(GLOBAL_CACHE.Player.GetAgentID())
+    profession, _ = Agent.GetProfessionNames(GLOBAL_CACHE.Player.GetAgentID())
     match profession:
         case "Assassin":
             bot.OverrideBuild(SF_Ass_vaettir())
@@ -205,12 +204,17 @@ def EquipSkillBar(bot: Botting):
     yield from AssignBuild(bot)
     yield from bot.config.build_handler.LoadSkillBar()
 
+def PrintDebug():
+   ConsoleLog("YAVB 2.0", "TEST") 
+   return
 
-def HandleInventory(bot: Botting) -> None:
+   yield
+
+def HandleInventory(bot: Botting) -> None:    
     bot.States.AddHeader("Inventory Handling")
     bot.Items.AutoIDAndSalvageAndDepositItems() #sort bags, auto id, salvage, deposit to bank
     bot.Move.XYAndInteractNPC(-23110, 14942) # Merchant in Longeyes Ledge
-    bot.Wait.ForTime(500)
+    bot.Wait.ForTime(250)
     bot.Merchant.SellMaterialsToMerchant() # Sell materials to merchant, make space in inventory
     bot.Merchant.Restock.IdentifyKits() #restock identify kits
     bot.Merchant.Restock.SalvageKits() #restock salvage kits
@@ -218,9 +222,10 @@ def HandleInventory(bot: Botting) -> None:
     bot.Merchant.SellMaterialsToMerchant() #Sell remaining materials again to make sure inventory is clear
     bot.Merchant.Restock.IdentifyKits() #restock identify kits
     bot.Merchant.Restock.SalvageKits() #restock salvage kits
-    bot.Items.Restock.BirthdayCupcake() #restock birthday cupcake
+    # bot.Items.Restock.BirthdayCupcake() #restock birthday cupcake
     
 def _wait_for_aggro_ball(bot: Botting, side_label: str, cycle_timeout: int = 150):
+    from Py4GWCoreLib.Agent import Agent
     """
     Shared logic for waiting until enemies have balled up.
     side_label is just used for logging ("Left" / "Right").
@@ -240,7 +245,7 @@ def _wait_for_aggro_ball(bot: Botting, side_label: str, cycle_timeout: int = 150
             elapsed += 1
 
             # hard exit if player dies
-            if GLOBAL_CACHE.Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
+            if Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
                 ConsoleLog(f"{side_label} Aggro Ball Wait",
                            "Player is dead, exiting wait.",
                            Py4GW.Console.MessageType.Warning)
@@ -256,10 +261,11 @@ def _wait_for_aggro_ball(bot: Botting, side_label: str, cycle_timeout: int = 150
             # Check if all enemies are within Adjacent range
             all_in_adjacent = True
             for enemy_id in enemies_ids:
-                enemy = GLOBAL_CACHE.Agent.GetAgent(enemy_id)
+                
+                enemy = Agent.GetAgentByID(enemy_id)
                 if enemy is None:
                     continue
-                dx, dy = enemy.x - px, enemy.y - py
+                dx, dy = enemy.pos.x - px, enemy.pos.y - py
                 if dx * dx + dy * dy > (Range.Adjacent.value ** 2):
                     all_in_adjacent = False
                     break
@@ -310,8 +316,8 @@ finished_routine = False
 stuck_counter = 0
 stuck_timer = ThrottledTimer(5000)
 stuck_timer.Start()
-BJORA_MARCHES = GLOBAL_CACHE.Map.GetMapIDByName("Bjora Marches")
-JAGA_MORAINE = GLOBAL_CACHE.Map.GetMapIDByName("Jaga Moraine")
+BJORA_MARCHES = Map.GetMapIDByName("Bjora Marches")
+JAGA_MORAINE = Map.GetMapIDByName("Jaga Moraine")
 movement_check_timer = ThrottledTimer(3000)
 old_player_position = (0,0)
 in_killing_routine = False
@@ -333,7 +339,7 @@ def HandleStuckJagaMoraine(bot: Botting):
             yield from Routines.Yield.wait(1000)
             return
 
-        if GLOBAL_CACHE.Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
+        if Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
             ConsoleLog("HandleStuck", "Player is dead, exiting stuck handler.", Py4GW.Console.MessageType.Debug, forced_log)
             yield from Routines.Yield.wait(1000)
             return
@@ -341,7 +347,7 @@ def HandleStuckJagaMoraine(bot: Botting):
 
         build: BuildMgr = bot.config.build_handler
         
-        instance_time = GLOBAL_CACHE.Map.GetInstanceUptime() / 1000  # Convert ms to seconds
+        instance_time = Map.GetInstanceUptime() / 1000  # Convert ms to seconds
         if instance_time > 7 * 60:  # 7 minutes in seconds
             ConsoleLog("HandleStuck", "Instance time exceeded 7 minutes, force resigning.", Py4GW.Console.MessageType.Debug, forced_log)
             stuck_counter = 0
@@ -383,7 +389,7 @@ def HandleStuckJagaMoraine(bot: Botting):
             continue
 
         # Jaga Moraine map check
-        if GLOBAL_CACHE.Map.GetMapID() == JAGA_MORAINE:
+        if Map.GetMapID() == JAGA_MORAINE:
             if stuck_timer.IsExpired():
                 ConsoleLog("HandleStuck", "Issuing scheduled /stuck command.", Py4GW.Console.MessageType.Debug, log_actions)
                 GLOBAL_CACHE.Player.SendChatCommand("stuck")

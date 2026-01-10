@@ -1,4 +1,4 @@
-from typing import Optional, List, Any
+from typing import Callable, Any
 
 
 class Console:
@@ -116,3 +116,121 @@ class PingHandler:
     def GetAveragePing(self) -> int: ...
     def GetMinPing(self) -> int: ...
     def GetMaxPing(self) -> int: ...
+
+# py4gw_game.pyi – stubs for Py4GW.Game module
+
+class Game:
+    """
+    Submodule for game functions.
+    All functions run inside the Guild Wars game thread when appropriate.
+    """
+
+    # --- Functions ---
+    @staticmethod
+    def enqueue(callback: Callable[[], Any]) -> None:
+        """
+        Enqueue a Python callable to execute on the Guild Wars game thread.
+
+        The callback is executed exactly once, the next time the internal
+        game-thread hook fires.
+
+        NOTE:
+            - `callback` MUST be a zero-argument function or lambda.
+              If arguments are needed, bind them using a lambda:
+
+                Game.enqueue(lambda: func(arg1, arg2))
+
+            - The callback runs with the Python GIL acquired.
+
+        Parameters
+        ----------
+        callback : Callable[[], Any]
+            A zero-argument Python function or lambda to run on the game thread.
+
+        Returns
+        -------
+        None
+        """
+        ...
+        
+    @staticmethod
+    def get_tick_count64() -> int:
+        """
+        Get the current GetTickCount64 value from the game.
+
+        Returns
+        -------
+        int
+            The current tick count in milliseconds since system boot.
+        """
+        ...
+
+    # ----------------------------
+    # Per-frame callbacks
+    # ----------------------------
+
+    @staticmethod
+    def register_callback(name: str, callback: Callable[[], Any]) -> int:
+        """
+        Register a named Python callable to be executed every frame.
+
+        Registration is idempotent by name:
+        - If a callback with the same name already exists, it is NOT duplicated.
+        - The existing callback id is returned.
+
+        Parameters
+        ----------
+        name : str
+            Unique identifier for the callback.
+        callback : Callable[[], Any]
+            Zero-argument Python callable.
+
+        Returns
+        -------
+        int
+            Callback id.
+        """
+        ...
+
+    @staticmethod
+    def remove_callback(name: str) -> bool:
+        """
+        Remove a per-frame callback by name.
+
+        Parameters
+        ----------
+        name : str
+            Callback name.
+
+        Returns
+        -------
+        bool
+            True if a callback was removed, False otherwise.
+        """
+        ...
+
+    @staticmethod
+    def remove_callback_by_id(callback_id: int) -> bool:
+        """
+        Remove a per-frame callback by id.
+
+        Parameters
+        ----------
+        callback_id : int
+            Callback id returned by register_callback().
+
+        Returns
+        -------
+        bool
+            True if a callback was removed, False otherwise.
+        """
+        ...
+
+    @staticmethod
+    def clear_callbacks() -> None:
+        """
+        Remove all registered per-frame callbacks.
+
+        Typically called on script reload or shutdown.
+        """
+        ...

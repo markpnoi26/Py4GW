@@ -1,7 +1,8 @@
 import PyPlayer
-from Py4GWCoreLib.Agent import AgentName
+from Py4GWCoreLib.Agent import Agent
 from Py4GWCoreLib.Py4GWcorelib import ActionQueueManager
 from Py4GWCoreLib import ThrottledTimer
+from ..native_src.internals.helpers import encoded_wstr_to_str
 
 class PlayerCache:
     def __init__(self, action_queue_manager):
@@ -10,14 +11,20 @@ class PlayerCache:
         self._title_throttle_timer = ThrottledTimer(250)
         self._title_array: list[int] = []
         self._active_title_id: int = -1
-        self._name_object = AgentName(self._player_instance.id,1000)
-        self._name = ""
         self._action_queue_manager:ActionQueueManager = action_queue_manager
         self.login_characters = []
+
+    def _format_uuid_as_email(self, player_uuid):
+        if not player_uuid:
+            return ""
+        try:
+            result = encoded_wstr_to_str("uuid_" + "_".join(str(part) for part in player_uuid))
+            return result if result else "INVALID"
+        except TypeError:
+            return str(player_uuid)
         
     def _update_cache(self):
         self._player_instance.GetContext()
-        self._name_object.agent_id = self._player_instance.id
         if self._title_throttle_timer.IsExpired():
             self._title_throttle_timer.Reset()
             self._active_title_id = self._player_instance.GetActiveTitleId()
@@ -38,8 +45,7 @@ class PlayerCache:
         return self._player_instance.id
     
     def GetName(self):
-        self._name = self._name_object.get_name()
-        return self._name
+        return Agent.GetNameByID(self._player_instance.id)
 
     def GetXY(self):
         x = self._player_instance.agent.x
@@ -114,9 +120,15 @@ class PlayerCache:
     def GetAccountName(self):
         return self._player_instance.account_name
     
-    def GetAccountEmail(self):
-        return self._player_instance.account_email
-    
+    def GetAccountEmail(self) -> str:
+        try:
+            account_email = self._player_instance.account_email
+            if account_email:
+                return account_email
+            return "" if all(part == 0 for part in self._player_instance.player_uuid) else self._format_uuid_as_email(self._player_instance.player_uuid)
+        except Exception:
+            return ""
+        
     def GetPlayerUUID(self):
         return self._player_instance.player_uuid
 
@@ -204,3 +216,6 @@ class PlayerCache:
     
     def GetPreGameContext(self):
         return self._player_instance.GetPreGameContext()
+    
+    def GetPreGameContextPtr(self):
+        return self._player_instance.GetPreGameContextPtr()

@@ -29,12 +29,14 @@ try:
     # This will require you to download and add to your file `Core` and `LootEx`
     from Widgets.frenkey.LootEx.data import Data  # type: ignore
     from Widgets.frenkey.LootEx.utility import Util  # type: ignore
+    from Widgets.frenkey.LootEx.cache import Cached_Item  # type: ignore
 
     LOOTEX_AVAILABLE = True
 
 except Exception:
     Util = None
     Data = None
+    Cached_Item = None
 
     LOOTEX_AVAILABLE = False
 
@@ -61,6 +63,7 @@ name_request_timer = ThrottledTimer(1000)
 # String consts
 MODULE_NAME = "TeamInventoryViewer"  # Change this Module name
 COLLAPSED = "collapsed"
+AUTO_SAVE = "autosave"
 X_POS = "x"
 Y_POS = "y"
 
@@ -68,6 +71,7 @@ Y_POS = "y"
 window_x = ini_window.read_int(MODULE_NAME, X_POS, 1512)
 window_y = ini_window.read_int(MODULE_NAME, Y_POS, 0)
 window_collapsed = ini_window.read_bool(MODULE_NAME, COLLAPSED, True)
+autosave_enabled = ini_window.read_bool(MODULE_NAME, AUTO_SAVE, True)
 
 # View data
 first_run = True
@@ -575,7 +579,7 @@ class AccountJSONStore:
         return data
 
     def save_bag(self, char_name=None, storage_name=None, bag_name=None, bag_items={}):
-        data = self._read()
+        data = self.load()
         changed = False
 
         if char_name:
@@ -743,7 +747,7 @@ def _collect_bag_items(bag, bag_id, email, storage_name=None, char_name=None):
     def _get_frenkey_texture_file(model_id, item_type):
         if LOOTEX_AVAILABLE and Data:
             data = Data()
-            item_data = data.Items[item_type].get(model_id)
+            item_data = data.Items.get(item_type, {}).get(model_id)
             if item_data:
                 return item_data.texture_file
         return ''
@@ -880,45 +884,124 @@ def search(query: str, items: list[str]) -> list[str]:
 
 
 def get_armor_name_from_modifiers(item):
-    if not LOOTEX_AVAILABLE or not Util:
-        try:
-            base_name = ModelID(item.model_id).name.replace("_", " ")
-        except ValueError:
-            base_name = None
+    try:
+        if not LOOTEX_AVAILABLE or not Util or not Cached_Item:
+            try:
+                base_name = ModelID(item.model_id).name.replace("_", " ")
+            except ValueError:
+                base_name = None
 
-        base_name = INVENTORY_MODEL_ID_CACHE.get(str(item.model_id))
-        if not base_name:
-            return None
-
-        if base_name:
-            mod_hash = ModHashJSONStore.hash_mods(item.modifiers)
-            if mod_hash not in INVENTORY_MOD_HASH_CACHE:
+            base_name = INVENTORY_MODEL_ID_CACHE.get(str(item.model_id))
+            if not base_name:
                 return None
 
-            prefix, suffix = INVENTORY_MOD_HASH_CACHE.get(mod_hash, [None, None])
+            if base_name:
+                mod_hash = ModHashJSONStore.hash_mods(item.modifiers)
+                if mod_hash not in INVENTORY_MOD_HASH_CACHE:
+                    return None
 
-            name_parts = []
+                prefix, suffix = INVENTORY_MOD_HASH_CACHE.get(mod_hash, [None, None])
 
-            if prefix:
-                name_parts.append(prefix)
+                name_parts = []
 
-            name_parts.append(base_name)
+                if prefix:
+                    name_parts.append(prefix)
 
-            if suffix:
-                name_parts.append(suffix)
+                name_parts.append(base_name)
 
-            return " ".join(name_parts)
+                if suffix:
+                    name_parts.append(suffix)
+
+                return " ".join(name_parts)
+            return None
+
+        # Prefer the in-game name if available
+        final_name = Util.GetItemDataName(item.item_id)
+        if final_name and not final_name.startswith("Unknown"):
+            base_name, _prefix, _suffix = clean_gw_item_name(final_name)
+            base_name = base_name.strip()
+        else:
+            try:
+                base_name = ModelID(item.model_id).name.replace("_", " ")
+            except ValueError:
+                base_name = None
+
+            if not base_name:
+                base_name = INVENTORY_MODEL_ID_CACHE.get(str(item.model_id))
+
+            if not base_name:
+                return None
+
+        # Collect mods
+        prefix = None
+        suffix = None
+
+        cached_item = Cached_Item(item.item_id, item.slot)
+        runes, _ = cached_item.GetModsFromModifiers() or ([], [])
+        for mod_info in runes:
+            mod = mod_info.Rune
+            mod_name = mod.name
+            mod_type = mod.mod_type.name
+
+            if mod_type == "Prefix":
+                prefix = mod_name
+            elif mod_type == "Suffix":
+                suffix = mod_name
+
+        # --- Construct name ---
+        name_parts = []
+
+        name_parts.append(base_name)
+
+        if prefix:
+            name_parts.append(f'| {prefix}')
+
+        if suffix:
+            name_parts.append(f"| {suffix}")
+
+        return " ".join(name_parts)
+    except Exception:
         return None
 
-    # Prefer the in-game name if available
-    final_name = Util.GetItemDataName(item.item_id)
-    if final_name and not final_name.startswith("Unknown"):
-        base_name, _prefix, _suffix = clean_gw_item_name(final_name)
-        base_name = base_name.strip()
-    else:
-        try:
-            base_name = ModelID(item.model_id).name.replace("_", " ")
-        except ValueError:
+
+def get_weapon_name_from_modifiers(item):
+    try:
+        if not LOOTEX_AVAILABLE or not Util or not Cached_Item:
+            try:
+                base_name = ModelID(item.model_id).name.replace("_", " ")
+            except ValueError:
+                base_name = None
+
+            base_name = INVENTORY_MODEL_ID_CACHE.get(str(item.model_id))
+            if not base_name:
+                return None
+
+            if base_name:
+                mod_hash = ModHashJSONStore.hash_mods(item.modifiers)
+                if mod_hash not in INVENTORY_MOD_HASH_CACHE:
+                    return None
+
+                prefix, suffix = INVENTORY_MOD_HASH_CACHE.get(mod_hash, [None, None])
+
+                name_parts = []
+                # Inherent mods like “Vampiric” or “Insightful” go before everything else
+                if prefix:
+                    name_parts.append(prefix)
+
+                name_parts.append(base_name)
+
+                if suffix:
+                    name_parts.append(f"{suffix}")
+
+                return " ".join(name_parts)
+            return None
+
+        # Prefer the in-game name if available
+        final_name = Util.GetItemDataName(item.item_id)
+        if final_name and not final_name.startswith("Unknown"):
+            base_name, _prefix, _suffix = clean_gw_item_name(final_name)
+            base_name = base_name.strip()
+        else:
             base_name = None
 
         if not base_name:
@@ -927,112 +1010,43 @@ def get_armor_name_from_modifiers(item):
         if not base_name:
             return None
 
-    # Collect mods
-    _, armor_mods, _ = Util.GetMods(item.item_id)
-    prefix = None
-    suffix = None
+        # Collect mods
+        prefix = None
+        suffix = None
+        inherent = None
 
-    for armor_mod in armor_mods:
-        mod_name = armor_mod.identifier.strip()
-        mod_type = armor_mod.mod_type.name
+        cached_item = Cached_Item(item.item_id, item.slot)
+        _, weapon_mods = cached_item.GetModsFromModifiers() or ([], [])
+        for mod_info in weapon_mods:
+            mod = mod_info.WeaponMod
+            mod_name = mod.name
+            mod_type = mod.mod_type.name
 
-        if mod_type == "Prefix":
-            prefix = mod_name
-        elif mod_type == "Suffix":
-            suffix = mod_name
+            if mod_type == "Prefix":
+                prefix = mod_name
+            elif mod_type == "Suffix":
+                suffix = mod_name
+            elif mod_type == "Inherent":
+                inherent = mod_name
 
-    # --- Construct name ---
-    name_parts = []
+        # --- Construct name ---
+        name_parts = []
 
-    name_parts.append(base_name)
+        # Inherent mods like “Vampiric” or “Insightful” go before everything else
+        if prefix:
+            name_parts.append(prefix)
 
-    if prefix:
-        name_parts.append(f'| {prefix}')
+        name_parts.append(base_name)
 
-    if suffix:
-        name_parts.append(f"| {suffix}")
+        if suffix:
+            name_parts.append(f"{suffix}")
 
-    return " ".join(name_parts)
+        if inherent:
+            name_parts.append(f"({inherent})")
 
-
-def get_weapon_name_from_modifiers(item):
-    if not LOOTEX_AVAILABLE or not Util:
-        try:
-            base_name = ModelID(item.model_id).name.replace("_", " ")
-        except ValueError:
-            base_name = None
-
-        base_name = INVENTORY_MODEL_ID_CACHE.get(str(item.model_id))
-        if not base_name:
-            return None
-
-        if base_name:
-            mod_hash = ModHashJSONStore.hash_mods(item.modifiers)
-            if mod_hash not in INVENTORY_MOD_HASH_CACHE:
-                return None
-
-            prefix, suffix = INVENTORY_MOD_HASH_CACHE.get(mod_hash, [None, None])
-
-            name_parts = []
-            # Inherent mods like “Vampiric” or “Insightful” go before everything else
-            if prefix:
-                name_parts.append(prefix)
-
-            name_parts.append(base_name)
-
-            if suffix:
-                name_parts.append(f"{suffix}")
-
-            return " ".join(name_parts)
+        return " ".join(name_parts)
+    except Exception:
         return None
-
-    # Prefer the in-game name if available
-    final_name = Util.GetItemDataName(item.item_id)
-    if final_name and not final_name.startswith("Unknown"):
-        base_name, _prefix, _suffix = clean_gw_item_name(final_name)
-        base_name = base_name.strip()
-    else:
-        base_name = None
-
-    if not base_name:
-        base_name = INVENTORY_MODEL_ID_CACHE.get(str(item.model_id))
-
-    if not base_name:
-        return None
-
-    # Collect mods
-    _, _, weapon_mods = Util.GetMods(item.item_id)
-    prefix = None
-    suffix = None
-    inherent = None
-
-    for weapon_mod in weapon_mods:
-        mod_name = weapon_mod.identifier.strip()
-        mod_type = weapon_mod.mod_type.name
-
-        if mod_type == "Prefix":
-            prefix = mod_name
-        elif mod_type == "Suffix":
-            suffix = mod_name
-        elif mod_type == "Inherent":
-            inherent = mod_name
-
-    # --- Construct name ---
-    name_parts = []
-
-    # Inherent mods like “Vampiric” or “Insightful” go before everything else
-    if prefix:
-        name_parts.append(prefix)
-
-    name_parts.append(base_name)
-
-    if suffix:
-        name_parts.append(f"{suffix}")
-
-    if inherent:
-        name_parts.append(f"({inherent})")
-
-    return " ".join(name_parts)
 
 
 # region Widget
@@ -1051,28 +1065,24 @@ def draw_widget():
     global multi_store
     global inventory_model_ids_store
     global inventory_mod_hash_store
+    global autosave_enabled
 
     if on_first_load:
         PyImGui.set_next_window_size(1000, 1250)
         PyImGui.set_next_window_pos(window_x, window_y)
         PyImGui.set_next_window_collapsed(window_collapsed, 0)
         on_first_load = False
-        if LOOTEX_AVAILABLE:
-            Data().Load()  # type: ignore
 
         TEAM_INVENTORY_CACHE = multi_store.load_all()
         INVENTORY_MODEL_ID_CACHE = inventory_model_ids_store.load()
         INVENTORY_MOD_HASH_CACHE = inventory_mod_hash_store.load()
 
-    new_collapsed = PyImGui.is_window_collapsed()
-    end_pos = PyImGui.get_window_pos()
-
     # This triggers a reload of and save of bag data
-    if inventory_write_timer.IsExpired() and Routines.Checks.Map.IsOutpost():
+    if inventory_write_timer.IsExpired() and Routines.Checks.Map.IsOutpost() and autosave_enabled:
         GLOBAL_CACHE.Coroutines.append(record_account_data())
         inventory_write_timer.Reset()
 
-    if inventory_read_timer.IsExpired() and Routines.Checks.Map.IsOutpost():
+    if inventory_read_timer.IsExpired() and Routines.Checks.Map.IsOutpost() and autosave_enabled:
         TEAM_INVENTORY_CACHE = multi_store.load_all()
         inventory_read_timer.Reset()
 
@@ -1082,7 +1092,7 @@ def draw_widget():
 
         # === SCROLLABLE AREA START ===
         # Compute space for footer
-        available_height = PyImGui.get_window_height() - 190  # leave room for buttons + footer
+        available_height = PyImGui.get_window_height() - 200  # leave room for buttons + footer
         PyImGui.begin_child("ScrollableContent", (0.0, float(available_height)), True, 1)
 
         # === TABS BY ACCOUNT ===
@@ -1367,9 +1377,22 @@ def draw_widget():
         current_character = f'Current Character: {current_character_name}'
         PyImGui.text(f"{"Waiting for ..." if not current_character_name else current_character}")
         if PyImGui.collapsing_header("Advanced Clearing", True):
-            PyImGui.text(
-                f'Save timer: {(inventory_write_timer.GetTimeRemaining() / 1000):.1f}(s), Read timer: {(inventory_read_timer.GetTimeRemaining() / 1000):.1f}(s)'
-            )
+            new_autosave_value = PyImGui.checkbox("Auto Save/Read  |", autosave_enabled)
+            if new_autosave_value != autosave_enabled:
+                ini_window.write_key(MODULE_NAME, AUTO_SAVE, new_autosave_value)
+                autosave_enabled = new_autosave_value
+            PyImGui.same_line(0, -1)
+            if autosave_enabled:
+                PyImGui.text(
+                    f'Save timer: {(inventory_write_timer.GetTimeRemaining() / 1000):.1f}(s), Read timer: {(inventory_read_timer.GetTimeRemaining() / 1000):.1f}(s)'
+                )
+            else:
+                if PyImGui.button("Manual Record"):
+                    GLOBAL_CACHE.Coroutines.append(record_account_data())
+                PyImGui.same_line(0, -1)
+                if PyImGui.button("Manual Refresh"):
+                    TEAM_INVENTORY_CACHE = multi_store.load_all()
+
             if PyImGui.begin_table("clear_buttons_table", 3, PyImGui.TableFlags.BordersInnerV):
                 # Define colors
                 orange_color = Color(255, 165, 0, 255).to_tuple_normalized()  # orange
@@ -1429,6 +1452,9 @@ def draw_widget():
                     TEAM_INVENTORY_CACHE = multi_store.load_all()
                 PyImGui.pop_style_color(3)
                 PyImGui.end_table()
+
+    new_collapsed = PyImGui.is_window_collapsed()
+    end_pos = PyImGui.get_window_pos()
 
     if save_window_timer.HasElapsed(1000):
         # Position changed?
