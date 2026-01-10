@@ -9,7 +9,11 @@ import Py4GW
 from Py4GWCoreLib.enums_src.GameData_enums import DyeColor
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Widgets.frenkey.LootEx import models
+<<<<<<< HEAD
 from Widgets.frenkey.LootEx.enum import ItemCategory, ModType, ModsModels
+=======
+from Widgets.frenkey.LootEx.enum import INVALID_NAMES, ItemCategory, ModType, ModsModels
+>>>>>>> frenkey/main
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.Py4GWcorelib import ConsoleLog
 from Py4GWCoreLib.enums import Attribute, ServerLanguage
@@ -1120,6 +1124,7 @@ class Data():
             return
         
         dirs = os.listdir(path)
+        new_items : dict[str, list[str]] = {}
         
         items_found = False
         for dir_name in dirs:
@@ -1137,10 +1142,19 @@ class Data():
                             
                         # Iterate through the items in the diff file
                         for model_id, item in items.items():
-                            self.Items.add_item(item)
+                            new_item = self.Items.add_item(item)
                             
+                            if new_item is None:
+                                continue
+                            
+                            if new_item:
+                                if item_type.name not in new_items:
+                                    new_items[item_type.name] = []
+                                    
+                                new_items[item_type.name].append(item.name)
+                                
                             name = item.names.get(ServerLanguage.English, None)
-                            if name is not None and name != "":
+                            if name is not None and name not in INVALID_NAMES:
                                 if (name, item.item_type) in self.Rare_Weapon_ModelIds:
                                     model_ids = self.Rare_Weapon_ModelIds[(name, item.item_type)]
                                     if not model_ids or model_id in model_ids:
@@ -1151,7 +1165,66 @@ class Data():
                 ConsoleLog(
                     "LootEx", f"Delete {file_path}...", Console.MessageType.Debug)
         
+        ## Load all files in path/import
+        import_folder = os.path.join(path, "import")
+        if os.path.exists(import_folder):
+            import_files = os.listdir(import_folder)
+            
+            for import_file in import_files:
+                file_path = os.path.join(import_folder, import_file)
+                
+                if os.path.exists(file_path) and import_file.endswith(".json"):                            
+                    with open(file_path, 'r', encoding='utf-8') as file:                    
+                        file_data = json.load(file)
+                        file_items = models.ItemsByType.from_dict(file_data)
+                        items_found = len(file_items.items()) > 0 or items_found
+                        
+                        for item_type, items in file_items.items():
+                            if item_type not in self.Items:
+                                self.Items[item_type] = {}
+                                
+                            # Iterate through the items in the diff file
+                            for model_id, item in items.items():
+                                new_item = self.Items.add_item(item)
+                                
+                                if new_item is None:
+                                    continue
+                                
+                                if new_item:
+                                    if item_type.name not in new_items:
+                                        new_items[item_type.name] = []
+                                        
+                                    new_items[item_type.name].append(item.name)
+                                
+                                name = item.names.get(ServerLanguage.English, None)
+                                if name is not None and name not in INVALID_NAMES:
+                                    if (name, item.item_type) in self.Rare_Weapon_ModelIds:
+                                        model_ids = self.Rare_Weapon_ModelIds[(name, item.item_type)]
+                                        if not model_ids or model_id in model_ids:
+                                            item.category = ItemCategory.RareWeapon                             
+                
+                    # Delete the diff file after merging
+                    os.remove(file_path)
+                    ConsoleLog(
+                        "LootEx", f"Delete {file_path}...", Console.MessageType.Debug)
+        
+        for item in list(self.Items.All):
+            ## remove all invalid names from item.names
+            names_to_remove = [lang for lang, name in item.names.items() if name in INVALID_NAMES]
+            for lang in names_to_remove:
+                del item.names[lang]
+            
+            ## if item has no valid names, remove it from the collection
+            if len(item.names) == 0:
+                self.Items[item.item_type].pop(item.model_id, None)
+                self.Items.All.remove(item)
+                items_found = True
+        
         if items_found:
+            for item_type, items in new_items.items():
+                ConsoleLog(
+                    "LootEx", f"Merged {len(items)} new items of type {item_type}: {', '.join(items)}", Console.MessageType.Info)
+                
             ConsoleLog(
                 "LootEx", f"Saving merged items...", Console.MessageType.Debug)
             self.SaveItems(shared_file=True, items=self.Items)

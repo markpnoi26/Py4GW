@@ -128,4 +128,3 @@ class _Merchant:
         merchant_handler = MerchantHandler()
         
         yield from merchant_handler.sell_item(item_id, quantity)
-        

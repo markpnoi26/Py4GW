@@ -4,7 +4,8 @@ import webbrowser
 from datetime import datetime
 
 from Py4GWCoreLib.GlobalCache.ItemCache import Bag_enum
-from Py4GWCoreLib.ImGui_src.types import TextDecorator
+from Py4GWCoreLib.ImGui_src.types import Alignment, TextDecorator
+from Py4GW_widget_manager import WidgetHandler
 from Widgets.frenkey.Core.iterable import chunked
 from Widgets.frenkey.Core.utility import ImGuiIniReader, string_similarity
 from Widgets.frenkey.Core.gui import GUI
@@ -12,7 +13,7 @@ from Widgets.frenkey.Core import ex_style, texture_map
 from Widgets.frenkey.LootEx import skin_rule, loot_handling, settings, price_check, utility, cache, ui_manager_extensions, inventory_handling, models, messaging
 from Widgets.frenkey.LootEx.data import Data
 from Widgets.frenkey.LootEx.data_collection import DataCollector
-from Widgets.frenkey.LootEx.enum import CHARACTER_INVENTORY, XUNLAI_STORAGE, ActionModsType, ItemAction, ItemCategory, ItemSubCategory, ModType, SalvageOption
+from Widgets.frenkey.LootEx.enum import CHARACTER_INVENTORY, XUNLAI_STORAGE, ActionModsType, ItemAction, ItemCategory, ItemSubCategory, MaterialType, ModType, SalvageOption
 from Widgets.frenkey.LootEx.item_configuration import ConfigurationCondition
 from Widgets.frenkey.LootEx.filter import Filter
 from Widgets.frenkey.LootEx.profile import Profile
@@ -192,6 +193,7 @@ class UI:
         from Widgets.frenkey.LootEx.data import Data
         self.data = Data()
         
+        self.widget_handler = WidgetHandler()        
         self.imgui_ini_reader = ImGuiIniReader()
         window_pos, window_size, collapse = self.get_window_info()
         
@@ -792,13 +794,19 @@ class UI:
         
         return window_pos, window_size, collapse
     
-    def show_main_window(self, ensure_on_screen: bool = False):        
-        self.settings.window_visible = True
-        self.module_window.open = True
-        self.ensure_window_on_screen = ensure_on_screen
+    def show_main_window(self, ensure_on_screen: bool = False):             
+        widget_info = self.widget_handler.get_widget_info("LootEx")
+        if not widget_info:
+            return
         
-    def hide_main_window(self):        
-        self.settings.window_visible = False
+        widget_info.configuring = True
+        
+    def hide_main_window(self):              
+        widget_info = self.widget_handler.get_widget_info("LootEx")
+        if not widget_info:
+            return
+        
+        widget_info.configuring = False
     
     def draw_disclaimer(self, active_inventory_widgets):
         if not self.InventoryBagsVisible():
@@ -875,8 +883,13 @@ class UI:
         style.WindowPadding.pop_style_var()
         style.WindowRounding.pop_style_var()
     
-    def draw_window(self):    
-        if not self.settings.window_visible:
+    def draw_window(self):
+        widget_info = self.widget_handler.get_widget_info("LootEx")
+        
+        self.settings.window_visible = widget_info.configuring if widget_info else False
+        self.module_window.open = self.settings.window_visible
+        
+        if not widget_info or not widget_info.configuring:
             return       
 
         window_style = ex_style.ExStyle()
@@ -990,7 +1003,7 @@ class UI:
         
         if self.module_window.open != self.settings.window_visible:
             self.settings.window_visible = self.module_window.open
-            self.settings.manual_window_visible = self.module_window.open
+            widget_info.configuring = self.module_window.open
             self.settings.save()
     
     def InventoryBagsVisible(self) -> bool:
@@ -1084,12 +1097,6 @@ class UI:
             self._draw_sort_inventory_button(width)
 
             PyImGui.end()
-
-        if self.settings.manual_window_visible:
-            if not self.settings.window_visible:
-                self.show_main_window(True)
-        else:
-            self.hide_main_window()
             
     def _draw_inventory_toggle_button(self, width):
         if UI.transparent_button(IconsFontAwesome5.ICON_CHECK, self.settings.automatic_inventory_handling, width, width):
@@ -1175,21 +1182,27 @@ class UI:
         )
     
     def _draw_manual_window_toggle_button(self, width):
-        if UI.transparent_button(IconsFontAwesome5.ICON_COG, self.settings.manual_window_visible, width, width):
+        if UI.transparent_button(IconsFontAwesome5.ICON_COG, self.settings.window_visible, width, width):
             imgui_io = self.py_io
             if imgui_io.key_ctrl:
-                if self.settings.manual_window_visible:
+                if self.settings.window_visible:
                     messaging.SendHideLootExWindow(imgui_io.key_shift)
                     self.settings.save()
                 else:
                     messaging.SendShowLootExWindow(imgui_io.key_shift)
                     self.settings.save()
             else:
-                self.settings.manual_window_visible = not self.settings.manual_window_visible
+                self.settings.window_visible = not self.settings.window_visible
+                
+                if self.settings.window_visible:
+                    self.show_main_window(True) 
+                else:
+                    self.hide_main_window()
+    
                 self.settings.save()
 
         ImGui.show_tooltip(
-            ("Hide" if self.settings.manual_window_visible else "Show") + " Window" +
+            ("Hide" if self.settings.window_visible else "Show") + " Window" +
             "\nHold Ctrl to send message to all accounts" +
             "\nHold Shift to send message to all accounts excluding yourself")
 
@@ -1701,21 +1714,29 @@ class UI:
                 price_check_mgr.request_prices(item_ids, assign_material_price)
             
             if PyImGui.is_rect_visible(0, 20):
-                ImGui.begin_table("DataCollectorMaterialsTable", 2, PyImGui.TableFlags.ScrollY | PyImGui.TableFlags.Borders, 0, 0)
+                ImGui.begin_table("DataCollectorMaterialsTable", 3, PyImGui.TableFlags.ScrollY | PyImGui.TableFlags.NoBordersInBody, 0, 0)
+                PyImGui.table_setup_column("Icon", PyImGui.TableColumnFlags.WidthFixed, 30)
                 PyImGui.table_setup_column("Material")
                 PyImGui.table_setup_column("Price")
-                PyImGui.table_headers_row()
+                # PyImGui.table_headers_row()
                 
                 PyImGui.table_next_row()
                 for material in data.Materials.values():
                     PyImGui.table_next_column()
-                    ImGui.text(material.name)
+                    ImGui.image(material.texture_file, (24, 24))
                     PyImGui.table_next_column()
-                    if material.vendor_value is not None:
-                        ImGui.text(utility.Util.format_currency(material.vendor_value))
+                    if material.material_type is MaterialType.Common:
+                        ImGui.text_aligned(f"{material.name} (10)", height=24, alignment=Alignment.MidLeft)
                     else:
-                        ImGui.text("N/A")
-                    ImGui.show_tooltip("Last Checked: " + utility.Util.format_time_ago(datetime.now() - material.vendor_updated) if material.vendor_updated else "Never Updated")
+                        ImGui.text_aligned(material.name, height=24, alignment=Alignment.MidLeft)
+                        
+                    PyImGui.table_next_column()
+                    price_str = utility.Util.format_currency(material.vendor_value) if material.vendor_value is not None else "N/A"
+                        
+                    ImGui.text_aligned(price_str, height=24, alignment=Alignment.MidLeft)
+                    
+                    if PyImGui.is_item_hovered():
+                        ImGui.show_tooltip("Last Checked: " + utility.Util.format_custom_time_ago(datetime.now() - material.vendor_updated) if material.vendor_updated else "Never Updated")
 
                 # for material in data.Rare_Materials.values():
                 #     PyImGui.table_next_row()
@@ -1732,7 +1753,7 @@ class UI:
             
             
             ImGui.end_child()
-        ImGui.end_tab_item()
+            ImGui.end_tab_item()
         pass
     
     def draw_delete_profile_popup(self):
@@ -5565,7 +5586,11 @@ class UI:
                     PyImGui.table_next_column()
                     ImGui.text(f"Last Checked")
                     PyImGui.table_next_column()
+<<<<<<< HEAD
                     time_ago = f"{utility.Util.format_time_ago(datetime.now() - mod.vendor_updated)}\n" if mod.vendor_updated else ""
+=======
+                    time_ago = f"{utility.Util.format_custom_time_ago(datetime.now() - mod.vendor_updated)}\n" if mod.vendor_updated else ""
+>>>>>>> frenkey/main
                     ImGui.text(f"{time_ago}")
                     
                 ImGui.end_table()

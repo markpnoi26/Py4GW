@@ -11,7 +11,7 @@ import Py4GW
 from PyItem import ItemModifier
 from Widgets.frenkey.Core.utility import get_image_name
 from Widgets.frenkey.LootEx import enum
-from Widgets.frenkey.LootEx.enum import Campaign, EnemyType, MaterialType, ModType, ModifierIdentifier, ModifierValueArg, ModsModels
+from Widgets.frenkey.LootEx.enum import INVALID_NAMES, Campaign, EnemyType, MaterialType, ModType, ModifierIdentifier, ModifierValueArg, ModsModels
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.Py4GWcorelib import ConsoleLog
 from Py4GWCoreLib.enums import Attribute, Console, DamageType, ItemType, ModelID, Profession, Rarity, ServerLanguage
@@ -288,7 +288,7 @@ class ItemsByType(dict[ItemType, dict[int, 'Item']]):
         super().__init__(*args, **kwargs)
         self.All : List['Item'] = []
     
-    def add_item(self, item: 'Item'):
+    def add_item(self, item: 'Item') -> Optional[bool]:
         """
         Add an Item to the collection under the specified ItemType.
         
@@ -300,16 +300,20 @@ class ItemsByType(dict[ItemType, dict[int, 'Item']]):
         if item.item_type not in self:
             self[item.item_type] = {}
         
+        item.names = {lang: name for lang, name in item.names.items() if name not in INVALID_NAMES}
+        
         if len(item.names) == 0:
-            return
+            return None
         
         if item.model_id not in self[item.item_type]:
             self[item.item_type][item.model_id] = item
             self.All.append(item)
+            return True
             
         else:
             existing_item = self[item.item_type][item.model_id]
             existing_item.update(item)
+            return False
     
     def sort_items(self):
         """

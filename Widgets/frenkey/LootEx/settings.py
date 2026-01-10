@@ -48,7 +48,6 @@ class Settings:
         self.window_position: tuple[float, float] = (500, 200)
         self.window_collapsed: bool = False
         self.window_visible: bool = False
-        self.manual_window_visible: bool = False
         self.scraper_window_visible: bool = False
 
         self.settings_file_path: str = ""
@@ -133,7 +132,6 @@ class Settings:
             "window_size": self.window_size,
             "window_position": self.window_position,
             "window_collapsed": self.window_collapsed,
-            "manual_window_visible": self.manual_window_visible,
             "collect_items": self.collect_items,
             "max_xunlai_storage": self.max_xunlai_storage.value,
             "last_xunlai_check": self.last_xunlai_check.isoformat(),
@@ -187,8 +185,6 @@ class Settings:
                     settings_dict.get("window_position", (200, 200)))
                 self.window_collapsed = settings_dict.get(
                     "window_collapsed", False)
-                self.manual_window_visible = settings_dict.get(
-                    "manual_window_visible", False)
                 self.max_xunlai_storage = Bag_enum(
                     settings_dict.get("max_xunlai_storage", Bag_enum.Storage_4.value))
                 last_xunlai_check_str = settings_dict.get("last_xunlai_check", None)

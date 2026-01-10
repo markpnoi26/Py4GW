@@ -591,6 +591,37 @@ class Util:
         else:
             days = seconds // 86400
             return f"{days} days ago"
+        
+    ## Create a method that formats a timedelta into a custom format just like time formatting libraries (e.g., "2 days, 3 hours, 15 minutes ago") with a formatting such as "dd hh mm ss ago"
+    @staticmethod
+    def format_custom_time_ago(delta: timedelta, separator: str = ", ", format: str = "dd hh mm ss") -> str:
+        """
+        Format a timedelta into a custom human-readable string indicating how long ago it was.
+
+        Args:
+            delta (timedelta): The time difference to format.
+        Returns:
+            str: A formatted string representing the time difference.
+        """
+        seconds = int(delta.total_seconds())
+        days, seconds = divmod(seconds, 86400)
+        hours, seconds = divmod(seconds, 3600)
+        minutes, seconds = divmod(seconds, 60)
+
+        parts = []
+        if "dd" in format and days > 0:
+            parts.append(f"{days} days")
+            
+        if "hh" in format and hours > 0:
+            parts.append(f"{hours} hours")
+            
+        if "mm" in format and minutes > 0:
+            parts.append(f"{minutes} minutes")
+            
+        if "ss" in format and seconds > 0:
+            parts.append(f"{seconds} seconds")
+            
+        return separator.join(parts) + " ago"
 
     @staticmethod
     def is_common_material(model_id: int) -> bool:

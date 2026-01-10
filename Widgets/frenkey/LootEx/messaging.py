@@ -248,11 +248,11 @@ def HandleReceivedMessages():
                             GLOBAL_CACHE.ShMem.MarkMessageAsFinished(GLOBAL_CACHE.Player.GetAccountEmail(), index)
                             
                         case enum.MessageActions.ShowLootExWindow:
-                            settings.manual_window_visible = True
+                            settings.window_visible = True
                             GLOBAL_CACHE.ShMem.MarkMessageAsFinished(GLOBAL_CACHE.Player.GetAccountEmail(), index)
                             
                         case enum.MessageActions.HideLootExWindow:
-                            settings.manual_window_visible = False
+                            settings.window_visible = False
                             GLOBAL_CACHE.ShMem.MarkMessageAsFinished(GLOBAL_CACHE.Player.GetAccountEmail(), index)
                             
                         case enum.MessageActions.OpenXunlai:    

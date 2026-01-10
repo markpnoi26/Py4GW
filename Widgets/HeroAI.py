@@ -514,8 +514,7 @@ def main():
             HeroAI_BT.tick()
         else:
             map_quads.clear()
-            HeroAI_BT.reset()
-
+            
 
 
     except ImportError as e:

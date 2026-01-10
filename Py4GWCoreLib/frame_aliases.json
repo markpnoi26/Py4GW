@@ -1158,6 +1158,8 @@
     "140452905,12": "Leave your party Dialog",
     "140452905,6,1,0": "Skip Cutscene Button",
     "1431953425,1,4294967290": "Gamepad Options Tab",
-    "4008686776": "AmountDialog.Max",
-    "4014954629": "AmountDialog.Drop"
+    "3332025202,1,8,0,0,0,0": "PartyMembersParent",
+    "3332025202,1,8,0,0,0,0,7": "PartyMember7",
+    "3332025202,1,8,0,0,0,0,1,1": "PartyReadyToggle",
+    "3332025202,0,0,0,0": "PartyMembersParentExplorable"
 }
