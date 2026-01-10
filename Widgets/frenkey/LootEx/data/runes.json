@@ -223,13 +223,8 @@
         "Profession": "_None",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:35.650160",
-        "VendorValue": 180,
-=======
         "VendorUpdated": "2025-12-25T17:33:11.411898",
         "VendorValue": 140,
->>>>>>> frenkey/main
         "InventoryIcon": "Stalwart Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/8/83/Stalwart_Insignia.png",
         "Modifiers": [
@@ -268,13 +263,8 @@
         "Profession": "_None",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:35.453566",
-        "VendorValue": 460,
-=======
         "VendorUpdated": "2025-12-25T17:33:11.160108",
         "VendorValue": 320,
->>>>>>> frenkey/main
         "InventoryIcon": "Survivor Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/b/b7/Survivor_Insignia.png",
         "Modifiers": [
@@ -313,13 +303,8 @@
         "Profession": "_None",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:39.638721",
-        "VendorValue": 140,
-=======
         "VendorUpdated": "2025-12-25T17:33:17.806689",
         "VendorValue": 320,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune All Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/f/fb/Rune_All_Minor.png",
         "Modifiers": [
@@ -358,13 +343,8 @@
         "Profession": "_None",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:39.444345",
-        "VendorValue": 2200,
-=======
         "VendorUpdated": "2025-12-25T17:33:17.473378",
         "VendorValue": 5000,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune All Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/f/fb/Rune_All_Minor.png",
         "Modifiers": [
@@ -403,13 +383,8 @@
         "Profession": "_None",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:39.540142",
-        "VendorValue": 600,
-=======
         "VendorUpdated": "2025-12-25T17:33:17.633305",
         "VendorValue": 1300,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune All Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/f/fb/Rune_All_Minor.png",
         "Modifiers": [
@@ -448,13 +423,8 @@
         "Profession": "_None",
         "Rarity": "Purple",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:44.000346",
-        "VendorValue": 3100,
-=======
         "VendorUpdated": "2025-12-25T17:33:24.401241",
         "VendorValue": 1200,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune All Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/f/f6/Rune_All_Major.png",
         "Modifiers": [
@@ -493,13 +463,8 @@
         "Profession": "_None",
         "Rarity": "Purple",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:43.702270",
-        "VendorValue": 10000,
-=======
         "VendorUpdated": "2025-12-25T17:33:23.968393",
         "VendorValue": 9500,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune All Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/f/f6/Rune_All_Major.png",
         "Modifiers": [
@@ -538,11 +503,7 @@
         "Profession": "_None",
         "Rarity": "Purple",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:44.100577",
-=======
         "VendorUpdated": "2025-12-25T17:33:24.530268",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Rune All Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/f/f6/Rune_All_Major.png",
@@ -582,13 +543,8 @@
         "Profession": "_None",
         "Rarity": "Purple",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:43.803946",
-        "VendorValue": 150,
-=======
         "VendorUpdated": "2025-12-25T17:33:24.100781",
         "VendorValue": 100,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune All Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/f/f6/Rune_All_Major.png",
         "Modifiers": [
@@ -627,13 +583,8 @@
         "Profession": "_None",
         "Rarity": "Purple",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:43.899157",
-        "VendorValue": 140,
-=======
         "VendorUpdated": "2025-12-25T17:33:24.267163",
         "VendorValue": 100,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune All Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/f/f6/Rune_All_Major.png",
         "Modifiers": [
@@ -672,13 +623,8 @@
         "Profession": "_None",
         "Rarity": "Gold",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:48.169902",
-        "VendorValue": 70000,
-=======
         "VendorUpdated": "2025-12-25T17:33:30.774196",
         "VendorValue": 60000,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune All Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/9/9e/Rune_All_Sup.png",
         "Modifiers": [
@@ -717,11 +663,7 @@
         "Profession": "Warrior",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:36.365501",
-=======
         "VendorUpdated": "2025-12-25T17:33:12.504750",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Dreadnought Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/c/ce/Dreadnought_Insignia.png",
@@ -761,13 +703,8 @@
         "Profession": "Warrior",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:36.093243",
-        "VendorValue": 180,
-=======
         "VendorUpdated": "2025-12-25T17:33:12.096752",
         "VendorValue": 120,
->>>>>>> frenkey/main
         "InventoryIcon": "Knight's Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/7/79/Knight%27s_Insignia.png",
         "Modifiers": [
@@ -806,11 +743,7 @@
         "Profession": "Warrior",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:36.184197",
-=======
         "VendorUpdated": "2025-12-25T17:33:12.219745",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Lieutenant's Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/5/57/Lieutenant%27s_Insignia.png",
@@ -850,13 +783,8 @@
         "Profession": "Warrior",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:36.455509",
-        "VendorValue": 280,
-=======
         "VendorUpdated": "2025-12-25T17:33:12.674492",
         "VendorValue": 950,
->>>>>>> frenkey/main
         "InventoryIcon": "Sentinel's Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/1/1e/Sentinel%27s_Insignia.png",
         "Modifiers": [
@@ -895,13 +823,8 @@
         "Profession": "Warrior",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:36.274995",
-        "VendorValue": 130,
-=======
         "VendorUpdated": "2025-12-25T17:33:12.348988",
         "VendorValue": 110,
->>>>>>> frenkey/main
         "InventoryIcon": "Stonefist Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/1/1f/Stonefist_Insignia.png",
         "Modifiers": [
@@ -940,11 +863,7 @@
         "Profession": "Warrior",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:39.733563",
-=======
         "VendorUpdated": "2025-12-25T17:33:17.945957",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Rune Warrior Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/2/2f/Rune_Warrior_Minor.png",
@@ -984,13 +903,8 @@
         "Profession": "Warrior",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:39.999624",
-        "VendorValue": 140,
-=======
         "VendorUpdated": "2025-12-25T17:33:18.370121",
         "VendorValue": 130,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Warrior Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/2/2f/Rune_Warrior_Minor.png",
         "Modifiers": [
@@ -1029,11 +943,7 @@
         "Profession": "Warrior",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:40.091542",
-=======
         "VendorUpdated": "2025-12-25T17:33:18.495047",
->>>>>>> frenkey/main
         "VendorValue": 130,
         "InventoryIcon": "Rune Warrior Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/2/2f/Rune_Warrior_Minor.png",
@@ -1073,13 +983,8 @@
         "Profession": "Warrior",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:39.918327",
-        "VendorValue": 950,
-=======
         "VendorUpdated": "2025-12-25T17:33:18.242601",
         "VendorValue": 3400,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Warrior Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/2/2f/Rune_Warrior_Minor.png",
         "Modifiers": [
@@ -1118,13 +1023,8 @@
         "Profession": "Warrior",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:40.180889",
-        "VendorValue": 140,
-=======
         "VendorUpdated": "2025-12-25T17:33:18.620338",
         "VendorValue": 370,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Warrior Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/2/2f/Rune_Warrior_Minor.png",
         "Modifiers": [
@@ -1163,13 +1063,8 @@
         "Profession": "Warrior",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:39.825777",
-        "VendorValue": 120,
-=======
         "VendorUpdated": "2025-12-25T17:33:18.073876",
         "VendorValue": 550,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Warrior Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/2/2f/Rune_Warrior_Minor.png",
         "Modifiers": [
@@ -1208,11 +1103,7 @@
         "Profession": "Warrior",
         "Rarity": "Purple",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:44.190492",
-=======
         "VendorUpdated": "2025-12-25T17:33:24.654093",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Rune Warrior Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/4/46/Rune_Warrior_Major.png",
@@ -1252,11 +1143,7 @@
         "Profession": "Warrior",
         "Rarity": "Purple",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:44.463830",
-=======
         "VendorUpdated": "2025-12-25T17:33:25.043467",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Rune Warrior Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/4/46/Rune_Warrior_Major.png",
@@ -1305,11 +1192,7 @@
         "Profession": "Warrior",
         "Rarity": "Purple",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:44.550788",
-=======
         "VendorUpdated": "2025-12-25T17:33:25.176403",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Rune Warrior Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/4/46/Rune_Warrior_Major.png",
@@ -1358,11 +1241,7 @@
         "Profession": "Warrior",
         "Rarity": "Purple",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:44.366465",
-=======
         "VendorUpdated": "2025-12-25T17:33:24.907193",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Rune Warrior Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/4/46/Rune_Warrior_Major.png",
@@ -1411,11 +1290,7 @@
         "Profession": "Warrior",
         "Rarity": "Purple",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:44.654756",
-=======
         "VendorUpdated": "2025-12-25T17:33:25.311571",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Rune Warrior Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/4/46/Rune_Warrior_Major.png",
@@ -1464,11 +1339,7 @@
         "Profession": "Warrior",
         "Rarity": "Purple",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:44.276380",
-=======
         "VendorUpdated": "2025-12-25T17:33:24.778996",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Rune Warrior Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/4/46/Rune_Warrior_Major.png",
@@ -1517,11 +1388,7 @@
         "Profession": "Warrior",
         "Rarity": "Gold",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:48.254801",
-=======
         "VendorUpdated": "2025-12-25T17:33:30.905724",
->>>>>>> frenkey/main
         "VendorValue": 200,
         "InventoryIcon": "Rune Warrior Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/3/31/Rune_Warrior_Sup.png",
@@ -1561,11 +1428,7 @@
         "Profession": "Warrior",
         "Rarity": "Gold",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:48.535088",
-=======
         "VendorUpdated": "2025-12-25T17:33:31.327816",
->>>>>>> frenkey/main
         "VendorValue": 200,
         "InventoryIcon": "Rune Warrior Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/3/31/Rune_Warrior_Sup.png",
@@ -1614,11 +1477,7 @@
         "Profession": "Warrior",
         "Rarity": "Gold",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:48.630936",
-=======
         "VendorUpdated": "2025-12-25T17:33:31.458599",
->>>>>>> frenkey/main
         "VendorValue": 200,
         "InventoryIcon": "Rune Warrior Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/3/31/Rune_Warrior_Sup.png",
@@ -1667,11 +1526,7 @@
         "Profession": "Warrior",
         "Rarity": "Gold",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:48.439523",
-=======
         "VendorUpdated": "2025-12-25T17:33:31.203466",
->>>>>>> frenkey/main
         "VendorValue": 200,
         "InventoryIcon": "Rune Warrior Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/3/31/Rune_Warrior_Sup.png",
@@ -1720,11 +1575,7 @@
         "Profession": "Warrior",
         "Rarity": "Gold",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:48.739359",
-=======
         "VendorUpdated": "2025-12-25T17:33:31.623303",
->>>>>>> frenkey/main
         "VendorValue": 200,
         "InventoryIcon": "Rune Warrior Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/3/31/Rune_Warrior_Sup.png",
@@ -1773,11 +1624,7 @@
         "Profession": "Warrior",
         "Rarity": "Gold",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:48.342792",
-=======
         "VendorUpdated": "2025-12-25T17:33:31.068952",
->>>>>>> frenkey/main
         "VendorValue": 200,
         "InventoryIcon": "Rune Warrior Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/3/31/Rune_Warrior_Sup.png",
@@ -1826,13 +1673,8 @@
         "Profession": "Ranger",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:37.019404",
-        "VendorValue": 850,
-=======
         "VendorUpdated": "2025-12-25T17:33:13.516462",
         "VendorValue": 230,
->>>>>>> frenkey/main
         "InventoryIcon": "Beastmaster's Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/d/d3/Beastmaster%27s_Insignia.png",
         "Modifiers": [
@@ -1871,11 +1713,7 @@
         "Profession": "Ranger",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:36.926033",
-=======
         "VendorUpdated": "2025-12-25T17:33:13.348082",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Earthbound Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/a/a3/Earthbound_Insignia.png",
@@ -1915,11 +1753,7 @@
         "Profession": "Ranger",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:36.542930",
-=======
         "VendorUpdated": "2025-12-25T17:33:12.803622",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Frostbound Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/9/91/Frostbound_Insignia.png",
@@ -1959,11 +1793,7 @@
         "Profession": "Ranger",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:36.634662",
-=======
         "VendorUpdated": "2025-12-25T17:33:12.970196",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Pyrebound Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/7/7c/Pyrebound_Insignia.png",
@@ -2003,11 +1833,7 @@
         "Profession": "Ranger",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:36.830422",
-=======
         "VendorUpdated": "2025-12-25T17:33:13.224138",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Scout's Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/1/15/Scout%27s_Insignia.png",
@@ -2047,11 +1873,7 @@
         "Profession": "Ranger",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:36.738973",
-=======
         "VendorUpdated": "2025-12-25T17:33:13.095883",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Stormbound Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/6/6a/Stormbound_Insignia.png",
@@ -2091,13 +1913,8 @@
         "Profession": "Ranger",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:40.457779",
-        "VendorValue": 150,
-=======
         "VendorUpdated": "2025-12-25T17:33:19.056361",
         "VendorValue": 100,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Ranger Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/1/15/Rune_Ranger_Minor.png",
         "Modifiers": [
@@ -2136,13 +1953,8 @@
         "Profession": "Ranger",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:40.365322",
-        "VendorValue": 100,
-=======
         "VendorUpdated": "2025-12-25T17:33:18.924875",
         "VendorValue": 500,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Ranger Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/1/15/Rune_Ranger_Minor.png",
         "Modifiers": [
@@ -2181,13 +1993,8 @@
         "Profession": "Ranger",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:40.551443",
-        "VendorValue": 320,
-=======
         "VendorUpdated": "2025-12-25T17:33:19.198151",
         "VendorValue": 450,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Ranger Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/1/15/Rune_Ranger_Minor.png",
         "Modifiers": [
@@ -2226,11 +2033,7 @@
         "Profession": "Ranger",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:40.271696",
-=======
         "VendorUpdated": "2025-12-25T17:33:18.790797",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Rune Ranger Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/1/15/Rune_Ranger_Minor.png",
@@ -2270,11 +2073,7 @@
         "Profession": "Ranger",
         "Rarity": "Purple",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:44.934459",
-=======
         "VendorUpdated": "2025-12-25T17:33:25.761404",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Rune Ranger Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/8/85/Rune_Ranger_Major.png",
@@ -2323,11 +2122,7 @@
         "Profession": "Ranger",
         "Rarity": "Purple",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:44.835521",
-=======
         "VendorUpdated": "2025-12-25T17:33:25.599497",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Rune Ranger Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/8/85/Rune_Ranger_Major.png",
@@ -2376,11 +2171,7 @@
         "Profession": "Ranger",
         "Rarity": "Purple",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:45.029703",
-=======
         "VendorUpdated": "2025-12-25T17:33:25.889116",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Rune Ranger Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/8/85/Rune_Ranger_Major.png",
@@ -2429,11 +2220,7 @@
         "Profession": "Ranger",
         "Rarity": "Purple",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:44.751227",
-=======
         "VendorUpdated": "2025-12-25T17:33:25.470718",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Rune Ranger Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/8/85/Rune_Ranger_Major.png",
@@ -2482,13 +2269,8 @@
         "Profession": "Ranger",
         "Rarity": "Gold",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:49.021863",
-        "VendorValue": 260,
-=======
         "VendorUpdated": "2025-12-25T17:33:32.018084",
         "VendorValue": 200,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Ranger Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/4/4d/Rune_Ranger_Sup.png",
         "Modifiers": [
@@ -2536,11 +2318,7 @@
         "Profession": "Ranger",
         "Rarity": "Gold",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:48.937177",
-=======
         "VendorUpdated": "2025-12-25T17:33:31.888249",
->>>>>>> frenkey/main
         "VendorValue": 200,
         "InventoryIcon": "Rune Ranger Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/4/4d/Rune_Ranger_Sup.png",
@@ -2589,13 +2367,8 @@
         "Profession": "Ranger",
         "Rarity": "Gold",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:49.104161",
-        "VendorValue": 210,
-=======
         "VendorUpdated": "2025-12-25T17:33:32.199544",
         "VendorValue": 200,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Ranger Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/4/4d/Rune_Ranger_Sup.png",
         "Modifiers": [
@@ -2643,11 +2416,7 @@
         "Profession": "Ranger",
         "Rarity": "Gold",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:48.840530",
-=======
         "VendorUpdated": "2025-12-25T17:33:31.755133",
->>>>>>> frenkey/main
         "VendorValue": 200,
         "InventoryIcon": "Rune Ranger Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/4/4d/Rune_Ranger_Sup.png",
@@ -2696,13 +2465,8 @@
         "Profession": "Monk",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:37.306719",
-        "VendorValue": 240,
-=======
         "VendorUpdated": "2025-12-25T17:33:13.938075",
         "VendorValue": 290,
->>>>>>> frenkey/main
         "InventoryIcon": "Anchorite's Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/2/2c/Anchorite%27s_Insignia.png",
         "Modifiers": [
@@ -2741,11 +2505,7 @@
         "Profession": "Monk",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:37.210752",
-=======
         "VendorUpdated": "2025-12-25T17:33:13.812627",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Disciple's Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/d/df/Disciple%27s_Insignia.png",
@@ -2785,11 +2545,7 @@
         "Profession": "Monk",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:37.115248",
-=======
         "VendorUpdated": "2025-12-25T17:33:13.656209",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Wanderer's Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/c/c1/Wanderer%27s_Insignia.png",
@@ -2829,13 +2585,8 @@
         "Profession": "Monk",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:40.934238",
-        "VendorValue": 900,
-=======
         "VendorUpdated": "2025-12-25T17:33:19.844556",
         "VendorValue": 1400,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Monk Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/2/28/Rune_Monk_Minor.png",
         "Modifiers": [
@@ -2874,13 +2625,8 @@
         "Profession": "Monk",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:40.653770",
-        "VendorValue": 370,
-=======
         "VendorUpdated": "2025-12-25T17:33:19.363417",
         "VendorValue": 950,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Monk Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/2/28/Rune_Monk_Minor.png",
         "Modifiers": [
@@ -2919,13 +2665,8 @@
         "Profession": "Monk",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:40.843564",
-        "VendorValue": 150,
-=======
         "VendorUpdated": "2025-12-25T17:33:19.705445",
         "VendorValue": 600,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Monk Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/2/28/Rune_Monk_Minor.png",
         "Modifiers": [
@@ -2964,11 +2705,7 @@
         "Profession": "Monk",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:40.748119",
-=======
         "VendorUpdated": "2025-12-25T17:33:19.542300",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Rune Monk Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/2/28/Rune_Monk_Minor.png",
@@ -3008,11 +2745,7 @@
         "Profession": "Monk",
         "Rarity": "Purple",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:45.439184",
-=======
         "VendorUpdated": "2025-12-25T17:33:26.406481",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Rune Monk Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/2/27/Rune_Monk_Major.png",
@@ -3061,11 +2794,7 @@
         "Profession": "Monk",
         "Rarity": "Purple",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:45.128589",
-=======
         "VendorUpdated": "2025-12-25T17:33:26.019829",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Rune Monk Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/2/27/Rune_Monk_Major.png",
@@ -3114,11 +2843,7 @@
         "Profession": "Monk",
         "Rarity": "Purple",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:45.344169",
-=======
         "VendorUpdated": "2025-12-25T17:33:26.274022",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Rune Monk Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/2/27/Rune_Monk_Major.png",
@@ -3167,11 +2892,7 @@
         "Profession": "Monk",
         "Rarity": "Purple",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:45.246736",
-=======
         "VendorUpdated": "2025-12-25T17:33:26.140941",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Rune Monk Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/2/27/Rune_Monk_Major.png",
@@ -3220,11 +2941,7 @@
         "Profession": "Monk",
         "Rarity": "Gold",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:49.480903",
-=======
         "VendorUpdated": "2025-12-25T17:33:32.747462",
->>>>>>> frenkey/main
         "VendorValue": 200,
         "InventoryIcon": "Rune Monk Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/e/e5/Rune_Monk_Sup.png",
@@ -3273,13 +2990,8 @@
         "Profession": "Monk",
         "Rarity": "Gold",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:49.199329",
-        "VendorValue": 800,
-=======
         "VendorUpdated": "2025-12-25T17:33:32.327389",
         "VendorValue": 200,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Monk Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/e/e5/Rune_Monk_Sup.png",
         "Modifiers": [
@@ -3327,11 +3039,7 @@
         "Profession": "Monk",
         "Rarity": "Gold",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:49.387553",
-=======
         "VendorUpdated": "2025-12-25T17:33:32.611377",
->>>>>>> frenkey/main
         "VendorValue": 200,
         "InventoryIcon": "Rune Monk Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/e/e5/Rune_Monk_Sup.png",
@@ -3380,11 +3088,7 @@
         "Profession": "Monk",
         "Rarity": "Gold",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:49.280966",
-=======
         "VendorUpdated": "2025-12-25T17:33:32.486253",
->>>>>>> frenkey/main
         "VendorValue": 200,
         "InventoryIcon": "Rune Monk Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/e/e5/Rune_Monk_Sup.png",
@@ -3433,11 +3137,7 @@
         "Profession": "Necromancer",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:37.771128",
-=======
         "VendorUpdated": "2025-12-25T17:33:14.617335",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Blighter's Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/d/d7/Blighter%27s_Insignia.png",
@@ -3477,13 +3177,8 @@
         "Profession": "Necromancer",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:37.397245",
-        "VendorValue": 750,
-=======
         "VendorUpdated": "2025-12-25T17:33:14.068345",
         "VendorValue": 490,
->>>>>>> frenkey/main
         "InventoryIcon": "Bloodstained Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/8/88/Bloodstained_Insignia.png",
         "Modifiers": [
@@ -3522,11 +3217,7 @@
         "Profession": "Necromancer",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:37.580011",
-=======
         "VendorUpdated": "2025-12-25T17:33:14.331060",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Bonelace Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/c/c5/Bonelace_Insignia.png",
@@ -3566,13 +3257,8 @@
         "Profession": "Necromancer",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:37.679863",
-        "VendorValue": 700,
-=======
         "VendorUpdated": "2025-12-25T17:33:14.459504",
         "VendorValue": 190,
->>>>>>> frenkey/main
         "InventoryIcon": "Minion Master's Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/8/81/Minion_Master%27s_Insignia.png",
         "Modifiers": [
@@ -3611,13 +3297,8 @@
         "Profession": "Necromancer",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:37.480343",
-        "VendorValue": 1300,
-=======
         "VendorUpdated": "2025-12-25T17:33:14.197663",
         "VendorValue": 1900,
->>>>>>> frenkey/main
         "InventoryIcon": "Tormentor's Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/8/8e/Tormentor%27s_Insignia.png",
         "Modifiers": [
@@ -3656,13 +3337,8 @@
         "Profession": "Necromancer",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:37.866575",
-        "VendorValue": 170,
-=======
         "VendorUpdated": "2025-12-25T17:33:14.783736",
         "VendorValue": 130,
->>>>>>> frenkey/main
         "InventoryIcon": "Undertaker's Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/f/fc/Undertaker%27s_Insignia.png",
         "Modifiers": [
@@ -3701,13 +3377,8 @@
         "Profession": "Necromancer",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:41.014293",
-        "VendorValue": 170,
-=======
         "VendorUpdated": "2025-12-25T17:33:19.974515",
         "VendorValue": 260,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Necromancer Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/c/c5/Rune_Necromancer_Minor.png",
         "Modifiers": [
@@ -3746,11 +3417,7 @@
         "Profession": "Necromancer",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:41.210567",
-=======
         "VendorUpdated": "2025-12-25T17:33:20.272633",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Rune Necromancer Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/c/c5/Rune_Necromancer_Minor.png",
@@ -3790,11 +3457,7 @@
         "Profession": "Necromancer",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:41.107399",
-=======
         "VendorUpdated": "2025-12-25T17:33:20.147928",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Rune Necromancer Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/c/c5/Rune_Necromancer_Minor.png",
@@ -3834,13 +3497,8 @@
         "Profession": "Necromancer",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:41.305092",
-        "VendorValue": 450,
-=======
         "VendorUpdated": "2025-12-25T17:33:20.401365",
         "VendorValue": 1400,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Necromancer Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/c/c5/Rune_Necromancer_Minor.png",
         "Modifiers": [
@@ -3879,13 +3537,8 @@
         "Profession": "Necromancer",
         "Rarity": "Purple",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:45.533325",
-        "VendorValue": 460,
-=======
         "VendorUpdated": "2025-12-25T17:33:26.563684",
         "VendorValue": 120,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Necromancer Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/8/85/Rune_Necromancer_Major.png",
         "Modifiers": [
@@ -3933,11 +3586,7 @@
         "Profession": "Necromancer",
         "Rarity": "Purple",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:45.730375",
-=======
         "VendorUpdated": "2025-12-25T17:33:26.854214",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Rune Necromancer Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/8/85/Rune_Necromancer_Major.png",
@@ -3986,11 +3635,7 @@
         "Profession": "Necromancer",
         "Rarity": "Purple",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:45.630040",
-=======
         "VendorUpdated": "2025-12-25T17:33:26.686841",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Rune Necromancer Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/8/85/Rune_Necromancer_Major.png",
@@ -4039,13 +3684,8 @@
         "Profession": "Necromancer",
         "Rarity": "Purple",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:45.823486",
-        "VendorValue": 800,
-=======
         "VendorUpdated": "2025-12-25T17:33:27.018345",
         "VendorValue": 230,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Necromancer Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/8/85/Rune_Necromancer_Major.png",
         "Modifiers": [
@@ -4093,13 +3733,8 @@
         "Profession": "Necromancer",
         "Rarity": "Gold",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:49.572322",
-        "VendorValue": 700,
-=======
         "VendorUpdated": "2025-12-25T17:33:32.884517",
         "VendorValue": 200,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Necromancer Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/d/d9/Rune_Necromancer_Sup.png",
         "Modifiers": [
@@ -4147,11 +3782,7 @@
         "Profession": "Necromancer",
         "Rarity": "Gold",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:49.756103",
-=======
         "VendorUpdated": "2025-12-25T17:33:33.191399",
->>>>>>> frenkey/main
         "VendorValue": 200,
         "InventoryIcon": "Rune Necromancer Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/d/d9/Rune_Necromancer_Sup.png",
@@ -4200,13 +3831,8 @@
         "Profession": "Necromancer",
         "Rarity": "Gold",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:49.663518",
-        "VendorValue": 440,
-=======
         "VendorUpdated": "2025-12-25T17:33:33.028453",
         "VendorValue": 650,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Necromancer Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/d/d9/Rune_Necromancer_Sup.png",
         "Modifiers": [
@@ -4254,13 +3880,8 @@
         "Profession": "Necromancer",
         "Rarity": "Gold",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:49.856290",
-        "VendorValue": 1300,
-=======
         "VendorUpdated": "2025-12-25T17:33:33.328911",
         "VendorValue": 260,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Necromancer Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/d/d9/Rune_Necromancer_Sup.png",
         "Modifiers": [
@@ -4308,13 +3929,8 @@
         "Profession": "Mesmer",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:38.050505",
-        "VendorValue": 120,
-=======
         "VendorUpdated": "2025-12-25T17:33:15.067895",
         "VendorValue": 100,
->>>>>>> frenkey/main
         "InventoryIcon": "Artificer's Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/f/fd/Artificer%27s_Insignia.png",
         "Modifiers": [
@@ -4353,13 +3969,8 @@
         "Profession": "Mesmer",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:38.142175",
-        "VendorValue": 14000,
-=======
         "VendorUpdated": "2025-12-25T17:33:15.236383",
         "VendorValue": 10000,
->>>>>>> frenkey/main
         "InventoryIcon": "Prodigy's Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/7/72/Prodigy%27s_Insignia.png",
         "Modifiers": [
@@ -4398,13 +4009,8 @@
         "Profession": "Mesmer",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:37.957398",
-        "VendorValue": 300,
-=======
         "VendorUpdated": "2025-12-25T17:33:14.910915",
         "VendorValue": 170,
->>>>>>> frenkey/main
         "InventoryIcon": "Virtuoso's Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/c/cf/Virtuoso%27s_Insignia.png",
         "Modifiers": [
@@ -4443,13 +4049,8 @@
         "Profession": "Mesmer",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:41.487596",
-        "VendorValue": 180,
-=======
         "VendorUpdated": "2025-12-25T17:33:20.726592",
         "VendorValue": 800,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Mesmer Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/6/6c/Rune_Mesmer_Minor.png",
         "Modifiers": [
@@ -4488,13 +4089,8 @@
         "Profession": "Mesmer",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:41.396767",
-        "VendorValue": 800,
-=======
         "VendorUpdated": "2025-12-25T17:33:20.567049",
         "VendorValue": 2100,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Mesmer Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/6/6c/Rune_Mesmer_Minor.png",
         "Modifiers": [
@@ -4533,11 +4129,7 @@
         "Profession": "Mesmer",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:41.578134",
-=======
         "VendorUpdated": "2025-12-25T17:33:20.875753",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Rune Mesmer Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/6/6c/Rune_Mesmer_Minor.png",
@@ -4577,13 +4169,8 @@
         "Profession": "Mesmer",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:41.680607",
-        "VendorValue": 1700,
-=======
         "VendorUpdated": "2025-12-25T17:33:21.011267",
         "VendorValue": 6000,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Mesmer Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/6/6c/Rune_Mesmer_Minor.png",
         "Modifiers": [
@@ -4622,13 +4209,8 @@
         "Profession": "Mesmer",
         "Rarity": "Purple",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-10-20T09:00:26.478500",
-        "VendorValue": 100,
-=======
         "VendorUpdated": "2025-12-25T17:33:27.294123",
         "VendorValue": 1000,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Mesmer Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/f/f9/Rune_Mesmer_Major.png",
         "Modifiers": [
@@ -4676,13 +4258,8 @@
         "Profession": "Mesmer",
         "Rarity": "Purple",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:45.922933",
-        "VendorValue": 1900,
-=======
         "VendorUpdated": "2025-12-25T17:33:27.158551",
         "VendorValue": 5500,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Mesmer Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/f/f9/Rune_Mesmer_Major.png",
         "Modifiers": [
@@ -4730,11 +4307,7 @@
         "Profession": "Mesmer",
         "Rarity": "Purple",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:46.015180",
-=======
         "VendorUpdated": "2025-12-25T17:33:27.459712",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Rune Mesmer Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/f/f9/Rune_Mesmer_Major.png",
@@ -4783,11 +4356,7 @@
         "Profession": "Mesmer",
         "Rarity": "Purple",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:46.107286",
-=======
         "VendorUpdated": "2025-12-25T17:33:27.621064",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Rune Mesmer Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/f/f9/Rune_Mesmer_Major.png",
@@ -4836,13 +4405,8 @@
         "Profession": "Mesmer",
         "Rarity": "Gold",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T20:57:39.605332",
-        "VendorValue": 650,
-=======
         "VendorUpdated": "2025-12-25T17:33:33.598530",
         "VendorValue": 7000,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Mesmer Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/0/08/Rune_Mesmer_Sup.png",
         "Modifiers": [
@@ -4890,13 +4454,8 @@
         "Profession": "Mesmer",
         "Rarity": "Gold",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:49.950048",
-        "VendorValue": 900,
-=======
         "VendorUpdated": "2025-12-25T17:33:33.467439",
         "VendorValue": 200,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Mesmer Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/0/08/Rune_Mesmer_Sup.png",
         "Modifiers": [
@@ -4944,13 +4503,8 @@
         "Profession": "Mesmer",
         "Rarity": "Gold",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:50.045169",
-        "VendorValue": 750,
-=======
         "VendorUpdated": "2025-12-21T14:09:24.221443",
         "VendorValue": 200,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Mesmer Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/0/08/Rune_Mesmer_Sup.png",
         "Modifiers": [
@@ -4998,11 +4552,7 @@
         "Profession": "Mesmer",
         "Rarity": "Gold",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:50.127939",
-=======
         "VendorUpdated": "2025-12-21T14:09:24.322309",
->>>>>>> frenkey/main
         "VendorValue": 200,
         "InventoryIcon": "Rune Mesmer Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/0/08/Rune_Mesmer_Sup.png",
@@ -5051,11 +4601,7 @@
         "Profession": "Elementalist",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:38.508164",
-=======
         "VendorUpdated": "2025-12-25T17:33:15.783132",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Aeromancer Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/f/f3/Aeromancer_Insignia.png",
@@ -5095,11 +4641,7 @@
         "Profession": "Elementalist",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:38.323344",
-=======
         "VendorUpdated": "2025-12-25T17:33:15.484895",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Geomancer Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/3/35/Geomancer_Insignia.png",
@@ -5139,11 +4681,7 @@
         "Profession": "Elementalist",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:38.232869",
-=======
         "VendorUpdated": "2025-12-25T17:33:15.363454",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Hydromancer Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/b/be/Hydromancer_Insignia.png",
@@ -5183,13 +4721,8 @@
         "Profession": "Elementalist",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:38.609316",
-        "VendorValue": 430,
-=======
         "VendorUpdated": "2025-12-25T17:33:15.914621",
         "VendorValue": 100,
->>>>>>> frenkey/main
         "InventoryIcon": "Prismatic Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/f/f8/Prismatic_Insignia.png",
         "Modifiers": [
@@ -5228,11 +4761,7 @@
         "Profession": "Elementalist",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:38.417101",
-=======
         "VendorUpdated": "2025-12-25T17:33:15.641936",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Pyromancer Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/4/4f/Pyromancer_Insignia.png",
@@ -5272,13 +4801,8 @@
         "Profession": "Elementalist",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:41.938711",
-        "VendorValue": 150,
-=======
         "VendorUpdated": "2025-12-25T17:33:21.490056",
         "VendorValue": 100,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Elementalist Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/6/6f/Rune_Elementalist_Minor.png",
         "Modifiers": [
@@ -5317,11 +4841,7 @@
         "Profession": "Elementalist",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:42.029466",
-=======
         "VendorUpdated": "2025-12-25T17:33:21.623933",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Rune Elementalist Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/6/6f/Rune_Elementalist_Minor.png",
@@ -5361,13 +4881,8 @@
         "Profession": "Elementalist",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:41.776790",
-        "VendorValue": 1000,
-=======
         "VendorUpdated": "2025-12-25T17:33:21.184254",
         "VendorValue": 2200,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Elementalist Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/6/6f/Rune_Elementalist_Minor.png",
         "Modifiers": [
@@ -5406,13 +4921,8 @@
         "Profession": "Elementalist",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:41.859055",
-        "VendorValue": 100,
-=======
         "VendorUpdated": "2025-12-25T17:33:21.323269",
         "VendorValue": 370,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Elementalist Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/6/6f/Rune_Elementalist_Minor.png",
         "Modifiers": [
@@ -5451,11 +4961,7 @@
         "Profession": "Elementalist",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:42.109744",
-=======
         "VendorUpdated": "2025-12-25T17:33:21.795992",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Rune Elementalist Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/6/6f/Rune_Elementalist_Minor.png",
@@ -5495,11 +5001,7 @@
         "Profession": "Elementalist",
         "Rarity": "Purple",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:46.383316",
-=======
         "VendorUpdated": "2025-12-25T17:33:28.089080",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Rune Elementalist Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/1/14/Rune_Elementalist_Major.png",
@@ -5548,11 +5050,7 @@
         "Profession": "Elementalist",
         "Rarity": "Purple",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:46.475357",
-=======
         "VendorUpdated": "2025-12-25T17:33:28.249630",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Rune Elementalist Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/1/14/Rune_Elementalist_Major.png",
@@ -5601,11 +5099,7 @@
         "Profession": "Elementalist",
         "Rarity": "Purple",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:46.200077",
-=======
         "VendorUpdated": "2025-12-25T17:33:27.789581",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Rune Elementalist Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/1/14/Rune_Elementalist_Major.png",
@@ -5654,11 +5148,7 @@
         "Profession": "Elementalist",
         "Rarity": "Purple",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:46.292346",
-=======
         "VendorUpdated": "2025-12-25T17:33:27.948657",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Rune Elementalist Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/1/14/Rune_Elementalist_Major.png",
@@ -5707,11 +5197,7 @@
         "Profession": "Elementalist",
         "Rarity": "Purple",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:46.566884",
-=======
         "VendorUpdated": "2025-12-25T17:33:28.380143",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Rune Elementalist Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/1/14/Rune_Elementalist_Major.png",
@@ -5760,13 +5246,8 @@
         "Profession": "Elementalist",
         "Rarity": "Gold",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:50.410171",
-        "VendorValue": 210,
-=======
         "VendorUpdated": "2025-12-21T14:09:24.640596",
         "VendorValue": 420,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Elementalist Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/8/83/Rune_Elementalist_Sup.png",
         "Modifiers": [
@@ -5814,11 +5295,7 @@
         "Profession": "Elementalist",
         "Rarity": "Gold",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:50.504094",
-=======
         "VendorUpdated": "2025-12-21T14:09:24.774547",
->>>>>>> frenkey/main
         "VendorValue": 200,
         "InventoryIcon": "Rune Elementalist Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/8/83/Rune_Elementalist_Sup.png",
@@ -5867,11 +5344,7 @@
         "Profession": "Elementalist",
         "Rarity": "Gold",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:50.221053",
-=======
         "VendorUpdated": "2025-12-21T14:09:24.423338",
->>>>>>> frenkey/main
         "VendorValue": 200,
         "InventoryIcon": "Rune Elementalist Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/8/83/Rune_Elementalist_Sup.png",
@@ -5920,13 +5393,8 @@
         "Profession": "Elementalist",
         "Rarity": "Gold",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:50.316563",
-        "VendorValue": 1100,
-=======
         "VendorUpdated": "2025-12-21T14:09:24.541218",
         "VendorValue": 320,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Elementalist Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/8/83/Rune_Elementalist_Sup.png",
         "Modifiers": [
@@ -5974,11 +5442,7 @@
         "Profession": "Elementalist",
         "Rarity": "Gold",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:50.597653",
-=======
         "VendorUpdated": "2025-12-21T14:09:24.874054",
->>>>>>> frenkey/main
         "VendorValue": 200,
         "InventoryIcon": "Rune Elementalist Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/8/83/Rune_Elementalist_Sup.png",
@@ -6027,11 +5491,7 @@
         "Profession": "Assassin",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:38.786054",
-=======
         "VendorUpdated": "2025-12-25T17:33:16.207932",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Infiltrator's Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/9/9a/Infiltrator%27s_Insignia.png",
@@ -6071,13 +5531,8 @@
         "Profession": "Assassin",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-10-20T09:00:10.915382",
-        "VendorValue": 300,
-=======
         "VendorUpdated": "2025-12-25T17:33:16.501601",
         "VendorValue": 1600,
->>>>>>> frenkey/main
         "InventoryIcon": "Nightstalker's Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/a/a1/Nightstalker%27s_Insignia.png",
         "Modifiers": [
@@ -6116,11 +5571,7 @@
         "Profession": "Assassin",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:38.890251",
-=======
         "VendorUpdated": "2025-12-25T17:33:16.350501",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Saboteur's Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/6/6c/Saboteur%27s_Insignia.png",
@@ -6160,11 +5611,7 @@
         "Profession": "Assassin",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:38.701496",
-=======
         "VendorUpdated": "2025-12-25T17:33:16.069399",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Vanguard's Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/0/03/Vanguard%27s_Insignia.png",
@@ -6204,13 +5651,8 @@
         "Profession": "Assassin",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:42.202216",
-        "VendorValue": 100,
-=======
         "VendorUpdated": "2025-12-25T17:33:21.935632",
         "VendorValue": 240,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Assassin Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/d/dd/Rune_Assassin_Minor.png",
         "Modifiers": [
@@ -6249,13 +5691,8 @@
         "Profession": "Assassin",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:42.296677",
-        "VendorValue": 390,
-=======
         "VendorUpdated": "2025-12-25T17:33:22.065973",
         "VendorValue": 550,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Assassin Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/d/dd/Rune_Assassin_Minor.png",
         "Modifiers": [
@@ -6294,11 +5731,7 @@
         "Profession": "Assassin",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:42.388272",
-=======
         "VendorUpdated": "2025-12-25T17:33:22.198226",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Rune Assassin Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/d/dd/Rune_Assassin_Minor.png",
@@ -6338,11 +5771,7 @@
         "Profession": "Assassin",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:42.481091",
-=======
         "VendorUpdated": "2025-12-25T17:33:22.331738",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Rune Assassin Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/d/dd/Rune_Assassin_Minor.png",
@@ -6382,11 +5811,7 @@
         "Profession": "Assassin",
         "Rarity": "Purple",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:46.658380",
-=======
         "VendorUpdated": "2025-12-25T17:33:28.539774",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Rune Assassin Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/c/cc/Rune_Assassin_Major.png",
@@ -6435,11 +5860,7 @@
         "Profession": "Assassin",
         "Rarity": "Purple",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:46.761501",
-=======
         "VendorUpdated": "2025-12-25T17:33:28.664358",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Rune Assassin Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/c/cc/Rune_Assassin_Major.png",
@@ -6488,11 +5909,7 @@
         "Profession": "Assassin",
         "Rarity": "Purple",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:46.853048",
-=======
         "VendorUpdated": "2025-12-25T17:33:28.831003",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Rune Assassin Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/c/cc/Rune_Assassin_Major.png",
@@ -6541,11 +5958,7 @@
         "Profession": "Assassin",
         "Rarity": "Purple",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:46.950470",
-=======
         "VendorUpdated": "2025-12-25T17:33:28.994546",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Rune Assassin Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/c/cc/Rune_Assassin_Major.png",
@@ -6594,11 +6007,7 @@
         "Profession": "Assassin",
         "Rarity": "Gold",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:50.691284",
-=======
         "VendorUpdated": "2025-12-21T14:09:24.989072",
->>>>>>> frenkey/main
         "VendorValue": 200,
         "InventoryIcon": "Rune Assassin Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/7/75/Rune_Assassin_Sup.png",
@@ -6647,13 +6056,8 @@
         "Profession": "Assassin",
         "Rarity": "Gold",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:50.788112",
-        "VendorValue": 200,
-=======
         "VendorUpdated": "2025-12-21T14:09:25.089033",
         "VendorValue": 290,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Assassin Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/7/75/Rune_Assassin_Sup.png",
         "Modifiers": [
@@ -6701,11 +6105,7 @@
         "Profession": "Assassin",
         "Rarity": "Gold",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:50.887918",
-=======
         "VendorUpdated": "2025-12-21T14:09:25.212217",
->>>>>>> frenkey/main
         "VendorValue": 200,
         "InventoryIcon": "Rune Assassin Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/7/75/Rune_Assassin_Sup.png",
@@ -6754,11 +6154,7 @@
         "Profession": "Assassin",
         "Rarity": "Gold",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:50.982102",
-=======
         "VendorUpdated": "2025-12-21T14:09:25.313090",
->>>>>>> frenkey/main
         "VendorValue": 200,
         "InventoryIcon": "Rune Assassin Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/7/75/Rune_Assassin_Sup.png",
@@ -6807,11 +6203,7 @@
         "Profession": "Ritualist",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:39.085342",
-=======
         "VendorUpdated": "2025-12-25T17:33:16.776283",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Ghost Forge Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/2/2b/Ghost_Forge_Insignia.png",
@@ -6851,13 +6243,8 @@
         "Profession": "Ritualist",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:39.177051",
-        "VendorValue": 130,
-=======
         "VendorUpdated": "2025-12-25T17:33:16.940419",
         "VendorValue": 340,
->>>>>>> frenkey/main
         "InventoryIcon": "Mystic's Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/1/10/Mystic%27s_Insignia.png",
         "Modifiers": [
@@ -6896,13 +6283,8 @@
         "Profession": "Ritualist",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:38.980941",
-        "VendorValue": 14000,
-=======
         "VendorUpdated": "2025-12-25T17:33:16.629586",
         "VendorValue": 13000,
->>>>>>> frenkey/main
         "InventoryIcon": "Shaman's Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/d/dc/Shaman%27s_Insignia.png",
         "Modifiers": [
@@ -6941,13 +6323,8 @@
         "Profession": "Ritualist",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:42.571677",
-        "VendorValue": 160,
-=======
         "VendorUpdated": "2025-12-25T17:33:22.464856",
         "VendorValue": 310,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Ritualist Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/c/cb/Rune_Ritualist_Minor.png",
         "Modifiers": [
@@ -6986,13 +6363,8 @@
         "Profession": "Ritualist",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:42.752544",
-        "VendorValue": 100,
-=======
         "VendorUpdated": "2025-12-25T17:33:22.718553",
         "VendorValue": 170,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Ritualist Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/c/cb/Rune_Ritualist_Minor.png",
         "Modifiers": [
@@ -7031,11 +6403,7 @@
         "Profession": "Ritualist",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:42.661441",
-=======
         "VendorUpdated": "2025-12-25T17:33:22.596141",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Rune Ritualist Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/c/cb/Rune_Ritualist_Minor.png",
@@ -7075,13 +6443,8 @@
         "Profession": "Ritualist",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:42.845230",
-        "VendorValue": 500,
-=======
         "VendorUpdated": "2025-12-21T14:09:16.330819",
         "VendorValue": 2100,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Ritualist Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/c/cb/Rune_Ritualist_Minor.png",
         "Modifiers": [
@@ -7120,11 +6483,7 @@
         "Profession": "Ritualist",
         "Rarity": "Purple",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:47.043990",
-=======
         "VendorUpdated": "2025-12-25T17:33:29.140206",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Rune Ritualist Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/9/90/Rune_Ritualist_Major.png",
@@ -7173,13 +6532,8 @@
         "Profession": "Ritualist",
         "Rarity": "Purple",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:47.232015",
-        "VendorValue": 170,
-=======
         "VendorUpdated": "2025-12-25T17:33:29.406323",
         "VendorValue": 100,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Ritualist Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/9/90/Rune_Ritualist_Major.png",
         "Modifiers": [
@@ -7227,13 +6581,8 @@
         "Profession": "Ritualist",
         "Rarity": "Purple",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:47.139162",
-        "VendorValue": 240,
-=======
         "VendorUpdated": "2025-12-25T17:33:29.272440",
         "VendorValue": 100,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Ritualist Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/9/90/Rune_Ritualist_Major.png",
         "Modifiers": [
@@ -7281,13 +6630,8 @@
         "Profession": "Ritualist",
         "Rarity": "Purple",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:47.327034",
-        "VendorValue": 260,
-=======
         "VendorUpdated": "2025-12-25T17:33:29.585040",
         "VendorValue": 100,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Ritualist Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/9/90/Rune_Ritualist_Major.png",
         "Modifiers": [
@@ -7335,11 +6679,7 @@
         "Profession": "Ritualist",
         "Rarity": "Gold",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:51.076656",
-=======
         "VendorUpdated": "2025-12-21T14:09:25.417834",
->>>>>>> frenkey/main
         "VendorValue": 1100,
         "InventoryIcon": "Rune Ritualist Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/1/13/Rune_Ritualist_Sup.png",
@@ -7388,13 +6728,8 @@
         "Profession": "Ritualist",
         "Rarity": "Gold",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-10-20T09:00:38.037995",
-        "VendorValue": 200,
-=======
         "VendorUpdated": "2025-12-21T14:09:25.668515",
         "VendorValue": 3000,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Ritualist Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/1/13/Rune_Ritualist_Sup.png",
         "Modifiers": [
@@ -7442,11 +6777,7 @@
         "Profession": "Ritualist",
         "Rarity": "Gold",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:51.168916",
-=======
         "VendorUpdated": "2025-12-21T14:09:25.552767",
->>>>>>> frenkey/main
         "VendorValue": 200,
         "InventoryIcon": "Rune Ritualist Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/1/13/Rune_Ritualist_Sup.png",
@@ -7495,13 +6826,8 @@
         "Profession": "Ritualist",
         "Rarity": "Gold",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T20:57:39.605381",
-        "VendorValue": 700,
-=======
         "VendorUpdated": "2025-12-21T14:09:25.786475",
         "VendorValue": 1800,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Ritualist Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/1/13/Rune_Ritualist_Sup.png",
         "Modifiers": [
@@ -7549,13 +6875,8 @@
         "Profession": "Paragon",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:39.268301",
-        "VendorValue": 480,
-=======
         "VendorUpdated": "2025-12-25T17:33:17.074228",
         "VendorValue": 1100,
->>>>>>> frenkey/main
         "InventoryIcon": "Centurion's Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/9/91/Centurion%27s_Insignia.png",
         "Modifiers": [
@@ -7594,13 +6915,8 @@
         "Profession": "Paragon",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:43.123004",
-        "VendorValue": 410,
-=======
         "VendorUpdated": "2025-12-25T17:33:23.142211",
         "VendorValue": 300,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Paragon Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/e/e8/Rune_Paragon_Minor.png",
         "Modifiers": [
@@ -7639,13 +6955,8 @@
         "Profession": "Paragon",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:42.938382",
-        "VendorValue": 150,
-=======
         "VendorUpdated": "2025-12-25T17:33:22.843850",
         "VendorValue": 220,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Paragon Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/e/e8/Rune_Paragon_Minor.png",
         "Modifiers": [
@@ -7684,11 +6995,7 @@
         "Profession": "Paragon",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:43.031069",
-=======
         "VendorUpdated": "2025-12-25T17:33:22.980611",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Rune Paragon Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/e/e8/Rune_Paragon_Minor.png",
@@ -7728,13 +7035,8 @@
         "Profession": "Paragon",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:43.236067",
-        "VendorValue": 170,
-=======
         "VendorUpdated": "2025-12-25T17:33:23.271717",
         "VendorValue": 550,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Paragon Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/e/e8/Rune_Paragon_Minor.png",
         "Modifiers": [
@@ -7773,11 +7075,7 @@
         "Profession": "Paragon",
         "Rarity": "Purple",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:47.603193",
-=======
         "VendorUpdated": "2025-12-25T17:33:29.999803",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Rune Paragon Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/9/9a/Rune_Paragon_Major.png",
@@ -7826,11 +7124,7 @@
         "Profession": "Paragon",
         "Rarity": "Purple",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:47.418735",
-=======
         "VendorUpdated": "2025-12-25T17:33:29.737769",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Rune Paragon Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/9/9a/Rune_Paragon_Major.png",
@@ -7879,11 +7173,7 @@
         "Profession": "Paragon",
         "Rarity": "Purple",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:47.511836",
-=======
         "VendorUpdated": "2025-12-25T17:33:29.871656",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Rune Paragon Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/9/9a/Rune_Paragon_Major.png",
@@ -7932,11 +7222,7 @@
         "Profession": "Paragon",
         "Rarity": "Purple",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:47.697905",
-=======
         "VendorUpdated": "2025-12-25T17:33:30.136546",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Rune Paragon Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/9/9a/Rune_Paragon_Major.png",
@@ -7985,13 +7271,8 @@
         "Profession": "Paragon",
         "Rarity": "Gold",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:51.441734",
-        "VendorValue": 220,
-=======
         "VendorUpdated": "2025-12-21T14:09:26.103866",
         "VendorValue": 200,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Paragon Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/3/35/Rune_Paragon_Sup.png",
         "Modifiers": [
@@ -8039,11 +7320,7 @@
         "Profession": "Paragon",
         "Rarity": "Gold",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:51.260746",
-=======
         "VendorUpdated": "2025-12-21T14:09:25.903011",
->>>>>>> frenkey/main
         "VendorValue": 200,
         "InventoryIcon": "Rune Paragon Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/3/35/Rune_Paragon_Sup.png",
@@ -8092,11 +7369,7 @@
         "Profession": "Paragon",
         "Rarity": "Gold",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:51.344569",
-=======
         "VendorUpdated": "2025-12-21T14:09:26.002595",
->>>>>>> frenkey/main
         "VendorValue": 200,
         "InventoryIcon": "Rune Paragon Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/3/35/Rune_Paragon_Sup.png",
@@ -8145,11 +7418,7 @@
         "Profession": "Paragon",
         "Rarity": "Gold",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:51.534574",
-=======
         "VendorUpdated": "2025-12-21T14:09:26.211291",
->>>>>>> frenkey/main
         "VendorValue": 200,
         "InventoryIcon": "Rune Paragon Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/3/35/Rune_Paragon_Sup.png",
@@ -8198,11 +7467,7 @@
         "Profession": "Dervish",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:39.359971",
-=======
         "VendorUpdated": "2025-12-25T17:33:17.344058",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Forsaken Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/1/13/Forsaken_Insignia.png",
@@ -8242,13 +7507,8 @@
         "Profession": "Dervish",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-10-20T09:00:11.930012",
-        "VendorValue": 2300,
-=======
         "VendorUpdated": "2025-12-25T17:33:17.212359",
         "VendorValue": 5500,
->>>>>>> frenkey/main
         "InventoryIcon": "Windwalker Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/9/97/Windwalker_Insignia.png",
         "Modifiers": [
@@ -8287,13 +7547,8 @@
         "Profession": "Dervish",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:43.421698",
-        "VendorValue": 220,
-=======
         "VendorUpdated": "2025-12-25T17:33:23.570744",
         "VendorValue": 410,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Dervish Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/4/45/Rune_Dervish_Minor.png",
         "Modifiers": [
@@ -8332,13 +7587,8 @@
         "Profession": "Dervish",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:43.328090",
-        "VendorValue": 8000,
-=======
         "VendorUpdated": "2025-12-25T17:33:23.435202",
         "VendorValue": 3900,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Dervish Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/4/45/Rune_Dervish_Minor.png",
         "Modifiers": [
@@ -8377,13 +7627,8 @@
         "Profession": "Dervish",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:43.512785",
-        "VendorValue": 10000,
-=======
         "VendorUpdated": "2025-12-25T17:33:23.701551",
         "VendorValue": 3400,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Dervish Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/4/45/Rune_Dervish_Minor.png",
         "Modifiers": [
@@ -8422,11 +7667,7 @@
         "Profession": "Dervish",
         "Rarity": "Blue",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:43.597652",
-=======
         "VendorUpdated": "2025-12-25T17:33:23.833408",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Rune Dervish Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/4/45/Rune_Dervish_Minor.png",
@@ -8466,11 +7707,7 @@
         "Profession": "Dervish",
         "Rarity": "Purple",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:47.892997",
-=======
         "VendorUpdated": "2025-12-25T17:33:30.394105",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Rune Dervish Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/4/44/Rune_Dervish_Major.png",
@@ -8519,13 +7756,8 @@
         "Profession": "Dervish",
         "Rarity": "Purple",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:47.798676",
-        "VendorValue": 500,
-=======
         "VendorUpdated": "2025-12-25T17:33:30.263428",
         "VendorValue": 440,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Dervish Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/4/44/Rune_Dervish_Major.png",
         "Modifiers": [
@@ -8573,13 +7805,8 @@
         "Profession": "Dervish",
         "Rarity": "Purple",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:47.974310",
-        "VendorValue": 220,
-=======
         "VendorUpdated": "2025-12-25T17:33:30.518988",
         "VendorValue": 310,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Dervish Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/4/44/Rune_Dervish_Major.png",
         "Modifiers": [
@@ -8627,11 +7854,7 @@
         "Profession": "Dervish",
         "Rarity": "Purple",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:48.074278",
-=======
         "VendorUpdated": "2025-12-25T17:33:30.650206",
->>>>>>> frenkey/main
         "VendorValue": 100,
         "InventoryIcon": "Rune Dervish Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/4/44/Rune_Dervish_Major.png",
@@ -8680,13 +7903,8 @@
         "Profession": "Dervish",
         "Rarity": "Gold",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:51.713125",
-        "VendorValue": 700,
-=======
         "VendorUpdated": "2025-12-21T14:09:26.453968",
         "VendorValue": 270,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Dervish Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/e/e1/Rune_Dervish_Sup.png",
         "Modifiers": [
@@ -8734,11 +7952,7 @@
         "Profession": "Dervish",
         "Rarity": "Gold",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:51.618584",
-=======
         "VendorUpdated": "2025-12-21T14:09:26.334782",
->>>>>>> frenkey/main
         "VendorValue": 200,
         "InventoryIcon": "Rune Dervish Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/e/e1/Rune_Dervish_Sup.png",
@@ -8787,13 +8001,8 @@
         "Profession": "Dervish",
         "Rarity": "Gold",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:51.809973",
-        "VendorValue": 200,
-=======
         "VendorUpdated": "2025-12-21T14:09:26.588293",
         "VendorValue": 320,
->>>>>>> frenkey/main
         "InventoryIcon": "Rune Dervish Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/e/e1/Rune_Dervish_Sup.png",
         "Modifiers": [
@@ -8841,11 +8050,7 @@
         "Profession": "Dervish",
         "Rarity": "Gold",
         "UpgradeExists": true,
-<<<<<<< HEAD
-        "VendorUpdated": "2025-11-28T21:07:51.899066",
-=======
         "VendorUpdated": "2025-12-21T14:09:26.705784",
->>>>>>> frenkey/main
         "VendorValue": 200,
         "InventoryIcon": "Rune Dervish Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/e/e1/Rune_Dervish_Sup.png",
