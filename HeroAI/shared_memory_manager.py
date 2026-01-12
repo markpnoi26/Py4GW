@@ -56,7 +56,7 @@ class SharedMemoryManager:
             for i in range(self.num_players):
                 self.reset_candidate(i)
                 self.reset_player(i)
-                self.reset_game_option(i)
+                
             self.reset_party_buffs()
             
             self._initialized = True
@@ -167,6 +167,7 @@ class SharedMemoryManager:
                 raise IndexError("Invalid player index.")
 
             player = self.game_struct.Players[index]
+            player.AccountEmail = player_data.AccountEmail
             player.PlayerID = player_data.PlayerID
             player.Energy_Regen = player_data.Energy_Regen
             player.Energy = player_data.Energy
@@ -195,6 +196,8 @@ class SharedMemoryManager:
             # Handle core properties
             if property_name == "PlayerID":
                 player.PlayerID = value
+            elif property_name == "AccountEmail":
+                player.AccountEmail = value
             elif property_name == "Energy_Regen":
                 player.Energy_Regen = value
             elif property_name == "Energy":
@@ -234,6 +237,7 @@ class SharedMemoryManager:
                 self.reset_player(index)
 
             data = {
+                "AccountEmail": player.AccountEmail,
                 "PlayerID": player.PlayerID,
                 "Energy_Regen": player.Energy_Regen,
                 "Energy": player.Energy,
@@ -250,97 +254,6 @@ class SharedMemoryManager:
         except Exception as e:
             Py4GW.Console.Log(SMM_MODULE_NAME, f"Read failed for player {index}: {e}", Py4GW.Console.MessageType.Error)
             return None
-
-
-    # ---------------------
-    # Game Option Management
-    # ---------------------
-
-    def reset_game_option(self, index):
-        """Reset game options for a specific player."""
-        game_option = self.game_struct.GameOptions[index]
-        game_option.Following = True
-        game_option.Avoidance = True
-        game_option.Looting = True
-        game_option.Targeting = True
-        game_option.Combat = True
-        game_option.WindowVisible = True
-
-        for i in range(NUMBER_OF_SKILLS):
-            game_option.Skills[i].Active = True
-
-
-    def set_game_option(self, index, game_option_data):
-        """Write game option data."""
-        try:
-            if index < 0 or index >= self.num_players:
-                raise IndexError("Invalid game option index.")
-
-            game_option = self.game_struct.GameOptions[index]
-            game_option.Following = game_option_data.Following
-            game_option.Avoidance = game_option_data.Avoidance
-            game_option.Looting = game_option_data.Looting
-            game_option.Targeting = game_option_data.Targeting
-            game_option.Combat = game_option_data.Combat
-            game_option.WindowVisible = game_option_data.WindowVisible
-
-            for i in range(NUMBER_OF_SKILLS):
-                game_option.Skills[i].Active = game_option_data.Skills[i].Active
-
-
-        except Exception as e:
-            Py4GW.Console.Log(SMM_MODULE_NAME, f"Write failed for game option {index}: {e}", Py4GW.Console.MessageType.Error)
-
-
-    def get_game_option(self, index):
-        """Read game option data and timeout check."""
-        try:
-            if index < 0 or index >= self.num_players:
-                raise IndexError("Invalid game option index.")
-
-            game_option = self.game_struct.GameOptions[index]
-            # Collect data
-            data = {
-                "Following": game_option.Following,
-                "Avoidance": game_option.Avoidance,
-                "Looting": game_option.Looting,
-                "Targeting": game_option.Targeting,
-                "Combat": game_option.Combat,
-                "WindowVisible": game_option.WindowVisible,
-                "Skills": [skill.Active for skill in game_option.Skills],
-            }
-
-            return data
-
-        except Exception as e:
-            Py4GW.Console.Log(SMM_MODULE_NAME, f"Read failed for game option {index}: {e}", Py4GW.Console.MessageType.Error)
-            return None
-
-    def set_game_option_property(self, index, property_name, value):
-        """Write a single property of the game option without locks."""
-        try:
-            if index < 0 or index >= self.num_players:
-                raise IndexError("Invalid game option index.")
-
-            # Access the game option
-            game_option = self.game_struct.GameOptions[index]
-
-            # Handle skill-specific properties
-            if property_name.startswith("Skill_"):
-                # Parse the skill index from the property name
-                skill_index = int(property_name.split("_")[1]) - 1
-                if not (0 <= skill_index < NUMBER_OF_SKILLS):
-                    raise IndexError(f"Invalid skill index: {skill_index}")
-                game_option.Skills[skill_index].Active = value
-            # Handle generic properties
-            elif hasattr(game_option, property_name):
-                setattr(game_option, property_name, value)
-            else:
-                raise KeyError(f"Invalid property name: {property_name}")
-
-        except Exception as e:
-            Py4GW.Console.Log(SMM_MODULE_NAME, f"Write failed for property {property_name} at index {index}: {e}", Py4GW.Console.MessageType.Error)
-
 
     # ---------------------
     # Party Buffs Management

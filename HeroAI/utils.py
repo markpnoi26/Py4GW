@@ -15,8 +15,8 @@ def SameMapAsAccount(account : AccountData):
 def DistanceFromLeader(cached_data:CacheData):
     return Utils.Distance(Agent.GetXY(GLOBAL_CACHE.Party.GetPartyLeaderID()),Agent.GetXY(GLOBAL_CACHE.Player.GetAgentID()))
 
-def DistanceFromWaypoint(posX,posY):
-    distance = Utils.Distance((posX,posY), GLOBAL_CACHE.Player.GetXY())
+def DistanceFromWaypoint(posX, posY):
+    distance = Utils.Distance((posX, posY), GLOBAL_CACHE.Player.GetXY())
     return distance if distance > 200 else 0
 
 
@@ -59,7 +59,8 @@ def IsHeroFlagged(cached_data:CacheData,index):
     if  index != 0 and index <= GLOBAL_CACHE.Party.GetHeroCount():
         return GLOBAL_CACHE.Party.Heroes.IsHeroFlagged(index)
     else:
-        return cached_data.HeroAI_vars.all_player_struct[index-GLOBAL_CACHE.Party.GetHeroCount()].IsFlagged and cached_data.HeroAI_vars.all_player_struct[index-GLOBAL_CACHE.Party.GetHeroCount()].IsActive
+        acc = GLOBAL_CACHE.ShMem.GetGerHeroAIOptionsByPartyNumber(index)
+        return acc is not None and acc.IsFlagged 
 
 
 def DrawFlagAll(pos_x, pos_y):

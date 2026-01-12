@@ -108,7 +108,9 @@ class Settings:
         
         self.account_ini_handler : IniHandler | None = None
         self.ini_handler = IniHandler(self.ini_path)
-            
+        
+        self.PrintDebug = False
+        self.ShowDebugWindow = False
         self.Anonymous_PanelNames = False
         self.ShowCommandPanel = True
         self.ShowPartyOverlay = True
@@ -116,7 +118,6 @@ class Settings:
         self.ShowCommandPanelOnlyOnLeaderAccount = True
         
         self.ShowPanelOnlyOnLeaderAccount = True
-        self.DisableAutomationOnLeaderAccount = False
         
         self.ShowDialogOverlay = True
         self.ShowControlPanelWindow = True
@@ -231,6 +232,8 @@ class Settings:
         # ConsoleLog("HeroAI", "Saving HeroAI settings...")
         
         self.ini_handler.write_key("General", "ShowCommandPanel", str(self.ShowCommandPanel))
+        self.ini_handler.write_key("General", "PrintDebug", str(self.PrintDebug))
+        self.ini_handler.write_key("General", "ShowDebug", str(self.ShowDebugWindow))
         self.ini_handler.write_key("General", "ShowCommandPanelOnlyOnLeaderAccount", str(self.ShowCommandPanelOnlyOnLeaderAccount))
         self.ini_handler.write_key("General", "Anonymous_PanelNames", str(self.Anonymous_PanelNames))
         
@@ -238,7 +241,6 @@ class Settings:
         self.ini_handler.write_key("General", "ShowPartySearchOverlay", str(self.ShowPartySearchOverlay))
         
         self.ini_handler.write_key("General", "ShowPanelOnlyOnLeaderAccount", str(self.ShowPanelOnlyOnLeaderAccount))
-        self.ini_handler.write_key("General", "DisableAutomationOnLeaderAccount", str(self.DisableAutomationOnLeaderAccount))
         self.ini_handler.write_key("General", "ShowDialogOverlay", str(self.ShowDialogOverlay))
         
         self.ini_handler.write_key("General", "CombinePanels", str(self.CombinePanels))
@@ -276,6 +278,8 @@ class Settings:
     def load_settings(self):          
         ConsoleLog("HeroAI", "Loading HeroAI settings...")      
         self.ShowCommandPanel = self.ini_handler.read_bool("General", "ShowCommandPanel", True)
+        self.PrintDebug = self.ini_handler.read_bool("General", "PrintDebug", False)
+        self.ShowDebugWindow = self.ini_handler.read_bool("General", "ShowDebug", False)
         self.ShowCommandPanelOnlyOnLeaderAccount = self.ini_handler.read_bool("General", "ShowCommandPanelOnlyOnLeaderAccount", True)
         self.Anonymous_PanelNames = self.ini_handler.read_bool("General", "Anonymous_PanelNames", False)
         
@@ -283,7 +287,6 @@ class Settings:
         self.ShowPartySearchOverlay = self.ini_handler.read_bool("General", "ShowPartySearchOverlay", True)
         
         self.ShowPanelOnlyOnLeaderAccount = self.ini_handler.read_bool("General", "ShowPanelOnlyOnLeaderAccount", True)
-        self.DisableAutomationOnLeaderAccount = self.ini_handler.read_bool("General", "DisableAutomationOnLeaderAccount", False)
         self.ShowDialogOverlay = self.ini_handler.read_bool("General", "ShowDialogOverlay", True)
         
         self.CombinePanels = self.ini_handler.read_bool("General", "CombinePanels", False)

@@ -113,14 +113,17 @@ class CombatClass:
         self.junundu_tunnel = GLOBAL_CACHE.Skill.GetID("Junundu_Tunnel")
         
     def Update(self, cached_data):
-        self.in_aggro = cached_data.in_aggro
-        self.is_targeting_enabled = cached_data.is_targeting_enabled
-        self.is_combat_enabled = cached_data.is_combat_enabled
-        self.is_skill_enabled = cached_data.is_skill_enabled
-        self.fast_casting_exists = cached_data.fast_casting_exists
-        self.fast_casting_level = cached_data.fast_casting_level
-        self.expertise_exists = cached_data.expertise_exists
-        self.expertise_level = cached_data.expertise_level
+        self.in_aggro = cached_data.data.in_aggro
+        
+        self.fast_casting_exists = cached_data.data.fast_casting_exists
+        self.fast_casting_level = cached_data.data.fast_casting_level
+        self.expertise_exists = cached_data.data.expertise_exists
+        self.expertise_level = cached_data.data.expertise_level
+        
+        options = GLOBAL_CACHE.ShMem.GetHeroAIOptions(cached_data.account_email)
+        self.is_targeting_enabled = options.Targeting if options is not None else False
+        self.is_combat_enabled = options.Combat if options is not None else False
+        self.is_skill_enabled = options.Skills if options is not None else [False]*MAX_SKILLS
         
 
     def PrioritizeSkills(self):

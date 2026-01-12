@@ -1771,7 +1771,7 @@ class Py4GWSharedMemoryManager:
     #region GetAllActivePlayers   
     def GetAllActivePlayers(self) -> list[AccountData]:
         """Get all active players in shared memory."""
-        players = []
+        players : list[AccountData] = []
         for i in range(self.max_num_players):
             player = self.GetStruct().AccountData[i]
             if self._is_slot_active(i) and player.IsAccount:
@@ -1797,7 +1797,7 @@ class Py4GWSharedMemoryManager:
         
     def GetAllAccountData(self) -> list[AccountData]:
         """Get all player data, ordered by PartyID, PartyPosition, PlayerLoginNumber, CharacterName."""
-        players = []
+        players : list[AccountData] = []
         for i in range(self.max_num_players):
             player = self.GetStruct().AccountData[i]
             if self._is_slot_active(i) and player.IsAccount:
@@ -1817,7 +1817,7 @@ class Py4GWSharedMemoryManager:
 
         return players
     
-    def GetAccountDataFromEmail(self, account_email: str) -> AccountData | None:
+    def GetAccountDataFromEmail(self, account_email: str, log : bool = False) -> AccountData | None:
         """Get player data for the account with the given email."""
         if not account_email:
             return None
@@ -1825,16 +1825,17 @@ class Py4GWSharedMemoryManager:
         if index != -1:
             return self.GetStruct().AccountData[index]
         else:
-            ConsoleLog(SMM_MODULE_NAME, f"Account {account_email} not found.", Py4GW.Console.MessageType.Error)
+            ConsoleLog(SMM_MODULE_NAME, f"Account {account_email} not found.", Py4GW.Console.MessageType.Error, log = log)
             return None
      
-    def GetAccountDataFromPartyNumber(self, party_number: int) -> AccountData | None:
+    def GetAccountDataFromPartyNumber(self, party_number: int, log : bool = False) -> AccountData | None:
         """Get player data for the account with the given party number."""
         for i in range(self.max_num_players):
             player = self.GetStruct().AccountData[i]
             if self._is_slot_active(i) and player.PartyPosition == party_number:
                 return player
-        ConsoleLog(SMM_MODULE_NAME, f"Party number {party_number} not found.", Py4GW.Console.MessageType.Error)
+        
+        ConsoleLog(SMM_MODULE_NAME, f"Party number {party_number} not found.", Py4GW.Console.MessageType.Error, log = log)
         return None
     
     def HasEffect(self, account_email: str, effect_id: int) -> bool:
@@ -1950,9 +1951,9 @@ class Py4GWSharedMemoryManager:
                 players.append(player)
         return players
     
-    def GetHeroesFromPlayers(self, owner_player_id: int):
+    def GetHeroesFromPlayers(self, owner_player_id: int) -> list[AccountData]:
         """Get a list of heroes owned by the specified player."""
-        heroes = []
+        heroes : list[AccountData] = []
         for i in range(self.max_num_players):
             player = self.GetStruct().AccountData[i]
             if (self._is_slot_active(i) and player.IsHero and
@@ -1964,9 +1965,9 @@ class Py4GWSharedMemoryManager:
         """Get the number of heroes owned by the specified player."""
         return self.GetHeroesFromPlayers(owner_player_id).__len__()
     
-    def GetPetsFromPlayers(self, owner_agent_id: int):
+    def GetPetsFromPlayers(self, owner_agent_id: int) -> list[AccountData]:
         """Get a list of pets owned by the specified player."""
-        pets = []
+        pets : list[AccountData] = []
         for i in range(self.max_num_players):
             player = self.GetStruct().AccountData[i]
             if (self._is_slot_active(i) and player.IsPet and
