@@ -8,6 +8,10 @@ from Py4GWCoreLib.py4gwcorelib_src.Console import ConsoleLog
 
 MODULE_NAME = "HeroAI"
 
+for module in list(sys.modules):
+    if MODULE_NAME in module:
+        del sys.modules[module]
+
 from Py4GWCoreLib.Map import Map
 
 from HeroAI.cache_data import CacheData
