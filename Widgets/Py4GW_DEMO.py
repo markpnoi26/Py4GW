@@ -510,7 +510,7 @@ def ShowEffectsWindow():
             ImGui.table("Buffs", buffs_headers, buffs_data)
 
             PySkill_window_state.values[0] = PyImGui.input_int("Buff ID", PySkill_window_state.values[0])
-            PySkill_window_state.values[1]  = ImGui.toggle_button("Drop Buff", PySkill_window_state.values[1])
+            PySkill_window_state.values[1], _  = ImGui.toggle_button("Drop Buff", PySkill_window_state.values[1])
 
             if PySkill_window_state.values[1]:
                 GLOBAL_CACHE.Effects.DropBuff(PySkill_window_state.values[0])
@@ -855,7 +855,7 @@ def ShowSkillWindow():
             ImGui.table("hovered info", headers, data)
 
             PySkill_window_state.values[0] = PyImGui.input_int("SkillID", PySkill_window_state.values[0])
-            PySkill_window_state.values[1]  = ImGui.toggle_button("Show Item Data", PySkill_window_state.values[1])
+            PySkill_window_state.values[1], _  = ImGui.toggle_button("Show Item Data", PySkill_window_state.values[1])
 
             if  PySkill_window_state.values[1]:
                 ShowSkillDataWindow(PySkill_window_state.values[0])
@@ -1163,7 +1163,7 @@ def ShowItemWindow():
 
             PyItem_window_state.values[0] = PyImGui.input_int("ItemID", PyItem_window_state.values[0])
 
-            PyItem_window_state.values[1]  = ImGui.toggle_button("Show Item Data",PyItem_window_state.values[1])
+            PyItem_window_state.values[1], _  = ImGui.toggle_button("Show Item Data",PyItem_window_state.values[1])
 
             if PyItem_window_state.values[1]:
                 GLOBAL_CACHE.Item.RequestName(PyItem_window_state.values[0])
@@ -1964,14 +1964,13 @@ def draw_agent_window(agent_id):
                 PyImGui.text("Show Agent type Specific data")
 
                 if Agent.IsLiving(agent_id):
-                    PyAgent_agent_window_state.values[0] = ImGui.toggle_button("Show Living Agent Data", PyAgent_agent_window_state.values[0])
+                    PyAgent_agent_window_state.values[0], _ = ImGui.toggle_button("Show Living Agent Data", PyAgent_agent_window_state.values[0])
 
                 if Agent.IsItem(agent_id):
-                    PyAgent_agent_window_state.values[1] = ImGui.toggle_button("Show Item Agent Data", PyAgent_agent_window_state.values[1])
+                    PyAgent_agent_window_state.values[1], _ = ImGui.toggle_button("Show Item Agent Data", PyAgent_agent_window_state.values[1])
 
                 if Agent.IsGadget(agent_id):
-                    PyAgent_agent_window_state.values[2] = ImGui.toggle_button("Show Gadget Agent Data", PyAgent_agent_window_state.values[2])
-
+                    PyAgent_agent_window_state.values[2], _ = ImGui.toggle_button("Show Gadget Agent Data", PyAgent_agent_window_state.values[2])
 
                 if PyAgent_agent_window_state.values[0]:
                     ShowLivingAgentData(agent_id)
@@ -2060,7 +2059,7 @@ def ShowPyAgentWindow():
             PyImGui.text("Input an Agent Id to see its data")
             PyAgent_window_state.values[0] = PyImGui.input_int("Agent ID", PyAgent_window_state.values[0])
             PyImGui.separator()
-            PyAgent_window_state.values[1] = ImGui.toggle_button("AgentArray", PyAgent_window_state.values[1])
+            PyAgent_window_state.values[1], _ = ImGui.toggle_button("AgentArray", PyAgent_window_state.values[1])
             # If an agent ID is entered, display agent details
             if PyAgent_window_state.values[0] != 0:
                 draw_agent_window(PyAgent_window_state.values[0])
@@ -2274,7 +2273,7 @@ def ShowPyMapWindow():
                     PyImGui.table_next_column()  # Move to the next column
 
                     selected_button_index = button_index
-                    PyMap_window_state.is_window_open[selected_button_index] = ImGui.toggle_button(button_label, PyMap_window_state.is_window_open[selected_button_index])
+                    PyMap_window_state.is_window_open[selected_button_index], _ = ImGui.toggle_button(button_label, PyMap_window_state.is_window_open[selected_button_index])
                     
                     if PyMap_window_state.is_window_open[selected_button_index]:
                         title = PyMap_window_state.button_list[selected_button_index]
@@ -2526,7 +2525,7 @@ def ShowPyImGuiDemoWindow():
                     PyImGui.table_next_column()  # Move to the next column
 
                     selected_button_index = button_index
-                    ImGui_window_state.is_window_open[selected_button_index] = ImGui.toggle_button(button_label, ImGui_window_state.is_window_open[selected_button_index])
+                    ImGui_window_state.is_window_open[selected_button_index], _ = ImGui.toggle_button(button_label, ImGui_window_state.is_window_open[selected_button_index])
                     
                     if ImGui_window_state.is_window_open[selected_button_index]:
                         title = ImGui_window_state.button_list[selected_button_index]
@@ -2622,7 +2621,7 @@ def DrawWindow():
                     PyImGui.table_next_column()  # Move to the next column
 
                     selected_button_index = button_index
-                    main_window_state.is_window_open[selected_button_index] = ImGui.toggle_button(button_label, main_window_state.is_window_open[selected_button_index])
+                    main_window_state.is_window_open[selected_button_index], _ = ImGui.toggle_button(button_label, main_window_state.is_window_open[selected_button_index])
                     
                     if main_window_state.is_window_open[selected_button_index]:
                         title = main_window_state.button_list[selected_button_index]

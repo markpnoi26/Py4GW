@@ -151,7 +151,7 @@ def DrawWindow():
 
             polling_time = PyImGui.input_int("Polling Time (s)", polling_time)
             
-            started = ImGui.toggle_button("Start" if not started else "Stop", started)
+            started, _ = ImGui.toggle_button("Start" if not started else "Stop", started)
 
             player_x, player_y = Player.GetXY()
 
@@ -178,7 +178,7 @@ def DrawWindow():
                 for coord in new_path:
                     Py4GW.Console.Log(module_name,f"({int(coord[0])}, {int(coord[1])}),", Py4GW.Console.MessageType.Info)
 
-            draw_original_route = ImGui.toggle_button("Draw Original Route", draw_original_route)
+            draw_original_route, _ = ImGui.toggle_button("Draw Original Route", draw_original_route)
             draw_new_route = ImGui.toggle_button("Draw New Route", draw_new_route)
 
             Overlay().BeginDraw()

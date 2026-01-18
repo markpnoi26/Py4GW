@@ -1266,7 +1266,7 @@ def DrawAutoHandler():
             active_button = IconsFontAwesome5.ICON_TOGGLE_OFF
             active_tooltip = "AutoHandler is inactive"
             
-        global_vars.auto_widget_options.module_active = ImGui.toggle_button(active_button + "##AutoHandlerActive", global_vars.auto_widget_options.module_active)
+        global_vars.auto_widget_options.module_active, _ = ImGui.toggle_button(active_button + "##AutoHandlerActive", global_vars.auto_widget_options.module_active)
         ImGui.show_tooltip(active_tooltip)
         
         PyImGui.same_line(0,-1)
@@ -1331,7 +1331,7 @@ def DrawAutoHandler():
                     global_vars.auto_widget_options.salvage_whites = not global_vars.auto_widget_options.salvage_whites
                 ImGui.show_tooltip("Salvage White Items")
                 PyImGui.same_line(0,-1)
-                global_vars.auto_widget_options.salvage_rare_materials = ImGui.toggle_button("Rare Mats##salvageRareMaterials", global_vars.auto_widget_options.salvage_rare_materials and global_vars.auto_widget_options.salvage_whites)
+                global_vars.auto_widget_options.salvage_rare_materials, _ = ImGui.toggle_button("Rare Mats##salvageRareMaterials", global_vars.auto_widget_options.salvage_rare_materials and global_vars.auto_widget_options.salvage_whites)
                 ImGui.show_tooltip("Salvage Rare Materials")
                 PyImGui.same_line(0,-1)
                 if color_toggle_button("BlueColorBtn",global_vars.auto_widget_options.salvage_blues, rarity_colors["Blue"]["frame"], rarity_colors["Blue"]["content"], rarity_colors["Blue"]["text"], 0, 0):
@@ -1356,10 +1356,10 @@ def DrawAutoHandler():
                         
                 PyImGui.end_tab_item()
             if PyImGui.begin_tab_item("Deposit"):
-                global_vars.auto_widget_options.deposit_materials = ImGui.toggle_button("Materials", global_vars.auto_widget_options.deposit_materials)
+                global_vars.auto_widget_options.deposit_materials, _ = ImGui.toggle_button("Materials", global_vars.auto_widget_options.deposit_materials)
                 ImGui.show_tooltip("Deposit Materials")
                 PyImGui.same_line(0,-1)
-                global_vars.auto_widget_options.deposit_trophies = ImGui.toggle_button("Trophies", global_vars.auto_widget_options.deposit_trophies)
+                global_vars.auto_widget_options.deposit_trophies, _ = ImGui.toggle_button("Trophies", global_vars.auto_widget_options.deposit_trophies)
                 ImGui.show_tooltip("Deposit Trophies")
                 PyImGui.same_line(0,-1)
                 if color_toggle_button("DepositBlueColorBtn",global_vars.auto_widget_options.deposit_blues, rarity_colors["Blue"]["frame"], rarity_colors["Blue"]["content"], rarity_colors["Blue"]["text"], 0, 0):

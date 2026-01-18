@@ -85,7 +85,7 @@ def draw_widget_popup_menus():
                 if new_enabled:
                     PyImGui.push_style_color(PyImGui.ImGuiCol.Text, CAT_COLOR)
 
-                item["info"]["configuring"] = ImGui.toggle_button(item["configure_id"], item["info"]["configuring"])
+                item["info"]["configuring"], _ = ImGui.toggle_button(item["configure_id"], item["info"]["configuring"])
 
                 if new_enabled:
                     PyImGui.pop_style_color(1)

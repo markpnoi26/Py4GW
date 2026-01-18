@@ -56,7 +56,7 @@ class XunlaiModule:
         PyImGui.push_style_var2(ImGui.ImGuiStyleVar.FramePadding, 0, 0)
         
         if PyImGui.begin("XunlaiButtons", flags):
-            self.show_transfer_buttons = ImGui.toggle_button(IconsFontAwesome5.ICON_CARET_SQUARE_RIGHT, self.show_transfer_buttons, width=20, height=20)
+            self.show_transfer_buttons, _ = ImGui.toggle_button(IconsFontAwesome5.ICON_CARET_SQUARE_RIGHT, self.show_transfer_buttons, width=20, height=20)
             ImGui.show_tooltip("Show Deposit/Withdraw Buttons")
             PyImGui.same_line(0,-1)
             PyImGui.text("|")
