@@ -4,15 +4,19 @@ import sys
 import traceback
 import Py4GW
 
+from Py4GWCoreLib.py4gwcorelib_src.Console import ConsoleLog
+
 MODULE_NAME = "HeroAI"
+
+for module in list(sys.modules):
+    if MODULE_NAME in module:
+        del sys.modules[module]
 
 from Py4GWCoreLib.Map import Map
 
 from HeroAI.cache_data import CacheData
 from HeroAI.constants import (FOLLOW_DISTANCE_OUT_OF_COMBAT, MELEE_RANGE_VALUE, RANGED_RANGE_VALUE)
-from HeroAI.game_option import UpdateGameOptions
 from HeroAI.globals import hero_formation
-from HeroAI.players import (RegisterHeroes, RegisterPlayer, UpdatePlayers)
 from HeroAI.utils import (DistanceFromWaypoint)
 from HeroAI.windows import (HeroAI_FloatingWindows ,HeroAI_Windows,)
 from HeroAI.ui import (draw_configure_window, draw_skip_cutscene_overlay)
@@ -29,8 +33,11 @@ map_quads : list[Map.Pathing.Quad] = []
 
 #region Combat
 def HandleOutOfCombat(cached_data: CacheData):
-    if not cached_data.data.is_combat_enabled:  # halt operation if combat is disabled
+    options = GLOBAL_CACHE.ShMem.GetHeroAIOptions(cached_data.account_email)
+    
+    if not options or not options.Combat:  # halt operation if combat is disabled
         return False
+    
     if cached_data.data.in_aggro:
         return False
 
@@ -39,19 +46,24 @@ def HandleCombatFlagging(cached_data: CacheData):
     # Suspends all activity until HeroAI has made it to the flagged position
     # Still goes into combat as long as its within the combat follow range value of the expected flag
     party_number = GLOBAL_CACHE.Party.GetOwnPartyNumber()
-    all_player_struct = cached_data.HeroAI_vars.all_player_struct
-    if all_player_struct[party_number].IsFlagged:
-        own_follow_x = all_player_struct[party_number].FlagPosX
-        own_follow_y = all_player_struct[party_number].FlagPosY
+    own_options = GLOBAL_CACHE.ShMem.GetGerHeroAIOptionsByPartyNumber(party_number)
+    leader_options = GLOBAL_CACHE.ShMem.GetGerHeroAIOptionsByPartyNumber(0)
+    
+    if not own_options:
+        return False    
+
+    if own_options.IsFlagged:
+        own_follow_x = own_options.FlagPosX
+        own_follow_y = own_options.FlagPosY
         own_flag_coords = (own_follow_x, own_follow_y)
         if (
             Utils.Distance(own_flag_coords, Agent.GetXY(GLOBAL_CACHE.Player.GetAgentID()))
             >= FOLLOW_COMBAT_DISTANCE
         ):
             return True  # Forces a reset on autoattack timer
-    elif all_player_struct[0].IsFlagged:
-        leader_follow_x = all_player_struct[0].FlagPosX
-        leader_follow_y = all_player_struct[0].FlagPosY
+    elif leader_options and leader_options.IsFlagged:
+        leader_follow_x = leader_options.FlagPosX
+        leader_follow_y = leader_options.FlagPosY
         leader_flag_coords = (leader_follow_x, leader_follow_y)
         if (
             Utils.Distance(leader_flag_coords, Agent.GetXY(GLOBAL_CACHE.Player.GetAgentID()))
@@ -62,8 +74,11 @@ def HandleCombatFlagging(cached_data: CacheData):
 
 
 def HandleCombat(cached_data: CacheData):
-    if not cached_data.data.is_combat_enabled:  # halt operation if combat is disabled
+    options = GLOBAL_CACHE.ShMem.GetHeroAIOptions(cached_data.account_email)
+    
+    if not options or not options.Combat:  # halt operation if combat is disabled
         return False
+    
     if not cached_data.data.in_aggro:
         return False
 
@@ -73,12 +88,16 @@ def HandleCombat(cached_data: CacheData):
     return cached_data.combat_handler.HandleCombat(ooc=False)
 
 def HandleAutoAttack(cached_data: CacheData) -> bool:
+    options = GLOBAL_CACHE.ShMem.GetHeroAIOptions(cached_data.account_email)
+    if not options:  # halt operation if combat is disabled
+        return False
+    
     target_id = GLOBAL_CACHE.Player.GetTargetID()
     _, target_aliegance = Agent.GetAllegiance(target_id)
 
     if target_id == 0 or Agent.IsDead(target_id) or (target_aliegance != "Enemy"):
         if (
-            cached_data.data.is_combat_enabled
+            options.Combat
             and (not Agent.IsAttacking(GLOBAL_CACHE.Player.GetAgentID()))
             and (not Agent.IsCasting(GLOBAL_CACHE.Player.GetAgentID()))
             and (not Agent.IsMoving(GLOBAL_CACHE.Player.GetAgentID()))
@@ -90,7 +109,7 @@ def HandleAutoAttack(cached_data: CacheData) -> bool:
     # auto attack
     if cached_data.auto_attack_timer.HasElapsed(cached_data.auto_attack_time) and cached_data.data.weapon_type != 0:
         if (
-            cached_data.data.is_combat_enabled
+            options.Combat
             and (not Agent.IsAttacking(GLOBAL_CACHE.Player.GetAgentID()))
             and (not Agent.IsCasting(GLOBAL_CACHE.Player.GetAgentID()))
             and (not Agent.IsMoving(GLOBAL_CACHE.Player.GetAgentID()))
@@ -119,8 +138,9 @@ def LootingRoutineActive():
 
 def Loot(cached_data: CacheData):
     global LOOT_THROTTLE_CHECK
+    options = GLOBAL_CACHE.ShMem.GetHeroAIOptions(cached_data.account_email)
 
-    if not cached_data.data.is_looting_enabled:
+    if not options or not options.Looting:
         return False
 
     if cached_data.data.in_aggro:
@@ -138,6 +158,7 @@ def Loot(cached_data: CacheData):
         return False
 
     # Build the loot array based on filtering rules
+    
     loot_array = LootConfig().GetfilteredLootArray(
         Range.Earshot.value,
         multibox_loot=True,
@@ -184,24 +205,28 @@ def Follow(cached_data: CacheData):
         return False
 
     party_number = GLOBAL_CACHE.Party.GetOwnPartyNumber()
-    if not cached_data.data.is_following_enabled:  # halt operation if following is disabled
+    options = GLOBAL_CACHE.ShMem.GetHeroAIOptions(cached_data.account_email)
+    leader_options = GLOBAL_CACHE.ShMem.GetGerHeroAIOptionsByPartyNumber(0)
+    
+    if not options or not options.Following:  # halt operation if following is disabled
         return False
 
     follow_x = 0.0
     follow_y = 0.0
     follow_angle = -1.0
 
-    all_player_struct = cached_data.HeroAI_vars.all_player_struct
-    if all_player_struct[party_number].IsFlagged:  # my own flag
-        follow_x = all_player_struct[party_number].FlagPosX
-        follow_y = all_player_struct[party_number].FlagPosY
-        follow_angle = all_player_struct[party_number].FollowAngle
+    if options.IsFlagged:  # my own flag
+        follow_x = options.FlagPosX
+        follow_y = options.FlagPosY
+        follow_angle = options.FlagFacingAngle
         following_flag = True
-    elif all_player_struct[0].IsFlagged:  # leader's flag
-        follow_x = all_player_struct[0].FlagPosX
-        follow_y = all_player_struct[0].FlagPosY
-        follow_angle = all_player_struct[0].FollowAngle
+        
+    elif leader_options and leader_options.IsFlagged:  # leader's flag
+        follow_x = leader_options.FlagPosX
+        follow_y = leader_options.FlagPosY
+        follow_angle = leader_options.FlagFacingAngle
         following_flag = False
+        
     else:  # follow leader
         following_flag = False
         follow_x, follow_y = Agent.GetXY(GLOBAL_CACHE.Party.GetPartyLeaderID())
@@ -252,22 +277,14 @@ def Follow(cached_data: CacheData):
             ## fallback to direct follow if calculated point is off-map to avoid getting stuck or falling behind
             xx = follow_x
             yy = follow_y
+            
+    if xx == 0.0 and yy == 0.0:
+        return False
     
     cached_data.data.angle_changed = False
     ActionQueueManager().ResetQueue("ACTION")
     GLOBAL_CACHE.Player.Move(xx, yy)
     return True
-
-
-
-    
-
-def register_data(cached_data: CacheData):
-    RegisterPlayer(cached_data)
-    RegisterHeroes(cached_data)
-    UpdatePlayers(cached_data)
-    UpdateGameOptions(cached_data)
-    cached_data.UpdateGameOptions()
 
 def handle_UI (cached_data: CacheData):      
     if not cached_data.ui_state_data.show_classic_controls:   
@@ -280,11 +297,6 @@ def handle_UI (cached_data: CacheData):
    
 def initialize(cached_data: CacheData) -> bool:
     if Map.IsMapReady() and GLOBAL_CACHE.Party.IsPartyLoaded():
-    
-        register_data(cached_data)
-
-        HeroAI_FloatingWindows.disable_main_automation(cached_data)
-        
         handle_UI(cached_data)
         
         if not Map.IsExplorable():  # halt operation if not in explorable area
@@ -355,7 +367,9 @@ def main():
             UpdateStatus(cached_data)
         else:
             map_quads.clear()
-            
+        
+        if HeroAI_FloatingWindows.settings.ShowDebugWindow:
+            HeroAI_Windows.DrawMultiboxTools(cached_data)
 
 
     except ImportError as e:

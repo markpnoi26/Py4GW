@@ -510,7 +510,7 @@ def ShowEffectsWindow():
             ImGui.table("Buffs", buffs_headers, buffs_data)
 
             PySkill_window_state.values[0] = PyImGui.input_int("Buff ID", PySkill_window_state.values[0])
-            PySkill_window_state.values[1]  = ImGui.toggle_button("Drop Buff", PySkill_window_state.values[1])
+            PySkill_window_state.values[1], _  = ImGui.toggle_button("Drop Buff", PySkill_window_state.values[1])
 
             if PySkill_window_state.values[1]:
                 GLOBAL_CACHE.Effects.DropBuff(PySkill_window_state.values[0])
@@ -855,7 +855,7 @@ def ShowSkillWindow():
             ImGui.table("hovered info", headers, data)
 
             PySkill_window_state.values[0] = PyImGui.input_int("SkillID", PySkill_window_state.values[0])
-            PySkill_window_state.values[1]  = ImGui.toggle_button("Show Item Data", PySkill_window_state.values[1])
+            PySkill_window_state.values[1], _  = ImGui.toggle_button("Show Item Data", PySkill_window_state.values[1])
 
             if  PySkill_window_state.values[1]:
                 ShowSkillDataWindow(PySkill_window_state.values[0])
@@ -1163,7 +1163,7 @@ def ShowItemWindow():
 
             PyItem_window_state.values[0] = PyImGui.input_int("ItemID", PyItem_window_state.values[0])
 
-            PyItem_window_state.values[1]  = ImGui.toggle_button("Show Item Data",PyItem_window_state.values[1])
+            PyItem_window_state.values[1], _  = ImGui.toggle_button("Show Item Data",PyItem_window_state.values[1])
 
             if PyItem_window_state.values[1]:
                 GLOBAL_CACHE.Item.RequestName(PyItem_window_state.values[0])
@@ -1865,7 +1865,7 @@ def ShowLivingAgentData(agent_id):
                     f"IsHexed: {Agent.IsHexed(agent_id)}",
                     f"IsdegenHexed: {Agent.IsDegenHexed(agent_id)}",
                     f"IsWeaponSpelled: {Agent.IsWeaponSpelled(agent_id)}",
-                    f"CastingSkillId: {Agent.GetCastingSkill(agent_id)}",
+                    f"CastingSkillId: {Agent.GetCastingSkillID(agent_id)}",
                     f"Overcast: {Agent.GetOvercast(agent_id)}"
                 ]
 
@@ -1884,40 +1884,6 @@ def ShowLivingAgentData(agent_id):
 
                 # Call the table function to display the data
                 ImGui.table("agent living pve Info", headers, formatted_data)
-                
-                AGENT_INSTANCE = Agent.agent_instance(agent_id).living_agent
-                
-                PyImGui.text("Extra data:")
-                combined_data = []
-                """
-                    f"h00C8: {AGENT_INSTANCE.h00C8}",
-                    f"h00CC: {AGENT_INSTANCE.h00CC}",
-                    f"h00D0: {AGENT_INSTANCE.h00D0}",
-                    f"h00D4: {AGENT_INSTANCE.h00D4}",
-                    f"animation_type: {AGENT_INSTANCE.animation_type}",
-                    f"h00E4: {AGENT_INSTANCE.h00E4}",
-                    f"weapon_attack_speed: {AGENT_INSTANCE.weapon_attack_speed}",
-                    f"attack_speed_modifier: {AGENT_INSTANCE.attack_speed_modifier}",
-                    f"agent_model_type: {AGENT_INSTANCE.agent_model_type}",
-                    f"transmog_npc_id: {AGENT_INSTANCE.transmog_npc_id}",
-                    f"h0100: {AGENT_INSTANCE.h0100}",
-                    f"guild_id: {AGENT_INSTANCE.guild_id}",
-                    f"team_id: {AGENT_INSTANCE.team_id}",
-                    f"h0108: {AGENT_INSTANCE.h0108}",
-                    f"h0110: {AGENT_INSTANCE.h0110}",
-                    f"h0124: {AGENT_INSTANCE.h0124}",
-                    f"h012C: {AGENT_INSTANCE.h012C}",
-                    f"effects: {AGENT_INSTANCE.effects}",
-                    f"h013C: {AGENT_INSTANCE.h013C}",
-                    f"model_state: {AGENT_INSTANCE.model_state}",
-                    f"type_map: {AGENT_INSTANCE.type_map}",
-                    f"h017C: {AGENT_INSTANCE.h017C}",
-                    f"animation_speed: {AGENT_INSTANCE.animation_speed}",
-                    f"animation_code: {AGENT_INSTANCE.animation_code}",
-                    f"animation_id: {AGENT_INSTANCE.animation_id}",
-                    f"h01B6: {AGENT_INSTANCE.h01B6}",
-                ]
-                """
 
                 # Format data into rows of 3 columns
                 columns = 5
@@ -1998,14 +1964,13 @@ def draw_agent_window(agent_id):
                 PyImGui.text("Show Agent type Specific data")
 
                 if Agent.IsLiving(agent_id):
-                    PyAgent_agent_window_state.values[0] = ImGui.toggle_button("Show Living Agent Data", PyAgent_agent_window_state.values[0])
+                    PyAgent_agent_window_state.values[0], _ = ImGui.toggle_button("Show Living Agent Data", PyAgent_agent_window_state.values[0])
 
                 if Agent.IsItem(agent_id):
-                    PyAgent_agent_window_state.values[1] = ImGui.toggle_button("Show Item Agent Data", PyAgent_agent_window_state.values[1])
+                    PyAgent_agent_window_state.values[1], _ = ImGui.toggle_button("Show Item Agent Data", PyAgent_agent_window_state.values[1])
 
                 if Agent.IsGadget(agent_id):
-                    PyAgent_agent_window_state.values[2] = ImGui.toggle_button("Show Gadget Agent Data", PyAgent_agent_window_state.values[2])
-
+                    PyAgent_agent_window_state.values[2], _ = ImGui.toggle_button("Show Gadget Agent Data", PyAgent_agent_window_state.values[2])
 
                 if PyAgent_agent_window_state.values[0]:
                     ShowLivingAgentData(agent_id)
@@ -2094,7 +2059,7 @@ def ShowPyAgentWindow():
             PyImGui.text("Input an Agent Id to see its data")
             PyAgent_window_state.values[0] = PyImGui.input_int("Agent ID", PyAgent_window_state.values[0])
             PyImGui.separator()
-            PyAgent_window_state.values[1] = ImGui.toggle_button("AgentArray", PyAgent_window_state.values[1])
+            PyAgent_window_state.values[1], _ = ImGui.toggle_button("AgentArray", PyAgent_window_state.values[1])
             # If an agent ID is entered, display agent details
             if PyAgent_window_state.values[0] != 0:
                 draw_agent_window(PyAgent_window_state.values[0])
@@ -2308,7 +2273,7 @@ def ShowPyMapWindow():
                     PyImGui.table_next_column()  # Move to the next column
 
                     selected_button_index = button_index
-                    PyMap_window_state.is_window_open[selected_button_index] = ImGui.toggle_button(button_label, PyMap_window_state.is_window_open[selected_button_index])
+                    PyMap_window_state.is_window_open[selected_button_index], _ = ImGui.toggle_button(button_label, PyMap_window_state.is_window_open[selected_button_index])
                     
                     if PyMap_window_state.is_window_open[selected_button_index]:
                         title = PyMap_window_state.button_list[selected_button_index]
@@ -2560,7 +2525,7 @@ def ShowPyImGuiDemoWindow():
                     PyImGui.table_next_column()  # Move to the next column
 
                     selected_button_index = button_index
-                    ImGui_window_state.is_window_open[selected_button_index] = ImGui.toggle_button(button_label, ImGui_window_state.is_window_open[selected_button_index])
+                    ImGui_window_state.is_window_open[selected_button_index], _ = ImGui.toggle_button(button_label, ImGui_window_state.is_window_open[selected_button_index])
                     
                     if ImGui_window_state.is_window_open[selected_button_index]:
                         title = ImGui_window_state.button_list[selected_button_index]
@@ -2656,7 +2621,7 @@ def DrawWindow():
                     PyImGui.table_next_column()  # Move to the next column
 
                     selected_button_index = button_index
-                    main_window_state.is_window_open[selected_button_index] = ImGui.toggle_button(button_label, main_window_state.is_window_open[selected_button_index])
+                    main_window_state.is_window_open[selected_button_index], _ = ImGui.toggle_button(button_label, main_window_state.is_window_open[selected_button_index])
                     
                     if main_window_state.is_window_open[selected_button_index]:
                         title = main_window_state.button_list[selected_button_index]

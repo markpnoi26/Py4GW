@@ -80,6 +80,7 @@ class HeroAICommands:
         self.CombatPrep = Command("Prepare for Combat", IconsFontAwesome5.ICON_SHIELD_ALT, self.__combat_prep_command, "Use Combat Preparations", map_types=["Explorable"])
         self.DisbandParty = Command("Disband Party", IconsFontAwesome5.ICON_SIGN_OUT_ALT, self.__leave_party_command, "Make all heroes leave party", map_types=["Outpost"])
         self.FormParty = Command("Form Party", IconsFontAwesome5.ICON_USERS, self.__invite_all_command, "Invite all heroes to party", map_types=["Outpost"])
+        self.LeavePartyAndTravelGH = Command("Leave & Travel to GH", IconsFontAwesome5.ICON_HOME, self.__leave_party_and_travel_gh_command, "Leave party and travel to Guild Hall")
         
         self.__commands = [
             self.Empty,
@@ -96,6 +97,7 @@ class HeroAICommands:
             self.CombatPrep,
             self.DisbandParty,
             self.FormParty,
+            self.LeavePartyAndTravelGH,
         ]
     
     @property
@@ -146,11 +148,19 @@ class HeroAICommands:
         for account in accounts:
             GLOBAL_CACHE.ShMem.SendMessage(sender_email, account.AccountEmail, SharedCommandType.LeaveParty, (0, 0, 0, 0))
     
+    def __leave_party_and_travel_gh_command(self, accounts: list[AccountData]):
+        sender_email = GLOBAL_CACHE.Player.GetAccountEmail()        
+        
+        for account in accounts:
+            GLOBAL_CACHE.ShMem.SendMessage(sender_email, account.AccountEmail, SharedCommandType.LeaveParty, (0, 0, 0, 0))
+            GLOBAL_CACHE.ShMem.SendMessage(sender_email, account.AccountEmail, SharedCommandType.TravelToGuildHall, (0, 0, 0, 0))
+
     def __combat_prep_command(self, accounts: list[AccountData]):
         sender_email = GLOBAL_CACHE.Player.GetAccountEmail()        
         
         for account in accounts:
-            GLOBAL_CACHE.ShMem.SendMessage(sender_email, account.AccountEmail, SharedCommandType.UseSkillCombatPrep, (0, 0, 0, 0))
+            GLOBAL_CACHE.ShMem.SendMessage(sender_email, account.AccountEmail, SharedCommandType.UseSkillCombatPrep, (1, 0, 0, 0))
+            GLOBAL_CACHE.ShMem.SendMessage(sender_email, account.AccountEmail, SharedCommandType.UseSkillCombatPrep, (2, 0, 0, 0))
     
     def __pick_up_loot_command(self, accounts: list[AccountData]):
         sender_email = GLOBAL_CACHE.Player.GetAccountEmail()        
@@ -265,14 +275,12 @@ class HeroAICommands:
         ui.show_configure_consumables_window()
 
     def __flag_heroes_command(self, accounts: list[AccountData]):
-        from HeroAI import ui, windows
-        windows.capture_flag_all = True
-        windows.capture_hero_flag = True
-        windows.capture_hero_index = 0
-        windows.one_time_set_flag = False      
+        from HeroAI import windows
+        windows.HeroAI_Windows.capture_flag_all = True
+        windows.HeroAI_Windows.capture_hero_flag = True
+        windows.HeroAI_Windows.capture_hero_index = 0
+        windows.HeroAI_Windows.one_time_set_flag = False    
     
     def __unflag_heroes_command(self, accounts: list[AccountData]):
-        from HeroAI import ui, windows
-        pass
-        #ClearFlags does not exists!?
-        #windows.ClearFlags = True
+        from HeroAI import windows
+        windows.HeroAI_Windows.ClearFlags = True

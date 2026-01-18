@@ -47,20 +47,19 @@ class Agent:
         return True
     
     @staticmethod
-    def require_valid(default=None):
+    def require_valid(func):
         """
         Decorator for safe agent access.
         Ensures the agent_id is valid before calling the function.
         """
-        def decorator(func):
-            def wrapper(agent_id, *args, **kwargs):
-                if not Agent.IsValid(agent_id):
-                    return default
-                return func(agent_id, *args, **kwargs)
-            return wrapper
-        return decorator
+        def wrapper(agent_id, *args, **kwargs):
+            if not Agent.IsValid(agent_id):
+                return None
+            return func(agent_id, *args, **kwargs)
+        return wrapper
 
     @staticmethod
+    @require_valid
     def GetAgentByID(agent_id: int) -> AgentStruct | None:
         """
         Purpose: Retrieve an agent by its ID.
@@ -75,6 +74,7 @@ class Agent:
         return agent
     
     @staticmethod
+    @require_valid
     def GetLivingAgentByID(agent_id: int) -> AgentLivingStruct | None:
         """
         Purpose: Retrieve a living agent by its ID.
@@ -88,6 +88,7 @@ class Agent:
         return agent.GetAsAgentLiving()
     
     @staticmethod
+    @require_valid
     def GetItemAgentByID(agent_id: int) -> AgentItemStruct | None:
         """
         Purpose: Retrieve an item agent by its ID.
@@ -101,6 +102,7 @@ class Agent:
         return agent.GetAsAgentItem()
     
     @staticmethod
+    @require_valid
     def GetGadgetAgentByID(agent_id: int) -> AgentGadgetStruct | None:
         """
         Purpose: Retrieve a gadget agent by its ID.
@@ -156,15 +158,15 @@ class Agent:
         Args:
             partial_name (str): The partial name to search for.
         Returns:
-            int: The AgentID of the matching agent, or None if no match is found.
+            int: The AgentID of the matching agent, or 0 if no match is found.
         """
         agent_array = AgentArray.GetAgentArray()
 
         for agent_id in agent_array:
             agent_name = Agent.GetNameByID(agent_id)  # Retrieve the full name of the agent
             if name.lower() in agent_name.lower():  # Check for partial match (case-insensitive)
-                return agent_id
-        
+                if Agent.IsValid(agent_id):
+                    return agent_id
         return 0
     
     @staticmethod
@@ -311,7 +313,7 @@ class Agent:
         return pos.x, pos.y, z
 
     @staticmethod
-    def GetZPlane(agent_id : int) -> float:
+    def GetZPlane(agent_id : int) -> int:
         """
         Purpose: Retrieve the Z plane of an agent.
         Args: agent_id (int): The ID of the agent.
@@ -319,7 +321,7 @@ class Agent:
         """
         agent = Agent.GetAgentByID(agent_id)
         if agent is None:
-            return 0.0
+            return 0
         pos = agent.pos
         return pos.zplane
     
@@ -883,7 +885,7 @@ class Agent:
         """Check if the agent is dead."""
         living = Agent.GetLivingAgentByID(agent_id)
         if living is None:
-            return True
+            return False
         is_dead = living.is_dead
         dead_by_type_map = living.is_dead_by_type_map
         return is_dead or dead_by_type_map
@@ -933,6 +935,18 @@ class Agent:
         if living is None:
             return False
         return living.is_casting
+    
+    @staticmethod
+    def GetCastingSkillID(agent_id: int) -> int:
+        """ Purpose: Retrieve the casting skill of the agent."""
+        if not Agent.IsCasting(agent_id):
+            return 0    
+        
+        living = Agent.GetLivingAgentByID(agent_id)
+        if living is None:
+            return 0
+        return living.skill
+
 
     @staticmethod
     def IsIdle(agent_id: int) -> bool:
@@ -1289,13 +1303,7 @@ class Agent:
                 
         return attributes
 
-    @staticmethod
-    def GetCastingSkill(agent_id: int) -> int:
-        """ Purpose: Retrieve the casting skill of the agent."""
-        if not Agent.agent_instance(agent_id).living_agent.is_casting:
-            return 0    
-        return Agent.agent_instance(agent_id).living_agent.casting_skill_id
-
+    
 
 
 
