@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from HeroAI.party_cache import PartyCache
 from Py4GWCoreLib.GlobalCache.SharedMemory import SHMEM_NUMBER_OF_SKILLS, AccountData, HeroAIOptionStruct
 
 from .constants import SHARED_MEMORY_FILE_NAME, STAY_ALERT_TIME, MAX_NUM_PLAYERS, NUMBER_OF_SKILLS
@@ -125,6 +126,7 @@ class CacheData:
             self.account_email = ""
             
             self.party_position : int = -1
+            self.party : PartyCache = PartyCache()
             self.account_data : AccountData = AccountData()
             self.account_options : HeroAIOptionStruct = HeroAIOptionStruct()
             
@@ -182,6 +184,9 @@ class CacheData:
                 self.account_email = GLOBAL_CACHE.Player.GetAccountEmail()
                 self.data.reset()
                 self.data.update()
+                
+                self.party.reset()
+                self.party.update()
                 
                 if self.stay_alert_timer.HasElapsed(STAY_ALERT_TIME):
                     self.data.in_aggro = self.InAggro(AgentArray.GetEnemyArray(), Range.Earshot.value)

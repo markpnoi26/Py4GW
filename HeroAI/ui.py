@@ -1229,7 +1229,7 @@ def draw_buttons(account_data: AccountData, cached_data: CacheData, message_queu
              SharedCommandType.TakeDialogWithTarget, lambda: GLOBAL_CACHE.ShMem.SendMessage(player_email, account_email, SharedCommandType.TakeDialogWithTarget, (target_id, 1, 0, 0)), lambda: is_queued(SharedCommandType.TakeDialogWithTarget), True),
 
             ("flag", IconsFontAwesome5.ICON_FLAG, "Flag Target",
-             SharedCommandType.NoCommand, flag_hero_account, lambda: IsHeroFlagged(cached_data, account_data.PartyPosition)),
+             SharedCommandType.NoCommand, flag_hero_account, lambda: IsHeroFlagged(account_data.PartyPosition)),
 
             ("clear flag", IconsFontAwesome5.ICON_CIRCLE_XMARK, "Clear Flag",
              SharedCommandType.NoCommand, clear_hero_flag, lambda: False),
@@ -1309,7 +1309,7 @@ def get_conditioned(account_data: AccountData) -> tuple[HealthState, bool, bool,
     return HealthState.Normal, deep_wounded, enchanted, conditioned, hexed, has_weaponspell
 
 def draw_combined_hero_panel(account_data: AccountData, cached_data: CacheData, messages: list[tuple[int, SharedMessage]], open: bool = True):
-    window_info = settings.HeroPanelPositions.get(account_data.AccountEmail, None)
+    window_info = settings.get_hero_panel_info(account_data.AccountEmail)
     if not window_info or not window_info.open:
         return
     
@@ -1379,7 +1379,7 @@ def draw_combined_hero_panel(account_data: AccountData, cached_data: CacheData, 
     draw_buffs_and_upkeeps(account_data, 28)    
 
 def draw_hero_panel(window: WindowModule, account_data: AccountData, cached_data: CacheData, messages: list[tuple[int, SharedMessage]]):   
-    window_info = settings.HeroPanelPositions.get(account_data.AccountEmail, None)
+    window_info = settings.get_hero_panel_info(account_data.AccountEmail)
     if not window_info or not window_info.open:
         return
     
@@ -1580,7 +1580,7 @@ def _post_pcon_message(params, cached_data: CacheData):
     if not self_account:
         return
     
-    accounts = GLOBAL_CACHE.ShMem.GetAllAccountData()
+    accounts = cached_data.party.accounts.values()
     sender_email = cached_data.account_email
     for account in accounts:        
         GLOBAL_CACHE.ShMem.SendMessage(sender_email, account.AccountEmail, SharedCommandType.PCon, params)
@@ -1641,13 +1641,13 @@ def draw_consumables_window(cached_data: CacheData):
     
     pass  # Implementation of consumables window drawing logic goes here
 
-def draw_command_panel(window: WindowModule, accounts : list[AccountData], cached_data: CacheData):
+def draw_command_panel(window: WindowModule, cached_data: CacheData):
     style = ImGui.get_style()
 
     size = window.window_size
     style.WindowPadding.push_style_var(5, 5)
     
-    info = settings.HeroPanelPositions.get(window.window_name, None)
+    info = settings.get_hero_panel_info(window.window_name)
     # if info:
     #     PyImGui.set_next_window_pos((info.x, info.y), PyImGui.ImGuiCond.Always)
         
@@ -1670,7 +1670,7 @@ def draw_command_panel(window: WindowModule, accounts : list[AccountData], cache
         
         if window.changed:                
             if Console.is_window_active():                
-                window_info = settings.HeroPanelPositions.get(window.window_name, Settings.HeroPanelInfo())
+                window_info = settings.get_hero_panel_info(window.window_name)
                 
                 if window_info:
                     if not window_info in settings.HeroPanelPositions.values():
@@ -1769,7 +1769,7 @@ hotbar_offsets : dict[StyleTheme, dict[str, dict]] = {
     },
 }
     
-def draw_hotbar(hotbar: Settings.CommandHotBar, accounts: list[AccountData]):
+def draw_hotbar(hotbar: Settings.CommandHotBar, cached_data: CacheData):
     global configure_hotbar
     style = ImGui.get_style()
     window = hotbars.get(hotbar.identifier, None)
@@ -1950,6 +1950,7 @@ def draw_hotbar(hotbar: Settings.CommandHotBar, accounts: list[AccountData]):
                                     valid_map_type = "Outpost" in cmd.map_types
                                     
                                 if draw_button(cmd.name, cmd.icon, btn_size, btn_size, False, valid_map_type):
+                                    accounts = [acct for acct in cached_data.party.accounts.values()]
                                     cmd(accounts)
                                 
 
@@ -2080,10 +2081,10 @@ def draw_configure_hotbar():
             
         PyImGui.end_popup()
 
-def draw_hotbars(accounts: list[AccountData], cached_data: CacheData):
+def draw_hotbars(cached_data: CacheData):
     for _, hotbar in settings.CommandHotBars.items():
         if hotbar.visible:
-            draw_hotbar(hotbar, accounts)
+            draw_hotbar(hotbar, cached_data)
             
     
     draw_configure_hotbar()
@@ -2124,7 +2125,7 @@ def is_left_mouse_clicked() -> bool:
 
     return clicked
     
-def draw_dialog_overlay(accounts: list[AccountData], cached_data: CacheData, messages: list[tuple[int, SharedMessage]]):
+def draw_dialog_overlay(cached_data: CacheData, messages: list[tuple[int, SharedMessage]]):
     global frame_coords, dialog_open, dialog_coords
     if not settings.ShowDialogOverlay:
         return
@@ -2150,7 +2151,7 @@ def draw_dialog_overlay(accounts: list[AccountData], cached_data: CacheData, mes
         for i, (frame_id, frame) in enumerate(sorted_frames):                
             if ImGui.is_mouse_in_rect((frame[0], frame[1], frame[2] - frame[0], frame[3] - frame[1]), mouse_pos):                                
                 if is_left_mouse_clicked() and pyimgui_io.key_ctrl:
-                    accounts = [acc for acc in accounts if acc.AccountEmail != cached_data.account_email]
+                    accounts = [acc for acc in cached_data.party.accounts.values() if acc.AccountEmail != cached_data.account_email]
                     commands.send_dialog(accounts, i + 1)
                     return
                 else:
@@ -2194,7 +2195,7 @@ def draw_skip_cutscene_overlay():
                     ImGui.text_colored(f"Ctrl + Click to skip cutscene on all accounts.", gray_color.color_tuple, 12)
                     ImGui.end_tooltip()                          
 
-def draw_party_overlay(accounts: list[AccountData], hero_windows : dict[str, WindowModule]):
+def draw_party_overlay(cached_data: CacheData, hero_windows : dict[str, WindowModule]):
     global party_member_frames
     
     main_account = GLOBAL_CACHE.ShMem.GetAccountDataFromEmail(GLOBAL_CACHE.Player.GetAccountEmail())
@@ -2229,13 +2230,13 @@ def draw_party_overlay(accounts: list[AccountData], hero_windows : dict[str, Win
         return
     
     for i, frame_info in enumerate(party_member_frames, start=1):      
-        account = next((acc for acc in accounts if acc.PartyPosition == i - 1), None)
+        account = next((acc for acc in cached_data.party.accounts.values() if acc.PartyPosition == i - 1), None)
         
         if account and account.AccountEmail != GLOBAL_CACHE.Player.GetAccountEmail():
             if account.PartyID != main_account.PartyID or not SameMapAsAccount(account):
                 continue
             
-            window_info = settings.HeroPanelPositions.get(account.AccountEmail, None)
+            window_info = settings.get_hero_panel_info(account.AccountEmail)
             
             if window_info:        
                 is_minimalus = style.Theme is StyleTheme.Minimalus  
@@ -2386,7 +2387,7 @@ def draw_tab_control(rect : tuple[float, float, float, float], label: str = "Acc
     PyImGui.pop_clip_rect()
     return show_accounts_in_party_search
 
-def draw_party_search_overlay(accounts: list[AccountData], cached_data: CacheData):
+def draw_party_search_overlay(cached_data: CacheData):
     global show_accounts_in_party_search, last_active_tab, selected_account
     global party_search, player_tab, hero_tab, henchmen_tab, active_tab, is_player_tab
     
@@ -2484,13 +2485,13 @@ def draw_party_search_overlay(accounts: list[AccountData], cached_data: CacheDat
             0,
         )
         
-        sorted_by_profession = sorted(accounts, key=lambda acc: (acc.PlayerProfession[0], get_display_name(acc)), reverse=False)
+        sorted_by_profession = sorted(GLOBAL_CACHE.ShMem.GetAllAccountData(), key=lambda acc: (acc.PlayerProfession[0], get_display_name(acc)), reverse=False)
         button_size  = 20
         texture = ThemeTextures.Hero_Panel_Toggle_Base.value.get_texture()
         mapid = Map.GetMapID()
         
         for i, account in enumerate(sorted_by_profession):
-            window_info = settings.HeroPanelPositions.get(account.AccountEmail, None)
+            window_info = settings.get_hero_panel_info(account.AccountEmail)
             
             if not window_info:
                 continue

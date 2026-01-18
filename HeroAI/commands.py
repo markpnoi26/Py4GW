@@ -159,7 +159,8 @@ class HeroAICommands:
         sender_email = GLOBAL_CACHE.Player.GetAccountEmail()        
         
         for account in accounts:
-            GLOBAL_CACHE.ShMem.SendMessage(sender_email, account.AccountEmail, SharedCommandType.UseSkillCombatPrep, (0, 0, 0, 0))
+            GLOBAL_CACHE.ShMem.SendMessage(sender_email, account.AccountEmail, SharedCommandType.UseSkillCombatPrep, (1, 0, 0, 0))
+            GLOBAL_CACHE.ShMem.SendMessage(sender_email, account.AccountEmail, SharedCommandType.UseSkillCombatPrep, (2, 0, 0, 0))
     
     def __pick_up_loot_command(self, accounts: list[AccountData]):
         sender_email = GLOBAL_CACHE.Player.GetAccountEmail()        

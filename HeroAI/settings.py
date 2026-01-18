@@ -367,3 +367,12 @@ class Settings:
         
         if request_save:
             self.save_requested = True  
+
+    def get_hero_panel_info(self, account_email: str) -> 'Settings.HeroPanelInfo':
+        info = self.HeroPanelPositions.get(account_email, self.HeroPanelPositions.get(account_email.lower(), Settings.HeroPanelInfo()))
+        
+        if account_email not in self.HeroPanelPositions:
+            self.HeroPanelPositions[account_email] = info
+            self.save_requested = True
+        
+        return info

@@ -26,11 +26,10 @@ class CombatClass:
             self.custom_skill_data = custom_skill_data_handler.get_skill(self.skill_id)  # Retrieve custom skill data
 
     def __init__(self):
-        import HeroAI.shared_memory_manager as shared_memory_manager
         """
         Initializes the CombatClass with an empty skill set and order.
         """
-        self.skills = []
+        self.skills : list[CombatClass.SkillData] = []
         self.skill_order = [0] * MAX_SKILLS
         self.skill_pointer = 0
         self.in_casting_routine = False
@@ -39,7 +38,6 @@ class CombatClass:
         self.aftercast_timer.Start()
         self.ping_handler = Py4GW.PingHandler()
         self.oldCalledTarget = 0
-        self.shared_memory_handler = shared_memory_manager.SharedMemoryManager()
         
         self.in_aggro = False
         self.is_targeting_enabled = False
@@ -51,8 +49,8 @@ class CombatClass:
         self.expertise_level = 0
         
         self.nearest_enemy = Routines.Agents.GetNearestEnemy(self.get_combat_distance())
-        self.lowest_ally = TargetLowestAlly()
-        self.lowest_ally_energy = TargetLowestAllyEnergy()
+        self.lowest_ally = 0
+        self.lowest_ally_energy = 0
         self.nearest_npc = Routines.Agents.GetNearestNPC(Range.Spellcast.value)
         self.nearest_spirit = Routines.Agents.GetNearestSpirit(Range.Spellcast.value)
         self.lowest_minion = Routines.Agents.GetLowestMinion(Range.Spellcast.value)
@@ -131,14 +129,14 @@ class CombatClass:
         Create a priority-based skill execution order.
         """
         #initialize skillbar
-        original_skills = []
+        original_skills : list[CombatClass.SkillData] = []
         for i in range(MAX_SKILLS):
             original_skills.append(self.SkillData(i+1))
 
         # Initialize the pointer and tracking list
         ptr = 0
         ptr_chk = [False] * MAX_SKILLS
-        ordered_skills = []
+        ordered_skills  : list[CombatClass.SkillData] = []
         
         priorities = [
             SkillNature.CustomA,
@@ -268,11 +266,8 @@ class CombatClass:
         return self.skill_pointer
             
     def GetEnergyValues(self,agent_id):
-        for i in range(MAX_NUM_PLAYERS):
-            player_data = self.shared_memory_handler.get_player(i)
-            if player_data and player_data["IsActive"] and player_data["PlayerID"] == agent_id:
-                return player_data["Energy"]
-        return 1.0 #default return full energy to prevent issues
+        from .utils import GetEnergyValues
+        return GetEnergyValues(agent_id)
 
     def IsSkillReady(self, slot):
         original_index = self.skill_order[slot] 
@@ -442,7 +437,7 @@ class CombatClass:
                 v_target = lowest_ally
         elif target_allegiance == Skilltarget.OtherAlly:
             if self.skills[slot].custom_skill_data.Nature == SkillNature.EnergyBuff.value:
-                v_target = TargetLowestAllyEnergy(other_ally=True, filter_skill_id=self.skills[slot].skill_id)
+                v_target = TargetLowestAllyEnergy(other_ally=True, filter_skill_id=self.skills[slot].skill_id, less_energy=self.skills[slot].custom_skill_data.Conditions.LessEnergy)
                 #print("Energy Buff Target: ", RawAgentArray().get_name(v_target))
             else:
                 v_target = TargetLowestAlly(other_ally=True, filter_skill_id=self.skills[slot].skill_id)
@@ -465,17 +460,8 @@ class CombatClass:
         return v_target
 
     def IsPartyMember(self, agent_id):
-        for i in range(MAX_NUM_PLAYERS):
-            player_data = self.shared_memory_handler.get_player(i)
-            if player_data and player_data["IsActive"] and player_data["PlayerID"] == agent_id:
-                return True
-            
-        allegiance , _ = Agent.GetAllegiance(agent_id)
-        if (allegiance == Allegiance.SpiritPet.value and 
-            not Agent.IsSpawned(agent_id)):
-            return True
-        
-        return False
+        from .utils import IsPartyMember
+        return IsPartyMember(agent_id)
         
     def HasEffect(self, agent_id, skill_id, exact_weapon_spell=False):
 
@@ -485,10 +471,9 @@ class CombatClass:
 
 
         if self.IsPartyMember(agent_id):
-            player_buffs = self.shared_memory_handler.get_agent_buffs(agent_id)
-            for buff in player_buffs:                
-                if buff == skill_id or buff in shared_effects:
-                    result = True
+            from .utils import CheckForEffect
+            return CheckForEffect(agent_id, skill_id)
+                    
         else:
             result = (
                 GLOBAL_CACHE.Effects.BuffExists(agent_id, skill_id) 
@@ -504,6 +489,8 @@ class CombatClass:
 
 
     def AreCastConditionsMet(self, slot, vTarget):
+        from .utils import GetEffectAndBuffIds
+        
         number_of_features = 0
         feature_count = 0
 
@@ -515,6 +502,7 @@ class CombatClass:
 
 
         if self.skills[slot].custom_skill_data.Conditions.UniqueProperty:
+            
             """ check all UniqueProperty skills """
             if (self.skills[slot].skill_id == self.energy_drain or 
                 self.skills[slot].skill_id == self.energy_tap or
@@ -640,7 +628,6 @@ class CombatClass:
 
             return True  # if no unique property is configured, return True for all UniqueProperty
         
-
         feature_count += (1 if Conditions.IsAlive else 0)
         feature_count += (1 if Conditions.HasCondition else 0)
         feature_count += (1 if Conditions.HasBleeding else 0)
@@ -766,7 +753,7 @@ class CombatClass:
                             break
 
         if Conditions.HasDervishEnchantment:
-            buff_list = self.shared_memory_handler.get_agent_buffs(GLOBAL_CACHE.Player.GetAgentID())
+            buff_list = GetEffectAndBuffIds(vTarget)
             for buff in buff_list:
                 skill_type, _ = GLOBAL_CACHE.Skill.GetType(buff)
                 if skill_type == SkillType.Enchantment.value:
@@ -786,8 +773,9 @@ class CombatClass:
                             break
 
         if Conditions.HasChant:
-            if self.IsPartyMember(vTarget):
-                buff_list = self.shared_memory_handler.get_agent_buffs(vTarget)
+            if self.IsPartyMember(vTarget):                
+                buff_list = GetEffectAndBuffIds(vTarget)
+                
                 for buff in buff_list:
                     skill_type, _ = GLOBAL_CACHE.Skill.GetType(buff)
                     if skill_type == SkillType.Chant.value:
@@ -834,12 +822,11 @@ class CombatClass:
                 number_of_features += 1
         
         if Conditions.LessEnergy != 0:
+            from .utils import GetEnergyValues
             if self.IsPartyMember(vTarget):
-                for i in range(MAX_NUM_PLAYERS):
-                    player_data = self.shared_memory_handler.get_player(i)
-                    if player_data and player_data["IsActive"] and player_data["PlayerID"] == vTarget:
-                        if player_data["Energy"] < Conditions.LessEnergy:
-                            number_of_features += 1
+                player_energy = GetEnergyValues(vTarget)
+                if player_energy < Conditions.LessEnergy:
+                    number_of_features += 1
             else:
                 number_of_features += 1 #henchmen, allies, pets or something else thats not reporting energy
 
