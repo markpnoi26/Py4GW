@@ -1207,7 +1207,7 @@ def draw_buttons(account_data: AccountData, cached_data: CacheData, message_queu
             return -1
         
         def clear_hero_flag():
-            options = GLOBAL_CACHE.ShMem.GetHeroAIOptions(account_data.AccountEmail)
+            options = cached_data.party.options.get(account_data.PlayerID)
             if not options:
                 return -1
             
@@ -1313,7 +1313,7 @@ def draw_combined_hero_panel(account_data: AccountData, cached_data: CacheData, 
     if not window_info or not window_info.open:
         return
     
-    options = GLOBAL_CACHE.ShMem.GetHeroAIOptions(account_data.AccountEmail)
+    options = cached_data.party.options.get(account_data.PlayerID)
     name = get_display_name(account_data)
     
     style = ImGui.get_style()
@@ -1385,7 +1385,7 @@ def draw_hero_panel(window: WindowModule, account_data: AccountData, cached_data
     
     window.open = window_info.open
     window.collapse = window_info.collapsed
-    options = GLOBAL_CACHE.ShMem.GetHeroAIOptions(account_data.AccountEmail)
+    options = cached_data.party.options.get(account_data.PlayerID)
     
     global title_names
     style = ImGui.get_style()
@@ -1479,10 +1479,10 @@ def draw_hero_panel(window: WindowModule, account_data: AccountData, cached_data
             
             for name, value in opt_dict.items():
                 ImGui.push_font("Regular", 10)
-                active = ImGui.toggle_button(name + f"##{account_data.AccountEmail}", value, 319 / len(opt_dict) - 3, 20)
+                active, clicked = ImGui.toggle_button(name + f"##{account_data.AccountEmail}", value, 319 / len(opt_dict) - 3, 20)
                 ImGui.pop_font()
                 
-                if active != value:
+                if clicked and active != value:
                     ConsoleLog("HeroAI", f"Set {name} to {active} for hero {account_data.CharacterName} | Party Position {account_data.PartyPosition}")
                     setattr(options, name, active)
                 
@@ -1950,7 +1950,11 @@ def draw_hotbar(hotbar: Settings.CommandHotBar, cached_data: CacheData):
                                     valid_map_type = "Outpost" in cmd.map_types
                                     
                                 if draw_button(cmd.name, cmd.icon, btn_size, btn_size, False, valid_map_type):
-                                    accounts = [acct for acct in cached_data.party.accounts.values()]
+                                    if Map.IsExplorable():
+                                        accounts = [acct for acct in cached_data.party.accounts.values()]
+                                    else:
+                                        accounts = [acct for acct in GLOBAL_CACHE.ShMem.GetAllAccountData() if SameMapAsAccount(acct)]
+                                        
                                     cmd(accounts)
                                 
 
