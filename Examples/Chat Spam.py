@@ -39,7 +39,7 @@ def main():
             message_text = PyImGui.input_text("Message", message_text, 120)
             channel = PyImGui.input_text("Channel", channel)
             button_label = "Stop" if running else "Start"
-            running = ImGui.toggle_button(button_label, running)
+            running, _ = ImGui.toggle_button(button_label, running)
         PyImGui.end()
     except Exception as e:
         Py4GW.Console.Log(MODULE_NAME, f"Error: {str(e)}", Py4GW.Console.MessageType.Error)

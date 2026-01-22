@@ -224,7 +224,7 @@ class AutoHandlderModule:
                 active_button = IconsFontAwesome5.ICON_TOGGLE_OFF
                 active_tooltip = "AutoHandler is inactive"
                 
-            self.auto_handler.module_active = ImGui.toggle_button(active_button + "##AutoHandlerActive", self.auto_handler.module_active)
+            self.auto_handler.module_active, _ = ImGui.toggle_button(active_button + "##AutoHandlerActive", self.auto_handler.module_active)
             ImGui.show_tooltip(active_tooltip)
             
             PyImGui.same_line(0,-1)
@@ -325,16 +325,16 @@ class AutoHandlderModule:
                             
                     PyImGui.end_tab_item()
                 if PyImGui.begin_tab_item("Deposit"):
-                    self.auto_handler.deposit_materials = ImGui.toggle_button( IconsFontAwesome5.ICON_HAMMER + "##depositmaterials", self.auto_handler.deposit_materials)
+                    self.auto_handler.deposit_materials, _ = ImGui.toggle_button( IconsFontAwesome5.ICON_HAMMER + "##depositmaterials", self.auto_handler.deposit_materials)
                     ImGui.show_tooltip("Deposit Materials")
                     PyImGui.same_line(0,3)
-                    self.auto_handler.deposit_trophies = ImGui.toggle_button(IconsFontAwesome5.ICON_TROPHY + "##deposittrophies", self.auto_handler.deposit_trophies)
+                    self.auto_handler.deposit_trophies, _ = ImGui.toggle_button(IconsFontAwesome5.ICON_TROPHY + "##deposittrophies", self.auto_handler.deposit_trophies)
                     ImGui.show_tooltip("Deposit Trophies")
                     PyImGui.same_line(0,3)
-                    self.auto_handler.deposit_event_items = ImGui.toggle_button(IconsFontAwesome5.ICON_HAT_WIZARD + "##depositeventitems", self.auto_handler.deposit_event_items)
+                    self.auto_handler.deposit_event_items, _ = ImGui.toggle_button(IconsFontAwesome5.ICON_HAT_WIZARD + "##depositeventitems", self.auto_handler.deposit_event_items)
                     ImGui.show_tooltip("Deposit Event Items")
                     PyImGui.same_line(0,3)
-                    self.auto_handler.deposit_dyes = ImGui.toggle_button(IconsFontAwesome5.ICON_FLASK + "##depositdyes", self.auto_handler.deposit_dyes)
+                    self.auto_handler.deposit_dyes, _ = ImGui.toggle_button(IconsFontAwesome5.ICON_FLASK + "##depositdyes", self.auto_handler.deposit_dyes)
                     ImGui.show_tooltip("Deposit Dyes")
                     
                     PyImGui.same_line(0,3)

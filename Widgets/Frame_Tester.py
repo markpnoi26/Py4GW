@@ -76,7 +76,7 @@ class FrameNode:
             if PyImGui.tree_node(f"Frame:[{self.frame_id}] <{self.frame_hash}> ({self.label}) ##{self.frame_id}"):
                 PyImGui.pop_style_color(1)
                 PyImGui.same_line(0,-1)
-                self.show_frame_data = ImGui.toggle_button(f"Show Data##{self.frame_id}", self.show_frame_data, width=70,height=17)
+                self.show_frame_data, _ = ImGui.toggle_button(f"Show Data##{self.frame_id}", self.show_frame_data, width=70,height=17)
                 if self.frame_id != 0:
                     if config_options.show_frame_data:
                         if PyImGui.collapsing_header(f"Frame#{self.frame_id}Data##{self.frame_id}"):
@@ -97,7 +97,7 @@ class FrameNode:
         else:
             PyImGui.text_colored(f"Frame:[{self.frame_id}] <{self.frame_hash}> ({self.label})",choose_frame_color())  # Leaf node
             PyImGui.same_line(0,-1)
-            self.show_frame_data = ImGui.toggle_button(f"Show Data##{self.frame_id}", self.show_frame_data, width=70,height=17)
+            self.show_frame_data, _ = ImGui.toggle_button(f"Show Data##{self.frame_id}", self.show_frame_data, width=70,height=17)
             if config_options.show_frame_data:
                 if PyImGui.collapsing_header(f"Frame#{self.frame_id}Data##{self.frame_id}"):
                     headers = ["Value", "Data"]
