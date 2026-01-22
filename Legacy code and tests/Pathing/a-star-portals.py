@@ -3,10 +3,10 @@ from Py4GWCoreLib import *
 import heapq
 import math
 from typing import List, Tuple, Optional, Dict
+from Py4GWCoreLib.native_src.context.MapContext import PortalStruct, PathingTrapezoidStruct
 
-Vec2f = Tuple[float, float]
-PathingTrapezoid = PyPathing.PathingTrapezoid
-PathingPortal = PyPathing.Portal
+PathingTrapezoid = PathingTrapezoidStruct
+PathingPortal = PortalStruct
 MODULE_NAME = "Portal Pathfinding"
 
 class AABB:
@@ -16,7 +16,7 @@ class AABB:
         self.m_max = (max(t.XTR, t.XBR), t.YT)
 
 class Portal:
-    def __init__(self, p1: Vec2f, p2: Vec2f, a: AABB, b: AABB):
+    def __init__(self, p1: Tuple[float, float], p2: Tuple[float, float], a: AABB, b: AABB):
         self.p1 = p1
         self.p2 = p2
         self.a = a
@@ -166,13 +166,13 @@ class NavMesh:
     def get_neighbors(self, t_id: int) -> List[int]:
         return self.portal_graph.get(t_id, [])
 
-    def get_position(self, t_id: int) -> Vec2f:
+    def get_position(self, t_id: int) -> Tuple[float, float]:
         t = self.trapezoids[t_id]
         cx = (t.XTL + t.XTR + t.XBL + t.XBR) / 4
         cy = (t.YT + t.YB) / 2
         return (cx, cy)
 
-    def find_trapezoid_id_by_coord(self, point: Vec2f) -> Optional[int]:
+    def find_trapezoid_id_by_coord(self, point: Tuple[float, float]) -> Optional[int]:
         x, y = point
         for t in self.trapezoids.values():
             if y > t.YT or y < t.YB:
@@ -340,7 +340,7 @@ def main():
             navmesh = NavMesh(Map.Pathing.GetPathingMaps())
 
         if navmesh:
-            start_pos = GLOBAL_CACHE.Player.GetXY()
+            start_pos = Player.GetXY()
             goal_pos = (0, 0)
 
             if PyImGui.button("Search Path (Raw A*)"):

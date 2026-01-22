@@ -6,6 +6,7 @@ from ...enums_src.UI_enums import UIMessage
 from ..context.GuildContext import Guild, GuildContext, GHKey
 import ctypes
 from typing import List
+from Py4GW import Game
 
 
 SkipCinematic_Func = NativeFunction(
@@ -19,6 +20,7 @@ SkipCinematic_Func = NativeFunction(
 )
 
 class MapMethods:
+    _GHKEY_SCRATCH = GHKey()
     @staticmethod
     def SkipCinematic() -> bool:
         """Skip the current map cinematic."""
@@ -46,20 +48,32 @@ class MapMethods:
 
     @staticmethod
     def TravelGH(key: GHKey | None = None) -> bool:
-        """Travel to a Guild Hall using the specified GHKey."""
-        if key is None:
-            guild_ctx = GuildContext.get_context()
-            if guild_ctx is None:
-                return False
-            key = guild_ctx.player_gh_key
-                    
+        """
+        Travel to a Guild Hall.
+        If a key is provided, its value is written into the existing
+        player_gh_key before sending the UI message.
+        """
+        guild_ctx = GuildContext.get_context()
+        if guild_ctx is None:
+            return False
+
+        gh_key = guild_ctx.player_gh_key
+        if gh_key is None:
+            return False
+
+        # If a custom key was provided, stuff its value into the real GH key
+        if key is not None:
+            for i in range(4):
+                gh_key.key_data[i] = key.key_data[i]
+
+        # Always use the original, working pointer
         return UIManager.SendUIMessageRaw(
             UIMessage.kGuildHall,
-            ctypes.addressof(key),
+            ctypes.addressof(gh_key),
             0,
             False
         )
-        
+
     @staticmethod
     def LeaveGH() -> bool:
         """Leave the current Guild Hall."""
@@ -77,4 +91,11 @@ class MapMethods:
             [0],
             False
         )
+        
+    @staticmethod
+    def LogouttoCharacterSelect() -> None:
+        def _action():
+            UIManager.SendUIMessage(UIMessage.kLogout,[0,0])
+        
+        Game.enqueue(_action)
         

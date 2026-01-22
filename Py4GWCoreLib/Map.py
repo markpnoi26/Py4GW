@@ -1,15 +1,16 @@
 
 from .Context import GWContext
 from .native_src.methods.MapMethods import MapMethods
+from .native_src.context.MapContext import PathingMapStruct, PathingTrapezoidStruct
+from .native_src.context.AvailableCharacterContext import AvailableCharacterStruct
 from .enums_src.Region_enums import (ServerRegionName, ServerLanguageName, RegionTypeName, 
                                      ContinentName, CampaignName,)
 
-from .enums_src.Map_enums import (InstanceTypeName)
+from .enums_src.Map_enums import (InstanceTypeName, InstanceType)
 from .native_src.internals.types import Vec2f
 from Py4GWCoreLib.py4gwcorelib_src.ActionQueue import ActionQueueManager
 from Py4GWCoreLib.enums import outposts
 
-import PyPathing
 import PyOverlay
 
 from .enums import FlagPreference
@@ -31,11 +32,25 @@ classes:
 class Map:
     #region Instance_Type
     @staticmethod
+    def IsMapDataLoaded() -> bool:
+        """Check if the map data is loaded."""
+        return (
+            GWContext.Map.IsValid() and
+            GWContext.Char.IsValid() and
+            GWContext.InstanceInfo.IsValid() and
+            GWContext.World.IsValid()
+        )
+
+    @staticmethod
     def GetInstanceType() -> int:
         """Retrieve the instance type of the current map."""
-        if not (instance_info := GWContext.InstanceInfo.GetContext()):
-            return 2  # Loading
-        return instance_info.instance_type
+        if (instance_info := GWContext.InstanceInfo.GetContext()) is None:
+            return InstanceType.Loading.value
+        return (
+            instance_info.instance_type
+            if instance_info.instance_type in InstanceType._value2member_map_
+            else InstanceType.Loading.value
+        )
     
     @staticmethod
     def GetInstanceTypeName() -> str:
@@ -46,42 +61,51 @@ class Map:
     @staticmethod
     def IsOutpost() -> bool:
         """Check if the map instance is an outpost."""
-        return Map.GetInstanceTypeName() == "Outpost"
+        if not Map.IsMapDataLoaded():
+            return False
+        return Map.GetInstanceType() == InstanceType.Outpost.value
 
     @staticmethod
     def IsExplorable() -> bool:
         """Check if the map instance is explorable."""
-        return Map.GetInstanceTypeName() == "Explorable"
-
+        if not Map.IsMapDataLoaded():
+            return False
+        return Map.GetInstanceType() == InstanceType.Explorable.value
+    
     @staticmethod
     def IsMapLoading() -> bool:
-        """Check if the map instance is loading."""
-        return Map.GetInstanceTypeName() == "Loading"
-    
-    @staticmethod
-    def IsMapDataLoaded() -> bool:
-        """Check if the map data is loaded."""
-        if not (GWContext.Map.IsValid()): return False
-        return True
-    
+        if not Map.IsMapDataLoaded():
+            return True
+
+        return Map.GetInstanceType() not in (
+            InstanceType.Outpost.value,
+            InstanceType.Explorable.value,
+        )
+
     @staticmethod
     def IsObservingMatch() -> bool:
         """Check if the character is observing a match."""
+        if not Map.IsMapDataLoaded():
+            return True
+        
         if not (char_context := GWContext.Char.GetContext()): return False
         return char_context.current_map_id != char_context.observe_map_id
     
     @staticmethod
     def IsMapReady() -> bool:
-        """Check if the map is ready to be handled."""  
-        map_data_loaded = Map.IsMapDataLoaded()
-        is_observing = Map.IsObservingMatch()
-        is_map_loading = Map.IsMapLoading()
-        return map_data_loaded and not is_observing and not is_map_loading
-    
+        """Check if the map is ready to be handled."""
+        return (
+            Map.IsMapDataLoaded() and
+            not Map.IsObservingMatch() and
+            not Map.IsMapLoading()
+        )
+
     #region Data
     @staticmethod
     def GetMapID() -> int:
         """Retrieve the ID of the current map."""
+        if not Map.IsMapReady():
+            return 0
         if not (char_context :=  GWContext.Char.GetContext()): return 0
         return char_context.current_map_id
     
@@ -280,6 +304,8 @@ class Map:
     @staticmethod
     def IsInCinematic() -> bool:
         """Check if the map is in a cinematic."""
+        if not Map.IsMapReady():
+            return False
         if not (cinematic_ctx := GWContext.Cinematic.GetContext()):
             return False
         return cinematic_ctx.h0004 != 0
@@ -902,9 +928,10 @@ class Map:
         @staticmethod
         def GetCenter() -> tuple[float, float]:
             """Get the player position coordinates of the mission map."""
-            if not (misison_map_ctx := GWContext.MissionMap.GetContext()):
-                return 0.0, 0.0
-            return misison_map_ctx.player_mission_map_pos.to_tuple()
+            dimensions = Map.MissionMap.GetMissionMapContentsCoords()
+            center_x = dimensions[0] + (dimensions[2] - dimensions[0]) / 2.0
+            center_y = dimensions[1] + (dimensions[3] - dimensions[1]) / 2.0
+            return center_x,  center_y
         
         
         
@@ -1155,8 +1182,6 @@ class Map:
                 Returns:
                     tuple[float, float]: The corresponding coordinates in game-space (gwinches).
                 """
-                #game_map_pos = PyOverlay.Overlay().NormalizedScreenToGameMap(x, y)
-                #return game_map_pos.x, game_map_pos.y
                 world_x, world_y = Map.MissionMap.MapProjection.NormalizedScreenToScreen(x, y)
                 return Map.MissionMap.MapProjection.ScreenToGamePos(world_x, world_y)
              
@@ -1876,13 +1901,7 @@ class Map:
             if not (frame_info := Map.Pregame.GetFrameInfo()):
                 return False
             return frame_info.FrameExists()
-            
-        @staticmethod
-        def LogOutToCharachterSelect() -> None:
-            """Log out to character selection from pregame map."""
-            from Py4GWCoreLib import GLOBAL_CACHE
-            GLOBAL_CACHE.Player.LogoutToCharacterSelect()
-        
+
         @staticmethod
         def GetChosenCharacterIndex() -> int:
             """Get the chosen character index from pregame map."""
@@ -1901,13 +1920,41 @@ class Map:
             if not (pre_game_ctx := GWContext.PreGame.GetContext()):
                 return []
             return pre_game_ctx.chars_list
-            
+        
+        @staticmethod
+        def GetAvailableCharacterList() -> List[AvailableCharacterStruct]:
+            """Get the available character list from pregame map."""
+            if (available_chars := GWContext.AvailableCharacterArray.GetContext()) is None:
+                return []
+            return available_chars.available_characters_list
+        
+        @staticmethod
+        def InCharacterSelectScreen() -> bool:
+            """Check if in character select screen."""
+            from Py4GW import Game
+            result = Game.InCharacterSelectScreen()
+            return result
+        
+        @staticmethod
+        def LogoutToCharacterSelect():
+            """
+            Purpose: Logout to the character select screen.
+            Args: None
+            Returns: None
+            """
+            ActionQueueManager().AddAction("ACTION",
+            MapMethods.LogouttoCharacterSelect)
+                
 #region not_processed
     #region Pathing
     class Pathing:
         @staticmethod
-        def GetPathingMaps() -> List[PyPathing.PathingMap]:
-            return PyPathing.get_pathing_maps()
+        def GetPathingMaps() -> List[PathingMapStruct]:
+            from .native_src.context.MapContext import MapContext
+            from .Routines import Checks
+            if not Checks.Map.MapValid():
+                return []
+            return MapContext.GetPathingMaps()
 
         @staticmethod
         def WorldToScreen(x: float, y: float, z: float = 0.0) -> tuple[float, float]:
@@ -1918,7 +1965,7 @@ class Map:
             return screen_pos.x, screen_pos.y
 
         class Quad:
-            def __init__(self, trapezoid: PyPathing.PathingTrapezoid):
+            def __init__(self, trapezoid: PathingTrapezoidStruct):
                 self.trapezoid = trapezoid
 
                 self.top_left: PyOverlay.Point2D = PyOverlay.Point2D(int(trapezoid.XTL), int(trapezoid.YT))

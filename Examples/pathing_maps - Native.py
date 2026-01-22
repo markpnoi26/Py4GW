@@ -37,7 +37,7 @@ def initialize_map_boundaries(map_boundaries_vector):
             unk=map_boundaries_vector[0],  # Any additional data in the vector
         )
 
-initialize_map_boundaries(PyPathing.get_map_boundaries())
+initialize_map_boundaries(Map.GetMapBoundaries())
 
 def scale_coords(x, y, width, height, primary_layer_boundaries):
     """
@@ -258,7 +258,7 @@ def DrawWindow():
 
             if PyImGui.button("Get Pathing Maps!"):
                 
-                pathing_map = PyPathing.get_pathing_maps()
+                pathing_map = Map.Pathing.GetPathingMaps()
                 Py4GW.Console.Log(module_name, "Pathing maps acquired!", Py4GW.Console.MessageType.Success)
                 precompute_layer_geometry(pathing_map, width=500, height=500)
                 Py4GW.Console.Log(module_name, "Pathing maps precomputed!", Py4GW.Console.MessageType.Success)

@@ -309,7 +309,12 @@ pick_up_item_timer = Timer()
 pick_up_item_timer.Start()
 
 def IsValidItem(item_id):
-    return (Agent.agent_instance(item_id).item_agent.owner_id == Player.GetAgentID()) or (Agent.agent_instance(item_id).item_agent.owner_id == 0)
+    item_agent = Agent.GetItemAgentByID(item_id)
+    if item_agent is None:
+        return False
+    
+    owner = item_agent.owner
+    return owner == Player.GetAgentID() or owner == 0
 
 def get_filtered_loot_array():
     global bot_vars
@@ -1391,7 +1396,7 @@ def CanCast():
 
     if (
         Agent.IsCasting(player_agent_id) 
-        or Agent.GetCastingSkill(player_agent_id) != 0
+        or Agent.GetCastingSkillID(player_agent_id) != 0
         or Agent.IsKnockedDown(player_agent_id)
         or Agent.IsDead(player_agent_id)
         or SkillBar.GetCasting() != 0
@@ -1728,6 +1733,8 @@ def assign_skill_ids():
 
 def check_norn_title():
     norntitle = Player.GetTitle(41)
+    if norntitle is None:
+        return
     if norntitle.current_points > 160000:
         FSM_vars.state_machine.jump_to_state_by_name("Route Aggro Left")
 

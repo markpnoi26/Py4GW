@@ -61,7 +61,7 @@ def initialize_map_boundaries(map_boundaries_vector):
             unk=map_boundaries_vector[0],  # Any additional data in the vector
         )
 
-initialize_map_boundaries(PyPathing.get_map_boundaries())
+initialize_map_boundaries(Map.GetMapBoundaries())
 
 def scale_coords(x, y, width, height, primary_layer_boundaries):
     """Scale (x, y) from game coordinates to window coordinates using layer boundaries."""
@@ -121,7 +121,7 @@ def draw_minimap_layers(layers, width, height):
         Py4GW.Console.Log(module_name, "No layers or precomputed geometry available for drawing.", Py4GW.Console.MessageType.Warning)
         return
 
-    screen.fill((0, 0, 0))  # Clear screen
+    #screen.fill((0, 0, 0))  # Clear screen
     for layer in layers:
         if layer.zplane not in precomputed_geometry:
             Py4GW.Console.Log(module_name, f"No geometry for z-plane {layer.zplane}. Skipping layer.", Py4GW.Console.MessageType.Warning)
@@ -225,7 +225,7 @@ def DrawWindow():
             # Fetch and precompute pathing maps
             if PyImGui.button("Get Pathing Maps!"):
                 try:
-                    pathing_map = PyPathing.get_pathing_maps()
+                    pathing_map = Map.Pathing.GetPathingMaps()
                     Py4GW.Console.Log(module_name, "Pathing maps acquired!", Py4GW.Console.MessageType.Success)
                     if pathing_map:
                         precompute_layer_geometry(pathing_map, width=WINDOW_WIDTH, height=WINDOW_HEIGHT)

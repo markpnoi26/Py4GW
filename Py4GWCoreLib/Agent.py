@@ -1,10 +1,9 @@
 
 import time
-from PyAgent import AttributeClass
-from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
 
 from .model_data import ModelData
 from .native_src.context.AgentContext import AgentStruct, AgentLivingStruct, AgentItemStruct, AgentGadgetStruct
+from .native_src.context.WorldContext import AttributeStruct
 from .native_src.internals.helpers import encoded_wstr_to_str
 
 # Agent
@@ -17,6 +16,9 @@ class Agent:
     @staticmethod
     def _update_cache() -> None:
         import PyAgent
+        return
+    
+    
         """Should be called every frame to resolve names when ready."""
         now = time.time() * 1000
         for agent_id in list(Agent.name_requested):
@@ -47,7 +49,7 @@ class Agent:
         return True
     
     @staticmethod
-    def require_valid(func):
+    def _require_valid(func):
         """
         Decorator for safe agent access.
         Ensures the agent_id is valid before calling the function.
@@ -59,7 +61,7 @@ class Agent:
         return wrapper
 
     @staticmethod
-    @require_valid
+    @_require_valid
     def GetAgentByID(agent_id: int) -> AgentStruct | None:
         """
         Purpose: Retrieve an agent by its ID.
@@ -74,7 +76,7 @@ class Agent:
         return agent
     
     @staticmethod
-    @require_valid
+    @_require_valid
     def GetLivingAgentByID(agent_id: int) -> AgentLivingStruct | None:
         """
         Purpose: Retrieve a living agent by its ID.
@@ -88,7 +90,7 @@ class Agent:
         return agent.GetAsAgentLiving()
     
     @staticmethod
-    @require_valid
+    @_require_valid
     def GetItemAgentByID(agent_id: int) -> AgentItemStruct | None:
         """
         Purpose: Retrieve an item agent by its ID.
@@ -102,7 +104,7 @@ class Agent:
         return agent.GetAsAgentItem()
     
     @staticmethod
-    @require_valid
+    @_require_valid
     def GetGadgetAgentByID(agent_id: int) -> AgentGadgetStruct | None:
         """
         Purpose: Retrieve a gadget agent by its ID.
@@ -118,6 +120,7 @@ class Agent:
     @staticmethod
     def GetNameByID(agent_id : int) -> str:
         import PyAgent
+        return "FEATURE DISABLED"
         """Purpose: Get the native name of an agent by its ID."""
         now = time.time() * 1000  # current time in ms
         # Cached and still valid
@@ -168,6 +171,60 @@ class Agent:
                 if Agent.IsValid(agent_id):
                     return agent_id
         return 0
+    
+    @staticmethod
+    def GetAttributes(agent_id: int) -> list[AttributeStruct]:
+        from .Context import GWContext
+
+        if (world_ctx := GWContext.World.GetContext()) is None:
+            return []
+
+        attributes = world_ctx.get_attributes_by_agent_id(agent_id)
+        return attributes
+    
+    @staticmethod
+    def GetAttributesDict(agent_id: int) -> dict[int, int]:  
+        # Get attributes
+        attributes_raw:list[AttributeStruct] = Agent.GetAttributes(agent_id)
+        attributes = {}
+
+        # Convert attributes to dictionary format
+        for attr in attributes_raw:
+            attr_id = int(attr.attribute_id)  # Convert enum to integer
+            attr_level = attr.level_base  # Get attribute level
+            if attr_level > 0:  # Only include attributes with points
+                attributes[attr_id] = attr_level
+                
+        return attributes
+        
+    @staticmethod
+    def GetInstanceFrames(agent_id : int) -> int:
+        """
+        Purpose: Retrieve the instance timer of an agent in frames.
+        Args:
+            agent_id (int): The ID of the agent.
+        Returns: int
+        """
+        agent = Agent.GetAgentByID(agent_id)
+        if agent is None:
+            return 0
+        return agent.timer
+    
+    @staticmethod
+    def GetInstanceUptime(agent_id : int) -> int:
+        """
+        Purpose: Retrieve the instance timer of an agent in milliseconds.
+        Args:
+            agent_id (int): The ID of the agent.
+        Returns: int
+        """
+        from .UIManager import UIManager
+        agent = Agent.GetAgentByID(agent_id)
+        if agent is None:
+            return 0
+        fps_limit = UIManager.GetFPSLimit() 
+        fps_limit = max(fps_limit, 30)  # Prevent division by zero
+        return int(agent.timer / fps_limit * 1000)
     
     @staticmethod
     def GetAgentEffects(agent_id : int) -> int:
@@ -313,7 +370,7 @@ class Agent:
         return pos.x, pos.y, z
 
     @staticmethod
-    def GetZPlane(agent_id : int) -> float:
+    def GetZPlane(agent_id : int) -> int:
         """
         Purpose: Retrieve the Z plane of an agent.
         Args: agent_id (int): The ID of the agent.
@@ -321,7 +378,7 @@ class Agent:
         """
         agent = Agent.GetAgentByID(agent_id)
         if agent is None:
-            return 0.0
+            return 0
         pos = agent.pos
         return pos.zplane
     
@@ -756,6 +813,7 @@ class Agent:
         Args: agent_id (int): The ID of the agent.
         Returns: int
         """
+        from .py4gwcorelib_src.Utils import Utils
         living = Agent.GetLivingAgentByID(agent_id)
         if living is None:
             return 0
@@ -804,6 +862,8 @@ class Agent:
         Args: agent_id (int): The ID of the agent.
         Returns: int
         """
+        from .py4gwcorelib_src.Utils import Utils
+        
         living = Agent.GetLivingAgentByID(agent_id)
         if living is None:
             return 0
@@ -935,6 +995,18 @@ class Agent:
         if living is None:
             return False
         return living.is_casting
+    
+    @staticmethod
+    def GetCastingSkillID(agent_id: int) -> int:
+        """ Purpose: Retrieve the casting skill of the agent."""
+        if not Agent.IsCasting(agent_id):
+            return 0    
+        
+        living = Agent.GetLivingAgentByID(agent_id)
+        if living is None:
+            return 0
+        return living.skill
+
 
     @staticmethod
     def IsIdle(agent_id: int) -> bool:
@@ -1220,84 +1292,8 @@ class Agent:
         return gadget.h00D4
 
 
-    #region not worked
-    import PyAgent
-    @staticmethod
-    def agent_instance(agent_id : int) -> PyAgent.PyAgent:
-        import PyAgent
-        """
-        Helper method to create and return a PyAgent instance.
-        Args:
-            agent_id (int): The ID of the agent to retrieve.
-        Returns:
-            PyAgent: The PyAgent instance for the given ID.
-        """
-        return PyAgent.PyAgent(agent_id)
 
-    @staticmethod
-    def GetAttributes(agent_id: int) -> list[AttributeClass]:
-        import PyAgent
-        """
-        Purpose: Retrieve the attributes of an agent.
-        Args: agent_id (int): The ID of the agent.
-        Returns: tuple
-        """
-
-        def safe_int(value):
-            """
-            Safely convert a value to an integer.
-            Returns 0 if the value is not a valid integer.
-            """
-            if isinstance(value, int):
-                return value  # Already an integer
-            if isinstance(value, str) and value.isdigit():
-                return int(value)  # Convert valid string integers like '15'
-            try:
-                # Attempt to extract the first valid integer if possible
-                return int(value.split()[0]) if isinstance(value, str) else 0
-            except (ValueError, AttributeError):
-                return 0  # Default to 0 for any invalid cases
-
-        agent_instance = Agent.agent_instance(agent_id)
-        model_id = agent_instance.living_agent.player_number
-        attribute_list = []
-        if model_id in ModelData:
-            attributes = ModelData[model_id].get('attributes', [])
-            for attribute in attributes:
-                level = safe_int(attribute.get('level', 0))
-
-                name = attribute.get('name', 'N/A')
-                attribute_instance = PyAgent.AttributeClass(name, level)
-                if attribute_instance.GetName() != "None":
-                    attribute_list.append(attribute_instance)
-            return attribute_list
-
-        agent = Agent.agent_instance(agent_id)
-        return agent.attributes
     
-    @staticmethod
-    def GetAttributesDict(agent_id: int) -> dict[int, int]:  
-        import PyAgent  
-        # Get attributes
-        attributes_raw:list[PyAgent.AttributeClass] = Agent.GetAttributes(agent_id)
-        attributes = {}
-
-        # Convert attributes to dictionary format
-        for attr in attributes_raw:
-            attr_id = int(attr.attribute_id)  # Convert enum to integer
-            attr_level = attr.level_base  # Get attribute level
-            if attr_level > 0:  # Only include attributes with points
-                attributes[attr_id] = attr_level
-                
-        return attributes
-
-    @staticmethod
-    def GetCastingSkill(agent_id: int) -> int:
-        """ Purpose: Retrieve the casting skill of the agent."""
-        if not Agent.agent_instance(agent_id).living_agent.is_casting:
-            return 0    
-        return Agent.agent_instance(agent_id).living_agent.casting_skill_id
-
 
 
 
