@@ -1092,7 +1092,7 @@ def color_toggle_button(label: str, state: bool, button_color=0, hovered_color=0
 
 def toggle_config_value(label: str, attr: str, width: int = 0, height: int = 25, tooltip: str = ""):
     curr = getattr(widget_config, attr)
-    toggled = ImGui.toggle_button(label, curr, width, height)
+    toggled, _ = ImGui.toggle_button(label, curr, width, height)
 
     if toggled != curr:
         setattr(widget_config, attr, toggled)
@@ -1367,7 +1367,7 @@ def draw_options_window():
     available_width = PyImGui.get_content_region_avail()[0]
     button_width = int(available_width)
 
-    new_state = ImGui.toggle_button("Follow", widget_config.smart_follow_toggled, button_width, 30)
+    new_state, _ = ImGui.toggle_button("Follow", widget_config.smart_follow_toggled, button_width, 30)
     if new_state != widget_config.smart_follow_toggled:
         Helper.log_event(message=f"Hero Follow {'Enabled' if new_state else 'Disabled'}")
     widget_config.smart_follow_toggled = new_state

@@ -138,7 +138,7 @@ class WidgetUI:
                 if icon.rainbow_color:
                     PyImGui.push_style_color(PyImGui.ImGuiCol.Text, icon.icon_color.to_tuple_normalized())
 
-                toggle_status =  ImGui.toggle_button(icon.icon + icon.icon_name, toggle_status, width=25, height=25)
+                toggle_status, _ =  ImGui.toggle_button(icon.icon + icon.icon_name, toggle_status, width=25, height=25)
                 if icon.rainbow_color:
                     PyImGui.pop_style_color(1)
                 if toggle_status:

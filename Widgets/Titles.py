@@ -3,6 +3,7 @@ from Py4GWCoreLib import Routines
 from Py4GWCoreLib import Map
 from Py4GWCoreLib import Player
 from Py4GWCoreLib import TitleID
+from Py4GWCoreLib.py4gwcorelib_src.Console import ConsoleLog
 
 
 module_name = "Set title on map load"
@@ -76,8 +77,7 @@ lightbringer_map_names = {
 game_throttle_timer = ThrottledTimer(100)
 
 
-def main():
-    
+def main():    
     if not game_throttle_timer.IsExpired():
         return
     

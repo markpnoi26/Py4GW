@@ -210,13 +210,13 @@ def draw_icon_toggle_button(theme: StyleTheme):
 
 
 def draw_toggle_button(theme: StyleTheme):
-    preview.toggle_button_1 = ImGui.toggle_button(
+    preview.toggle_button_1, _ = ImGui.toggle_button(
         ("On" if preview.toggle_button_1 else "Off") + "##Toggle" + theme.name, preview.toggle_button_1)
     PyImGui.same_line(0, 5)
-    preview.toggle_button_2 = ImGui.toggle_button(
+    preview.toggle_button_2, _ = ImGui.toggle_button(
         ("On" if preview.toggle_button_2 else "Off") + "##Toggle2" + theme.name, preview.toggle_button_2)
     PyImGui.same_line(0, 5)
-    preview.toggle_button_3 = ImGui.toggle_button(
+    preview.toggle_button_3, _ = ImGui.toggle_button(
         "Disabled" + "##Toggle3" + theme.name, preview.toggle_button_3, disabled=True)
 
 

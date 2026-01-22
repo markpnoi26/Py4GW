@@ -307,7 +307,7 @@ def draw_widget():
 
     if is_window_opened:
         # Toggle suppression via your UI
-        should_suppress_key = ImGui.toggle_button(
+        should_suppress_key, _ = ImGui.toggle_button(
             f'Alcohol Support is {"ON" if should_suppress_key else "OFF"}##StartAlcoholSupport', should_suppress_key
         )
 

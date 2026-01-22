@@ -266,7 +266,7 @@ def draw_widget_ui():
                 PyImGui.table_set_column_index(1)
                 if info["enabled"]:
                     PyImGui.push_style_color(PyImGui.ImGuiCol.Text, cat_color)
-                info["configuring"] = ImGui.toggle_button(IconsFontAwesome5.ICON_COG + f"##Configure{name}", info["configuring"])
+                info["configuring"], _ = ImGui.toggle_button(IconsFontAwesome5.ICON_COG + f"##Configure{name}", info["configuring"])
                 if info["enabled"]:
                     PyImGui.pop_style_color(1)
 

@@ -630,7 +630,7 @@ def main():
 
             selected_skill = PyImGui.input_int("Selected Skill ID", selected_skill)
 
-            compare_skills = ImGui.toggle_button("Compare Skills", compare_skills)
+            compare_skills, _ = ImGui.toggle_button("Compare Skills", compare_skills)
             if compare_skills:
                 DrawCompareSkills()
 

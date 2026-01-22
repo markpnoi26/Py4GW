@@ -3138,7 +3138,7 @@ SkillTextureMap = {
     #	3528 : "[3528] - EchoRefrain.jpg",
     #	3529 : "[3529] - Disguise.jpg",
     #	3530 : "[3530] - Enemy.jpg",
-    }
+}
 
 
 # endregion

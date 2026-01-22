@@ -600,7 +600,7 @@ class CombatPrep:
                 PyImGui.table_next_column()
 
                 if col_index == 5:
-                    auto_spirit_cast_enabled[VALUE] = ImGui.toggle_button(
+                    auto_spirit_cast_enabled[VALUE], _ = ImGui.toggle_button(
                         SPIRITS_BRAIN_TEXT,
                         auto_spirit_cast_enabled[VALUE],
                         icon_size + icon_size * 0.15,
@@ -608,7 +608,7 @@ class CombatPrep:
                     )
                     ImGui.show_tooltip(SPIRITS_TOOL_TIP_TEXT)
                 if col_index == 6:
-                    auto_shout_cast_enabled[VALUE] = ImGui.toggle_button(
+                    auto_shout_cast_enabled[VALUE], _ = ImGui.toggle_button(
                         SHOUTS_BRAIN_TEXT,
                         auto_shout_cast_enabled[VALUE],
                         icon_size + icon_size * 0.15,
@@ -616,7 +616,7 @@ class CombatPrep:
                     )
                     ImGui.show_tooltip(SHOUTS_TOOL_TIP_TEXT)
                 if col_index == 8:
-                    auto_toggle_party_members_hero_ai_follow_enabled[VALUE] = ImGui.toggle_button(
+                    auto_toggle_party_members_hero_ai_follow_enabled[VALUE], _ = ImGui.toggle_button(
                         TOGGLE_PARTY_MEMBERS_BRAIN_TEXT,
                         auto_toggle_party_members_hero_ai_follow_enabled[VALUE],
                         icon_size + icon_size * 0.15,
@@ -679,7 +679,7 @@ class CombatPrep:
             ImGui.show_tooltip(SPIRITS_BUTTON_TOOL_TIP_TEXT)
 
             # --- Auto-cast Toggle Below ---
-            auto_spirit_cast_enabled[VALUE] = ImGui.toggle_button(
+            auto_spirit_cast_enabled[VALUE], _ = ImGui.toggle_button(
                 SPIRITS_BRAIN_TEXT,
                 auto_spirit_cast_enabled[VALUE],
                 icon_size + icon_size * 0.15,
@@ -697,7 +697,7 @@ class CombatPrep:
             ImGui.show_tooltip(SHOUTS_BUTTON_TOOL_TIP_TEXT)
 
             # --- Auto-cast Toggle Below ---
-            auto_shout_cast_enabled[VALUE] = ImGui.toggle_button(
+            auto_shout_cast_enabled[VALUE], _ = ImGui.toggle_button(
                 SHOUTS_BRAIN_TEXT,
                 auto_shout_cast_enabled[VALUE],
                 icon_size + icon_size * 0.15,
@@ -735,7 +735,7 @@ class CombatPrep:
                 if self.is_party_members_hero_ai_status_enabled()
                 else ENABLE_PARTY_MEMBERS_TOOL_TIP_TEXT
             )
-            auto_toggle_party_members_hero_ai_follow_enabled[VALUE] = ImGui.toggle_button(
+            auto_toggle_party_members_hero_ai_follow_enabled[VALUE], _ = ImGui.toggle_button(
                 TOGGLE_PARTY_MEMBERS_BRAIN_TEXT,
                 auto_toggle_party_members_hero_ai_follow_enabled[VALUE],
                 icon_size + icon_size * 0.15,
@@ -832,7 +832,7 @@ def configure():
 
         # --- Hotkey Usage ---
         previous_should_use_hotkey_value = should_use_hotkeys
-        should_use_hotkeys = ImGui.toggle_button('Allow to use pre-set Hotkeys##ShouldUseHotkeys', should_use_hotkeys)
+        should_use_hotkeys, _ = ImGui.toggle_button('Allow to use pre-set Hotkeys##ShouldUseHotkeys', should_use_hotkeys)
         if should_use_hotkeys != previous_should_use_hotkey_value:
             ini_window.write_key(MODULE_NAME, USE_HOTKEYS, should_use_hotkeys)
     PyImGui.end()

@@ -940,15 +940,17 @@ class ImGui:
         if disabled:PyImGui.end_disabled()
         
         return clicked
-    
+        
     @staticmethod
-    def toggle_button(label: str, v: bool, width:float =0.0, height:float =0.0, disabled:bool =False) -> bool:
+    def toggle_button(label: str, v: bool, width:float =0.0, height:float =0.0, disabled:bool =False) -> tuple[bool, bool]:
         """
         Purpose: Create a toggle button that changes its state and color based on the current state.
         Args:
             label (str): The label of the button.
             v (bool): The current toggle state (True for on, False for off).
-        Returns: bool: The new state of the button after being clicked.
+        Returns: tuple[bool, bool]: a tuple containing:
+            - v (bool): the updated toggle state.
+            - clicked (bool): whether the button was clicked.
         """
         enabled = not disabled
         clicked = False
@@ -990,7 +992,7 @@ class ImGui:
                 
             if current_style_var.img_style_enum:
                 PyImGui.pop_style_var(1)
-            return v
+            return v, clicked
         
         #THEMED
         ImGui.push_style_color(PyImGui.ImGuiCol.Button, (0, 0, 0, 0))
@@ -1060,7 +1062,7 @@ class ImGui:
         if clicked:
             v = not v
         
-        return v                         
+        return v, clicked         
           
     @staticmethod
     def toggle_icon_button(label: str, v : bool, width: float=0.0, height: float=0.0, disabled: bool=False) -> bool:

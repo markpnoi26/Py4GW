@@ -94,7 +94,7 @@ class LootModule:
             if game_toggle_button("##BasicLootFilterGreenButton","Loot Green Items",state, width=20, height=20, color=color):
                 self.loot_singleton.loot_greens = not self.loot_singleton.loot_greens
             PyImGui.same_line(0,3)
-            self.loot_singleton.loot_gold_coins = ImGui.toggle_button(IconsFontAwesome5.ICON_COINS + "##BasicLootFilterGoldCoinsButton", self.loot_singleton.loot_gold_coins, width=20, height=20)
+            self.loot_singleton.loot_gold_coins, _ = ImGui.toggle_button(IconsFontAwesome5.ICON_COINS + "##BasicLootFilterGoldCoinsButton", self.loot_singleton.loot_gold_coins, width=20, height=20)
             ImGui.show_tooltip("Loot Gold Coins")
             PyImGui.separator()
 
