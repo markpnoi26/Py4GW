@@ -2,6 +2,9 @@
 from Py4GWCoreLib.routines_src.Agents import Agents
 from ..GlobalCache import GLOBAL_CACHE
 from ..Py4GWcorelib import ConsoleLog, Console
+from ..Map import Map
+from ..Agent import Agent
+from ..Player import Player
 from ..enums_src.Title_enums import TITLE_NAME
 from ..UIManager import UIManager
 from ..enums_src.UI_enums import ControlAction
@@ -35,7 +38,7 @@ class BT:
                 log (bool) Optional: Whether to log the action. Default is False.
             """
             def _interact_agent(agent_id:int):
-                GLOBAL_CACHE.Player.Interact(agent_id, False)
+                Player.Interact(agent_id, False)
                 ConsoleLog("InteractAgent", f"Interacted with agent {agent_id}.", Console.MessageType.Info, log=log)
                 return BehaviorTree.NodeState.SUCCESS
             
@@ -48,7 +51,7 @@ class BT:
             Purpose: Interact with the currently selected target.
             """
             def _get_target_id(node: BehaviorTree.Node):
-                node.blackboard["target_id"] = GLOBAL_CACHE.Player.GetTargetID()
+                node.blackboard["target_id"] = Player.GetTargetID()
                 if node.blackboard["target_id"] == 0:
                     ConsoleLog("InteractTarget", "No target selected.", Console.MessageType.Error, log=True)
                     return BehaviorTree.NodeState.FAILURE
@@ -87,7 +90,7 @@ class BT:
             """
             def _change_target():
                 if agent_id != 0:
-                    GLOBAL_CACHE.Player.ChangeTarget(agent_id)
+                    Player.ChangeTarget(agent_id)
                     ConsoleLog("ChangeTarget", f"Changed target to agent {agent_id}.", Console.MessageType.Info, log=log)
                     return BehaviorTree.NodeState.SUCCESS
                 
@@ -107,7 +110,7 @@ class BT:
             Returns: None
             """
             def _send_dialog(dialog_id):
-                GLOBAL_CACHE.Player.SendDialog(dialog_id)
+                Player.SendDialog(dialog_id)
                 ConsoleLog("SendDialog", f"Sent dialog {dialog_id}.", Console.MessageType.Info, log=log)
                 return BehaviorTree.NodeState.SUCCESS
             
@@ -124,7 +127,7 @@ class BT:
             Returns: None
             """
             def _set_title(title_id:int):
-                GLOBAL_CACHE.Player.SetActiveTitle(title_id)
+                Player.SetActiveTitle(title_id)
                 ConsoleLog("SetTitle", f"Set title to {TITLE_NAME.get(title_id, 'Invalid')}.", Console.MessageType.Info, log=log)
                 return BehaviorTree.NodeState.SUCCESS
             
@@ -141,7 +144,7 @@ class BT:
             Returns: None
             """
             def _send_chat_command(command:str):
-                GLOBAL_CACHE.Player.SendChatCommand(command)
+                Player.SendChatCommand(command)
                 ConsoleLog("SendChatCommand", f"Sent chat command: {command}.", Console.MessageType.Info, log=log)
                 return BehaviorTree.NodeState.SUCCESS
             
@@ -157,7 +160,7 @@ class BT:
             Returns: None
             """
             def _resign():
-                GLOBAL_CACHE.Player.SendChatCommand("resign")
+                Player.SendChatCommand("resign")
                 ConsoleLog("Resign", "Resigned from party.", Console.MessageType.Info, log=log)
                 return BehaviorTree.NodeState.SUCCESS
             
@@ -175,7 +178,7 @@ class BT:
             Returns: None
             """
             def _send_chat_message(channel:str, message:str):
-                GLOBAL_CACHE.Player.SendChat(channel, message)
+                Player.SendChat(channel, message)
                 ConsoleLog("SendChatMessage", f"Sent chat message to {channel}: {message}.", Console.MessageType.Info, log=log)
                 return BehaviorTree.NodeState.SUCCESS
             
@@ -208,7 +211,7 @@ class BT:
             Returns: None
             """
             def _move(x:float, y:float):
-                GLOBAL_CACHE.Player.Move(x, y)
+                Player.Move(x, y)
                 ConsoleLog("Move", f"Moving to ({x}, {y}).", Console.MessageType.Info, log=log)
                 return BehaviorTree.NodeState.SUCCESS
             
@@ -227,7 +230,7 @@ class BT:
             Returns: None
             """
             def _move_xyz(x:float, y:float, zplane:float):
-                GLOBAL_CACHE.Player.MoveXYZ(x, y, zplane)
+                Player.Move(x, y, int(zplane))
                 ConsoleLog("MoveXYZ", f"Moving to ({x}, {y}, {zplane}).", Console.MessageType.Info, log=log)
                 return BehaviorTree.NodeState.SUCCESS
             
@@ -290,7 +293,7 @@ class BT:
             
             tree = BehaviorTree.SequenceNode(children=[
                         BehaviorTree.ConditionNode(name="InExplorable", condition_fn=lambda:Checks.Map.IsExplorable()),
-                        BehaviorTree.ConditionNode(name="EnoughEnergy", condition_fn=lambda:Checks.Skills.HasEnoughEnergy(GLOBAL_CACHE.Player.GetAgentID(),skill_id)),
+                        BehaviorTree.ConditionNode(name="EnoughEnergy", condition_fn=lambda:Checks.Skills.HasEnoughEnergy(Player.GetAgentID(),skill_id)),
                         BehaviorTree.ConditionNode(name="IsSkillIDReady", condition_fn=lambda:Checks.Skills.IsSkillIDReady(skill_id)),
                         BehaviorTree.ConditionNode(name="IsSkillInSlot", condition_fn=lambda:1 <= GLOBAL_CACHE.SkillBar.GetSlotBySkillID(skill_id) <= 8),
                         BehaviorTree.ConditionNode(name="ExtraCustomCondition", condition_fn=lambda: extra_condition),
@@ -318,7 +321,7 @@ class BT:
             tree = BehaviorTree.SequenceNode(children=[
                         BehaviorTree.ConditionNode(name="InExplorable", condition_fn=lambda:Routines.Checks.Map.IsExplorable()),
                         BehaviorTree.ConditionNode(name="ValidSkillSlot", condition_fn=lambda:1 <= slot <= 8),
-                        BehaviorTree.ConditionNode(name="EnoughEnergy", condition_fn=lambda:Routines.Checks.Skills.HasEnoughEnergy(GLOBAL_CACHE.Player.GetAgentID(), GLOBAL_CACHE.SkillBar.GetSkillIDBySlot(slot))),
+                        BehaviorTree.ConditionNode(name="EnoughEnergy", condition_fn=lambda:Routines.Checks.Skills.HasEnoughEnergy(Player.GetAgentID(), GLOBAL_CACHE.SkillBar.GetSkillIDBySlot(slot))),
                         BehaviorTree.ConditionNode(name="IsSkillSlotReady", condition_fn=lambda:Routines.Checks.Skills.IsSkillSlotReady(slot)),
                         BehaviorTree.ConditionNode(name="ExtraCustomCondition", condition_fn=lambda: extra_condition),
                         BehaviorTree.ActionNode(name="CastSkillSlot", action_fn=lambda:_use_skill(slot, target_agent_id, aftercast_delay, log), aftercast_ms=aftercast_delay),
@@ -337,7 +340,7 @@ class BT:
             """
             tree = BehaviorTree.SequenceNode(children=[
                 BehaviorTree.ConditionNode(name="InExplorable", condition_fn=lambda:Checks.Map.IsExplorable()),
-                BehaviorTree.ConditionNode(name="EnoughEnergy", condition_fn=lambda:Checks.Skills.HasEnoughEnergy(GLOBAL_CACHE.Player.GetAgentID(),skill_id)),
+                BehaviorTree.ConditionNode(name="EnoughEnergy", condition_fn=lambda:Checks.Skills.HasEnoughEnergy(Player.GetAgentID(),skill_id)),
                 BehaviorTree.ConditionNode(name="IsSkillIDReady", condition_fn=lambda:Checks.Skills.IsSkillIDReady(skill_id)),
                 BehaviorTree.ConditionNode(name="IsSkillInSlot", condition_fn=lambda:1 <= GLOBAL_CACHE.SkillBar.GetSlotBySkillID(skill_id) <= 8),
             ])
@@ -358,7 +361,7 @@ class BT:
             tree = BehaviorTree.SequenceNode(children=[
                 BehaviorTree.ConditionNode(name="InExplorable", condition_fn=lambda:Checks.Map.IsExplorable()),
                 BehaviorTree.ConditionNode(name="ValidSkillSlot", condition_fn=lambda:1 <= skill_slot <= 8),
-                BehaviorTree.ConditionNode(name="EnoughEnergy", condition_fn=lambda:Checks.Skills.HasEnoughEnergy(GLOBAL_CACHE.Player.GetAgentID(), _get_skill_id_from_slot(skill_slot))),
+                BehaviorTree.ConditionNode(name="EnoughEnergy", condition_fn=lambda:Checks.Skills.HasEnoughEnergy(Player.GetAgentID(), _get_skill_id_from_slot(skill_slot))),
                 BehaviorTree.ConditionNode(name="IsSkillIDReady", condition_fn=lambda:Checks.Skills.IsSkillSlotReady(skill_slot)),
             ])
             bt = BehaviorTree(root=tree)
@@ -404,21 +407,21 @@ class BT:
             Returns: None
             """
             def arrived_early(outpost_id) -> bool: 
-                if GLOBAL_CACHE.Map.GetMapID() == outpost_id: 
-                    ConsoleLog("TravelToOutpost", f"Already at {GLOBAL_CACHE.Map.GetMapName(outpost_id)}", log=log) 
+                if Map.GetMapID() == outpost_id: 
+                    ConsoleLog("TravelToOutpost", f"Already at {Map.GetMapName(outpost_id)}", log=log) 
                     return True
                 return False
 
             def travel_action(outpost_id) -> BehaviorTree.NodeState:
-                ConsoleLog("TravelToOutpost", f"Travelling to {GLOBAL_CACHE.Map.GetMapName(outpost_id)}", log=log)
-                GLOBAL_CACHE.Map.Travel(outpost_id)
+                ConsoleLog("TravelToOutpost", f"Travelling to {Map.GetMapName(outpost_id)}", log=log)
+                Map.Travel(outpost_id)
                 return BehaviorTree.NodeState.SUCCESS 
             
             def map_arrival (outpost_id: int) -> BehaviorTree.NodeState: 
-                if (GLOBAL_CACHE.Map.IsMapReady() and 
+                if (Map.IsMapReady() and 
                     GLOBAL_CACHE.Party.IsPartyLoaded() and 
-                    GLOBAL_CACHE.Map.GetMapID() == outpost_id): 
-                    ConsoleLog("TravelToOutpost", f"Arrived at {GLOBAL_CACHE.Map.GetMapName(outpost_id)}", log=log) 
+                    Map.GetMapID() == outpost_id): 
+                    ConsoleLog("TravelToOutpost", f"Arrived at {Map.GetMapName(outpost_id)}", log=log) 
                     return BehaviorTree.NodeState.SUCCESS 
                 return BehaviorTree.NodeState.RUNNING 
             
@@ -437,13 +440,13 @@ class BT:
         def TravelToRegion(outpost_id, region, district, language=0, log:bool=False, timeout: int = 10000):
             # 1. EARLY ARRIVAL CHECK
             def arrived_early() -> bool:
-                if (GLOBAL_CACHE.Map.GetMapID() == outpost_id and
-                    GLOBAL_CACHE.Map.GetRegion() == region and
-                    GLOBAL_CACHE.Map.GetDistrict() == district and
-                    GLOBAL_CACHE.Map.GetLanguage() == language):
+                if (Map.GetMapID() == outpost_id and
+                    Map.GetRegion() == region and
+                    Map.GetDistrict() == district and
+                    Map.GetLanguage() == language):
 
                     ConsoleLog("TravelToRegion",
-                            f"Already at {GLOBAL_CACHE.Map.GetMapName(outpost_id)}",
+                            f"Already at {Map.GetMapName(outpost_id)}",
                             log=log)
                     return True
                 
@@ -451,21 +454,21 @@ class BT:
             # 2. TRAVEL ACTION
             def travel_action() -> BehaviorTree.NodeState:
                 ConsoleLog("TravelToRegion",
-                        f"Travelling to {GLOBAL_CACHE.Map.GetMapName(outpost_id)}",
+                        f"Travelling to {Map.GetMapName(outpost_id)}",
                         log=log)
-                GLOBAL_CACHE.Map.TravelToRegion(outpost_id, region, district, language)
+                Map.TravelToRegion(outpost_id, region, district, language)
                 return BehaviorTree.NodeState.SUCCESS
             # 3. ARRIVAL CHECK
             def map_arrival() -> BehaviorTree.NodeState:
-                if (GLOBAL_CACHE.Map.IsMapReady() and
+                if (Map.IsMapReady() and
                     GLOBAL_CACHE.Party.IsPartyLoaded() and
-                    GLOBAL_CACHE.Map.GetMapID() == outpost_id and
-                    GLOBAL_CACHE.Map.GetRegion() == region and
-                    GLOBAL_CACHE.Map.GetDistrict() == district and
-                    GLOBAL_CACHE.Map.GetLanguage() == language):
+                    Map.GetMapID() == outpost_id and
+                    Map.GetRegion() == region and
+                    Map.GetDistrict() == district and
+                    Map.GetLanguage() == language):
 
                     ConsoleLog("TravelToRegion",
-                            f"Arrived at {GLOBAL_CACHE.Map.GetMapName(outpost_id)}",
+                            f"Arrived at {Map.GetMapName(outpost_id)}",
                             log=log)
                     return BehaviorTree.NodeState.SUCCESS
 
@@ -487,15 +490,29 @@ class BT:
         def WaitforMapLoad(map_id:int=0, log:bool=False, timeout: int = 10000, map_name: str =""):   
             def _map_arrival_check(node: BehaviorTree.Node) -> BehaviorTree.NodeState:
                 nonlocal map_id, map_name, log
+                from .Checks import Checks
                 
                 if map_name:
-                    map_id = GLOBAL_CACHE.Map.GetMapIDByName(map_name)
+                    map_id = Map.GetMapIDByName(map_name)
+                    
+                if map_id == 0:
+                    return BehaviorTree.NodeState.RUNNING
+                
+                _map_valid = Checks.Map.MapValid()
+                if not _map_valid:
+                    return BehaviorTree.NodeState.RUNNING
+                
+                if not GLOBAL_CACHE.Party.IsPartyLoaded():
+                    return BehaviorTree.NodeState.RUNNING
+                
+                if not Map.GetInstanceUptime() >= 1500:
+                    return BehaviorTree.NodeState.RUNNING
+                
+                if not Player.GetInstanceUptime() >= 1500:
+                    return BehaviorTree.NodeState.RUNNING
 
-                if (GLOBAL_CACHE.Map.IsMapReady() and
-                    GLOBAL_CACHE.Party.IsPartyLoaded() and
-                    GLOBAL_CACHE.Map.GetMapID() == map_id and
-                    GLOBAL_CACHE.Map.GetInstanceUptime() >= 2000):
-                    ConsoleLog("WaitforMapLoad", f"Map {GLOBAL_CACHE.Map.GetMapName(map_id)} loaded successfully.", log=log)
+                if (Map.GetMapID() == map_id):
+                    ConsoleLog("WaitforMapLoad", f"Map {Map.GetMapName(map_id)} loaded successfully.", log=log)
                     return BehaviorTree.NodeState.SUCCESS
                 return BehaviorTree.NodeState.RUNNING
 
@@ -562,18 +579,19 @@ class BT:
         agent_ids = None
         @staticmethod
         def GetAgentIDByName(agent_name: str) -> BehaviorTree:
+            from ..AgentArray import AgentArray
             def _request_names(node):
-                ids = GLOBAL_CACHE.AgentArray.GetAgentArray()
+                ids = AgentArray.GetAgentArray()
                 node.blackboard["agent_ids"] = ids
 
                 for aid in ids:
-                    GLOBAL_CACHE.Agent.RequestName(aid)
+                    Agent.RequestName(aid)
 
                 return BehaviorTree.NodeState.SUCCESS
 
             def _check_names_ready(node):
                 for aid in node.blackboard["agent_ids"]:
-                    if not GLOBAL_CACHE.Agent.IsNameReady(aid):
+                    if not Agent.IsNameReady(aid):
                         return BehaviorTree.NodeState.FAILURE
                 return BehaviorTree.NodeState.SUCCESS
             
@@ -582,8 +600,8 @@ class BT:
                 found = 0
 
                 for aid in node.blackboard["agent_ids"]:
-                    if GLOBAL_CACHE.Agent.IsNameReady(aid):
-                        name = GLOBAL_CACHE.Agent.GetName(aid)
+                    if Agent.IsNameReady(aid):
+                        name = Agent.GetNameByID(aid)
                         if search_lower in name.lower():
                             found = aid
                             break
@@ -623,11 +641,12 @@ class BT:
             Returns: int: The agent ID or 0 if not found.
             """
             def _search_model_id(node):
-                ids = GLOBAL_CACHE.AgentArray.GetAgentArray()
+                from ..AgentArray import AgentArray
+                ids = AgentArray.GetAgentArray()
                 found = 0
 
                 for aid in ids:
-                    if GLOBAL_CACHE.Agent.GetModelID(aid) == model_id:
+                    if Agent.GetModelID(aid) == model_id:
                         found = aid
                         break
 

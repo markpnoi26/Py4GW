@@ -5,7 +5,7 @@ from .globals import HeroAI_varsClass, HeroAI_Window_varsClass
 from .combat import CombatClass
 from Py4GWCoreLib import GLOBAL_CACHE
 from Py4GWCoreLib import Timer, ThrottledTimer
-from Py4GWCoreLib import Range, Utils, ConsoleLog
+from Py4GWCoreLib import Range, Agent, ConsoleLog, Player
 from Py4GWCoreLib import AgentArray, Weapon, Routines
 
 @dataclass
@@ -47,7 +47,7 @@ class GameData:
     def update(self):
         
         #Player data
-        attributes = GLOBAL_CACHE.Agent.GetAttributes(GLOBAL_CACHE.Player.GetAgentID())
+        attributes = Agent.GetAttributes(Player.GetAgentID())
         self.fast_casting_exists = False
         self.fast_casting_level = 0
         self.expertise_exists = False
@@ -70,7 +70,7 @@ class GameData:
 @dataclass
 class UIStateData:
     def __init__(self):
-        self.show_classic_controls = False
+        self.show_classic_controls = True
 
 class CacheData:
     _instance = None  # Singleton instance
@@ -84,13 +84,13 @@ class CacheData:
         """
         Returns the attack speed of the current weapon.
         """
-        weapon_type,_ = GLOBAL_CACHE.Agent.GetWeaponType(GLOBAL_CACHE.Player.GetAgentID())
-        player = GLOBAL_CACHE.Agent.GetAgentByID(GLOBAL_CACHE.Player.GetAgentID())
-        if player is None:
+        weapon_type,_ = Agent.GetWeaponType(Player.GetAgentID())
+        player_living = Agent.GetLivingAgentByID(Player.GetAgentID())
+        if player_living is None:
             return 0
         
-        attack_speed = player.living_agent.weapon_attack_speed
-        attack_speed_modifier = player.living_agent.attack_speed_modifier if player.living_agent.attack_speed_modifier != 0 else 1.0
+        attack_speed = player_living.weapon_attack_speed
+        attack_speed_modifier = player_living.attack_speed_modifier if player_living.attack_speed_modifier != 0 else 1.0
         
         if attack_speed == 0:
             match weapon_type:
@@ -175,7 +175,7 @@ class CacheData:
             self.data.is_skill_enabled[i] = self.HeroAI_vars.all_game_option_struct[GLOBAL_CACHE.Party.GetOwnPartyNumber()].Skills[i].Active
   
         
-    def UdpateCombat(self):
+    def UpdateCombat(self):
         self.combat_handler.Update(self.data)
         self.combat_handler.PrioritizeSkills()
         
@@ -183,14 +183,14 @@ class CacheData:
         try:
             if self.game_throttle_timer.HasElapsed(self.game_throttle_time):
                 self.game_throttle_timer.Reset()
-                self.account_email = GLOBAL_CACHE.Player.GetAccountEmail()
+                self.account_email = Player.GetAccountEmail()
                 self.data.reset()
                 self.data.update()
                 
                 if self.stay_alert_timer.HasElapsed(STAY_ALERT_TIME):
-                    self.data.in_aggro = self.InAggro(GLOBAL_CACHE.AgentArray.GetEnemyArray(), Range.Earshot.value)
+                    self.data.in_aggro = self.InAggro(AgentArray.GetEnemyArray(), Range.Earshot.value)
                 else:
-                    self.data.in_aggro = self.InAggro(GLOBAL_CACHE.AgentArray.GetEnemyArray(), Range.Spellcast.value)
+                    self.data.in_aggro = self.InAggro(AgentArray.GetEnemyArray(), Range.Spellcast.value)
                     
                 if self.data.in_aggro:
                     self.stay_alert_timer.Reset()

@@ -7,18 +7,21 @@ class _RProxy:
 
 Routines = _RProxy()
 
+from ..Player import Player
+
 #region Agents
 class Party:   
     @staticmethod
     def GetPartyTargetID():
         from ..GlobalCache import GLOBAL_CACHE
+        from ..Agent import Agent
         if not GLOBAL_CACHE.Party.IsPartyLoaded():
             return 0
 
         players = GLOBAL_CACHE.Party.GetPlayers()
         target = players[0].called_target_id
 
-        if GLOBAL_CACHE.Agent.IsValid(target):
+        if Agent.IsValid(target):
             return target  
         
         return 0   
@@ -48,6 +51,7 @@ class Party:
     def GetDeadPartyMemberID():
         from ..GlobalCache import GLOBAL_CACHE
         from ..Routines import Checks
+        from ..Agent import Agent
         if not Checks.Map.MapValid():
             return 0
         players = GLOBAL_CACHE.Party.GetPlayers()
@@ -56,15 +60,16 @@ class Party:
 
         for player in players:
             agent_id = GLOBAL_CACHE.Party.Players.GetAgentIDByLoginNumber(player.login_number)
-            if GLOBAL_CACHE.Agent.IsDead(agent_id):
+            if Agent.IsValid(agent_id) and Agent.IsDead(agent_id):
                 return agent_id
 
         for henchman in henchmen:
-            if GLOBAL_CACHE.Agent.IsDead(henchman.agent_id):
+            if Agent.IsValid(henchman.agent_id) and Agent.IsDead(henchman.agent_id):
                 return henchman.agent_id
-            
+
         for hero in heroes:
-            if GLOBAL_CACHE.Agent.IsDead(hero.agent_id):
+            # Heroes may have agent_id=0 in outposts before spawning
+            if Agent.IsValid(hero.agent_id) and Agent.IsDead(hero.agent_id):
                 return hero.agent_id
 
         return 0
@@ -74,10 +79,11 @@ class Party:
         from ..GlobalCache import GLOBAL_CACHE
         from ..Routines import Checks
         from ..Py4GWcorelib import Utils
+        from ..Agent import Agent
         if not Checks.Map.MapValid():
             return 0
 
-        player_pos = GLOBAL_CACHE.Player.GetXY()
+        player_pos = Player.GetXY()
         players = GLOBAL_CACHE.Party.GetPlayers()
         henchmen = GLOBAL_CACHE.Party.GetHenchmen()
         heroes = GLOBAL_CACHE.Party.GetHeroes()
@@ -85,22 +91,23 @@ class Party:
         # check players
         for player in players:
             agent_id = GLOBAL_CACHE.Party.Players.GetAgentIDByLoginNumber(player.login_number)
-            if not GLOBAL_CACHE.Agent.IsDead(agent_id):
-                agent_pos = GLOBAL_CACHE.Agent.GetXY(agent_id)
+            if Agent.IsValid(agent_id) and not Agent.IsDead(agent_id):
+                agent_pos = Agent.GetXY(agent_id)
                 if Utils.Distance(player_pos, agent_pos) > range_value:
                     return agent_id
 
         # check henchmen
         for henchman in henchmen:
-            if not GLOBAL_CACHE.Agent.IsDead(henchman.agent_id):
-                agent_pos = GLOBAL_CACHE.Agent.GetXY(henchman.agent_id)
+            if Agent.IsValid(henchman.agent_id) and not Agent.IsDead(henchman.agent_id):
+                agent_pos = Agent.GetXY(henchman.agent_id)
                 if Utils.Distance(player_pos, agent_pos) > range_value:
                     return henchman.agent_id
 
         # check heroes
         for hero in heroes:
-            if not GLOBAL_CACHE.Agent.IsDead(hero.agent_id):
-                agent_pos = GLOBAL_CACHE.Agent.GetXY(hero.agent_id)
+            # Heroes may have agent_id=0 in outposts before spawning
+            if Agent.IsValid(hero.agent_id) and not Agent.IsDead(hero.agent_id):
+                agent_pos = Agent.GetXY(hero.agent_id)
                 if Utils.Distance(player_pos, agent_pos) > range_value:
                     return hero.agent_id
 

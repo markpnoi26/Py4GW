@@ -11,6 +11,7 @@ from Py4GWCoreLib import Routines
 from Py4GWCoreLib import Skill
 from Py4GWCoreLib import SpiritModelID
 from Py4GWCoreLib import Weapon
+from Py4GWCoreLib import Agent
 from Py4GWCoreLib.Builds.AutoCombat import AutoCombat
 
 ENEMY_BLACKLIST = {SpiritModelID.BLOODSONG, SpiritModelID.DESTRUCTION, AgentModelID.CHARR_AXEMASTER}
@@ -63,12 +64,12 @@ class DervBoneFarmer(BuildMgr):
         self.attacking = False
 
     def swap_to_scythe(self):
-        if GLOBAL_CACHE.Agent.GetWeaponType(Player.GetAgentID())[0] != Weapon.Scythe:
+        if Agent.GetWeaponType(Player.GetAgentID())[0] != Weapon.Scythe:
             Keystroke.PressAndRelease(Key.F1.value)
             yield
 
     def swap_to_shield_set(self):
-        if GLOBAL_CACHE.Agent.GetWeaponType(Player.GetAgentID())[0] == Weapon.Scythe:
+        if Agent.GetWeaponType(Player.GetAgentID())[0] == Weapon.Scythe:
             Keystroke.PressAndRelease(Key.F2.value)
             yield from Routines.Yield.wait(750)
 
@@ -97,7 +98,7 @@ class DervBoneFarmer(BuildMgr):
             yield from Routines.Yield.wait(100)
             return
 
-        player_agent_id = GLOBAL_CACHE.Player.GetAgentID()
+        player_agent_id = Player.GetAgentID()
         has_signet_of_mystic_speed = Routines.Checks.Effects.HasBuff(player_agent_id, self.signet_of_mystic_speed)
         has_grenths_aura = Routines.Checks.Effects.HasBuff(player_agent_id, self.grenths_aura)
         has_vow_of_silence = Routines.Checks.Effects.HasBuff(player_agent_id, self.vow_of_silence)
@@ -152,14 +153,14 @@ class DervBoneFarmer(BuildMgr):
                         ActionQueueManager().ResetAllQueues()
                 return
 
-            px, py = GLOBAL_CACHE.Player.GetXY()
+            px, py = Player.GetXY()
             enemy_array = Routines.Agents.GetFilteredEnemyArray(px, py, Range.Spellcast.value)
-            filtered_enemy_array = [agent_id for agent_id in enemy_array if GLOBAL_CACHE.Agent.GetModelID(agent_id) not in ENEMY_BLACKLIST]
+            filtered_enemy_array = [agent_id for agent_id in enemy_array if Agent.GetModelID(agent_id) not in ENEMY_BLACKLIST]
 
             if filtered_enemy_array:
                 nearest_enemy = Routines.Agents.GetNearestEnemy(Range.Spellcast.value)
                 vos_buff_time_remaining = (
-                    GLOBAL_CACHE.Effects.GetEffectTimeRemaining(GLOBAL_CACHE.Player.GetAgentID(), self.vow_of_silence)
+                    GLOBAL_CACHE.Effects.GetEffectTimeRemaining(Player.GetAgentID(), self.vow_of_silence)
                     if has_vow_of_silence
                     else 0
                 )
@@ -172,7 +173,7 @@ class DervBoneFarmer(BuildMgr):
                     )
                 ):
                     yield from self.swap_to_scythe()
-                    GLOBAL_CACHE.Player.Interact(nearest_enemy, False)
+                    yield from Routines.Yield.Agents.InteractAgent(nearest_enemy)
                     if self.has_enough_adrenaline(self.crippling_victory_slot):
                         yield from Routines.Yield.Skills.CastSkillID(self.crippling_victory, aftercast_delay=100)
                         return
@@ -180,6 +181,8 @@ class DervBoneFarmer(BuildMgr):
                     if self.has_enough_adrenaline(self.reap_impurities_slot):
                         yield from Routines.Yield.Skills.CastSkillID(self.reap_impurities, aftercast_delay=100)
                         return
+        yield
+        return
 
 
 # =================== BUILD END ========================

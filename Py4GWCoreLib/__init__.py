@@ -8,9 +8,9 @@ import sys
 from dataclasses import dataclass, field
 
 import Py4GW
+import PyScanner
 import PyImGui
-import PyMap
-import PyMissionMap
+
 import PyAgent
 import PyPlayer
 import PyParty
@@ -27,6 +27,7 @@ import PyPathing
 import PyUIManager
 import PyCamera
 import Py2DRenderer
+import PyCombatEvents
 
 from .enums import *
 from .ImGui_src.IconsFontAwesome5 import IconsFontAwesome5
@@ -46,6 +47,7 @@ from .Effect import *
 from .Merchant import *
 from .Quest import *
 from .Camera import *
+from .Scanner import *
 
 from .Py4GWcorelib import *
 from .Overlay import *
@@ -57,6 +59,8 @@ from .GlobalCache import GLOBAL_CACHE
 from .Pathing import AutoPathing
 from .BuildMgr import BuildMgr
 from .Botting import BottingClass as Botting
+from .Context import GWContext
+from .CombatEvents import CombatEvents
 
 traceback = traceback
 math = math
@@ -69,9 +73,9 @@ field = field
 
 Py4Gw = Py4GW
 Py4GW = Py4GW
+PyScanner = PyScanner
 PyImGui = PyImGui
-PyMap = PyMap
-PyMissionMap = PyMissionMap
+
 PyAgent = PyAgent
 PyPlayer = PyPlayer
 PyParty = PyParty
@@ -87,9 +91,11 @@ PyQuest = PyQuest
 PyUIManager = PyUIManager
 PyCamera = PyCamera
 Py2DRenderer = Py2DRenderer
+PyCombatEvents = PyCombatEvents
 GLOBAL_CACHE = GLOBAL_CACHE
 AutoPathing = AutoPathing
 IconsFontAwesome5 = IconsFontAwesome5
+
 
 
 #redirect print output to Py4GW Console

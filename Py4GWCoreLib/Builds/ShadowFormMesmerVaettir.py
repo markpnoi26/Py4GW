@@ -10,6 +10,7 @@ from Py4GWCoreLib import BuildMgr
 from Py4GWCoreLib import Agent
 from Py4GWCoreLib import Range
 from Py4GWCoreLib import Utils
+from Py4GWCoreLib import Map, Player
 
 
 #region SFMesmerVaettir
@@ -79,7 +80,7 @@ class ShadowFormMesmerVaettir(BuildMgr):
         return result
         
     def DefensiveActions(self):
-        player_agent_id = GLOBAL_CACHE.Player.GetAgentID()
+        player_agent_id = Player.GetAgentID()
         has_deadly_paradox = Routines.Checks.Effects.HasBuff(player_agent_id, self.deadly_paradox)
         if (yield from Routines.Yield.Skills.IsSkillIDUsable(self.shadow_form)):
             if (yield from self._CastSkillID(self.deadly_paradox,extra_condition=(not has_deadly_paradox), log=False, aftercast_delay=100)):
@@ -89,8 +90,8 @@ class ShadowFormMesmerVaettir(BuildMgr):
                 ConsoleLog(self.build_name, "Casting Shadow Form.", Py4GW.Console.MessageType.Info, log=False)
                 
     def CastShroudOfDistress(self):
-        player_agent_id = GLOBAL_CACHE.Player.GetAgentID()
-        if GLOBAL_CACHE.Agent.GetHealth(player_agent_id) < 0.45:
+        player_agent_id = Player.GetAgentID()
+        if Agent.GetHealth(player_agent_id) < 0.45:
             ConsoleLog(self.build_name, "Casting Shroud of Distress.", Py4GW.Console.MessageType.Info, log=False)
             # ** Cast Shroud of Distress **
             yield from self._CastSkillID(self.shroud_of_distress, log =False, aftercast_delay=1750)
@@ -108,7 +109,7 @@ class ShadowFormMesmerVaettir(BuildMgr):
     def CastHeartOfShadow(self):
         center_point1 = (10980, -21532)
         center_point2 = (11461, -17282)
-        player_pos = GLOBAL_CACHE.Player.GetXY()
+        player_pos = Player.GetXY()
         
         distance_to_center1 = Utils.Distance(player_pos, center_point1)
         distance_to_center2 = Utils.Distance(player_pos, center_point2)
@@ -122,9 +123,9 @@ class ShadowFormMesmerVaettir(BuildMgr):
         enemy_array = Routines.Agents.GetFilteredEnemyArray(player_pos[0], player_pos[1], Range.Spellcast.value)
         
         for enemy in enemy_array:
-            if GLOBAL_CACHE.Agent.IsDead(enemy):
+            if Agent.IsDead(enemy):
                 continue
-            enemy_pos = GLOBAL_CACHE.Agent.GetXY(enemy)
+            enemy_pos = Agent.GetXY(enemy)
             to_enemy = (enemy_pos[0] - player_pos[0], enemy_pos[1] - player_pos[1])
 
             angle_score = self.vector_angle(to_goal, to_enemy)  # -1 is most opposite
@@ -142,10 +143,10 @@ class ShadowFormMesmerVaettir(BuildMgr):
             
     def ProcessSkillCasting(self):
         def GetNotHexedEnemy():
-            player_pos =  GLOBAL_CACHE.Player.GetXY()
+            player_pos =  Player.GetXY()
             enemy_array = Routines.Agents.GetFilteredEnemyArray(player_pos[0],player_pos[1],Range.Spellcast.value)
             for enemy in enemy_array:
-                if GLOBAL_CACHE.Agent.IsDead(enemy):
+                if Agent.IsDead(enemy):
                     continue
                 if Agent.IsHexed(enemy):
                     continue 
@@ -158,12 +159,12 @@ class ShadowFormMesmerVaettir(BuildMgr):
                 yield from Routines.Yield.wait(1000)
                 continue
             
-            if not GLOBAL_CACHE.Map.GetMapID() == GLOBAL_CACHE.Map.GetMapIDByName("Jaga Moraine"):
+            if not Map.GetMapID() == Map.GetMapIDByName("Jaga Moraine"):
                 yield from Routines.Yield.wait(1000)
                 return
             
             
-            if GLOBAL_CACHE.Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
+            if Agent.IsDead(Player.GetAgentID()):
                 yield from Routines.Yield.wait(1000)
                 continue
             
@@ -174,7 +175,7 @@ class ShadowFormMesmerVaettir(BuildMgr):
             if self.routine_finished:
                 return
 
-            player_agent_id = GLOBAL_CACHE.Player.GetAgentID()
+            player_agent_id = Player.GetAgentID()
             has_shadow_form = Routines.Checks.Effects.HasBuff(player_agent_id,self.shadow_form)
             shadow_form_buff_time_remaining = GLOBAL_CACHE.Effects.GetEffectTimeRemaining(player_agent_id,self.shadow_form) if has_shadow_form else 0
             if Routines.Checks.Agents.InDanger(Range.Spellcast):
@@ -210,10 +211,10 @@ class ShadowFormMesmerVaettir(BuildMgr):
                 continue
 
             if not self.in_killing_routine:
-                if GLOBAL_CACHE.Agent.GetHealth(player_agent_id) < 0.35 or self.stuck_counter > 0:
+                if Agent.GetHealth(player_agent_id) < 0.35 or self.stuck_counter > 0:
                     center_point1 = (10980, -21532)
                     center_point2 = (11461, -17282)
-                    player_pos = GLOBAL_CACHE.Player.GetXY()
+                    player_pos = Player.GetXY()
                     
                     distance_to_center1 = Utils.Distance(player_pos, center_point1)
                     distance_to_center2 = Utils.Distance(player_pos, center_point2)
@@ -227,9 +228,9 @@ class ShadowFormMesmerVaettir(BuildMgr):
                     enemy_array = Routines.Agents.GetFilteredEnemyArray(player_pos[0], player_pos[1], Range.Spellcast.value)
                     
                     for enemy in enemy_array:
-                        if GLOBAL_CACHE.Agent.IsDead(enemy):
+                        if Agent.IsDead(enemy):
                             continue
-                        enemy_pos = GLOBAL_CACHE.Agent.GetXY(enemy)
+                        enemy_pos = Agent.GetXY(enemy)
                         to_enemy = (enemy_pos[0] - player_pos[0], enemy_pos[1] - player_pos[1])
 
                         angle_score = self.vector_angle(to_goal, to_enemy)  # -1 is most opposite
@@ -250,21 +251,21 @@ class ShadowFormMesmerVaettir(BuildMgr):
                 target = GetNotHexedEnemy()
                 if target and shadow_form_buff_time_remaining >= 4000:
                     GLOBAL_CACHE._ActionQueueManager.ResetQueue("ACTION")
-                    GLOBAL_CACHE.Player.ChangeTarget(target)
+                    Player.ChangeTarget(target)
                     if (yield from self._CastSkillSlot(self.arcane_echo_slot, extra_condition=both_ready, log=False, aftercast_delay=2050)):
-                        GLOBAL_CACHE.Player.Interact(target,False)
+                        Player.Interact(target,False)
                         ConsoleLog(self.build_name, "Casting Arcane Echo.", Py4GW.Console.MessageType.Info, log=False)
                     else:
                         if (yield from self._CastSkillSlot(self.arcane_echo_slot, log=False, aftercast_delay=1000)):
-                            GLOBAL_CACHE.Player.Interact(target,False)
+                            Player.Interact(target,False)
                             ConsoleLog(self.build_name, "Casting Echoed Wastrel.", Py4GW.Console.MessageType.Info, log=False)
                 
                 target = GetNotHexedEnemy()  
                 if target and not Routines.Checks.Skills.IsSkillSlotReady(self.arcane_echo_slot): 
                     GLOBAL_CACHE._ActionQueueManager.ResetQueue("ACTION")
-                    GLOBAL_CACHE.Player.ChangeTarget(target)
+                    Player.ChangeTarget(target)
                     if (yield from self._CastSkillSlot(self.wastrels_demise_slot, log=False, aftercast_delay=1000)):
-                        GLOBAL_CACHE.Player.Interact(target,False)
+                        Player.Interact(target,False)
 
             yield from Routines.Yield.wait(100)
             

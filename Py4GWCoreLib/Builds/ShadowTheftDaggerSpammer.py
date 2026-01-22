@@ -86,11 +86,11 @@ class AssassinShadowTheftDaggerSpammer(BuildMgr):
         Scans nearby enemies and locks onto the nearest valid target within range_limit.
         Returns True if a target was successfully locked, else False.
         """
-        player_x, player_y = GLOBAL_CACHE.Player.GetXY()
+        player_x, player_y = Player.GetXY()
         enemies_left = Routines.Agents.GetFilteredEnemyArray(player_x, player_y, range_limit)
         if enemies_left:
             yield from Routines.Yield.Keybinds.TargetNearestEnemy()
-            target_id = GLOBAL_CACHE.Player.GetTargetID()
+            target_id = Player.GetTargetID()
             yield from Routines.Yield.Keybinds.Interact()
             ActionQueueManager().AddAction("ACTION", Keystroke.PressAndReleaseCombo, [Key.Ctrl.value, Key.Space.value])
             self.priority_target = target_id
@@ -98,7 +98,7 @@ class AssassinShadowTheftDaggerSpammer(BuildMgr):
         else:
             if Routines.Checks.Agents.InDanger(Range.Spellcast):
                 yield from Routines.Yield.Keybinds.TargetNearestEnemy()
-                target_id = GLOBAL_CACHE.Player.GetTargetID()
+                target_id = Player.GetTargetID()
                 yield from Routines.Yield.Keybinds.Interact()
                 ActionQueueManager().AddAction(
                     "ACTION", Keystroke.PressAndReleaseCombo, [Key.Ctrl.value, Key.Space.value]
@@ -117,14 +117,14 @@ class AssassinShadowTheftDaggerSpammer(BuildMgr):
             return
 
         yield from Routines.Yield.Keybinds.TargetPriorityTarget()
-        target_id = GLOBAL_CACHE.Player.GetTargetID()
+        target_id = Player.GetTargetID()
         if target_id != self.priority_target:
             self.priority_target = None
             yield from self.call_a_priority_target()
             return
 
-        agent = GLOBAL_CACHE.Agent.GetAgentByID(self.priority_target)
-        if not agent or GLOBAL_CACHE.Agent.IsDead(self.priority_target):
+        #agent = Agent.GetAgentByID(self.priority_target)
+        if Agent.IsDead(self.priority_target):
             self.priority_target = None
             yield from self.call_a_priority_target()
             return
@@ -146,7 +146,7 @@ class AssassinShadowTheftDaggerSpammer(BuildMgr):
             6493: 7,  # Stone Summit Dominator
         }
 
-        player_x, player_y = GLOBAL_CACHE.Player.GetXY()
+        player_x, player_y = Player.GetXY()
         enemy_agent_ids = Routines.Agents.GetFilteredEnemyArray(player_x, player_y, Range.Earshot.value * 0.5)
 
         best_agent_id = None
@@ -154,9 +154,11 @@ class AssassinShadowTheftDaggerSpammer(BuildMgr):
         best_dist_sq = float("inf")
 
         for agent_id in enemy_agent_ids:
-            agent = GLOBAL_CACHE.Agent.GetAgentByID(agent_id)
-            model_id = GLOBAL_CACHE.Agent.GetModelID(agent.id)
-            dx, dy = agent.x - player_x, agent.y - player_y
+            agent = Agent.GetAgentByID(agent_id)
+            if agent is None or agent.agent_id == 0:
+                continue
+            model_id = Agent.GetModelID(agent.agent_id)
+            dx, dy = agent.pos.x - player_x, agent.pos.y - player_y
             dist_sq = dx * dx + dy * dy
 
             # Determine priority rank (default = 999 if not special)
@@ -171,31 +173,31 @@ class AssassinShadowTheftDaggerSpammer(BuildMgr):
         # === Lock and engage the chosen target ===
         if best_agent_id:
             self.priority_target = best_agent_id
-            GLOBAL_CACHE.Player.ChangeTarget(best_agent_id)
-            GLOBAL_CACHE.Player.Interact(best_agent_id, True)
+            Player.ChangeTarget(best_agent_id)
+            Player.Interact(best_agent_id, True)
             ActionQueueManager().AddAction("ACTION", Keystroke.PressAndReleaseCombo, [Key.Ctrl.value, Key.Space.value])
             yield from Routines.Yield.Keybinds.TargetPriorityTarget()
             return
         else:
             yield from Routines.Yield.Keybinds.TargetNearestEnemy()
-            target_id = GLOBAL_CACHE.Player.GetTargetID()
+            target_id = Player.GetTargetID()
             yield from Routines.Yield.Keybinds.Interact()
             ActionQueueManager().AddAction("ACTION", Keystroke.PressAndReleaseCombo, [Key.Ctrl.value, Key.Space.value])
             self.priority_target = target_id
             return
 
     def swap_to_bow(self):
-        if GLOBAL_CACHE.Agent.GetWeaponType(Player.GetAgentID())[0] != Weapon.Bow:
+        if Agent.GetWeaponType(Player.GetAgentID())[0] != Weapon.Bow:
             Keystroke.PressAndRelease(Key.F3.value)
             # yield from Routines.Yield.Keybinds.ActivateWeaponSet(3)
 
     def swap_to_shield_set(self):
-        if GLOBAL_CACHE.Agent.GetWeaponType(Player.GetAgentID())[0] != Weapon.Spear:
+        if Agent.GetWeaponType(Player.GetAgentID())[0] != Weapon.Spear:
             Keystroke.PressAndRelease(Key.F2.value)
             # yield from Routines.Yield.Keybinds.ActivateWeaponSet(2)
 
     def swap_to_dagger(self):
-        if GLOBAL_CACHE.Agent.GetWeaponType(Player.GetAgentID())[0] != Weapon.Daggers:
+        if Agent.GetWeaponType(Player.GetAgentID())[0] != Weapon.Daggers:
             Keystroke.PressAndRelease(Key.F1.value)
             # yield from Routines.Yield.Keybinds.ActivateWeaponSet(1)
 
@@ -216,7 +218,7 @@ class AssassinShadowTheftDaggerSpammer(BuildMgr):
             yield from self.update_priority_target_if_needed()
 
             elapsed = 0
-            player_x, player_y = GLOBAL_CACHE.Player.GetXY()
+            player_x, player_y = Player.GetXY()
             while not Routines.Agents.GetFilteredEnemyArray(player_x, player_y, Range.Area.value) and elapsed < 40:
                 yield from Routines.Yield.wait(100)
                 elapsed += 1
@@ -226,7 +228,7 @@ class AssassinShadowTheftDaggerSpammer(BuildMgr):
 
         if self.status == BuildStatus.Kill:
             self.swap_to_dagger()
-            player_agent_id = GLOBAL_CACHE.Player.GetAgentID()
+            player_agent_id = Player.GetAgentID()
             has_critical_eye = Routines.Checks.Effects.HasBuff(player_agent_id, self.critical_eye)
             has_i_am_unstoppable = Routines.Checks.Effects.HasBuff(player_agent_id, self.i_am_unstoppable)
             has_shadow_theft = Routines.Checks.Effects.HasBuff(player_agent_id, self.shadow_theft)
@@ -253,10 +255,13 @@ class AssassinShadowTheftDaggerSpammer(BuildMgr):
                 return
 
             yield from Routines.Yield.Keybinds.TargetPriorityTarget()
-            nearest_enemy_agent_id = GLOBAL_CACHE.Player.GetTargetID()
+            nearest_enemy_agent_id = Player.GetTargetID()
             nearest_enemy_agent = Agent.GetAgentByID(nearest_enemy_agent_id)
-            player_x, player_y = GLOBAL_CACHE.Player.GetXY()
-            enemy_x, enemy_y = nearest_enemy_agent.x, nearest_enemy_agent.y
+            if nearest_enemy_agent is None:
+                yield
+                return
+            player_x, player_y = Player.GetXY()
+            enemy_x, enemy_y = nearest_enemy_agent.pos.x, nearest_enemy_agent.pos.y
 
             # --- Compute squared distance between player and enemy ---
             dx = enemy_x - player_x
@@ -279,7 +284,7 @@ class AssassinShadowTheftDaggerSpammer(BuildMgr):
                 if (yield from Routines.Yield.Skills.IsSkillIDUsable(self.asuran_scan)) and nearest_enemy_agent_id:
                     if (
                         self.asuran_scan_throttle.IsExpired()
-                        or not GLOBAL_CACHE.Agent.IsHexed(nearest_enemy_agent_id)
+                        or not Agent.IsHexed(nearest_enemy_agent_id)
                         or self.last_asuran_scan_target_id != nearest_enemy_agent_id
                     ):
                         asura_scan_slot = GLOBAL_CACHE.SkillBar.GetSlotBySkillID(self.asuran_scan)
@@ -305,20 +310,20 @@ class AssassinShadowTheftDaggerSpammer(BuildMgr):
                         nearest_enemy_agent_id = self.priority_target
                         nearest_enemy_agent = Agent.GetAgentByID(nearest_enemy_agent_id)
 
-                        if nearest_enemy_agent and nearest_enemy_agent.is_living and nearest_enemy_agent.living_agent:
+                        if nearest_enemy_agent and nearest_enemy_agent.is_living_type:
                             shadow_theft_slot = GLOBAL_CACHE.SkillBar.GetSlotBySkillID(self.shadow_theft)
                             yield from Routines.Yield.Keybinds.UseSkill(shadow_theft_slot)
                             yield from Routines.Yield.wait(350)
 
                 # --- Only proceed if within adjacent range ---
                 if dist_sq <= Range.Adjacent.value**2:
-                    player_current_energy = GLOBAL_CACHE.Agent.GetEnergy(
+                    player_current_energy = Agent.GetEnergy(
                         player_agent_id
-                    ) * GLOBAL_CACHE.Agent.GetMaxEnergy(player_agent_id)
+                    ) * Agent.GetMaxEnergy(player_agent_id)
                     if (
                         yield from Routines.Yield.Skills.IsSkillIDUsable(self.exhausting_assault)
                     ) and player_current_energy >= 10:
-                        nearest_enemy_agent = GLOBAL_CACHE.Agent.GetAgentByID(nearest_enemy_agent_id)
+                        nearest_enemy_agent = Agent.GetAgentByID(nearest_enemy_agent_id)
                         if not nearest_enemy_agent:
                             return  # no valid target
 
@@ -329,8 +334,8 @@ class AssassinShadowTheftDaggerSpammer(BuildMgr):
                             yield from Routines.Yield.wait(50)
 
                         # --- Confirm target is still in range before chaining ---
-                        player_x, player_y = GLOBAL_CACHE.Player.GetXY()
-                        dx, dy = nearest_enemy_agent.x - player_x, nearest_enemy_agent.y - player_y
+                        player_x, player_y = Player.GetXY()
+                        dx, dy = nearest_enemy_agent.pos.x - player_x, nearest_enemy_agent.pos.y - player_y
                         if dx * dx + dy * dy > MAX_RANGE_SQ:
                             yield from Routines.Yield.Keybinds.Interact()
                             return
@@ -349,7 +354,7 @@ class AssassinShadowTheftDaggerSpammer(BuildMgr):
 
                         # --- Cast Exhausting Assault right after ---
                         if (yield from Routines.Yield.Skills.IsSkillIDUsable(self.exhausting_assault)):
-                            if GLOBAL_CACHE.Agent.IsDead(nearest_enemy_agent_id):
+                            if Agent.IsDead(nearest_enemy_agent_id):
                                 return
                             yield from Routines.Yield.Keybinds.UseSkill(exhausting_slot)
                             yield from Routines.Yield.wait(250)
@@ -358,8 +363,8 @@ class AssassinShadowTheftDaggerSpammer(BuildMgr):
                         yield from Routines.Yield.Skills.IsSkillIDUsable(self.death_blossom)
                     ) and player_current_energy >= 12:
                         # === Check distance first ===
-                        player_x, player_y = GLOBAL_CACHE.Player.GetXY()
-                        target_x, target_y = GLOBAL_CACHE.Agent.GetXY(nearest_enemy_agent_id)
+                        player_x, player_y = Player.GetXY()
+                        target_x, target_y = Agent.GetXY(nearest_enemy_agent_id)
                         dist_sq = (player_x - target_x) ** 2 + (player_y - target_y) ** 2
                         if dist_sq > Range.Adjacent.value**2:
                             yield from Routines.Yield.Keybinds.Interact()
@@ -376,7 +381,7 @@ class AssassinShadowTheftDaggerSpammer(BuildMgr):
 
                         # Fox Fangs
                         if (yield from Routines.Yield.Skills.IsSkillIDUsable(self.fox_fangs)):
-                            if GLOBAL_CACHE.Agent.IsDead(nearest_enemy_agent_id):
+                            if Agent.IsDead(nearest_enemy_agent_id):
                                 return
 
                             skill_slot = GLOBAL_CACHE.SkillBar.GetSlotBySkillID(self.fox_fangs)
@@ -385,7 +390,7 @@ class AssassinShadowTheftDaggerSpammer(BuildMgr):
 
                             # Death Blossom
                             if (yield from Routines.Yield.Skills.IsSkillIDUsable(self.death_blossom)):
-                                if GLOBAL_CACHE.Agent.IsDead(nearest_enemy_agent_id):
+                                if Agent.IsDead(nearest_enemy_agent_id):
                                     return
 
                                 skill_slot = GLOBAL_CACHE.SkillBar.GetSlotBySkillID(self.death_blossom)
@@ -397,8 +402,8 @@ class AssassinShadowTheftDaggerSpammer(BuildMgr):
                         yield from Routines.Yield.Skills.IsSkillIDUsable(self.fox_fangs)
                     ) and player_current_energy >= 10:
                         # === Check distance first ===
-                        player_x, player_y = GLOBAL_CACHE.Player.GetXY()
-                        target_x, target_y = GLOBAL_CACHE.Agent.GetXY(nearest_enemy_agent_id)
+                        player_x, player_y = Player.GetXY()
+                        target_x, target_y = Agent.GetXY(nearest_enemy_agent_id)
                         dist_sq = (player_x - target_x) ** 2 + (player_y - target_y) ** 2
                         if dist_sq > Range.Adjacent.value**2:
                             yield from Routines.Yield.Keybinds.Interact()
@@ -415,7 +420,7 @@ class AssassinShadowTheftDaggerSpammer(BuildMgr):
 
                         # Fox Fangs
                         if (yield from Routines.Yield.Skills.IsSkillIDUsable(self.fox_fangs)):
-                            if GLOBAL_CACHE.Agent.IsDead(nearest_enemy_agent_id):
+                            if Agent.IsDead(nearest_enemy_agent_id):
                                 return
 
                             skill_slot = GLOBAL_CACHE.SkillBar.GetSlotBySkillID(self.fox_fangs)
@@ -424,7 +429,7 @@ class AssassinShadowTheftDaggerSpammer(BuildMgr):
 
                             # Death Blossom
                             if (yield from Routines.Yield.Skills.IsSkillIDUsable(self.death_blossom)):
-                                if GLOBAL_CACHE.Agent.IsDead(nearest_enemy_agent_id):
+                                if Agent.IsDead(nearest_enemy_agent_id):
                                     return
 
                                 skill_slot = GLOBAL_CACHE.SkillBar.GetSlotBySkillID(self.death_blossom)

@@ -27,20 +27,19 @@ def record_current_enemies():
     """Scan nearby enemies and record their names + model IDs."""
     global recorded_agents
 
-    player_x, player_y = GLOBAL_CACHE.Player.GetXY()
+    player_x, player_y = Player.GetXY()
     enemy_agent_ids = Routines.Agents.GetFilteredEnemyArray(
         player_x, player_y, Range.SafeCompass.value
     )
 
     added = 0
     for agent_id in enemy_agent_ids:
-        agent = GLOBAL_CACHE.Agent.GetAgentByID(agent_id)
-        if not agent or agent.id == 0:
+        agent = Agent.GetAgentByID(agent_id)
+        if not agent or agent.agent_id == 0:
             continue
 
-        name = GLOBAL_CACHE.Agent.GetName(agent.id)
-        model_id = GLOBAL_CACHE.Agent.GetModelID(agent.id)
-
+        name = Agent.GetNameByID(agent.agent_id)
+        model_id = Agent.GetModelID(agent.agent_id)
         if not name:
             continue
 
@@ -48,7 +47,7 @@ def record_current_enemies():
         if name not in recorded_agents:
             recorded_agents[name] = {
                 "model_id": model_id,
-                "agent_id": agent.id
+                "agent_id": agent.agent_id
             }
             added += 1
 

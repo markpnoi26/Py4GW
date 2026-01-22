@@ -85,27 +85,45 @@ class Color:
     def to_tuple(self) -> tuple: return (self.r, self.g, self.b, self.a)  
     
     @classmethod
+    def from_float_tuple(cls, color: tuple[float, float, float, float]) -> "Color":
+        if any(c > 255.0 for c in color):
+            raise ValueError("Color components must be in the range 0.0 to 255.0")
+        r, g, b, a = (int(c) for c in color)
+        return cls(r, g, b, a)
+
+    
+    @classmethod
     def from_tuple(cls, color: tuple[float, float, float, float]) -> "Color":
         # Your original method: normalized floats 0..1
+        if color[0] > 1.0 or color[1] > 1.0 or color[2] > 1.0 or color[3] > 1.0:
+            raise ValueError("Color components must be in the range 0.0 to 1.0")
+        
         r, g, b, a = [int(c * 255) for c in color]
         return cls(r, g, b, a)
     
     def to_tuple_normalized(self) -> tuple:
         return (self.r / 255, self.g / 255, self.b / 255, self.a / 255)
 
-    def from_tuple_normalized(self, color: tuple[float, float, float, float]) -> None:
-        r, g, b, a = [int(c * 255) for c in color]
-        self.set_rgba(r, g, b, a)
-    
+    @classmethod
+    def from_tuple_normalized(cls, color: tuple[float, float, float, float]) -> "Color":
+        if any(c > 1.0 or c < 0.0 for c in color):
+            raise ValueError("Color components must be in the range 0.0 to 1.0")
+
+        r, g, b, a = (int(c * 255) for c in color)
+        return cls(r, g, b, a)
+
+        
     def copy(self) -> "Color":
         return Color(self.r, self.g, self.b, self.a)
 
     @property
     def rgb_tuple(self) -> tuple[int, int, int, int]:
+        """Return integer RGBA tuple (0–255)."""
         return self.to_tuple()
 
     @property
     def color_tuple(self) -> tuple[float, float, float, float]:
+        """Return normalized RGBA tuple (0.0–1.0)."""
         return self.to_tuple_normalized()
 
     @property
@@ -176,6 +194,11 @@ class Color:
 
         return Color(r=new_r, g=new_g, b=new_b, a=self.a)
 
+    def opacify(self, amount: float) -> "Color":
+        """
+        0.0 = fully transparent, 1.0 = fully solid.
+        """
+        return Color(self.r, self.g, self.b, int(255 * amount))
     
     def shift(self, target: "Color", amount: float) -> "Color":
         """
@@ -213,6 +236,16 @@ class Color:
             data.get("a", 255)
         )
 
+    @classmethod
+    def random(cls, a: int = 255) -> "Color":
+        """Generate a random color with optional alpha."""
+        import random
+        return cls(
+            r=random.randint(0, 255),
+            g=random.randint(0, 255),
+            b=random.randint(0, 255),
+            a=a
+        )
     
 class ColorPalette:
     _colors: dict[str, Color] = {

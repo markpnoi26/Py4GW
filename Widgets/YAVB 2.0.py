@@ -1,7 +1,7 @@
 import Py4GW
 import math
-from Py4GWCoreLib import (Routines,Botting,ActionQueueManager, ConsoleLog, GLOBAL_CACHE, AgentArray, Utils)
-from Py4GWCoreLib import ThrottledTimer
+from Py4GWCoreLib import (Routines,Botting,ActionQueueManager, ConsoleLog, GLOBAL_CACHE, Agent, Utils)
+from Py4GWCoreLib import ThrottledTimer, Map, Player
 from Py4GWCoreLib.enums import ModelID, Range, TitleID
 
 from Py4GWCoreLib.BuildMgr import BuildMgr
@@ -34,7 +34,6 @@ def InitializeBot(bot: Botting) -> None:
     bot.Properties.Enable("birthday_cupcake")
     bot.Properties.Enable("identify_kits")
     bot.Properties.Enable("salvage_kits")
-    
     
 def TownRoutines(bot: Botting) -> None:
     bot.States.AddHeader("Town Routines")
@@ -139,7 +138,7 @@ def NeedsInventoryManagement(bot: Botting):
         or count_of_id_kits == 0
         or count_of_salvage_kits == 0
     ):
-        GLOBAL_CACHE.Player.SendChatCommand("resign") 
+        Player.SendChatCommand("resign") 
         yield from Routines.Yield.wait(500)
     yield
     
@@ -156,7 +155,7 @@ def KillEnemies(bot: Botting):
     if isinstance(build, SF_Ass_vaettir) or isinstance(build, SF_Mes_vaettir):
         build.SetKillingRoutine(in_killing_routine)
         
-    player_pos = GLOBAL_CACHE.Player.GetXY()
+    player_pos = Player.GetXY()
     enemy_array = Routines.Agents.GetFilteredEnemyArray(player_pos[0],player_pos[1],Range.Spellcast.value)
     
     start_time = Utils.GetBaseTimestamp()
@@ -167,11 +166,11 @@ def KillEnemies(bot: Botting):
         delta = current_time - start_time
         if delta > timeout and timeout > 0:
             ConsoleLog("Killing Routine", "Timeout reached, restarting.", Py4GW.Console.MessageType.Error)
-            GLOBAL_CACHE.Player.SendChatCommand("resign") 
+            Player.SendChatCommand("resign") 
             yield from Routines.Yield.wait(500)
             return
   
-        if GLOBAL_CACHE.Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
+        if Agent.IsDead(Player.GetAgentID()):
             ConsoleLog("Killing Routine", "Player is dead, restarting.", Py4GW.Console.MessageType.Warning)
             yield from Routines.Yield.wait(500)
             return 
@@ -189,7 +188,7 @@ def KillEnemies(bot: Botting):
 
 
 def AssignBuild(bot: Botting):
-    profession, _ = GLOBAL_CACHE.Agent.GetProfessionNames(GLOBAL_CACHE.Player.GetAgentID())
+    profession, _ = Agent.GetProfessionNames(Player.GetAgentID())
     match profession:
         case "Assassin":
             bot.OverrideBuild(SF_Ass_vaettir())
@@ -221,6 +220,7 @@ def HandleInventory(bot: Botting) -> None:
     bot.Items.Restock.BirthdayCupcake() #restock birthday cupcake
     
 def _wait_for_aggro_ball(bot: Botting, side_label: str, cycle_timeout: int = 150):
+    from Py4GWCoreLib.Agent import Agent
     """
     Shared logic for waiting until enemies have balled up.
     side_label is just used for logging ("Left" / "Right").
@@ -240,7 +240,7 @@ def _wait_for_aggro_ball(bot: Botting, side_label: str, cycle_timeout: int = 150
             elapsed += 1
 
             # hard exit if player dies
-            if GLOBAL_CACHE.Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
+            if Agent.IsDead(Player.GetAgentID()):
                 ConsoleLog(f"{side_label} Aggro Ball Wait",
                            "Player is dead, exiting wait.",
                            Py4GW.Console.MessageType.Warning)
@@ -248,7 +248,7 @@ def _wait_for_aggro_ball(bot: Botting, side_label: str, cycle_timeout: int = 150
                 return
 
             # Get player position
-            px, py = GLOBAL_CACHE.Player.GetXY()
+            px, py = Player.GetXY()
 
             # Get enemies within earshot
             enemies_ids = Routines.Agents.GetFilteredEnemyArray(px, py, Range.Earshot.value)
@@ -256,10 +256,11 @@ def _wait_for_aggro_ball(bot: Botting, side_label: str, cycle_timeout: int = 150
             # Check if all enemies are within Adjacent range
             all_in_adjacent = True
             for enemy_id in enemies_ids:
-                enemy = GLOBAL_CACHE.Agent.GetAgent(enemy_id)
+                
+                enemy = Agent.GetAgentByID(enemy_id)
                 if enemy is None:
                     continue
-                dx, dy = enemy.x - px, enemy.y - py
+                dx, dy = enemy.pos.x - px, enemy.pos.y - py
                 if dx * dx + dy * dy > (Range.Adjacent.value ** 2):
                     all_in_adjacent = False
                     break
@@ -310,8 +311,8 @@ finished_routine = False
 stuck_counter = 0
 stuck_timer = ThrottledTimer(5000)
 stuck_timer.Start()
-BJORA_MARCHES = GLOBAL_CACHE.Map.GetMapIDByName("Bjora Marches")
-JAGA_MORAINE = GLOBAL_CACHE.Map.GetMapIDByName("Jaga Moraine")
+BJORA_MARCHES = Map.GetMapIDByName("Bjora Marches")
+JAGA_MORAINE = Map.GetMapIDByName("Jaga Moraine")
 movement_check_timer = ThrottledTimer(3000)
 old_player_position = (0,0)
 in_killing_routine = False
@@ -333,7 +334,7 @@ def HandleStuckJagaMoraine(bot: Botting):
             yield from Routines.Yield.wait(1000)
             return
 
-        if GLOBAL_CACHE.Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
+        if Agent.IsDead(Player.GetAgentID()):
             ConsoleLog("HandleStuck", "Player is dead, exiting stuck handler.", Py4GW.Console.MessageType.Debug, forced_log)
             yield from Routines.Yield.wait(1000)
             return
@@ -341,14 +342,14 @@ def HandleStuckJagaMoraine(bot: Botting):
 
         build: BuildMgr = bot.config.build_handler
         
-        instance_time = GLOBAL_CACHE.Map.GetInstanceUptime() / 1000  # Convert ms to seconds
+        instance_time = Map.GetInstanceUptime() / 1000  # Convert ms to seconds
         if instance_time > 7 * 60:  # 7 minutes in seconds
             ConsoleLog("HandleStuck", "Instance time exceeded 7 minutes, force resigning.", Py4GW.Console.MessageType.Debug, forced_log)
             stuck_counter = 0
             if isinstance(build, SF_Ass_vaettir) or isinstance(build, SF_Mes_vaettir):
                 build.SetStuckSignal(stuck_counter)
                 
-            GLOBAL_CACHE.Player.SendChatCommand("resign") 
+            Player.SendChatCommand("resign") 
             yield from Routines.Yield.wait(500)
             return
 
@@ -383,19 +384,19 @@ def HandleStuckJagaMoraine(bot: Botting):
             continue
 
         # Jaga Moraine map check
-        if GLOBAL_CACHE.Map.GetMapID() == JAGA_MORAINE:
+        if Map.GetMapID() == JAGA_MORAINE:
             if stuck_timer.IsExpired():
                 ConsoleLog("HandleStuck", "Issuing scheduled /stuck command.", Py4GW.Console.MessageType.Debug, log_actions)
-                GLOBAL_CACHE.Player.SendChatCommand("stuck")
+                Player.SendChatCommand("stuck")
                 stuck_timer.Reset()
 
             if movement_check_timer.IsExpired():
-                current_player_pos = GLOBAL_CACHE.Player.GetXY()
+                current_player_pos = Player.GetXY()
                 ConsoleLog("HandleStuck", f"Checking movement. Old pos: {old_player_position}, Current pos: {current_player_pos}", Py4GW.Console.MessageType.Debug, log_actions)
 
                 if old_player_position == current_player_pos:
                     ConsoleLog("HandleStuck", "Player is stuck, sending /stuck command.", Py4GW.Console.MessageType.Warning, forced_log)
-                    GLOBAL_CACHE.Player.SendChatCommand("stuck")
+                    Player.SendChatCommand("stuck")
                     stuck_counter += 1
                     ConsoleLog("HandleStuck", f"Stuck counter incremented to {stuck_counter}.", Py4GW.Console.MessageType.Debug, log_actions)
                     if isinstance(build, SF_Ass_vaettir) or isinstance(build, SF_Mes_vaettir):
@@ -415,7 +416,7 @@ def HandleStuckJagaMoraine(bot: Botting):
                 if isinstance(build, SF_Ass_vaettir) or isinstance(build, SF_Mes_vaettir):
                     build.SetStuckSignal(stuck_counter)
                 
-                GLOBAL_CACHE.Player.SendChatCommand("resign") 
+                Player.SendChatCommand("resign") 
                 yield from Routines.Yield.wait(500)
                 return
         else:

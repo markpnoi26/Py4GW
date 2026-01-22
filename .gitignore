@@ -3,6 +3,8 @@ accounts.json
 accounts - Copy.json
 Py4GW_Launcher.exe
 
+GodTools.py
+god_tools_src/*
 imgui.ini
 Inject.au3
 AlcoholProc.ini
@@ -191,3 +193,9 @@ cython_debug/
 
 # # But keep the .default.json ones
 !/Styles/*.default.json
+
+# Ignore Visual Studio Code settings folder
+.vscode/
+
+# macOS system files
+.DS_Store

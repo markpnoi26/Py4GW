@@ -1,6 +1,6 @@
 from typing import Any, Generator, override
 
-from Py4GWCoreLib import GLOBAL_CACHE
+from Py4GWCoreLib import GLOBAL_CACHE, Map, Agent, Player
 from Py4GWCoreLib.Py4GWcorelib import ThrottledTimer
 
 from Widgets.CustomBehaviors.primitives.bus.event_bus import EventBus
@@ -51,13 +51,13 @@ class DeathDetectionUtility(CustomSkillUtilityBase):
     @override
     def _evaluate(self, current_state: BehaviorState, previously_attempted_skills: list[CustomSkill]) -> float | None:
         del current_state, previously_attempted_skills  # Unused parameters
-        if not GLOBAL_CACHE.Map.IsExplorable(): return None
+        if not Map.IsExplorable(): return None
         if not GLOBAL_CACHE.Party.IsPartyLeader(): return None
 
         if custom_behavior_helpers.Resources.is_party_dead():
             return self.score_definition.get_score()
         
-        if GLOBAL_CACHE.Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
+        if Agent.IsDead(Player.GetAgentID()):
             return self.score_definition.get_score()
         
         # Player/Party is alive again; clear any pending death timer
@@ -73,7 +73,7 @@ class DeathDetectionUtility(CustomSkillUtilityBase):
                 yield from self.event_bus.publish(EventType.PARTY_DEATH, state)
                 return BehaviorResult.ACTION_PERFORMED
             
-        if GLOBAL_CACHE.Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
+        if Agent.IsDead(Player.GetAgentID()):
             if self.__death_timer.IsExpired():
                 yield from self.event_bus.publish(EventType.PLAYER_CRITICAL_DEATH, state)
                 return BehaviorResult.ACTION_PERFORMED
@@ -83,7 +83,6 @@ class DeathDetectionUtility(CustomSkillUtilityBase):
 
     @override
     def customized_debug_ui(self, current_state: BehaviorState) -> None:
-        del current_state  # Unused parameter
         pass
         # PyImGui.bullet_text(f"__stuck_count : {self.__stuck_count}")
         # PyImGui.bullet_text(f"__stuck_timer : {self.throttle_timer.GetTimeRemaining()}")

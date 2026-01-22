@@ -9,6 +9,8 @@ from typing import Any, Generator, TYPE_CHECKING, Tuple, List, Optional, Callabl
 from Py4GWCoreLib.enums import SharedCommandType 
 
 from Py4GWCoreLib import ConsoleLog, Console
+from Py4GWCoreLib.Player import Player
+from Py4GWCoreLib.Map import Map
 
 #region Multibox
 class _Multibox:
@@ -133,7 +135,7 @@ class _Multibox:
     
     def _get_player_data(self):
         from ...GlobalCache import GLOBAL_CACHE
-        player_email = GLOBAL_CACHE.Player.GetAccountEmail()
+        player_email = Player.GetAccountEmail()
         return self._get_account_data_from_email(player_email)
 
     def _summon_all_accounts(self):
@@ -241,7 +243,7 @@ class _Multibox:
         from ...GlobalCache import GLOBAL_CACHE
         from ...Routines import Routines
         accounts = GLOBAL_CACHE.ShMem.GetAllAccountData()
-        sender_email = GLOBAL_CACHE.Player.GetAccountEmail()
+        sender_email = Player.GetAccountEmail()
         for account in accounts:
             ConsoleLog("Messaging", "Resigning account: " + account.AccountEmail, log=False)
             GLOBAL_CACHE.ShMem.SendMessage(sender_email, account.AccountEmail, SharedCommandType.Resign, (0,0,0,0))
@@ -249,20 +251,22 @@ class _Multibox:
         
     def _pixel_stack(self):
         from ...GlobalCache import GLOBAL_CACHE
+        from ...Agent import Agent
         from ...import Range
-        sender_email = GLOBAL_CACHE.Player.GetAccountEmail()
-        x, y = GLOBAL_CACHE.Player.GetXY()
+        sender_email = Player.GetAccountEmail()
+        x, y = Player.GetXY()
 
         players = GLOBAL_CACHE.Party.GetPlayers()
-        current_map = GLOBAL_CACHE.Map.GetMapID()
+        current_map = Map.GetMapID()
         player_names = []
 
         for player in players:
             agent_name = GLOBAL_CACHE.Party.Players.GetPlayerNameByLoginNumber(player.login_number)
             agent_id = GLOBAL_CACHE.Party.Players.GetAgentIDByLoginNumber(player.login_number)
-            agent = GLOBAL_CACHE.Agent.GetAgentByID(agent_id)
-
-            dx, dy = x - agent.x, y - agent.y
+            agent = Agent.GetAgentByID(agent_id)
+            if not agent:
+                continue
+            dx, dy = x - agent.pos.x, y - agent.pos.y
             players_dist_sq = dx * dx + dy * dy
             max_dist_sq = Range.Earshot.value ** 2
 
@@ -289,11 +293,11 @@ class _Multibox:
     def _brute_force_unstuck(self):
         from ...GlobalCache import GLOBAL_CACHE
 
-        sender_email = GLOBAL_CACHE.Player.GetAccountEmail()
-        x, y = GLOBAL_CACHE.Player.GetXY()
+        sender_email = Player.GetAccountEmail()
+        x, y = Player.GetXY()
 
         players = GLOBAL_CACHE.Party.GetPlayers()
-        current_map = GLOBAL_CACHE.Map.GetMapID()
+        current_map = Map.GetMapID()
         player_names = []
 
         for player in players:
@@ -322,11 +326,11 @@ class _Multibox:
         
     def _interact_with_target(self):
         from ...GlobalCache import GLOBAL_CACHE
-        target = GLOBAL_CACHE.Player.GetTargetID()
+        target = Player.GetTargetID()
         if target == 0:
             ConsoleLog("Messaging", "No target to interact with.")
             return
-        sender_email = GLOBAL_CACHE.Player.GetAccountEmail()
+        sender_email = Player.GetAccountEmail()
         accounts = GLOBAL_CACHE.ShMem.GetAllAccountData()
 
         for account in accounts:
@@ -339,7 +343,7 @@ class _Multibox:
     def _take_dialog_with_target(self):
         from ...GlobalCache import GLOBAL_CACHE
         from ...UIManager import UIManager
-        target = GLOBAL_CACHE.Player.GetTargetID()
+        target = Player.GetTargetID()
         if target == 0:
             ConsoleLog("Messaging", "No target to interact with.")
             return
@@ -349,7 +353,7 @@ class _Multibox:
         
         # i need to display a modal dialog here to confirm options
         options = UIManager.GetDialogButtonCount()
-        sender_email = GLOBAL_CACHE.Player.GetAccountEmail()
+        sender_email = Player.GetAccountEmail()
 
         self_account = GLOBAL_CACHE.ShMem.GetAccountDataFromEmail(sender_email)
         if not self_account:
@@ -365,7 +369,7 @@ class _Multibox:
     def _use_consumable_message(self, params):
         from ...GlobalCache import GLOBAL_CACHE
         from ...Routines import Routines
-        account_email = sender_email = GLOBAL_CACHE.Player.GetAccountEmail()
+        account_email = sender_email = Player.GetAccountEmail()
 
         accounts = GLOBAL_CACHE.ShMem.GetAllAccountData()
         sender_email = account_email
@@ -378,7 +382,7 @@ class _Multibox:
     def _donate_faction(self):
         from ...GlobalCache import GLOBAL_CACHE
         accounts = GLOBAL_CACHE.ShMem.GetAllAccountData()
-        sender_email = GLOBAL_CACHE.Player.GetAccountEmail()
+        sender_email = Player.GetAccountEmail()
         for account in accounts:
             ConsoleLog("Messaging", "Donating to guild from account: " + account.AccountEmail, log= False)
             GLOBAL_CACHE.ShMem.SendMessage(sender_email, account.AccountEmail, SharedCommandType.DonateToGuild, (0,0,0,0))
@@ -387,11 +391,11 @@ class _Multibox:
     def _send_dialog_with_target(self, dialog_id: int, wait_time: int=3000):
         from ...GlobalCache import GLOBAL_CACHE
         from ...Routines import Routines
-        target = GLOBAL_CACHE.Player.GetTargetID()
+        target = Player.GetTargetID()
         if target == 0:
             ConsoleLog("Messaging", "No target to interact with.")
             return
-        sender_email = GLOBAL_CACHE.Player.GetAccountEmail()
+        sender_email = Player.GetAccountEmail()
         accounts = GLOBAL_CACHE.ShMem.GetAllAccountData()
 
         for account in accounts:

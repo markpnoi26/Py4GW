@@ -12,10 +12,11 @@ class UtilitySkillTypologyColor:
     DAEMON_COLOR = Utils.ColorToTuple(Utils.RGBToColor(150, 150, 150, 200))
     BLESSING_COLOR = Utils.ColorToTuple(Utils.RGBToColor(255, 143, 62, 200))
     INVENTORY_COLOR = Utils.ColorToTuple(Utils.RGBToColor(30, 143, 62, 200))
+    FLAG_COLOR = Utils.ColorToTuple(Utils.RGBToColor(147, 217, 32, 250))
 
     @staticmethod
     def get_color_from_typology(utility_skill_typology:UtilitySkillTypology) -> tuple[float, float, float, float]:
-        if utility_skill_typology == UtilitySkillTypology.BOTTING:
+        if utility_skill_typology.value == UtilitySkillTypology.BOTTING.value:
             return UtilitySkillTypologyColor.BOTTING_COLOR
         if utility_skill_typology == UtilitySkillTypology.CHESTING:
             return UtilitySkillTypologyColor.CHESTING_COLOR
@@ -31,5 +32,6 @@ class UtilitySkillTypologyColor:
             return UtilitySkillTypologyColor.BLESSING_COLOR
         if utility_skill_typology == UtilitySkillTypology.INVENTORY:
             return UtilitySkillTypologyColor.INVENTORY_COLOR
-            
-        return Utils.ColorToTuple(Utils.RGBToColor(255, 255, 255, 200))
+        
+        print(f"Unknown typology {utility_skill_typology}")
+        return Utils.ColorToTuple(Utils.RGBToColor(255, 2, 255, 200))

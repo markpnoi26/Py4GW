@@ -1,4 +1,4 @@
-from Py4GWCoreLib import Botting, Routines, GLOBAL_CACHE, ModelID, Range, Utils, ConsoleLog
+from Py4GWCoreLib import Botting, Routines, GLOBAL_CACHE, ModelID, Map, Agent, ConsoleLog, Player
 import Py4GW
 import os
 BOT_NAME = "VQ Mount Qinkai"
@@ -129,7 +129,7 @@ def _upkeep_multibox_consumables(bot :"Botting"):
 
 def _reverse_path():
     global Vanquish_Path
-    if GLOBAL_CACHE.Map.GetIsVanquishComplete():
+    if Map.IsVanquishCompleted():
         Vanquish_Path = []
         yield 
         return
@@ -138,7 +138,7 @@ def _reverse_path():
     yield
     
 def _on_party_wipe(bot: "Botting"):
-    while GLOBAL_CACHE.Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
+    while Agent.IsDead(Player.GetAgentID()):
         yield from bot.Wait._coro_for_time(1000)
         if not Routines.Checks.Map.MapValid():
             # Map invalid → release FSM and exit

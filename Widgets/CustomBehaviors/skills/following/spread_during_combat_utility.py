@@ -2,10 +2,11 @@ import math
 from typing import Any, Generator, override
 import PyImGui
 
-from Py4GWCoreLib import GLOBAL_CACHE, Routines, Range
+from Py4GWCoreLib import GLOBAL_CACHE, Map, Agent, Player
 from Py4GWCoreLib.Pathing import AutoPathing
 from Py4GWCoreLib.Py4GWcorelib import ThrottledTimer, Utils, VectorFields
 from Py4GWCoreLib.Overlay import Overlay
+from Py4GWCoreLib.AgentArray import AgentArray
 from Widgets.CustomBehaviors.primitives.bus.event_message import EventMessage
 from Widgets.CustomBehaviors.primitives.bus.event_type import EventType
 from Widgets.CustomBehaviors.primitives.helpers import custom_behavior_helpers
@@ -63,10 +64,10 @@ class SpreadDuringCombatUtility(CustomSkillUtilityBase):
         self.event_bus.subscribe(EventType.MAP_CHANGED, self.area_changed, subscriber_name=self.custom_skill.skill_name)
     
     def area_changed(self, message: EventMessage)-> Generator[Any, Any, Any]:
-        if GLOBAL_CACHE.Map.IsExplorable():
-            self.enable_enemy_repulsion = False if GLOBAL_CACHE.Agent.IsMelee(GLOBAL_CACHE.Player.GetAgentID()) else True
+        if Map.IsExplorable():
+            self.enable_enemy_repulsion = False if Agent.IsMelee(Player.GetAgentID()) else True
             self.enable_leader_attraction = True
-            self.enable_allies_repulsion = False if GLOBAL_CACHE.Agent.IsMelee(GLOBAL_CACHE.Player.GetAgentID()) else True
+            self.enable_allies_repulsion = False if Agent.IsMelee(Player.GetAgentID()) else True
         yield
         
 
@@ -78,7 +79,7 @@ class SpreadDuringCombatUtility(CustomSkillUtilityBase):
         if self.allowed_states is not None and current_state not in self.allowed_states: return False
         if GLOBAL_CACHE.Party.IsPartyLeader(): return False
         # Only run if this player has a defined flag position (spread around flag)
-        if CustomBehaviorParty().party_flagging_manager.is_flag_defined(GLOBAL_CACHE.Player.GetAccountEmail()): return False
+        if CustomBehaviorParty().party_flagging_manager.is_flag_defined(Player.GetAccountEmail()): return False
 
         return True
 
@@ -87,16 +88,16 @@ class SpreadDuringCombatUtility(CustomSkillUtilityBase):
         positions = []
         
         # Get ally positions
-        for agent_id in GLOBAL_CACHE.AgentArray.GetAllyArray():
-            if GLOBAL_CACHE.Agent.IsAlive(agent_id) and GLOBAL_CACHE.Agent.IsValid(agent_id):
+        for agent_id in AgentArray.GetAllyArray():
+            if Agent.IsAlive(agent_id) and Agent.IsValid(agent_id):
                 # Exclude self
-                if agent_id != GLOBAL_CACHE.Player.GetAgentID():
-                    positions.append(GLOBAL_CACHE.Agent.GetXY(agent_id))
+                if agent_id != Player.GetAgentID():
+                    positions.append(Agent.GetXY(agent_id))
 
         # Get spirit positions
-        for agent_id in GLOBAL_CACHE.AgentArray.GetSpiritPetArray():
-            if GLOBAL_CACHE.Agent.IsAlive(agent_id) and GLOBAL_CACHE.Agent.IsValid(agent_id):
-                positions.append(GLOBAL_CACHE.Agent.GetXY(agent_id))
+        for agent_id in AgentArray.GetSpiritPetArray():
+            if Agent.IsAlive(agent_id) and Agent.IsValid(agent_id):
+                positions.append(Agent.GetXY(agent_id))
 
         return positions
 
@@ -106,18 +107,18 @@ class SpreadDuringCombatUtility(CustomSkillUtilityBase):
             return []
 
         positions = []
-        my_pos = GLOBAL_CACHE.Player.GetXY()
+        my_pos = Player.GetXY()
         if my_pos is None:
             return []
 
         try:
             # Get nearby enemies
-            enemy_array = GLOBAL_CACHE.AgentArray.GetEnemyArray()
+            enemy_array = AgentArray.GetEnemyArray()
             for enemy_id in enemy_array:
-                if not GLOBAL_CACHE.Agent.IsAlive(enemy_id) or not GLOBAL_CACHE.Agent.IsValid(enemy_id):
+                if not Agent.IsAlive(enemy_id) or not Agent.IsValid(enemy_id):
                     continue
 
-                enemy_pos = GLOBAL_CACHE.Agent.GetXY(enemy_id)
+                enemy_pos = Agent.GetXY(enemy_id)
                 if enemy_pos is None:
                     continue
 
@@ -138,7 +139,7 @@ class SpreadDuringCombatUtility(CustomSkillUtilityBase):
             if leader_agent_id is None:
                 return None
 
-            leader_pos = GLOBAL_CACHE.Agent.GetXY(leader_agent_id)
+            leader_pos = Agent.GetXY(leader_agent_id)
             return leader_pos
         except Exception as e:
             print(f"SpreadDuringCombatUtility._get_party_leader_position error: {e}")
@@ -307,8 +308,8 @@ class SpreadDuringCombatUtility(CustomSkillUtilityBase):
             return
 
         Overlay().BeginDraw()
-        my_agent_id = GLOBAL_CACHE.Player.GetAgentID()
-        _, _, my_z = GLOBAL_CACHE.Agent.GetXYZ(my_agent_id)
+        my_agent_id = Player.GetAgentID()
+        _, _, my_z = Agent.GetXYZ(my_agent_id)
 
         # Color scheme for different force types
         player_color = Utils.RGBToColor(0, 150, 255, 255)  # Blue
@@ -444,7 +445,7 @@ class SpreadDuringCombatUtility(CustomSkillUtilityBase):
         if not self.throttle_timer.IsExpired():
             return None
 
-        my_pos = GLOBAL_CACHE.Player.GetXY()
+        my_pos = Player.GetXY()
 
         # Use vector field computation to determine if movement is needed
         # If the vector field produces a significant vector, we need to move
@@ -461,13 +462,13 @@ class SpreadDuringCombatUtility(CustomSkillUtilityBase):
     def _execute(self, state: BehaviorState) -> Generator[Any, None, BehaviorResult]:
 
         try:
-            my_pos = GLOBAL_CACHE.Player.GetXY()
+            my_pos = Player.GetXY()
             target_pos = self._calculate_finale_position(my_pos)
 
             self.last_target_pos = target_pos
 
             if target_pos is not None:
-                GLOBAL_CACHE.Player.Move(target_pos[0], target_pos[1])
+                Player.Move(target_pos[0], target_pos[1])
                 self.throttle_timer.Reset()
                 yield from custom_behavior_helpers.Helpers.wait_for(1000)
                 return BehaviorResult.ACTION_PERFORMED
@@ -495,7 +496,7 @@ class SpreadDuringCombatUtility(CustomSkillUtilityBase):
 
         try:
             # Get current positions
-            my_pos = GLOBAL_CACHE.Player.GetXY()
+            my_pos = Player.GetXY()
             party_positions = self._get_party_member_positions()
             enemy_positions = self._get_enemy_positions()
             leader_pos = self._get_party_leader_position()
@@ -780,7 +781,7 @@ class SpreadDuringCombatUtility(CustomSkillUtilityBase):
 
             # Force counts
             try:
-                my_pos = GLOBAL_CACHE.Player.GetXY()
+                my_pos = Player.GetXY()
                 if my_pos is not None:
                     # Count active forces
                     party_positions = self._get_party_member_positions() if self.enable_allies_repulsion else []

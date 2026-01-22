@@ -1,29 +1,44 @@
-from Py4GWCoreLib import GLOBAL_CACHE
 import PyImGui
-import PyPlayer
+
+from Py4GWCoreLib import GLOBAL_CACHE
+from Py4GWCoreLib.Map import Map
+from Py4GWCoreLib.Routines import Routines
 
 
-dialog = 0x000AA
+def _coro_travel_in_loop():
+    while True:
+        Map.TravelGH()
+        while True:
+            in_guild_hall = Map.IsGuildHall()
+            if not in_guild_hall:
+                yield from Routines.Yield.wait(1000)
+            else:
+                break
+        yield from Routines.Yield.wait(1500)
+        Map.LeaveGH()
+        while True:
+            in_guild_hall = Map.IsGuildHall()
+            if in_guild_hall or not Routines.Checks.Map.MapValid():
+                yield from Routines.Yield.wait(1000)
+            else:
+                break
+        yield from Routines.Yield.wait(1500)
+
+input_string = ""
 
 def draw_window():
-    global dialog
-    
-    if PyImGui.begin("dialog tester"):
+    global input_string
+    if PyImGui.begin("player test"): 
+        if PyImGui.button("Start Travel GH Loop"):
+            GLOBAL_CACHE.Coroutines.append(_coro_travel_in_loop())
 
-        if PyImGui.button("dialog trough GLOBAL_CACHE"):
-            GLOBAL_CACHE.Player.SendDialog(dialog)
-            
-        if PyImGui.button("dialog directly"):
-            player_instance = PyPlayer.PyPlayer()
-            player_instance.SendDialog(dialog)
-            
+        if PyImGui.button("Stop All Coroutines"):
+            GLOBAL_CACHE.Coroutines.clear()
 
     PyImGui.end()
 
-
 def main():
     draw_window()
-
 
 if __name__ == "__main__":
     main()

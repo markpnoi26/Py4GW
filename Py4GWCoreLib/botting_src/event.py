@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Callable, Optional
 
 from typing import Any, Optional, TYPE_CHECKING
+from ..Player import Player
 
 if TYPE_CHECKING:
     from .config import BotConfig  # for type checkers only
@@ -58,19 +59,21 @@ class OnDeathEvent(Event):
     def should_trigger(self) -> bool:
         from Py4GWCoreLib import GLOBAL_CACHE  # local import!
         from Py4GWCoreLib import Routines
-        if not Routines.Checks.Map.MapValid() or not Routines.Checks.Map.IsExplorable():
+        from Py4GWCoreLib import Agent
+        player_agent_id = Player.GetAgentID()
+        if not Routines.Checks.Map.MapValid() or not Routines.Checks.Map.IsExplorable() or not player_agent_id:
             return False
-        dead = GLOBAL_CACHE.Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID())
+        dead = Agent.IsDead(player_agent_id)
         #if dead:
         #    print("OnDeathEvent triggered")
         return dead
 
     def should_reset(self) -> bool:
-        from Py4GWCoreLib import GLOBAL_CACHE, Routines
+        from Py4GWCoreLib import GLOBAL_CACHE, Routines, Agent
         if not Routines.Checks.Map.MapValid():
             return True
         
-        return not GLOBAL_CACHE.Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID())
+        return not Agent.IsDead(Player.GetAgentID())
 
 class OnPartyDefeated(Event):
     def should_trigger(self) -> bool:
@@ -94,14 +97,14 @@ class OnPartyDefeated(Event):
     
 class OnPartyWipe(Event):
     def should_trigger(self):
-        from Py4GWCoreLib import Routines, GLOBAL_CACHE
+        from Py4GWCoreLib import Routines, Map
         if not Routines.Checks.Map.MapValid():
             return False
         
         if not Routines.Checks.Map.IsExplorable():
             return False
         
-        map_uptime = GLOBAL_CACHE.Map.GetInstanceUptime()
+        map_uptime = Map.GetInstanceUptime()
         if map_uptime < 5000:
             return False
         
@@ -216,7 +219,7 @@ class OnStuck(Event):
         self.active = value
 
     def should_trigger(self) -> bool:
-        from Py4GWCoreLib import GLOBAL_CACHE, Routines
+        from Py4GWCoreLib import GLOBAL_CACHE, Routines, Agent
 
         if not self.active:
             return False
@@ -232,7 +235,7 @@ class OnStuck(Event):
 
         if not Routines.Checks.Map.MapValid():
             return _reset_counter()
-        if GLOBAL_CACHE.Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
+        if Agent.IsDead(Player.GetAgentID()):
             return _reset_counter()
 
         if self.in_waiting_routine or self.finished_routine or self.in_killing_routine:
@@ -241,15 +244,15 @@ class OnStuck(Event):
             return False
 
         if self.stuck_timer.IsExpired():
-            GLOBAL_CACHE.Player.SendChatCommand("stuck")
+            Player.SendChatCommand("stuck")
             self.stuck_timer.Reset()
 
         if self.movement_check_timer.IsExpired():
-            current_player_pos = GLOBAL_CACHE.Player.GetXY()
+            current_player_pos = Player.GetXY()
             self.timer_was_expired = True
             self.movement_check_timer.Reset()
             if self.old_player_position == current_player_pos:
-                GLOBAL_CACHE.Player.SendChatCommand("stuck")
+                Player.SendChatCommand("stuck")
                 self.stuck_counter += 1
                 return True   # stuck
             else:

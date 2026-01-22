@@ -1,6 +1,6 @@
 from datetime import datetime
 import PyImGui
-from PyPlayer import PyTitle
+
 from Py4GWCoreLib import *
 from Py4GWCoreLib.GlobalCache.SharedMemory import AccountData, FactionsStruct, TitleStruct
 from typing import Callable
@@ -278,7 +278,11 @@ class TitleData:
 
     def _draw_title(self, title: TitleStruct, managed: bool):
         title_name = TITLE_NAME.get(title.TitleID, f"Unknown ({title.TitleID})")
-        py_title = PyTitle(title_id=title.TitleID)
+        py_title = Player.GetTitle(title.TitleID)
+        if py_title is None:
+            PyImGui.text(f"{title_name} - (Title data not found in Player)")
+            PyImGui.separator()
+            return
 
         if not managed:
             PyImGui.text(f"{title_name}")
@@ -393,7 +397,7 @@ def draw_available_characters(player: AccountData):
 
             # Map
             PyImGui.table_set_column_index(2)
-            PyImGui.text(GLOBAL_CACHE.Map.GetMapName(char.MapID))
+            PyImGui.text(Map.GetMapName(char.MapID))
 
             # Professions
             PyImGui.table_set_column_index(3)
@@ -481,7 +485,7 @@ class PlayerData:
     def _get_map_name(self, map_id: int) -> str:
         """Store map names permanently."""
         if map_id not in self._map_name_cache:
-            map_name = GLOBAL_CACHE.Map.GetMapName(map_id)
+            map_name = Map.GetMapName(map_id)
             if not map_name:
                 map_name = "Unknown"
             self._map_name_cache[map_id] = map_name

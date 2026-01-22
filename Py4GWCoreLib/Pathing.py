@@ -1,19 +1,21 @@
 import Py4GW
 import PyPathing
 import PyOverlay
-import PyMap
 import math
 import heapq
 import pickle
+import ctypes
 
 from .enums import name_to_map_id
 from typing import List, Tuple, Optional, Dict
 from collections import defaultdict
 from Py4GWCoreLib import Utils
+from Py4GWCoreLib.Map import Map
+from Py4GWCoreLib.native_src.context.MapContext import PathingTrapezoidStruct, PathingMapStruct, PortalStruct
 
-PathingMap = PyPathing.PathingMap
-PathingTrapezoid = PyPathing.PathingTrapezoid
-PathingPortal = PyPathing.Portal
+PathingMap = PathingMapStruct
+PathingTrapezoid = PathingTrapezoidStruct
+PathingPortal = PortalStruct
 Point2D = PyOverlay.Point2D
 
 class AABB:
@@ -159,25 +161,36 @@ class NavMesh:
                         
     def create_all_cross_layer_portals(self):
         from collections import defaultdict
+        import ctypes
 
-        portal_groups = defaultdict(lambda: defaultdict(list))  # pair_index → zplane → List[Trap]
+        # pair_key -> zplane -> list[PathingTrapezoid]
+        portal_groups = defaultdict(lambda: defaultdict(list))
 
-        # Step 1: group by pair_index and zplane
         for z, portal_list in self.layer_portals.items():
             for p in portal_list:
+                pair = p.pair
+                if not pair:
+                    continue  # keep this to match “real” pairs only
+
+                # Use underlying C addresses (stable)
+                a = ctypes.addressof(p)
+                b = ctypes.addressof(pair)
+                if a > b:
+                    a, b = b, a
+                pair_key = (a, b)
+
                 for trap_id in p.trapezoid_indices:
                     trap = self.trapezoids.get(trap_id)
                     if not trap:
                         continue
-                    portal_groups[p.pair_index][z].append(trap)
+                    portal_groups[pair_key][z].append(trap)
 
-        # Step 2: only test across zplane groups
+        # Connect only within each pair bucket across zplanes
         for zplane_map in portal_groups.values():
             zplanes = list(zplane_map.keys())
             if len(zplanes) < 2:
-                continue  # only one side present
+                continue
 
-            # For each pair of zplanes (usually just 2)
             for i in range(len(zplanes)):
                 for j in range(i + 1, len(zplanes)):
                     zi, zj = zplanes[i], zplanes[j]
@@ -192,6 +205,7 @@ class NavMesh:
                             aj = AABB(tj)
                             if self.touching(ai, aj):
                                 self.create_portal(ai, aj, None)
+
                                 
     def get_position(self, t_id: int) -> Tuple[float, float]:
         t = self.trapezoids[t_id]
@@ -579,15 +593,23 @@ class AutoPathing:
         return (map_id,)  # Default: treat each unknown map_id as its own group
 
     def load_pathing_maps(self):
-        map_id = PyMap.PyMap().map_id.ToInt()
+        map_id = Map.GetMapID()
+        if not map_id:
+            yield
+            return
+
         group_key = self._get_group_key(map_id)
         yield
 
-        if group_key in self.pathing_map_cache:
+        # ---- IMPORTANT FIX ----
+        # Reuse only if the cached NavMesh was built for THIS exact map_id.
+        cached = self.pathing_map_cache.get(group_key)
+        if cached is not None and cached.map_id == map_id:
             yield
-            return  # Already loaded
+            return  # Already loaded for this map
 
-        pathing_maps = PyPathing.get_pathing_maps()
+        # Otherwise rebuild (even if group_key matches) to avoid stale trapezoid IDs
+        pathing_maps = Map.Pathing.GetPathingMaps()
         navmesh = NavMesh(pathing_maps, map_id)
         self.pathing_map_cache[group_key] = navmesh
         yield
@@ -598,10 +620,22 @@ class AutoPathing:
             navmesh = NavMesh(pathing_maps, map_id)
             navmesh.save_to_file("NavMeshCache")"""
 
+
     def get_navmesh(self) -> Optional[NavMesh]:
-        map_id = PyMap.PyMap().map_id.ToInt()
+        map_id = Map.GetMapID()
+        if not map_id:
+            return None
+
         group_key = self._get_group_key(map_id)
-        return self.pathing_map_cache.get(group_key, None)
+        nav = self.pathing_map_cache.get(group_key)
+
+        # ---- IMPORTANT FIX ----
+        # Never return a NavMesh for a different map_id.
+        if nav is None or nav.map_id != map_id:
+            return None
+
+        return nav
+
 
     def get_path(self, 
                  start: Tuple[float, float, float], 
@@ -612,23 +646,25 @@ class AutoPathing:
                  smooth_by_chaikin: bool = False,
                  chaikin_iterations: int = 1):
         from . import Routines
-        
-        def _prepend_start(path2d: list[tuple[float, float]], sx: float, sy: float, tol: float = 250.0):
+
+        def _prepend_start(path2d, sx, sy):
             if not path2d:
-                path2d.insert(0, (sx, sy))
-                return path2d
+                return [(sx, sy)]
 
             dx = path2d[0][0] - sx
             dy = path2d[0][1] - sy
+            d2 = dx*dx + dy*dy
 
-            # prepend start only if the first point is farther than 250 units
-            if dx * dx + dy * dy > tol * tol:
-                path2d.insert(0, (sx, sy))
+            # Only prepend if it is REALLY far (path clearly doesn't start at player)
+            if d2 > 750*750:
+                return [(sx, sy)] + path2d
 
             return path2d
 
-
-        map_id = PyMap.PyMap().map_id.ToInt()
+        map_id = Map.GetMapID()
+        if not map_id:
+            yield
+            return []
         group_key = self._get_group_key(map_id)
 
         # --- Try fast planner first ---
@@ -660,13 +696,14 @@ class AutoPathing:
             yield
 
         # --- Fallback to A* ---
-        navmesh = self.pathing_map_cache.get(group_key)
+        navmesh = self.get_navmesh()
         if not navmesh:
             yield from self.load_pathing_maps()
-            navmesh = self.pathing_map_cache.get(group_key)
+            navmesh = self.get_navmesh()
             if not navmesh:
                 yield
                 return []
+
 
         yield
         astar = AStar(navmesh)
@@ -697,16 +734,16 @@ class AutoPathing:
                     step_dist: float = 200.0,
                     smooth_by_chaikin: bool = False,
                     chaikin_iterations: int = 1):
-        import PyPlayer
-        import PyAgent
+        from .Agent import Agent
+        from .Player import Player
 
-        _player = PyPlayer.PyPlayer()
-        if not _player.agent:
+        _player = Player.GetAgent()
+        if not _player:
             yield
             return []
 
-        pos = (_player.agent.x, _player.agent.y)
-        zplane = PyAgent.PyAgent(_player.agent.id).zplane
+        pos = (_player.pos.x, _player.pos.y)
+        zplane = _player.pos.zplane
         start = (pos[0], pos[1], zplane)
         goal = (x, y, zplane)
 

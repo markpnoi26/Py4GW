@@ -1,4 +1,4 @@
-from Py4GWCoreLib import Botting, Routines, GLOBAL_CACHE, ModelID, Range, Utils, ConsoleLog
+from Py4GWCoreLib import Botting, Routines, GLOBAL_CACHE, ModelID, Agent, Player, ConsoleLog
 import Py4GW
 import os
 BOT_NAME = "Norn title farm by Wick Divinus"
@@ -85,14 +85,8 @@ def bot_routine(bot: Botting) -> None:
     bot.Templates.Routines.PrepareForFarm(map_id_to_travel=OLAFSTEAD)
     
     bot.Party.SetHardMode(True)
-    auto_path_list = [
-        (204, -562),
-        (95, 460),
-        (-514, 1267),
-        (-1116, 2066),
-        (-2252, 831)
-    ]
-    bot.Move.FollowAutoPath(auto_path_list)
+    auto_path_list = [(-328.0, 1240.0), (-1500.0, 1250.0)]
+    bot.Move.FollowPath(auto_path_list)
     bot.Wait.ForMapLoad(target_map_id=553)
     bot.States.AddHeader("Start Combat")
     bot.Multibox.UseAllConsumables()
@@ -299,14 +293,13 @@ def _upkeep_multibox_consumables(bot: "Botting"):
             yield from bot.Wait._coro_for_time(250)
             
 def _on_party_wipe(bot: "Botting"):
-    while GLOBAL_CACHE.Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
+    while Agent.IsDead(Player.GetAgentID()):
         yield from bot.Wait._coro_for_time(1000)
         if not Routines.Checks.Map.MapValid():
             # Map invalid → release FSM and exit
             bot.config.FSM.resume()
             return
 
-    GLOBAL_CACHE.Map
     # Player revived on same map → jump to recovery step
     bot.States.JumpToStepName("[H]Start Combat_3")
     bot.config.FSM.resume()
@@ -322,7 +315,7 @@ bot.SetMainRoutine(bot_routine)
 
 def main():
     bot.Update()
-    bot.UI.draw_window()
+    bot.UI.draw_window(icon_path="Reforged_Icon.png")
 
 if __name__ == "__main__":
     main()

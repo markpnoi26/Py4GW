@@ -199,7 +199,7 @@ class ConsumablesHelper:
             if not Routines.Checks.Map.MapValid():
                 yield from Routines.Yield.wait(1000)
                 continue
-            if GLOBAL_CACHE.Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
+            if Agent.IsDead(Player.GetAgentID()):
                 yield from Routines.Yield.wait(1000)
                 continue
 
@@ -207,10 +207,14 @@ class ConsumablesHelper:
 
             if s.get("Cupcake", False):
                 yield from Routines.Yield.Upkeepers.Upkeep_BirthdayCupcake()
+            if s.get("CandyApple", False):
+                yield from Routines.Yield.Upkeepers.Upkeep_CandyApple()    
             if s.get("Alcohol", False):
                 yield from Routines.Yield.Upkeepers.Upkeep_Alcohol(target_alc_level=1 , disable_drunk_effects=True)
             if s.get("Morale", False):
                 yield from Routines.Yield.Upkeepers.Upkeep_Morale(110)
+            if s.get("WarSupplies", False):
+                yield from Routines.Yield.Upkeepers.Upkeep_WarSupplies()
             if s.get("CitySpeed", False):
                 yield from Routines.Yield.Upkeepers.Upkeep_City_Speed()
 
@@ -588,10 +592,10 @@ if not os.path.exists(OUTPOST_PATH_DIR):
     os.makedirs(OUTPOST_PATH_DIR)
 
 def get_map_name():
-    return GLOBAL_CACHE.Map.GetMapName()
+    return Map.GetMapName()
 
 def get_map_id():
-    return GLOBAL_CACHE.Map.GetMapID()
+    return Map.GetMapID()
 
 def reset_state():
     state["active"] = False
@@ -678,13 +682,13 @@ def render_path_ui():
 
             reset_state()
 
-    x, y = GLOBAL_CACHE.Player.GetXY()
+    x, y = Player.GetXY()
     PyImGui.text(f"Player Pos: ({int(x)}, {int(y)})")
     if PyImGui.button("Copy position"):
         PyImGui.set_clipboard_text(f"({int(x)}, {int(y)}),")
 
     # Facing vector from heading
-    heading = GLOBAL_CACHE.Agent.GetRotationAngle(Player.GetAgentID())
+    heading = Agent.GetRotationAngle(Player.GetAgentID())
     facing_vec = (math.cos(heading), math.sin(heading))
 
     # Projected point 1000 units forward
@@ -702,7 +706,7 @@ def log_path():
     if not state["active"]:
         return
 
-    x, y = GLOBAL_CACHE.Player.GetXY()
+    x, y = Player.GetXY()
     current_map_id = get_map_id()
 
     if (x, y) == (0, 0):
@@ -748,7 +752,7 @@ def log_path():
         ConsoleLog("Logger", f"Started new segment in: {state['current_segment_name']}", Console.MessageType.Info)
         return
 
-    threshold = 1000 if state["mode"] == "outpost" else 2000
+    threshold = 100  # record more frequent points (denser sampling for better path fidelity)
     if (x, y) != (0, 0):
         if state["last_pos"] is None or Utils.Distance((x, y), state["last_pos"]) >= threshold:
             state["prev_last_pos"] = state.get("last_pos")
@@ -806,14 +810,14 @@ def main():
 
         if PyImGui.begin("Pathing Test", PyImGui.WindowFlags.AlwaysAutoResize):
 
-            player_pos = GLOBAL_CACHE.Player.GetXY()
-            player_z = GLOBAL_CACHE.Agent.GetZPlane(GLOBAL_CACHE.Player.GetAgentID())
-            map_id = PyMap.PyMap().map_id.ToInt()
+            player_pos = Player.GetXY()
+            player_z = Agent.GetZPlane(Player.GetAgentID())
+            map_id = Map.GetMapID()
             x = PyImGui.input_int("Target X", x)
             y = PyImGui.input_int("Target Y", y)
 
             if PyImGui.button("Capture Start Position"):
-                player_pos = GLOBAL_CACHE.Player.GetXY()
+                player_pos = Player.GetXY()
                 x = int(player_pos[0])
                 y = int(player_pos[1])
                 print(f"Captured start position: ({x}, {y})")
@@ -830,7 +834,7 @@ def main():
                 path_requested = True
                 def search_path_coroutine():
                     global result_path, path_requested, elapsed_time
-                    zplane = GLOBAL_CACHE.Agent.GetZPlane(GLOBAL_CACHE.Player.GetAgentID())
+                    zplane = Agent.GetZPlane(Player.GetAgentID())
                     result_path = yield from pathing_object.get_path(
                         (player_pos[0], player_pos[1], zplane),
                         (x, y, zplane),

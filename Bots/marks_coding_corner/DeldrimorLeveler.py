@@ -17,9 +17,9 @@ def AddHenchies():
 
 def ReturnToOutpost():
     yield from Routines.Yield.wait(4000)
-    is_map_ready = GLOBAL_CACHE.Map.IsMapReady()
+    is_map_ready = Map.IsMapReady()
     is_party_loaded = GLOBAL_CACHE.Party.IsPartyLoaded()
-    is_explorable = GLOBAL_CACHE.Map.IsExplorable()
+    is_explorable = Map.IsExplorable()
     is_party_defeated = GLOBAL_CACHE.Party.IsPartyDefeated()
 
     if is_map_ready and is_party_loaded and is_explorable and is_party_defeated:
@@ -33,10 +33,10 @@ def wait_until_item_looted(item_name: str, timeout_ms: int):
     timeout = ThrottledTimer(timeout_ms)
 
     def search_item_id_by_name(item_name: str) -> int | None:
-        item_array = GLOBAL_CACHE.AgentArray.GetItemArray()
-        item_array = AgentArray.Filter.ByDistance(item_array, GLOBAL_CACHE.Player.GetXY(), Range.Spirit.value)
+        item_array = AgentArray.GetItemArray()
+        item_array = AgentArray.Filter.ByDistance(item_array, Player.GetXY(), Range.Spirit.value)
         for item_id in item_array:
-            name = GLOBAL_CACHE.Agent.GetName(item_id)
+            name = Agent.GetNameByID(item_id)
             # print(f"item {name}")
 
             # Clean both strings to remove non-printable characters (like NULL bytes) and whitespace
@@ -59,14 +59,14 @@ def wait_until_item_looted(item_name: str, timeout_ms: int):
             continue
 
         # LOOT
-        pos = GLOBAL_CACHE.Agent.GetXY(item_id)
+        pos = Agent.GetXY(item_id)
         follow_success = yield from Routines.Yield.Movement.FollowPath([pos], timeout=6000)
         if not follow_success:
             print("Failed to follow path to loot item, next attempt.")
             yield from Routines.Yield.wait(1000)
             continue
 
-        GLOBAL_CACHE.Player.Interact(item_id, call_target=False)
+        Player.Interact(item_id, call_target=False)
         yield from Routines.Yield.wait(100)
 
         # ENSURE LOOT IS LOOTED

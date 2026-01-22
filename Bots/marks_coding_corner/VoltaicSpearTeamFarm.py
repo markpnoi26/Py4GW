@@ -15,6 +15,7 @@ from Py4GWCoreLib import Routines
 from Py4GWCoreLib import SharedCommandType
 from Py4GWCoreLib import ThrottledTimer
 from Py4GWCoreLib import LootConfig
+from Py4GWCoreLib import Map, Agent, Player
 
 from Py4GWCoreLib import ChatChannel
 from Py4GWCoreLib.Builds.ShadowTheftDaggerSpammer import AssassinShadowTheftDaggerSpammer
@@ -26,7 +27,7 @@ BOT_NAME = "Voltaic Spear Farm [BETA]"
 TEXTURE = os.path.join(
     Py4GW.Console.get_projects_path(), "Bots", "marks_coding_corner", "textures", "voltaic_spear.png"
 )
-OUTPOST_TO_TRAVEL = GLOBAL_CACHE.Map.GetMapIDByName('Umbral Grotto')
+OUTPOST_TO_TRAVEL = Map.GetMapIDByName('Umbral Grotto')
 VERDANT_CASCADES_MAP_ID = 566
 SALVERS_EXILE_MAP_ID = 577
 JUSTICIAR_THOMMIS_ROOM_MAP_ID = 620
@@ -91,16 +92,16 @@ at_final_chest = False
 
 
 def _on_party_wipe(bot: "Botting"):
-    while GLOBAL_CACHE.Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
-        yield from bot.helpers.Wait._for_time(1000)
+    while Agent.IsDead(Player.GetAgentID()):
+        yield from bot.Wait._coro_for_time(1000)
         if not Routines.Checks.Map.MapValid():
             # Map invalid → release FSM and exit
             bot.config.FSM.resume()
             return
 
     ConsoleLog("Res Check", "We ressed retrying!")
-    yield from bot.helpers.Wait._for_time(3000)
-    player_x, player_y = GLOBAL_CACHE.Player.GetXY()
+    yield from bot.Wait._coro_for_time(3000)
+    player_x, player_y = Player.GetXY()
     shrine_2_x, shrine_2_y = (-18673, -7701)
 
     # Compute distances
@@ -108,9 +109,9 @@ def _on_party_wipe(bot: "Botting"):
 
     bot.config.FSM.pause()
     # Check if within earshot
-    if GLOBAL_CACHE.Map.GetMapID() == JUSTICIAR_THOMMIS_ROOM_MAP_ID:
+    if Map.GetMapID() == JUSTICIAR_THOMMIS_ROOM_MAP_ID:
         if GLOBAL_CACHE.Party.IsPartyDefeated():
-            yield from bot.helpers.Wait._for_time(10000)
+            yield from bot.Wait._coro_for_time(10000)
             bot.config.FSM.jump_to_state_by_name("[H]Exit To Farm_3")
             bot.config.FSM.resume()
             return
@@ -123,7 +124,7 @@ def _on_party_wipe(bot: "Botting"):
             bot.config.FSM.jump_to_state_by_name("[H]Justiciar Tommis pt1_6")
     else:
         bot.Multibox.ResignParty()
-        yield from bot.helpers.Wait._for_time(10000)  # Allow the widget to take the party back to town
+        yield from bot.Wait._coro_for_time(10000)  # Allow the widget to take the party back to town
         bot.config.FSM.jump_to_state_by_name("[H]Exit To Farm_3")
     bot.config.FSM.resume()
     return
@@ -152,12 +153,12 @@ def open_final_chest():
 
     yield from Routines.Yield.Agents.TargetNearestGadgetXY(-17461.00, -14258.00, 100)
     at_final_chest = True
-    target = GLOBAL_CACHE.Player.GetTargetID()
+    target = Player.GetTargetID()
     if target == 0:
         ConsoleLog("Messaging", "No target to interact with.")
         return
 
-    sender_email = GLOBAL_CACHE.Player.GetAccountEmail()
+    sender_email = Player.GetAccountEmail()
     accounts = GLOBAL_CACHE.ShMem.GetAllAccountData()
     while command_type_routine_in_message_is_active(sender_email, SharedCommandType.InteractWithTarget):
         yield from Routines.Yield.wait(250)
@@ -195,10 +196,10 @@ def open_final_chest():
 
 def clear_item_id_blacklist_and_attempt_open_chest_again():
     LootConfig().ClearItemIDBlacklist()
-    sender_email = GLOBAL_CACHE.Player.GetAccountEmail()
+    sender_email = Player.GetAccountEmail()
     accounts = GLOBAL_CACHE.ShMem.GetAllAccountData()
     yield from Routines.Yield.Agents.InteractWithGadgetXY(-17461.00, -14258.00, 100)
-    target = GLOBAL_CACHE.Player.GetTargetID()
+    target = Player.GetTargetID()
 
     if target == 0:
         ConsoleLog("Messaging", "No target to interact with.")
@@ -231,7 +232,7 @@ def clear_item_id_blacklist_and_attempt_open_chest_again():
 
 
 def team_loot_items():
-    sender_email = GLOBAL_CACHE.Player.GetAccountEmail()
+    sender_email = Player.GetAccountEmail()
     accounts = GLOBAL_CACHE.ShMem.GetAllAccountData()
     for account in accounts:
         if not account.AccountEmail or sender_email == account.AccountEmail:
@@ -261,8 +262,8 @@ def handle_on_danger_flagging(bot: Botting):
             yield from Routines.Yield.wait(1000)
             continue
 
-        player_x, player_y = GLOBAL_CACHE.Player.GetXY()
-        map_id = GLOBAL_CACHE.Map.GetMapID()
+        player_x, player_y = Player.GetXY()
+        map_id = Map.GetMapID()
 
         # === Determine nearest enemy for facing angle ===
         enemy_agent_ids = Routines.Agents.GetFilteredEnemyArray(player_x, player_y, Range.Earshot.value * 1.75)
@@ -270,8 +271,10 @@ def handle_on_danger_flagging(bot: Botting):
         nearest_enemy_dist_sq = float("inf")
 
         for agent_id in enemy_agent_ids:
-            agent = GLOBAL_CACHE.Agent.GetAgentByID(agent_id)
-            dx, dy = agent.x - player_x, agent.y - player_y
+            agent = Agent.GetAgentByID(agent_id)
+            if agent is None or not agent.is_living_type:
+                continue    
+            dx, dy = agent.pos.x - player_x, agent.pos.y - player_y
             dist_sq = dx * dx + dy * dy
             if dist_sq < nearest_enemy_dist_sq:
                 nearest_enemy_dist_sq = dist_sq
@@ -279,7 +282,7 @@ def handle_on_danger_flagging(bot: Botting):
 
         facing_angle = 0.0
         if nearest_enemy:
-            facing_angle = math.atan2(nearest_enemy.y - player_y, nearest_enemy.x - player_x)
+            facing_angle = math.atan2(nearest_enemy.pos.y - player_y, nearest_enemy.pos.x - player_x)
         angle_rad = facing_angle - math.pi / 2
 
         trigger_flagging = (
@@ -340,7 +343,7 @@ def handle_on_danger_flagging(bot: Botting):
 def disable_hero_ai_leader_combat(bot: Botting):
     bot.OverrideBuild(AssassinShadowTheftDaggerSpammer())
     if isinstance(bot.config.build_handler, AssassinShadowTheftDaggerSpammer):
-        acount_email = GLOBAL_CACHE.Player.GetAccountEmail()
+        acount_email = Player.GetAccountEmail()
         hero_ai_options = GLOBAL_CACHE.ShMem.GetHeroAIOptions(acount_email)
 
         if hero_ai_options is None:
@@ -369,9 +372,9 @@ def setup_hero_ai_and_custom_builds(bot: Botting):
         yield
         return
 
-    primary_profession, _ = GLOBAL_CACHE.Agent.GetProfessionNames(GLOBAL_CACHE.Player.GetAgentID())
+    primary_profession, _ = Agent.GetProfessionNames(Player.GetAgentID())
     if primary_profession != "Assassin" and use_assassin_skillbar:
-        GLOBAL_CACHE.Player.SendFakeChat(
+        Player.SendFakeChat(
             ChatChannel.CHANNEL_WARNING, "You are not allowed to use this skill bar! Not Assassin main"
         )
         yield

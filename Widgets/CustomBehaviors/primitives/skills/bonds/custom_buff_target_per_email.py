@@ -2,9 +2,9 @@ from dataclasses import dataclass
 import threading
 
 from typing import Callable, override
-from Py4GWCoreLib import GLOBAL_CACHE, ThrottledTimer
+from Py4GWCoreLib import GLOBAL_CACHE, ThrottledTimer, Agent
 from Py4GWCoreLib.Routines import Routines
-from Py4GWCoreLib.enums import Profession
+from Py4GWCoreLib import Player
 from Widgets.CustomBehaviors.primitives.helpers import custom_behavior_helpers
 from Widgets.CustomBehaviors.primitives.skills.bonds.custom_buff_target import CustomBuffTarget
 from Widgets.CustomBehaviors.primitives.skills.custom_skill import CustomSkill
@@ -89,8 +89,8 @@ class BuffConfigurationPerPlayerEmail(CustomBuffTarget):
 
     def __should_apply_effect_on_agent_id(self, agent_id: int) -> bool:
         # Align effect-check logic with profession-based configuration
-        if agent_id == GLOBAL_CACHE.Player.GetAgentID():
-            has_buff: bool = Routines.Checks.Effects.HasBuff(GLOBAL_CACHE.Player.GetAgentID(), self.custom_skill.skill_id)
+        if agent_id == Player.GetAgentID():
+            has_buff: bool = Routines.Checks.Effects.HasBuff(Player.GetAgentID(), self.custom_skill.skill_id)
             return not has_buff
         else:
             has_effect: bool = custom_behavior_helpers.Resources.is_ally_under_specific_effect(agent_id, self.custom_skill.skill_id)
@@ -125,7 +125,7 @@ class BuffConfigurationPerPlayerEmail(CustomBuffTarget):
             prof_prefix: str | None = None
             if agent_id:
                 try:
-                    primary, secondary = GLOBAL_CACHE.Agent.GetProfessionShortNames(agent_id)
+                    primary, secondary = Agent.GetProfessionShortNames(agent_id)
                     primary = (primary or "").strip()
                     secondary = (secondary or "").strip()
                     if secondary and secondary.lower() not in ("none", "n/a", "0"):
@@ -167,7 +167,9 @@ class BuffConfigurationPerPlayerEmail(CustomBuffTarget):
                 if agent_id <= 0:
                     continue
                 try:
-                    primary_prof_id: int = int(GLOBAL_CACHE.Agent.GetProfessionIDs(agent_id)[0])
+                    primary_prof_id: int | None = Agent.GetProfessionIDs(agent_id)[0]
+                    if primary_prof_id is None:
+                        continue
                     email_to_prof_id[email] = primary_prof_id
                 except Exception:
                     continue

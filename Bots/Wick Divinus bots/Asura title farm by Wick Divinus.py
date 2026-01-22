@@ -1,4 +1,4 @@
-from Py4GWCoreLib import Botting, Routines, GLOBAL_CACHE, ModelID, Range, Utils, ConsoleLog
+from Py4GWCoreLib import Botting, Routines, GLOBAL_CACHE, ModelID, Agent, Player, ConsoleLog
 import Py4GW
 import os
 
@@ -10,19 +10,23 @@ bot = Botting(BOT_NAME,
               upkeep_honeycomb_active=True)
 
 def Routine(bot: Botting) -> None:
+    PrepareForCombat(bot)
+    Fight(bot)
+
+def PrepareForCombat(bot: Botting) -> None:
+    bot.States.AddHeader("Enable Combat Mode")
+    bot.Templates.Multibox_Aggressive()
+    bot.Templates.Routines.PrepareForFarm(map_id_to_travel=RATASUM)
+    bot.Party.SetHardMode(True)
+
+def Fight(bot: Botting) -> None:
     #events
     condition = lambda: OnPartyWipe(bot)
     bot.Events.OnPartyWipeCallback(condition)
     #end events
-    
-    bot.States.AddHeader(BOT_NAME)
-    bot.Templates.Multibox_Aggressive()
-    bot.Templates.Routines.PrepareForFarm(map_id_to_travel=RATASUM)
-    
-    bot.Party.SetHardMode(True)
+    bot.States.AddHeader("Start Combat")
     bot.Move.XY(-6062, -2688,"Exit Outpost")
     bot.Wait.ForMapLoad(target_map_name="Magus Stones")
-    bot.States.AddHeader("Start Combat")
     bot.Multibox.UseAllConsumables()
     bot.States.AddManagedCoroutine("Upkeep Multibox Consumables", lambda: _upkeep_multibox_consumables(bot))
     bot.Move.XY(14778.00, 13178.00)
@@ -143,12 +147,11 @@ def Routine(bot: Botting) -> None:
     bot.Move.XY(-11414, 4055, "Leftovers Krait")
     bot.Move.XY(-6907, 8461, "Moving")
     bot.Move.XY(-8689, 11227, "Leftovers Krait and Rider")
-    
     bot.Multibox.ResignParty()
     bot.Wait.UntilOnOutpost()
-    
     bot.Wait.ForTime(5000)
-    bot.States.JumpToStepName("[H]Asura by Wick Divinus_1")
+    bot.States.JumpToStepName("[H]Enable Combat Mode_1")
+
 
 def _upkeep_multibox_consumables(bot: "Botting"):
     while True:
@@ -188,7 +191,7 @@ def _upkeep_multibox_consumables(bot: "Botting"):
             yield from bot.Wait._coro_for_time(250)
             
 def _on_party_wipe(bot: "Botting"):
-    while GLOBAL_CACHE.Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
+    while Agent.IsDead(Player.GetAgentID()):
         yield from bot.Wait._coro_for_time(1000)
         if not Routines.Checks.Map.MapValid():
             # Map invalid → release FSM and exit
@@ -196,7 +199,7 @@ def _on_party_wipe(bot: "Botting"):
             return
 
     # Player revived on same map → jump to recovery step
-    bot.States.JumpToStepName("[H]Start Combat_3")
+    bot.States.JumpToStepName("[H]Start Combat_2")
     bot.config.FSM.resume()
     
 def OnPartyWipe(bot: "Botting"):
@@ -207,10 +210,9 @@ def OnPartyWipe(bot: "Botting"):
 
 bot.SetMainRoutine(Routine)
 
-
 def main():
     bot.Update()
-    bot.UI.draw_window()
+    bot.UI.draw_window(icon_path="Reforged_Icon.png")
 
 if __name__ == "__main__":
     main()

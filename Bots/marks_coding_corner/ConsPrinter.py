@@ -8,8 +8,10 @@ from Py4GWCoreLib import ConsoleLog
 from Py4GWCoreLib import Item
 from Py4GWCoreLib import ItemArray
 from Py4GWCoreLib import ModelID
-from Py4GWCoreLib import Py4GW
-from Py4GWCoreLib import PyImGui
+from Py4GWCoreLib import Map
+from Py4GWCoreLib import Player
+import Py4GW
+import PyImGui
 from Py4GWCoreLib import Routines
 from Py4GWCoreLib import Trading
 
@@ -134,7 +136,7 @@ def withdraw_cons_materials_from_inventory():
     max_possible = min(max_possible, possible_gold)
 
     # Step 3: Check skill points availability
-    current_skill_points, _ = GLOBAL_CACHE.Player.GetSkillPointData()
+    current_skill_points, _ = Player.GetSkillPointData()
     possible_skillpoints = current_skill_points // 3
     max_possible = min(max_possible, possible_skillpoints)
 
@@ -517,7 +519,7 @@ def analyze_conset_material_balance():
 
 
 def cons_printer_bot(bot: Botting) -> None:
-    map_id = GLOBAL_CACHE.Map.GetMapID()
+    map_id = Map.GetMapID()
     if map_id != 640:
         bot.Map.Travel(target_map_name=EMBARK_BEACH)
         bot.Wait.ForMapLoad(target_map_name=EMBARK_BEACH)

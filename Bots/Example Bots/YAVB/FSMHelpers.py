@@ -1,10 +1,11 @@
 from Py4GWCoreLib.Builds import ShadowFormAssassinVaettir, ShadowFormMesmerVaettir
 from .LogConsole import LogConsole
-from Py4GWCoreLib import GLOBAL_CACHE
+from Py4GWCoreLib import GLOBAL_CACHE, Agent
 from Py4GWCoreLib import Routines
 from Py4GWCoreLib.enums import ModelID, TitleID, SharedCommandType, Range
 from Py4GWCoreLib import ItemArray
 from Py4GWCoreLib import Utils
+from Py4GWCoreLib import Map, Player
 from typing import List, Tuple
 from Py4GWCoreLib import LootConfig
 from Py4GWCoreLib import Profession
@@ -109,7 +110,7 @@ class _FSM_Helpers:
             yield from Routines.Yield.wait(100)
             
         def _send_message(self,message:SharedCommandType, params: tuple = ()):
-            account_email = GLOBAL_CACHE.Player.GetAccountEmail()
+            account_email = Player.GetAccountEmail()
             GLOBAL_CACHE.ShMem.SendMessage(account_email,account_email, message, params)
             
         def _get_materials_to_sell(self):
@@ -189,7 +190,7 @@ class _FSM_Helpers:
                 return True
         
         def _movement_eval_exit_on_map_loading(self):
-            if GLOBAL_CACHE.Map.IsMapLoading():
+            if Map.IsMapLoading():
                 return True
             
             if not self._parent.script_running:
@@ -198,13 +199,13 @@ class _FSM_Helpers:
             return False
         
         def _movement_eval_exit_on_map_loading_or_death(self):
-            if GLOBAL_CACHE.Map.IsMapLoading():
+            if Map.IsMapLoading():
                 return True
             
             if not self._parent.script_running:
                 return True
             
-            if GLOBAL_CACHE.Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
+            if Agent.IsDead(Player.GetAgentID()):
                 return True
             
             return False
@@ -225,7 +226,7 @@ class _FSM_Helpers:
             
         def TravelToLongeyesLedge(self):
             self._parent.SetCurrentStep("Travel to Longeyes Ledge",0.02)
-            current_map = GLOBAL_CACHE.Map.GetMapID()
+            current_map = Map.GetMapID()
             if current_map != self._parent.LONGEYES_LEDGE:
                 self._parent.AdvanceProgress(0.5)
                 self._parent.LogMessage("Map Check", "Traveling to Longeyes Ledge", LogConsole.LogSeverity.INFO)
@@ -381,7 +382,7 @@ class _FSM_Helpers:
             if not success_movement:
                 if not self._parent.script_running:
                     return
-                if not GLOBAL_CACHE.Map.IsMapLoading():
+                if not Map.IsMapLoading():
                     self._parent.LogMessage("Failed to leave outpost", "TIMEOUT", LogConsole.LogSeverity.ERROR)
                     yield from self._stop_execution()
                 
@@ -428,17 +429,17 @@ class _FSM_Helpers:
                 if not self._parent.script_running:
                     return
                 
-                if GLOBAL_CACHE.Map.IsMapLoading():
+                if Map.IsMapLoading():
                     return
  
-                if GLOBAL_CACHE.Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
+                if Agent.IsDead(Player.GetAgentID()):
                     self._parent.run_to_jaga_stats.EndCurrentRun(failed=True, deaths=1)
                     self._parent.running_to_jaga = False
                     self._parent.LogMessage("Death", "Player is dead, restarting.", LogConsole.LogSeverity.WARNING)
                     yield from Routines.Yield.wait(1000)
                     yield from self._reset_execution()
             
-                if GLOBAL_CACHE.Map.GetMapID() != self._parent.JAGA_MORAINE:
+                if Map.GetMapID() != self._parent.JAGA_MORAINE:
                     self._parent.running_to_jaga = False
                     self._parent.run_to_jaga_stats.EndCurrentRun(failed=True, stuck_timeouts=1)
                     self._parent.LogMessage("Failed to traverse Bjora Marches", "TIMEOUT", LogConsole.LogSeverity.ERROR)
@@ -518,16 +519,17 @@ class _FSM_Helpers:
                 if not self._parent.script_running:
                     return
                 
-                if GLOBAL_CACHE.Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
+                if Agent.IsDead(Player.GetAgentID()):
                     self._parent.LogMessage("Death", "Player is dead, restarting.", LogConsole.LogSeverity.WARNING)
                     yield from self._reset_execution()
                 
         def WaitforLeftAggroBall(self):
+            from Py4GWCoreLib.Agent import Agent
             self._parent.LogMessage("Waiting for Left Aggro Ball", "Waiting for enemies to ball up.", LogConsole.LogSeverity.INFO)
             self._parent.SetCurrentStep("Wait for Left Aggro Ball", 0.05)
             self._parent.in_waiting_routine = True
 
-            player_id = GLOBAL_CACHE.Player.GetAgentID()
+            player_id = Player.GetAgentID()
             start_time = 0
 
             while start_time < 150:  # 150 * 100ms = 15 seconds
@@ -537,7 +539,7 @@ class _FSM_Helpers:
                 self._parent.AdvanceProgress(start_time / 150.0)
 
                 # Get current player position
-                player_pos = GLOBAL_CACHE.Player.GetXY()
+                player_pos = Player.GetXY()
                 px, py = player_pos[0], player_pos[1]
 
                 # Get nearby enemies
@@ -546,10 +548,10 @@ class _FSM_Helpers:
                 # Check if ALL enemies are within Adjacent range
                 all_in_adjacent = True
                 for enemy_id in enemies_ids:
-                    enemy = GLOBAL_CACHE.Agent.GetAgent(enemy_id)
+                    enemy = Agent.GetAgentByID(enemy_id)
                     if enemy is None:
                         continue
-                    ex, ey = enemy.x, enemy.y
+                    ex, ey = enemy.pos.x, enemy.pos.y
                     dx, dy = ex - px, ey - py
                     dist_sq = dx * dx + dy * dy
                     if dist_sq > (Range.Adjacent.value ** 2):
@@ -562,7 +564,7 @@ class _FSM_Helpers:
             self._parent.in_waiting_routine = False
 
             # Death check
-            if GLOBAL_CACHE.Agent.IsDead(player_id):
+            if Agent.IsDead(player_id):
                 self._parent.LogMessage("Death", "Player is dead, restarting.", LogConsole.LogSeverity.WARNING)
                 yield from self._reset_execution()
 
@@ -582,16 +584,17 @@ class _FSM_Helpers:
                 if not self._parent.script_running:
                     return
                 
-                if GLOBAL_CACHE.Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
+                if Agent.IsDead(Player.GetAgentID()):
                     self._parent.LogMessage("Death", "Player is dead, restarting.", LogConsole.LogSeverity.WARNING)
                     yield from self._reset_execution()
                     
         def WaitforRightAggroBall(self):
+            from Py4GWCoreLib.Agent import Agent
             self._parent.LogMessage("Waiting for Right Aggro Ball", "Waiting for enemies to ball up.", LogConsole.LogSeverity.INFO)
             self._parent.SetCurrentStep("Wait for Right Aggro Ball", 0.05)
             self._parent.in_waiting_routine = True
 
-            player_id = GLOBAL_CACHE.Player.GetAgentID()
+            player_id = Player.GetAgentID()
             elapsed = 0
 
             while elapsed < 150:  # 150 * 100ms = 15s max
@@ -600,7 +603,7 @@ class _FSM_Helpers:
                 self._parent.AdvanceProgress(elapsed / 150.0)
 
                 # Get player position
-                px, py = GLOBAL_CACHE.Player.GetXY()
+                px, py = Player.GetXY()
 
                 # Get enemies within earshot
                 enemies_ids = Routines.Agents.GetFilteredEnemyArray(px, py, Range.Earshot.value)
@@ -608,10 +611,10 @@ class _FSM_Helpers:
                 # Check if all enemies are within Adjacent range
                 all_in_adjacent = True
                 for enemy_id in enemies_ids:
-                    enemy = GLOBAL_CACHE.Agent.GetAgent(enemy_id)
+                    enemy = Agent.GetAgentByID(enemy_id)
                     if enemy is None:
                         continue
-                    dx, dy = enemy.x - px, enemy.y - py
+                    dx, dy = enemy.pos.x - px, enemy.pos.y - py
                     if dx * dx + dy * dy > (Range.Adjacent.value ** 2):
                         all_in_adjacent = False
                         break
@@ -622,7 +625,7 @@ class _FSM_Helpers:
             self._parent.in_waiting_routine = False
 
             # Death check
-            if GLOBAL_CACHE.Agent.IsDead(player_id):
+            if Agent.IsDead(player_id):
                 self._parent.LogMessage("Death", "Player is dead, restarting.", LogConsole.LogSeverity.WARNING)
                 yield from self._reset_execution()
 
@@ -643,7 +646,7 @@ class _FSM_Helpers:
                 if not self._parent.script_running:
                     return
 
-                if GLOBAL_CACHE.Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
+                if Agent.IsDead(Player.GetAgentID()):
                     self._parent.LogMessage("Death", "Player is dead, restarting.", LogConsole.LogSeverity.WARNING)
                 yield from self._reset_execution()
                 
@@ -654,7 +657,7 @@ class _FSM_Helpers:
                     build = self._parent.build  # now Pylance sees it as non-Optional
                     build.SetKillingRoutine(self._parent.in_killing_routine)
 
-            player_pos = GLOBAL_CACHE.Player.GetXY()
+            player_pos = Player.GetXY()
             enemy_array = Routines.Agents.GetFilteredEnemyArray(player_pos[0],player_pos[1],Range.Spellcast.value)
             
             start_time = Utils.GetBaseTimestamp()
@@ -671,7 +674,7 @@ class _FSM_Helpers:
                 if not self._parent.script_running:
                     return
                     
-                if GLOBAL_CACHE.Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
+                if Agent.IsDead(Player.GetAgentID()):
                     self._parent.LogMessage("Death", "Player is dead, restarting.", LogConsole.LogSeverity.WARNING)
                     yield from self._reset_execution()   
                 yield from Routines.Yield.wait(1000)
@@ -692,7 +695,7 @@ class _FSM_Helpers:
                 GLOBAL_CACHE.Coroutines.remove(build.ProcessSkillCasting())
             if self._parent.HandleStuckJagaMoraine() in GLOBAL_CACHE.Coroutines:
                 GLOBAL_CACHE.Coroutines.remove(self._parent.HandleStuckJagaMoraine())
-            self._parent.farming_stats.EndCurrentRun(vaettirs_killed=GLOBAL_CACHE.Map.GetFoesKilled())
+            self._parent.farming_stats.EndCurrentRun(vaettirs_killed=Map.GetFoesKilled())
             self._parent.LogDetailedMessage("Skill Casting Coroutine", "Removed from Coroutines.", LogConsole.LogSeverity.INFO)
   
  
@@ -731,13 +734,13 @@ class _FSM_Helpers:
                 if not self._parent.script_running:
                     return
                 
-                if GLOBAL_CACHE.Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
+                if Agent.IsDead(Player.GetAgentID()):
                     self._parent.LogMessage("Death", "Player is dead, restarting.", LogConsole.LogSeverity.WARNING)
                     yield from Routines.Yield.wait(1000)
                     yield from self._reset_execution()
             
-                if not GLOBAL_CACHE.Map.IsMapLoading():
-                    if GLOBAL_CACHE.Map.GetMapID() != self._parent.BJORA_MARCHES:
+                if not Map.IsMapLoading():
+                    if Map.GetMapID() != self._parent.BJORA_MARCHES:
                         self._parent.LogMessage("Failed to traverse Bjora Marches", "TIMEOUT", LogConsole.LogSeverity.ERROR)
                         yield from Routines.Yield.wait(1000)
                         yield from self._reset_execution()  
@@ -761,12 +764,12 @@ class _FSM_Helpers:
                 if not self._parent.script_running:
                     return
                 
-                if GLOBAL_CACHE.Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID()):
+                if Agent.IsDead(Player.GetAgentID()):
                     self._parent.LogMessage("Death", "Player is dead, restarting.", LogConsole.LogSeverity.WARNING)
                     yield from self._reset_execution()
             
-                if not GLOBAL_CACHE.Map.IsMapLoading():
-                    if GLOBAL_CACHE.Map.GetMapID() != self._parent.JAGA_MORAINE:
+                if not Map.IsMapLoading():
+                    if Map.GetMapID() != self._parent.JAGA_MORAINE:
                         self._parent.LogMessage("Failed to return to Jaga Moraine", "TIMEOUT", LogConsole.LogSeverity.ERROR)
                         yield from Routines.Yield.wait(1000)
                         yield from self._reset_execution()

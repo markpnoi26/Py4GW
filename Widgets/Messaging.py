@@ -3,9 +3,10 @@ from datetime import datetime
 from datetime import timezone
 
 import Py4GW
+import PyUIManager
 
 from HeroAI.cache_data import CacheData
-from Py4GWCoreLib import GLOBAL_CACHE
+from Py4GWCoreLib import GLOBAL_CACHE, Player, Map, Agent
 from Py4GWCoreLib import ActionQueueManager
 from Py4GWCoreLib import CombatPrepSkillsType
 from Py4GWCoreLib import Console
@@ -18,13 +19,16 @@ from Py4GWCoreLib import Utils
 from Py4GWCoreLib import SharedCommandType
 from Py4GWCoreLib import UIManager
 from Py4GWCoreLib import AutoPathing
+from Py4GWCoreLib.GlobalCache.SharedMemory import AccountData
 from Py4GWCoreLib.Py4GWcorelib import Keystroke
+from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GW_widget_manager import WidgetHandler
 
 cached_data = CacheData()
 
 
 MODULE_NAME = "Messaging"
+OPTIONAL = False
 
 SUMMON_SPIRITS_LUXON = "Summon_Spirits_luxon"
 SUMMON_SPIRITS_KURZICK = "Summon_Spirits_kurzick"
@@ -57,7 +61,7 @@ def configure():
 
 def DrawWindow():
     if PyImGui.begin(MODULE_NAME):
-        account_email = GLOBAL_CACHE.Player.GetAccountEmail()
+        account_email = Player.GetAccountEmail()
         PyImGui.text(f"Account Email: {account_email}")
         PyImGui.separator()
         PyImGui.text("Messages for you:")
@@ -255,7 +259,7 @@ def Resign(index, message):
     # ConsoleLog(MODULE_NAME, f"Processing Resign message: {message}", Console.MessageType.Info)
     GLOBAL_CACHE.ShMem.MarkMessageAsRunning(message.ReceiverEmail, index)
     for i in range(2):
-        GLOBAL_CACHE.Player.SendChatCommand("resign")
+        Player.SendChatCommand("resign")
         yield from Routines.Yield.wait(100)
     GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
     ConsoleLog(MODULE_NAME, "Resign message processed and finished.", Console.MessageType.Info, False)
@@ -274,7 +278,7 @@ def PixelStack(index, message):
     try:
         yield from DisableHeroAIOptions(message.ReceiverEmail)
         yield from Routines.Yield.wait(100)
-        GLOBAL_CACHE.Player.SendChatCommand("stuck")
+        Player.SendChatCommand("stuck")
         yield from Routines.Yield.wait(250)
         result = (yield from Routines.Yield.Movement.FollowPath(
             [(message.Params[0], message.Params[1])],
@@ -287,8 +291,8 @@ def PixelStack(index, message):
             ConsoleLog(MODULE_NAME, "PixelStack movement failed or timed out.", Console.MessageType.Warning, log=True)
 
             # --- Recovery sequence ---
-            start_x, start_y = GLOBAL_CACHE.Player.GetXY()
-            GLOBAL_CACHE.Player.SendChatCommand("stuck")
+            start_x, start_y = Player.GetXY()
+            Player.SendChatCommand("stuck")
             # Step 1: Always walk backwards
             ConsoleLog(MODULE_NAME, "Recovery: walking backwards.", Console.MessageType.Info)
             yield from Routines.Yield.Movement.WalkBackwards(1500)
@@ -296,7 +300,7 @@ def PixelStack(index, message):
             ConsoleLog(MODULE_NAME, "Recovery: strafing left.", Console.MessageType.Info)
             yield from Routines.Yield.Movement.StrafeLeft(1500)
             # Step 3: If no movement after strafing left, strafe right
-            left_x, left_y = GLOBAL_CACHE.Player.GetXY()
+            left_x, left_y = Player.GetXY()
             if Utils.Distance((start_x, start_y), (left_x, left_y)) < 50:
                 ConsoleLog(MODULE_NAME, "No movement detected, strafing right.", Console.MessageType.Info)
                 yield from Routines.Yield.Movement.StrafeRight(3500)  # we need to get away from that wall
@@ -326,11 +330,11 @@ def BruteForceUnstuck(index, message):
         yield from Routines.Yield.wait(100)
 
         # Initial stuck command
-        GLOBAL_CACHE.Player.SendChatCommand("stuck")
+        Player.SendChatCommand("stuck")
         yield from Routines.Yield.wait(250)
 
         # --- Recovery sequence attempts ---
-        start_x, start_y = GLOBAL_CACHE.Player.GetXY()
+        start_x, start_y = Player.GetXY()
 
         # --- define wiggle helpers ---
         def wiggle_back_left():
@@ -357,7 +361,7 @@ def BruteForceUnstuck(index, message):
             yield from attempt["action"]()
 
             # Check movement
-            cur_x, cur_y = GLOBAL_CACHE.Player.GetXY()
+            cur_x, cur_y = Player.GetXY()
             if Utils.Distance((start_x, start_y), (cur_x, cur_y)) > 50:
                 ConsoleLog(MODULE_NAME, f"Unstuck successful with {attempt['name']}.", Console.MessageType.Info)
                 break
@@ -390,7 +394,7 @@ def InteractWithTarget(index, message):
     try:
         yield from DisableHeroAIOptions(message.ReceiverEmail)
         yield from Routines.Yield.wait(100)
-        x, y = GLOBAL_CACHE.Agent.GetXY(target)
+        x, y = Agent.GetXY(target)
         yield from Routines.Yield.Movement.FollowPath([(x, y)])
         yield from Routines.Yield.wait(100)
         yield from Routines.Yield.Player.InteractAgent(target)
@@ -421,7 +425,7 @@ def TakeDialogWithTarget(index, message):
     try:
         yield from DisableHeroAIOptions(message.ReceiverEmail)
         yield from Routines.Yield.wait(100)
-        x, y = GLOBAL_CACHE.Agent.GetXY(target)
+        x, y = Agent.GetXY(target)
         yield from Routines.Yield.Movement.FollowPath([(x, y)])
         yield from Routines.Yield.wait(100)
         yield from Routines.Yield.Player.InteractAgent(target)
@@ -457,12 +461,12 @@ def SendDialogToTarget(index, message):
     try:
         yield from DisableHeroAIOptions(message.ReceiverEmail)
         yield from Routines.Yield.wait(100)
-        x, y = GLOBAL_CACHE.Agent.GetXY(target)
+        x, y = Agent.GetXY(target)
         yield from Routines.Yield.Movement.FollowPath([(x, y)])
         yield from Routines.Yield.wait(100)
         yield from Routines.Yield.Player.InteractAgent(target)
         yield from Routines.Yield.wait(500)
-        GLOBAL_CACHE.Player.SendDialog(dialog)
+        Player.SendDialog(dialog)
         yield from Routines.Yield.wait(500)
 
         ConsoleLog(MODULE_NAME, "SendDialogToTarget message processed and finished.", Console.MessageType.Info, False)
@@ -505,7 +509,7 @@ def GetBlessing(index, message):
     try:
         yield from DisableHeroAIOptions(message.ReceiverEmail)
         yield from Routines.Yield.wait(100)
-        x, y = GLOBAL_CACHE.Agent.GetXY(target)
+        x, y = Agent.GetXY(target)
         yield from Routines.Yield.Movement.FollowPath([(x, y)])
         yield from Routines.Yield.wait(100)
         yield from Routines.Yield.Player.InteractAgent(target)
@@ -600,20 +604,20 @@ def DonateToGuild(index, message):
         GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
         return
 
-    map_id = GLOBAL_CACHE.Map.GetMapID()
+    map_id = Map.GetMapID()
     TITLE_CAP = 10_000_000
     TOTAL_CUMULATIVE = 0
     if map_id == 77:  # House zu Heltzer
         faction = 0  # Kurzick
         npc_pos = (5408, 1494)
-        CURRENT_FACTION = GLOBAL_CACHE.Player.GetKurzickData()[0]
-        title = GLOBAL_CACHE.Player.GetTitle(TitleID.Kurzick)
+        CURRENT_FACTION = Player.GetKurzickData()[0]
+        title = Player.GetTitle(TitleID.Kurzick)
         TOTAL_CUMULATIVE = title.current_points if title else 0
     elif map_id == 193:  # Cavalon
         faction = 1  # Luxon
         npc_pos = (9074, -1124)
-        CURRENT_FACTION = GLOBAL_CACHE.Player.GetLuxonData()[0]
-        title = GLOBAL_CACHE.Player.GetTitle(TitleID.Luxon)
+        CURRENT_FACTION = Player.GetLuxonData()[0]
+        title = Player.GetTitle(TitleID.Luxon)
         TOTAL_CUMULATIVE = title.current_points if title else 0
     else:
         ConsoleLog(MODULE, "Not in a valid outpost for donation.", Console.MessageType.Warning)
@@ -621,8 +625,8 @@ def DonateToGuild(index, message):
         return
 
     # --- Move to NPC ---
-    px, py = GLOBAL_CACHE.Player.GetXY()
-    z = GLOBAL_CACHE.Agent.GetZPlane(GLOBAL_CACHE.Player.GetAgentID())
+    px, py = Player.GetXY()
+    z = Agent.GetZPlane(Player.GetAgentID())
     try:
         path3d = yield from AutoPathing().get_path(
             (px, py, z), (npc_pos[0], npc_pos[1], z), smooth_by_los=True, margin=100.0, step_dist=500.0
@@ -647,7 +651,7 @@ def DonateToGuild(index, message):
                 yield from Routines.Yield.wait(300)
                 if not UIManager.IsNPCDialogVisible():
                     break
-            GLOBAL_CACHE.Player.DepositFaction(faction)
+            Player.DepositFaction(faction)
             yield from Routines.Yield.wait(300)
     else:  # swap faction points for mats if title is maxed
         swapped = 0
@@ -666,6 +670,106 @@ def DonateToGuild(index, message):
 
     GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
 # endregion
+
+#region Open Chest
+def OpenChest(index, message):
+    start_time = time.time()
+    
+    cascade = int(message.Params[1]) == 1
+    chest_id = int(message.Params[0])
+    
+    email_owner = message.ReceiverEmail or Player.GetAccountEmail()
+    
+    GLOBAL_CACHE.ShMem.MarkMessageAsRunning(email_owner, index)
+    yield from SnapshotHeroAIOptions(email_owner)
+    
+    def unlock_chest():
+        has_lockpick = GLOBAL_CACHE.Inventory.GetModelCount(ModelID.Lockpick) > 0
+        
+        if not has_lockpick:
+            ConsoleLog(MODULE_NAME, "No lockpicks available, halting.", Console.MessageType.Warning)
+            return
+            
+        if not Agent.IsValid(chest_id):
+            return
+                
+        yield from DisableHeroAIOptions(email_owner)
+        yield from Routines.Yield.wait(100)
+        x, y = Agent.GetXY(chest_id)
+        ConsoleLog(MODULE_NAME, f"Moving to chest at ({x}, {y})", Console.MessageType.Info)
+        yield from Routines.Yield.Movement.FollowPath([(x, y)])
+        yield from Routines.Yield.wait(100)
+        
+        ConsoleLog(MODULE_NAME, f"Interacting with chest ID {chest_id}", Console.MessageType.Info)
+        yield from Routines.Yield.Player.InteractAgent(chest_id)
+        yield from Routines.Yield.wait(150)
+
+        ConsoleLog(MODULE_NAME, "Checking for locked chest window...", Console.MessageType.Info)
+        if UIManager.IsLockedChestWindowVisible():
+            while True:
+                if time.time() - start_time > 30:
+                    ConsoleLog(MODULE_NAME, "Timeout reached while opening chest, halting.", Console.MessageType.Warning)
+                    return
+            
+                Player.SendDialog(2)
+                yield from Routines.Yield.wait(1500)    
+            
+                if not UIManager.IsLockedChestWindowVisible():
+                    ConsoleLog(MODULE_NAME, "Chest successfully unlocked.", Console.MessageType.Info)
+                    return
+        else:
+            ConsoleLog(MODULE_NAME, "Chest is not locked or already opened.", Console.MessageType.Info)
+                
+    try:
+        yield from unlock_chest()  
+          
+    finally:
+        yield from RestoreHeroAISnapshot(email_owner)      
+        GLOBAL_CACHE.ShMem.MarkMessageAsFinished(email_owner, index)
+          
+        #Get Party Index and cascade to the next party index
+        if cascade:
+            ConsoleLog(MODULE_NAME, "Cascading OpenChest to next party member.", Console.MessageType.Info)
+            account_data = GLOBAL_CACHE.ShMem.GetAccountDataFromEmail(email_owner)     
+                   
+            if account_data is not None:
+                ConsoleLog(MODULE_NAME, f"Current account party position: {account_data.PartyPosition}", Console.MessageType.Info)
+                
+                party_id = account_data.PartyID
+                map_id = Map.GetMapID()
+                map_region = Map.GetRegion()[0]
+                map_district = Map.GetDistrict()
+                map_language = Map.GetLanguage()[0]
+
+                def on_same_map_and_party(account : AccountData) -> bool:                    
+                    return (account.PartyID == party_id and
+                            account.MapID == map_id and
+                            account.MapRegion == map_region and
+                            account.MapDistrict == map_district and
+                            account.MapLanguage == map_language)
+                
+                all_accounts = [account for account in GLOBAL_CACHE.ShMem.GetAllAccountData() if on_same_map_and_party(account) and account.PartyPosition > account_data.PartyPosition]
+                chest_pos = Agent.GetXY(chest_id)
+                                
+                sorted_by_party_index = sorted(
+                    [acc for acc in all_accounts if Utils.Distance((acc.PlayerPosX, acc.PlayerPosY), chest_pos) < 2500.0], 
+                key=lambda acc: acc.PartyPosition ) if all_accounts else []
+                
+                if sorted_by_party_index:
+                    next_account = sorted_by_party_index[0]
+                    ConsoleLog(MODULE_NAME, f"Cascading OpenChest to next party member: {next_account.CharacterName} ({next_account.AccountEmail})", Console.MessageType.Info)
+                    GLOBAL_CACHE.ShMem.SendMessage(
+                        sender_email=email_owner,
+                        receiver_email=next_account.AccountEmail,
+                        command=SharedCommandType.OpenChest,
+                        params=(chest_id, 1 if cascade else 0, 0, 0),
+                    )
+            else:
+                ConsoleLog(MODULE_NAME, f"Account data of {email_owner} not found for cascading.", Console.MessageType.Warning)
+                    
+        else:
+            ConsoleLog(MODULE_NAME, "OpenChest routine finished without cascading.", Console.MessageType.Info)
+    
 
 # region PickUpLoot
 def PickUpLoot(index, message):
@@ -721,11 +825,11 @@ def PickUpLoot(index, message):
                 ActionQueueManager().ResetAllQueues()
                 return
 
-            if not GLOBAL_CACHE.Agent.IsValid(item_id):
+            if not Agent.IsValid(item_id):
                 yield from Routines.Yield.wait(100)
                 continue
 
-            pos = GLOBAL_CACHE.Agent.GetXY(item_id)
+            pos = Agent.GetXY(item_id)
             follow_success = yield from Routines.Yield.Movement.FollowPath([pos], timeout=10000)
             if not follow_success:
                 LootConfig().AddItemIDToBlacklist(item_id)
@@ -1193,7 +1297,7 @@ def SwitchCharacter(index, message):
     extra = tuple(GLOBAL_CACHE.ShMem._c_wchar_array_to_str(arr) for arr in message.ExtraData)
     character_name = extra[0] if extra else ""
     
-    if character_name and character_name != GLOBAL_CACHE.Player.GetName():
+    if character_name and character_name != Player.GetName():
         yield from Routines.Yield.RerollCharacter.Reroll(character_name)  
     
     GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
@@ -1209,7 +1313,7 @@ def LoadSkillTemplate(index, message):
         GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
         return
     
-    if GLOBAL_CACHE.Map.IsOutpost():
+    if Map.IsOutpost():
         extra = tuple(GLOBAL_CACHE.ShMem._c_wchar_array_to_str(arr) for arr in message.ExtraData)
         template = extra[0] if extra else ""
             
@@ -1230,17 +1334,35 @@ def SkipCutscene(index, message):
         GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
         return
     
-    if GLOBAL_CACHE.Map.IsInCinematic():
-        GLOBAL_CACHE.Map.SkipCinematic()
+    if Map.IsInCinematic():
+        Map.SkipCinematic()
         yield from Routines.Yield.wait(100)
     
     GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
     ConsoleLog(MODULE_NAME, "SkipCutscene message processed and finished.", Console.MessageType.Info, False)
 # endregion
 
+#region TravelToGuildHall
+def TravelToGuildHall(index, message):
+    GLOBAL_CACHE.ShMem.MarkMessageAsRunning(message.ReceiverEmail, index)
+    sender_data = GLOBAL_CACHE.ShMem.GetAccountDataFromEmail(message.SenderEmail)
+    if sender_data is None:
+        GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
+        return
+    
+    if Map.IsGuildHall():
+        GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
+        return
+    
+    Map.TravelGH()
+    yield from Routines.Yield.wait(100)
+    GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
+    ConsoleLog(MODULE_NAME, "TravelToGuildHall message processed and finished.", Console.MessageType.Info, False)
+# endregion
+
 # region ProcessMessages
 def ProcessMessages():
-    account_email = GLOBAL_CACHE.Player.GetAccountEmail()
+    account_email = Player.GetAccountEmail()
     index, message = GLOBAL_CACHE.ShMem.GetNextMessage(account_email)
 
     if index == -1 or message is None:
@@ -1264,6 +1386,7 @@ def ProcessMessages():
         case SharedCommandType.GetBlessing:
             pass
         case SharedCommandType.OpenChest:
+            GLOBAL_CACHE.Coroutines.append(OpenChest(index, message))
             pass
         case SharedCommandType.PickUpLoot:
             GLOBAL_CACHE.Coroutines.append(PickUpLoot(index, message))
@@ -1323,6 +1446,8 @@ def ProcessMessages():
             GLOBAL_CACHE.Coroutines.append(LoadSkillTemplate(index, message))
         case SharedCommandType.SkipCutscene:
             GLOBAL_CACHE.Coroutines.append(SkipCutscene(index, message))
+        case SharedCommandType.TravelToGuildHall:
+            GLOBAL_CACHE.Coroutines.append(TravelToGuildHall(index, message))
         case SharedCommandType.UseSkillCombatPrep:
             GLOBAL_CACHE.Coroutines.append(UseSkillCombatPrep(index, message))
         case SharedCommandType.LootEx:

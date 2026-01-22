@@ -52,176 +52,189 @@ class ChatChannel(IntEnum):
 
     # Non-standard channels, but useful.
     CHANNEL_COMMAND = 16
-    CHANNEL_UNKNOW = -1
+    CHANNEL_UNKNOWN = -1
 
 
 # endregion
 
 # region UIManager
 class UIMessage(IntEnum):
-    kNone = 0x0
-    kResize = 0x8
-    kInitFrame = 0x9
-    kDestroyFrame = 0xB
-    kKeyDown = 0x20  # wparam = UIPacket::kKeyAction*
-    kSetFocus = 0x21
-    kKeyUp = 0x22  # wparam = UIPacket::kKeyAction*
-    kMouseClick = 0x24  # wparam = UIPacket::kMouseClick*
-    kMouseCoordsClick = 0x26
-    kMouseUp = 0x28  # wparam = UIPacket::kMouseClick*
-    kMouseClick2 = 0x31  # wparam = UIPacket::kMouseAction*
-    kMouseAction = 0x32  # wparam = UIPacket::kMouseAction*
-    kSetLayout = 0x37
-    kMeasureContent = 0x38
-    kRefreshContent = 0x3A
-    kUpdateAgentEffects = 0x10000009
-    kRerenderAgentModel = 0x10000007  # wparam = uint32_t agent_id
-    kAgentSpeechBubble = 0x10000017
-    kShowAgentNameTag = 0x10000019  # wparam = AgentNameTagInfo*
-    kHideAgentNameTag = 0x1000001A
-    kSetAgentNameTagAttribs = 0x1000001B  # wparam = AgentNameTagInfo*
-    kChangeTarget = 0x10000020  # wparam = ChangeTargetUIMsg*
-    kAgentStartCasting = 0x10000027  # wparam = { uint32_t agent_id, uint32_t skill_id }
-    kShowMapEntryMessage = 0x10000029  # wparam = { wchar_t* title, wchar_t* subtitle }
-    kSetCurrentPlayerData = 0x1000002A
-    kPostProcessingEffect = 0x10000034  # wparam = UIPacket::kPostProcessingEffect
-    kHeroAgentAdded = 0x10000038
-    kHeroDataAdded = 0x10000039
-    kShowXunlaiChest = 0x10000040
-    kMinionCountUpdated = 0x10000046
-    kMoraleChange = 0x10000047  # wparam = {agent id, morale percent }
-    kLoginStateChanged = 0x10000050  # wparam = {bool is_logged_in, bool unk }
-    kEffectAdd = 0x10000055  # wparam = {agent_id, GW::Effect*}
-    kEffectRenew = 0x10000056  # wparam = GW::Effect*
-    kEffectRemove = 0x10000057  # wparam = effect id
-    kSkillActivated = 0x1000005B  # wparam = { uint32_t agent_id , uint32_t skill_id }
-    kUpdateSkillbar = 0x1000005E  # wparam = { uint32_t agent_id , ... }
-    kUpdateSkillsAvailable = 0x1000005F  # wparam = { uint32_t agent_id , ... }
-    kPlayerTitleChanged = 0x10000064  # wparam = title id
-    kTitleProgressUpdated = 0x10000065  # wparam = title_id
-    kExperienceGained = 0x10000066  # wparam = experience amount
-    kWriteToChatLog = 0x1000007E  # wparam = UIPacket::kWriteToChatLog*
-    kWriteToChatLogWithSender = 0x1000007F  # wparam = UIPacket::kWriteToChatLogWithSender*
-    kAllyOrGuildMessage = 0x10000080 
-    kPlayerChatMessage = 0x10000081  # wparam = UIPacket::kPlayerChatMessage*
-    kFloatingWindowMoved = 0x10000083  # wparam = { uint32_t window_id, int32_t pos_x, int32_t pos_y }
-    kFriendUpdated = 0x10000089  # wparam = { GW::Friend*, ... }
-    kMapLoaded = 0x1000008A
-    kOpenWhisper = 0x10000090  # wparam = wchar* name
-    kLogout = 0x1000009B  # wparam = { bool unknown, bool character_select }
-    kCompassDraw = 0x1000009C  # wparam = UIPacket::kCompassDraw*
-    kOnScreenMessage = 0x100000A0  # wparam = wchar_** encoded_string
-    kDialogBody = 0x100000A4  # wparam = DialogBodyInfo*
-    kDialogButton = 0x100000A1  # wparam = DialogButtonInfo*
-    kTargetNPCPartyMember = 0x100000B1  # wparam = { uint32_t unk, uint32_t agent_id }
-    kTargetPlayerPartyMember = 0x100000B2  # wparam = { uint32_t unk, uint32_t player_number }
-    kInitMerchantList = 0x100000B3  # wparam = { uint32_t merchant_tab_type, uint32_t unk, uint32_t merchant_agent_id, uint32_t is_pending }
-    kVendorItems = 0x100000B7  # wparam = UIPacket::kVendorItemsResponse*
-    kVendorTransComplete = 0x100000B9
-    kQuotedItemPrice = 0x100000BB  # wparam = { uint32_t item_id, uint32_t price }
-    kStartMapLoad = 0x100000C0  # wparam = { uint32_t map_id, ... }
-    kWorldMapUpdated = 0x100000C5
-    kGuildMemberUpdated = 0x100000D8  # wparam = { GuildPlayer::name_ptr }
-    kShowHint = 0x100000DF  # wparam = { uint32_t icon_type, wchar_t* message_enc }
-    kWeaponSetSwapComplete = 0x100000E7
-    kWeaponSetSwapCancel = 0x100000E8
-    kWeaponSetUpdated = 0x100000E9  # wparam = UIPacket::kWeaponSetUpdated* 
-    kUpdateGoldCharacter = 0x100000EA  # wparam = { uint32_t unk, uint32_t gold_character }
-    kUpdateGoldStorage = 0x100000EB  # wparam = { uint32_t unk, uint32_t gold_storage }
-    kInventorySlotUpdated = 0x100000EC  # Triggered when an item is moved into a slot
-    kEquipmentSlotUpdated = 0x100000ED  # Triggered when an item is moved into a slot
-    kInventorySlotCleared = 0x100000EF  # Triggered when an item is removed from a slot
-    kEquipmentSlotCleared = 0x100000F0  # Triggered when an item is removed from a slot
-    kPvPWindowContent = 0x100000F8
-    kPreStartSalvage = 0x10000100  # { uint32_t item_id, uint32_t kit_id }
-    kTomeSkillSelection = 0x10000101  # wparam = UIPacket::kTomeSkillSelection*
-    kTradePlayerUpdated = 0x10000103  # wparam = GW::TraderPlayer*
-    kItemUpdated = 0x10000104  # wparam = UIPacket::kItemUpdated*
-    kMapChange = 0x1000010F  # wparam = map id
-    kCalledTargetChange = 0x10000113  # wparam = { player_number, target_id }
-    kErrorMessage = 0x10000117  # wparam = { int error_index, wchar_t* error_encoded_string }
-    kPartyHardModeChanged = 0x10000118
-    kPartyAddHenchman = 0x10000119  # wparam = { uint32_t henchman_id, ... }
-    kPartyRemoveHenchman = 0x1000011A  # wparam = { uint32_t henchman_id, ... }
-    kPartyAddHero = 0x1000011c  # wparam = { uint32_t hero_id, ... }
-    kPartyRemoveHero = 0x1000011D  # wparam = { uint32_t hero_id, ... }
-    kPartyAddPlayer = 0x10000122
-    kPartyRemovePlayer = 0x10000124
-    kDisableEnterMissionBtn = 0x10000128
-    kShowCancelEnterMissionBtn = 0x1000012B
-    kPartyDefeated = 0x1000012D
-    kPartySearchInviteReceived = 0x10000135
-    kPartySearchInviteSent = 0x10000137
-    kPartyShowConfirmDialog = 0x10000138
-    kPreferenceEnumChanged = 0x1000013E
-    kPreferenceFlagChanged = 0x1000013F
-    kPreferenceValueChanged = 0x10000140
-    kUIPositionChanged = 0x10000141  # wparam = { uint32_t pref_id, ... }
-    kPreBuildLoginScene = 0x10000142
-    kQuestDetailsChanged = 0x1000014A  # wparam = uint32_t quest_id
-    kQuestRemoved = 0x1000014B  # wparam = uint32_t quest_id
-    kClientActiveQuestChanged = 0x1000014C  # wparam = uint32_t quest_id
-    kServerActiveQuestChanged = 0x1000014E
-    kUnknownQuestRelated = 0x1000014F  # wparam = uint32_t quest_id
-    kDungeonCompleted = 0x10000151
-    kMissionCompleted = 0x10000152
-    kVanquishComplete = 0x10000154
-    kObjectiveAdd = 0x10000155  # wparam = uint32_t objective_id
-    kObjectiveComplete = 0x10000156  # wparam = uint32_t objective_id
-    kObjectiveUpdated = 0x10000157  # wparam = uint32_t objective_id
-    kTradeSessionStart = 0x10000160
-    kTradeSessionUpdated = 0x10000166
-    kTriggerLogoutPrompt = 0x1000016C
-    kToggleOptionsWindow = 0x1000016D
-    kCheckUIState = 0x10000170
-    kRedrawItem = 0x10000172  # wparam = uint32_t item_id
-    kCloseSettings = 0x10000174
-    kChangeSettingsTab = 0x10000175  # wparam = uint32_t tab_id
-    kGuildHall = 0x10000177
-    kLeaveGuildHall = 0x10000179
-    kTravel = 0x1000017A
-    kOpenWikiUrl = 0x1000017B  # wparam = wchar_t* url
-    kAppendMessageToChat = 0x10000189  # wparam = wchar_t* message
-    kHideHeroPanel = 0x10000197
-    kShowHeroPanel = 0x10000198
-    kGetInventoryAgentId = 0x1000019C
-    kEquipItem = 0x1000019D  # wparam = uint32_t item_id
-    kMoveItem = 0x1000019E  # wparam = UIPacket::kMoveItem*
-    kInitiateTrade = 0x100001A0
-    kInventoryAgentChanged = 0x100001B0
-    kOpenTemplate= 0x100001B9
-    
-    kSendEnterMission = 0x30000002  # wparam = uint32_t arena_id
-    kSendLoadSkillbar = 0x30000003  # wparam = UIPacket::kSendLoadSkillbar*
-    kSendPingWeaponSet = 0x30000004  # wparam = UIPacket::kSendPingWeaponSet*
-    kSendMoveItem = 0x30000005  # wparam = UIPacket::kSendMoveItem*
-    kSendMerchantRequestQuote = 0x30000006  # wparam = UIPacket::kSendMerchantRequestQuote*
-    kSendMerchantTransactItem = 0x30000007  # wparam = UIPacket::kSendMerchantTransactItem*
-    kSendUseItem = 0x30000008  # wparam = UIPacket::kSendUseItem*
-    kSendSetActiveQuest = 0x30000009  # wparam = uint32_t quest_id
-    kSendAbandonQuest = 0x3000000A  # wparam = uint32_t quest_id
-    kSendChangeTarget = 0x3000000B  # wparam = UIPacket::kSendChangeTarget*
-    kSendMoveToWorldPoint = 0x3000000C  # wparam = GW::GamePos*  # Clicking on the ground in the 3D world to move there
-    kSendInteractNPC = 0x3000000D  # wparam = UIPacket::kInteractAgent*
-    kSendInteractGadget = 0x3000000E  # wparam = UIPacket::kInteractAgent*
-    kSendInteractItem = 0x3000000F  # wparam = UIPacket::kInteractAgent*
-    kSendInteractEnemy = 0x30000010  # wparam = UIPacket::kInteractAgent*
-    kSendInteractPlayer = 0x30000011  # wparam = uint32_t agent_id  # NB: calling target is a separate packet
-    kSendCallTarget = 0x30000013  # wparam = { uint32_t call_type, uint32_t agent_id }  # Also used to broadcast morale, death penalty, "I'm following X", etc
-    kSendAgentDialog = 0x30000014  # wparam = uint32_t agent_id  # e.g., switching tabs on a merchant window, choosing a response to an NPC dialog
-    kSendGadgetDialog = 0x30000015  # wparam = uint32_t agent_id  # e.g., opening locked chest with a key
-    kSendDialog = 0x30000016  # wparam = dialog_id  # Internal use
+    kNone                       = 0x0
+    kResize                     = 0x8
+    kInitFrame                  = 0x9
+    kDestroyFrame               = 0xB
+    kKeyDown                    = 0x20  # wparam = UIPacket::kKeyAction*
+    kSetFocus                   = 0x21
+    kKeyUp                      = 0x22  # wparam = UIPacket::kKeyAction*
+    kMouseClick                 = 0x24  # wparam = UIPacket::kMouseClick*
+    kMouseCoordsClick           = 0x26
+    kMouseUp                    = 0x28  # wparam = UIPacket::kMouseClick*
+    kMouseClick2                = 0x31  # wparam = UIPacket::kMouseAction*
+    kMouseAction                = 0x32  # wparam = UIPacket::kMouseAction*
+    kSetLayout                  = 0x37
+    kMeasureContent             = 0x38
+    kRefreshContent             = 0x3B
 
-    kStartWhisper = 0x30000017  # wparam = UIPacket::kStartWhisper*
-    kGetSenderColor = 0x30000018  # wparam = UIPacket::kGetColor*  # Get chat sender color depending on the channel, output object passed by reference
-    kGetMessageColor = 0x30000019  # wparam = UIPacket::kGetColor*  # Get chat message color depending on the channel, output object passed by reference
-    kSendChatMessage = 0x3000001B  # wparam = UIPacket::kSendChatMessage*
-    kLogChatMessage = 0x3000001D  # wparam = UIPacket::kLogChatMessage*  # Triggered when a message wants to be added to the persistent chat log
-    kRecvWhisper = 0x3000001E  # wparam = UIPacket::kRecvWhisper*
-    kPrintChatMessage = 0x3000001F  # wparam = UIPacket::kPrintChatMessage*  # Triggered when a message wants to be added to the in-game chat window
-    kSendWorldAction = 0x30000020  # wparam = UIPacket::kSendWorldAction*
-    kSetRendererValue = 0x30000021 #| 0x21, // wparam = UIPacket::kSetRendererValue
-    kIdentifyItem = 0x30000022 #| 0x22  // wparam = UIPacket::kIdentifyItem
+    kRerenderAgentModel         = 0x10000007 # 0x10000007, wparam = uint32_t agent_id
+    kAgentDestroy               = 0x10000008 # 0x10000008, wparam = uint32_t agent_id
+    kUpdateAgentEffects         = 0x10000009
+    kAgentSpeechBubble          = 0x10000017
+    kShowAgentNameTag           = 0x10000019 # 0x10000019, wparam = AgentNameTagInfo*
+    kHideAgentNameTag           = 0x1000001A 
+    kSetAgentNameTagAttribs     = 0x1000001B #  0x1000001B, wparam = AgentNameTagInfo*
+    kSetAgentProfession         = 0x1000001D #  0x1000001D, wparam = UIPacket::kSetAgentProfession*
+    kChangeTarget               = 0x10000020 # 0x10000020, wparam = UIPacket::kChangeTarget*
+    kAgentSkillActivatedInstantly = 0x10000025 # kAgentSkillPacket
+    kAgentSkillCancelled        = 0x10000026 # kAgentSkillPacket
+    kAgentStartCasting          = 0x10000027  # wparam = { uint32_t agent_id, uint32_t skill_id }
+    kShowMapEntryMessage        = 0x10000029 # 0x10000029, wparam = { wchar_t* title, wchar_t* subtitle }
+    kSetCurrentPlayerData       = 0x1000002A # 0x1000002A, fired after setting the worldcontext player name
+    kPostProcessingEffect       = 0x10000034 # 0x10000034, Triggered when drunk. wparam = UIPacket::kPostProcessingEffect
+    kHeroAgentAdded             = 0x10000038 # 0x10000038, hero assigned to agent/inventory/ai mode
+    kHeroDataAdded              = 0x10000039 # 0x10000039, hero info received from server (name, level etc)
+    kShowXunlaiChest            = 0x10000040 # 0x10000040
+    kMinionCountUpdated         = 0x10000046 # 0x10000046
+    kMoraleChange               = 0x10000047 # 0x10000047, wparam = {agent id, morale percent }
+    #= 0x10000048 unknown enter challenge related message
+    kLoginStateChanged          = 0x10000050 # 0x10000050, wparam = {bool is_logged_in, bool unk }
+    kEffectAdd                  = 0x10000055 # 0x10000055, wparam = {agent_id, GW::Effect*}
+    kEffectRenew                = 0x10000056 # 0x10000056, wparam = GW::Effect*
+    kEffectRemove               = 0x10000057 # 0x10000057, wparam = effect id
+    kSkillActivated             = 0x1000005b # 0x1000005b, wparam ={ uint32_t agent_id , uint32_t skill_id }
+    kUpdateSkillbar             = 0x1000005E # 0x1000005E, wparam ={ uint32_t agent_id , ... }
+    kUpdateSkillsAvailable      = 0x1000005f # 0x1000005f, Triggered on a skill unlock, profession change or map load
+    kPlayerTitleChanged         = 0x10000064 # 0x10000064, wparam = { uint32_t player_id, uint32_t title_id }
+    kTitleProgressUpdated       = 0x10000065 # 0x10000065, wparam = title_id
+    kExperienceGained           = 0x10000066 # 0x10000066, wparam = experience amount
+    kWriteToChatLog             = 0x1000007F # 0x1000007F, wparam = UIPacket::kWriteToChatLog*
+    kWriteToChatLogWithSender   = 0x10000080 # 0x10000080, wparam = UIPacket::kWriteToChatLogWithSender*
+    kAllyOrGuildMessage         = 0x10000081 # 0x10000081, wparam = UIPacket::kAllyOrGuildMessage*
+    kPlayerChatMessage          = 0x10000082 # 0x10000082, wparam = UIPacket::kPlayerChatMessage*
+    kFloatingWindowMoved        = 0x10000084 # 0x10000084, wparam = frame_id
+    kFriendUpdated              = 0x1000008B # 0x1000008B, wparam = { GW::Friend*, ... }
+    kMapLoaded                  = 0x1000008C # 0x1000008C
+    kOpenWhisper                = 0x10000092 # 0x10000092, wparam = wchar* name
+    kLoadMapContext             = 0x10000098 # 0x10000098, wparam = UIPacket::kLoadMapContext
+    kLogout                     = 0x1000009D # 0x1000009D, wparam = { bool unknown, bool character_select }
+    kCompassDraw                = 0x1000009E # 0x1000009E, wparam = UIPacket::kCompassDraw*
+    kOnScreenMessage            = 0x100000A2 # 0x100000A2, wparam = wchar_** encoded_string
+    kDialogButton               = 0x100000A3 # 0x100000A3, wparam = DialogButtonInfo*
+    kDialogBody                 = 0x100000A6 # 0x100000A6, wparam = DialogBodyInfo*
+    kTargetNPCPartyMember       = 0x100000B3 # 0x100000B3, wparam = { uint32_t unk, uint32_t agent_id }
+    kTargetPlayerPartyMember    = 0x100000B4 # 0x100000B4, wparam = { uint32_t unk, uint32_t player_number }
+    kVendorWindow               = 0x100000B5 # 0x100000B5, wparam = UIPacket::kVendorWindow
+    kVendorItems                = 0x100000B9 # 0x100000B9, wparam = UIPacket::kVendorItems
+    kVendorTransComplete        = 0x100000BB # 0x100000BB, wparam = *TransactionType
+    kVendorQuote                = 0x100000BD # 0x100000BD, wparam = UIPacket::kVendorQuote
+    kStartMapLoad               = 0x100000C2 # 0x100000C2, wparam = { uint32_t map_id, ...}
+    kWorldMapUpdated            = 0x100000C7 # 0x100000C7, Triggered when an area in the world map has been discovered/updated
+    kGuildMemberUpdated         = 0x100000DA # 0x100000DA, wparam = { GuildPlayer::name_ptr }
+    kShowHint                   = 0x100000E1 # 0x100000E1, wparam = { uint32_t icon_type, wchar_t* message_enc }
+    kWeaponSetSwapComplete      = 0x100000E9 # 0x100000E9, wparam = UIPacket::kWeaponSwap*
+    kWeaponSetSwapCancel        = 0x100000EA # 0x100000EA
+    kWeaponSetUpdated           = 0x100000EB # 0x100000EB
+    kUpdateGoldCharacter        = 0x100000EC # 0x100000EC, wparam = { uint32_t unk, uint32_t gold_character }
+    kUpdateGoldStorage          = 0x100000ED # 0x100000ED, wparam = { uint32_t unk, uint32_t gold_storage }
+    kInventorySlotUpdated       = 0x100000EE # 0x100000EE, Triggered when an item is moved into a slot
+    kEquipmentSlotUpdated       = 0x100000EF # 0x100000EF, Triggered when an item is moved into a slot
+    kInventorySlotCleared       = 0x100000F1 # 0x100000F1, Triggered when an item has been removed from a slot
+    kEquipmentSlotCleared       = 0x100000F2 # 0x100000F2, Triggered when an item has been removed from a slot
+    kPvPWindowContent           = 0x100000FA # 0x100000FA
+    kPreStartSalvage            = 0x10000102 # 0x10000102, { uint32_t item_id, uint32_t kit_id }
+    kTomeSkillSelection         = 0x10000103 # 0x10000103, wparam = UIPacket::kTomeSkillSelection*
+    kTradePlayerUpdated         = 0x10000105 # 0x10000105, wparam = GW::TraderPlayer*
+    kItemUpdated                = 0x10000106 # 0x10000106, wparam = UIPacket::kItemUpdated*
+    kMapChange                  = 0x10000111 # 0x10000111, wparam = map id
+    kCalledTargetChange         = 0x10000115 # 0x10000115, wparam = { player_number, target_id }
+    kErrorMessage               = 0x10000119 # 0x10000119, wparam = { int error_index, wchar_t* error_encoded_string }
+    kPartyHardModeChanged       = 0x1000011A # 0x1000011A, wparam = { int is_hard_mode }
+    kPartyAddHenchman           = 0x1000011B # 0x1000011B
+    kPartyRemoveHenchman        = 0x1000011C # 0x1000011C
+    kPartyAddHero               = 0x1000011E # 0x1000011E
+    kPartyRemoveHero            = 0x1000011F # 0x1000011F
+    kPartyAddPlayer             = 0x10000124 # 0x10000124
+    kPartyRemovePlayer          = 0x10000126 # 0x10000126
+    kDisableEnterMissionBtn     = 0x1000012A # 0x1000012A, wparam = boolean (1 = disabled, 0 = enabled)
+    kShowCancelEnterMissionBtn  = 0x1000012D # 0x1000012D
+    kPartyDefeated              = 0x1000012F # 0x1000012F
+    #kEnterChallengeRelated      = 0x10000130
+    kPartySearchInviteReceived  = 0x10000137 # 0x10000137, wparam = UIPacket::kPartySearchInviteReceived*
+    kPartySearchInviteSent      = 0x10000139 # 0x10000139
+    kPartyShowConfirmDialog     = 0x1000013A # 0x1000013A, wparam = UIPacket::kPartyShowConfirmDialog
+    kPreferenceEnumChanged      = 0x10000140 # 0x10000140, wparam = UiPacket::kPreferenceEnumChanged
+    kPreferenceFlagChanged      = 0x10000141 # 0x10000141, wparam = UiPacket::kPreferenceFlagChanged
+    kPreferenceValueChanged     = 0x10000142 # 0x10000142, wparam = UiPacket::kPreferenceValueChanged
+    kUIPositionChanged          = 0x10000143 # 0x10000143, wparam = UIPacket::kUIPositionChanged
+    kPreBuildLoginScene         = 0x10000144 # 0x10000144, Called with no args right before login scene is drawn
+    kQuestAdded                 = 0x1000014E # 0x1000014E, wparam = { quest_id, ... }
+    kQuestDetailsChanged        = 0x1000014F # 0x1000014F, wparam = { quest_id, ... }
+    kQuestRemoved               = 0x10000150 # 0x10000150, wparam = { quest_id, ... }
+    kClientActiveQuestChanged   = 0x10000151 # 0x10000151, wparam = { quest_id, ... }. Triggered when the game requests the current quest to change
+    kServerActiveQuestChanged   = 0x10000153 # 0x10000153, wparam = UIPacket::kServerActiveQuestChanged*. Triggered when the server requests the current quest to change
+    kUnknownQuestRelated        = 0x10000154 # 0x10000154
+    kDungeonComplete            = 0x10000156 # 0x10000156
+    kMissionComplete            = 0x10000157 # 0x10000157
+    kVanquishComplete           = 0x10000159 # 0x10000159
+    kObjectiveAdd               = 0x1000015A # 0x1000015A, wparam = UIPacket::kObjectiveAdd*
+    kObjectiveComplete          = 0x1000015B # 0x1000015B, wparam = UIPacket::kObjectiveComplete*
+    kObjectiveUpdated           = 0x1000015C # 0x1000015C, wparam = UIPacket::kObjectiveUpdated*
+    kTradeSessionStart          = 0x10000165 # 0x10000165, wparam = { trade_state, player_number }
+    kTradeSessionUpdated        = 0x1000016b # 0x1000016b, no args
+    kTriggerLogoutPrompt        = 0x1000016E # 0x1000016E, no args
+    kToggleOptionsWindow        = 0x1000016F # 0x1000016F, no args
+    kRedrawItem                 = 0x10000174 # 0x10000174, wparam = uint32_t item_id
+    kCheckUIState               = 0x10000175 # 0x10000175
+    kCloseSettings              = 0x10000176 # 0x10000176
+    kChangeSettingsTab          = 0x10000177 # 0x10000177, wparam = uint32_t is_interface_tab
+    kDestroyUIPositionOverlay   = 0x10000179 # 0x10000179
+    kEnableUIPositionOverlay    = 0x1000017a # 0x1000017a, wparam = uint32_t enable
+
+    kGuildHall                  = 0x1000017C # 0x1000017C, wparam = gh key (uint32_t[4])
+    kLeaveGuildHall             = 0x1000017E # 0x1000017E
+    kTravel                     = 0x1000017F # 0x1000017F
+    kOpenWikiUrl                = 0x10000180 # 0x10000180, wparam = char* url
+    kAppendMessageToChat        = 0x1000018E # 0x1000018E, wparam = wchar_t* message
+    kHideHeroPanel              = 0x1000019C # 0x1000019C, wparam = hero_id
+    kShowHeroPanel              = 0x1000019D # 0x1000019D, wparam = hero_id
+    kGetInventoryAgentId        = 0x100001A1 # 0x100001A1, wparam = 0, lparam = uint32_t* agent_id_out. Used to fetch which agent is selected
+    kEquipItem                  = 0x100001A2 # 0x100001A2, wparam = { item_id, agent_id }
+    kMoveItem                   = 0x100001A3 # 0x100001A3, wparam = { item_id, to_bag, to_slot, bool prompt }
+    kInitiateTrade              = 0x100001A5 # 0x100001A5
+    kInventoryAgentChanged      = 0x100001B5 # 0x100001B5, Triggered when inventory needs updating due to agent change; no args
+    kOpenTemplate               = 0x100001BE # 0x100001BE, wparam = GW::UI::ChatTemplate*
+
+    kSendEnterMission           = 0x30000002  # wparam = uint32_t arena_id
+    kSendLoadSkillbar           = 0x30000003  # wparam = UIPacket::kSendLoadSkillbar*
+    kSendPingWeaponSet          = 0x30000004  # wparam = UIPacket::kSendPingWeaponSet*
+    kSendMoveItem               = 0x30000005  # wparam = UIPacket::kSendMoveItem*
+    kSendMerchantRequestQuote   = 0x30000006  # wparam = UIPacket::kSendMerchantRequestQuote*
+    kSendMerchantTransactItem   = 0x30000007  # wparam = UIPacket::kSendMerchantTransactItem*
+    kSendUseItem                = 0x30000008  # wparam = UIPacket::kSendUseItem*
+    kSendSetActiveQuest         = 0x30000009  # wparam = uint32_t quest_id
+    kSendAbandonQuest           = 0x3000000A  # wparam = uint32_t quest_id
+    kSendChangeTarget           = 0x3000000B  # wparam = UIPacket::kSendChangeTarget*
+    kSendMoveToWorldPoint       = 0x3000000C  # wparam = GW::GamePos*  # Clicking on the ground in the 3D world to move there
+    kSendInteractNPC            = 0x3000000D  # wparam = UIPacket::kInteractAgent*
+    kSendInteractGadget         = 0x3000000E  # wparam = UIPacket::kInteractAgent*
+    kSendInteractItem           = 0x3000000F  # wparam = UIPacket::kInteractAgent*
+    kSendInteractEnemy          = 0x30000010  # wparam = UIPacket::kInteractAgent*
+    kSendInteractPlayer         = 0x30000011  # wparam = uint32_t agent_id  # NB: calling target is a separate packet
+    kSendCallTarget             = 0x30000013  # wparam = { uint32_t call_type, uint32_t agent_id }
+    kSendAgentDialog            = 0x30000014  # wparam = uint32_t agent_id
+    kSendGadgetDialog           = 0x30000015  # wparam = uint32_t agent_id
+    kSendDialog                 = 0x30000016  # wparam = dialog_id  # Internal use
+
+    kStartWhisper               = 0x30000017  # wparam = UIPacket::kStartWhisper*
+    kGetSenderColor             = 0x30000018  # wparam = UIPacket::kGetColor*
+    kGetMessageColor            = 0x30000019  # wparam = UIPacket::kGetColor*
+    kSendChatMessage            = 0x3000001B  # wparam = UIPacket::kSendChatMessage*
+    kLogChatMessage             = 0x3000001D  # wparam = UIPacket::kLogChatMessage*
+    kRecvWhisper                = 0x3000001E  # wparam = UIPacket::kRecvWhisper*
+    kPrintChatMessage           = 0x3000001F  # wparam = UIPacket::kPrintChatMessage*
+    kSendWorldAction            = 0x30000020  # wparam = UIPacket::kSendWorldAction*
+    kSetRendererValue           = 0x30000021  # wparam = UIPacket::kSetRendererValue
+    kIdentifyItem               = 0x30000022  # wparam = UIPacket::kIdentifyItem
+
 
 
 class EnumPreference(IntEnum):
