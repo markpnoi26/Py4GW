@@ -4,7 +4,7 @@ import PyImGui
 import PyOverlay
 from HeroAI.ui import get_display_name
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
-from Py4GWCoreLib.GlobalCache.SharedMemory import AccountStruct
+from Py4GWCoreLib.GlobalCache.SharedMemory import AccountData
 from Py4GWCoreLib.ImGui_src.ImGuisrc import ImGui
 from Py4GWCoreLib.ImGui_src.Textures import TextureState, ThemeTextures
 from Py4GWCoreLib.ImGui_src.WindowModule import WindowModule
@@ -49,7 +49,7 @@ class UI():
     AnimationTimer : Timer = Timer()
         
     @staticmethod
-    def draw_log(quest_data : QuestData, accounts: dict[int, AccountStruct]):
+    def draw_log(quest_data : QuestData, accounts: dict[int, AccountData]):
         UI.QuestLogWindow.open = UI.Settings.LogOpen
         
         if not UI.QuestLogWindow.open:
@@ -154,7 +154,7 @@ class UI():
                                 
                                 for acc in accounts.values():
                                     name = get_display_name(acc)
-                                    acc_quest = next((q for q in acc.QuestLog.Quests if q.QuestID == quest.quest_id), None)
+                                    acc_quest = next((q for q in acc.PlayerData.QuestsData.Quests if q.QuestID == quest.quest_id), None)
                                     
                                     active = acc_quest is not None
                                     completed = acc_quest and acc_quest.IsCompleted
@@ -169,9 +169,9 @@ class UI():
                                                                     
                                     prof_primary, prof_secondary = "", ""
                                     prof_primary = ProfessionShort(
-                                        acc.AgentData.Profession[0]).name if acc.AgentData.Profession[0] != 0 else ""
+                                        acc.PlayerProfession[0]).name if acc.PlayerProfession[0] != 0 else ""
                                     prof_secondary = ProfessionShort(
-                                        acc.AgentData.Profession[1]).name if acc.AgentData.Profession[1] != 0 else ""
+                                        acc.PlayerProfession[1]).name if acc.PlayerProfession[1] != 0 else ""
                                     PyImGui.table_next_column()
                                     ImGui.text(f"{prof_primary}{('/' if prof_secondary else '')}{prof_secondary}")
                                     
@@ -199,7 +199,7 @@ class UI():
                         for i, acc in enumerate(accounts.values()):
                             PyImGui.set_cursor_pos(width - (i * 10) - 20, posY + 2)
                             ## chek if quest.quest_id is in active quests (.QuestID) 
-                            acc_quest = next((q for q in acc.QuestLog.Quests if q.QuestID == quest.quest_id), None)
+                            acc_quest = next((q for q in acc.PlayerData.QuestsData.Quests if q.QuestID == quest.quest_id), None)
                             
                             active = acc_quest is not None
                             completed = acc_quest and acc_quest.IsCompleted
@@ -244,7 +244,7 @@ class UI():
         
     
     @staticmethod
-    def draw_quest_details(quest: QuestNode, accounts: dict[int, AccountStruct]):
+    def draw_quest_details(quest: QuestNode, accounts: dict[int, AccountData]):
         child_width = PyImGui.get_content_region_avail()[0]
         text_clip = child_width - 120
         cursor_pos = PyImGui.get_cursor_screen_pos()
@@ -381,11 +381,11 @@ class UI():
         )
         
     @staticmethod
-    def draw_overlays(accounts : dict[int, AccountStruct]):
+    def draw_overlays(accounts : dict[int, AccountData]):
         if not UI.Settings.ShowFollowerActiveQuestOnMinimap and not UI.Settings.ShowFollowerActiveQuestOnMissionMap:
             return
 
-        active_quests = [acc.QuestLog.ActiveQuest for acc in accounts.values() if acc.QuestLog.ActiveQuest.QuestID != 0 and UI.Settings.show_quests_for_accounts.get(acc.AccountEmail, True)]
+        active_quests = [acc.PlayerData.QuestsData.ActiveQuest for acc in accounts.values() if acc.PlayerData.QuestsData.ActiveQuest.QuestID != 0 and UI.Settings.show_quests_for_accounts.get(acc.AccountEmail, True)]
         
         if not active_quests:
             return
@@ -480,7 +480,7 @@ class UI():
         
     
     @staticmethod
-    def draw_configure(accounts : dict[int, AccountStruct]):
+    def draw_configure(accounts : dict[int, AccountData]):
         if not UI.ConfigWindow.open:
             return
         
@@ -498,10 +498,10 @@ class UI():
                     PyImGui.same_line(0, 5)
                     width_avail = PyImGui.get_content_region_avail()[0]
                     PyImGui.push_item_width(width_avail - 5)
-                    key, modifiers = ImGui.keybinding("##HotkeyInfo", key=UI.Settings.HotKeyKey, modifiers=UI.Settings.Modifiers)
+                    key, modifiers, changed = ImGui.keybinding("##HotkeyInfo", key=UI.Settings.HotKeyKey, modifiers=UI.Settings.Modifiers)
                     PyImGui.pop_item_width()
                     
-                    if key != UI.Settings.HotKeyKey or modifiers != UI.Settings.Modifiers:
+                    if changed:
                         ConsoleLog("Party Quest Log", f"Setting new hotkey: {modifiers.name}+{key.name.replace('VK_','')}")
                         UI.Settings.set_questlog_hotkey_keys(key, modifiers)
                     
