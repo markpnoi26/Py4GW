@@ -437,7 +437,8 @@ class ImGui:
         height: float = 0.0,
         alignment: Alignment = Alignment.MidCenter,
         font_size: int | None = None,
-        font_style: str | None = None
+        font_style: str | None = None,
+        color: tuple[float, float, float, float] | None = None,
     ):
         """Draws text aligned inside a given width/height box."""
         width = PyImGui.get_content_region_avail()[0] if width == 0 else width
@@ -464,7 +465,10 @@ class ImGui:
             x0, y0 = PyImGui.get_cursor_pos()
             
             PyImGui.set_cursor_pos(x, y)
-            PyImGui.text(text)
+            if color is not None:
+                ImGui.text_colored(text, color)
+            else:
+                PyImGui.text(text)
             _, _, item_rect_size = ImGui.get_item_rect()
             
             #Restore cursor position

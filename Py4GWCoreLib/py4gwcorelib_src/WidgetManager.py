@@ -461,7 +461,10 @@ class WidgetHandler:
             #self._log_success(f"Discovered: {widget_id}")
             
         except Exception as e:
-            self._log_error(f"Failed to discover {widget_id}: {e}")
+            # Capture full traceback
+            import traceback
+            tb_str = traceback.format_exc()
+            self._log_error(f"Failed to discover {widget_id}: {e}\nFull traceback:\n{tb_str}")
     
             
     def _load_widget_module(self, folder: str, filename: str):
@@ -516,7 +519,10 @@ class WidgetHandler:
             #self._log_success(f"Discovered: {widget_id}")
             
         except Exception as e:
-            self._log_error(f"Failed to discover {widget_id}: {e}")
+            # Capture full traceback
+            import traceback
+            tb_str = traceback.format_exc()
+            self._log_error(f"Failed to discover {widget_id}: {e}\nFull traceback:\n{tb_str}")
                             
                 
     def _apply_ini_configuration(self):
