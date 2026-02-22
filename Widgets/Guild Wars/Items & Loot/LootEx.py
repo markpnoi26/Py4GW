@@ -14,6 +14,7 @@ from Py4GWCoreLib.py4gwcorelib_src.Color import Color
 from Py4GWCoreLib.py4gwcorelib_src.Console import ConsoleLog, Console
 from Py4GWCoreLib.py4gwcorelib_src.WidgetManager import get_widget_handler
 from ctypes import windll
+from HeroAI.cache_data import CacheData
 
 from Sources.frenkeyLib.LootEx.enum import ITEM_TEXTURE_FOLDER
 from Sources.frenkeyLib.SulfurousRunner import ui
@@ -47,6 +48,7 @@ class LootEx:
         self.inventory_handler = InventoryHandler()
         self.loot_handler = LootHandler()
         self.price_check_mgr = PriceCheckManager()
+        self.cached_data = CacheData()
 
         self.ui = UI()
         
@@ -190,8 +192,10 @@ class LootEx:
             
         if not self.current_character:
             login_number = GLOBAL_CACHE.Party.Players.GetLoginNumberByAgentID(Player.GetAgentID())
-            char_name = GLOBAL_CACHE.Party.Players.GetPlayerNameByLoginNumber(login_number)
-            self.current_character = char_name
+            account_data = self.cached_data.party.get_by_party_pos(login_number)
+            if not  account_data:
+                return
+            self.current_character = account_data.AgentData.CharacterName
                 
         if self.current_character == "Timeout":
             ConsoleLog(MODULE_NAME, "Character name request timed out. Try again...", Console.MessageType.Error)

@@ -1,46 +1,9 @@
-<<<<<<< Updated upstream
-import PyImGui
-from glm import c_uint32
-from Py4GWCoreLib import GLOBAL_CACHE, Agent, Player, Party
-from Py4GWCoreLib.GlobalCache.shared_memory_src.AccountStruct import AccountStruct
-import Py4GW
-=======
 from Py4GWCoreLib import GLOBAL_CACHE
 
 import PyImGui
->>>>>>> Stashed changes
 
 ShMem = GLOBAL_CACHE.ShMem
 
-<<<<<<< Updated upstream
-def main():
-    living = Agent.GetLivingAgentByID(Player.GetAgentID())
-    if living is None:
-        return
-        
-    if PyImGui.begin("acocutn data tester"):
-        PyImGui.text(f"data from context:")
-        
-        PyImGui.text(f"Account Name: {Player.GetAccountName()}")
-        PyImGui.text(f"Account email: {Player.GetAccountEmail()}")
-        PyImGui.text(f"character name: {Party.Players.GetPlayerNameByLoginNumber(Player.GetLoginNumber())}")
-        
-        PyImGui.separator()
-        
-        PyImGui.text(f"data from shared memory:")
-        account: AccountStruct | None = ShMem.GetAccountDataFromEmail(Player.GetAccountEmail())
-        if account is None:
-            PyImGui.text(f"Couldnt Locate email in shared memory {Player.GetAccountEmail()}")
-        else:
-            PyImGui.text(f"Account Name: {account.AccountName}")
-            PyImGui.text(f"Account Email: {account.AccountEmail}")
-            PyImGui.text(f"Character Name: {account.AgentData.CharacterName}")
-        
-
-
-            
-        
-=======
 
 def draw_window():
     MIN_WIDTH = 400
@@ -84,14 +47,11 @@ def draw_window():
             if GLOBAL_CACHE.Quest.IsQuestLocationReady(active_quest):
                 location = GLOBAL_CACHE.Quest.GetQuestLocation(active_quest)
                 PyImGui.text(f"Location: {location}")
->>>>>>> Stashed changes
 
             if GLOBAL_CACHE.Quest.IsQuestNPCReady(active_quest):
                 npc = GLOBAL_CACHE.Quest.GetQuestNPC(active_quest)
                 PyImGui.text(f"NPC: {npc}")
 
-<<<<<<< Updated upstream
-=======
             
                 
                 
@@ -102,6 +62,5 @@ def main():
     draw_window()
 
 
->>>>>>> Stashed changes
 if __name__ == "__main__":
     main()
