@@ -643,6 +643,7 @@ class UI:
                 ItemType.Materials_Zcoins,
                 ItemType.Rune_Mod,
             ],
+            ItemAction.Hold : [],
             ItemAction.Destroy : default_item_types,
         }
         
